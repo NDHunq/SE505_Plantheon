@@ -38,7 +38,6 @@ class _NavigationState extends State<Navigation> {
         });
       },
       height: 56,
-      backgroundColor: Colors.red,
       indicatorColor: Colors.transparent,
       // indicatorShape: const Border(
       //   top: BorderSide(
