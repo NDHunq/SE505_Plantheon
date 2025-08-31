@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
 import 'package:se501_plantheon/presentation/screens/navigator/navigator.dart';
 
 void main() {
@@ -13,7 +14,7 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Navigation(),
+          child: SignInPage(),
         ),
       ),
       debugShowCheckedModeBanner: false,
