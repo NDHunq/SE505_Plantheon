@@ -1,26 +1,12 @@
-// // //Dung de quan ly cac duong dan cua cac file vector
-
-// class AppVectors {
-//   static const String basePath = 'assets/vectors/';
-//   static const String format = '.svg';
-//   static const String logo = '${basePath}taskmate_logo$format';
-//   static const String navi_home_icon = '${basePath}navi_home_icon$format';
-//   static const String navi_activity_icon =
-//       '${basePath}navi_activity_icon$format';
-//   static const String navi_message_icon = '${basePath}navi_message_icon$format';
-//   static const String navi_profile_icon = '${basePath}navi_profile_icon$format';
-//   static const String navi_home_icon_selected =
-//       '${basePath}navi_home_icon_selected$format';
-//   static const String navi_activity_icon_selected =
-//       '${basePath}navi_activity_icon_selected$format';
-//   static const String navi_message_icon_selected =
-//       '${basePath}navi_message_icon_selected$format';
-//   static const String navi_profile_icon_selected =
-//       '${basePath}navi_profile_icon_selected$format';
-//   static const String google = '${basePath}google$format';
-//   static const String facebook = '${basePath}facebook$format';
-//   static const String baby_carriage_icon = '${basePath}baby-carriage$format';
-//   static const String search = '${basePath}search$format';
-//   static const String coin = '${basePath}coin$format';
-//   static const String avatar = '${basePath}avatar$format';
-// }
+class AppVectors {
+  static const String basePath = 'assets/vectors/';
+  static const String format = '.svg';
+  static const String homeSolid = '${basePath}home_solid$format';
+  static const String homeStroke = '${basePath}home_stroke$format';
+  static const String diarySolid = '${basePath}diary_solid$format';
+  static const String diaryStroke = '${basePath}diary_stroke$format';
+  static const String communitySolid = '${basePath}community_solid$format';
+  static const String communityStroke = '${basePath}community_stroke$format';
+  static const String accountSolid = '${basePath}account_solid$format';
+  static const String accountStroke = '${basePath}account_stroke$format';
+}

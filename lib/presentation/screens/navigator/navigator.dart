@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/presentation/screens/account/account.dart';
 import 'package:se501_plantheon/presentation/screens/community/community.dart';
 import 'package:se501_plantheon/presentation/screens/diary/diary.dart';
@@ -36,7 +38,7 @@ class _NavigationState extends State<Navigation> {
         });
       },
       height: 56,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.red,
       indicatorColor: Colors.transparent,
       // indicatorShape: const Border(
       //   top: BorderSide(
@@ -48,11 +50,19 @@ class _NavigationState extends State<Navigation> {
         NavigationDestination(
           selectedIcon: Padding(
             padding: const EdgeInsets.only(top: 3),
-            child: Icon(Icons.home)
+            child:  SvgPicture.asset(
+              AppVectors.homeSolid,
+              height: 23,
+              width: 23,
+            ),
           ),
           icon: Padding(
             padding: const EdgeInsets.only(top: 20.0),
-            child: Icon(Icons.home)
+            child: SvgPicture.asset(
+              AppVectors.homeStroke,
+              height: 23,
+              width: 23,
+            ),
 
           ),
           label: '',
@@ -60,34 +70,58 @@ class _NavigationState extends State<Navigation> {
         NavigationDestination(
           selectedIcon: Padding(
             padding: const EdgeInsets.only(top: 3),
-            child: Icon(Icons.home)
+            child: SvgPicture.asset(
+              AppVectors.diarySolid,
+              height: 23,
+              width: 23,
+            ),
 
           ),
           icon: Padding(
             padding: const EdgeInsets.only(top: 20.0),
-            child: Icon(Icons.home)
+            child: SvgPicture.asset(
+              AppVectors.diaryStroke,
+              height: 23,
+              width: 23,
+            ),
           ),
           label: '',
         ),
         NavigationDestination(
           selectedIcon: Padding(
             padding: const EdgeInsets.only(top: 3),
-            child: Icon(Icons.home)
+            child: SvgPicture.asset(
+              AppVectors.communitySolid,
+              height: 23,
+              width: 23,
+            ),
           ),
           icon: Padding(
             padding: const EdgeInsets.only(top: 20.0),
-            child: Icon(Icons.home)
+            child: SvgPicture.asset(
+              AppVectors.communityStroke,
+              height: 23,
+              width: 23,
+            ),
           ),
           label: '',
         ),
         NavigationDestination(
           selectedIcon: Padding(
             padding: const EdgeInsets.only(top: 3),
-            child: Icon(Icons.home)
+            child: SvgPicture.asset(
+              AppVectors.accountSolid,
+              height: 23,
+              width: 23,
+            ),
           ),
           icon: Padding(
             padding: const EdgeInsets.only(top: 20.0),
-            child: Icon(Icons.home)
+            child: SvgPicture.asset(
+              AppVectors.accountStroke,
+              height: 23,
+              width: 23,
+            ),
           ),
           label: '',
         ),
