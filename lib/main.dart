@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
-import 'package:se501_plantheon/presentation/screens/navigator/navigator.dart';
 
 void main() {
   runApp(const MainApp());
@@ -12,11 +11,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: SignInPage(),
-        ),
-      ),
+      home: Scaffold(body: Center(child: SignInPage())),
       debugShowCheckedModeBanner: false,
     );
   }
