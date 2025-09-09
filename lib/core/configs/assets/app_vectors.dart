@@ -9,4 +9,8 @@ class AppVectors {
   static const String communityStroke = '${basePath}community_stroke$format';
   static const String accountSolid = '${basePath}account_solid$format';
   static const String accountStroke = '${basePath}account_stroke$format';
+  static const String chatBot = '${basePath}chat_bot$format';
+  static const String arrowBack = '${basePath}arrow_back$format';
+  static const String send = '${basePath}send$format';
+  static const String gallery = '${basePath}gallery$format';
 }
