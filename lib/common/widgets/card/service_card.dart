@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
 class ServiceCard extends StatelessWidget {
-  const ServiceCard({super.key});
+  final String text;
+  final IconData icon;
+  const ServiceCard({super.key, required this.text, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +19,12 @@ class ServiceCard extends StatelessWidget {
               border: Border.all(color: AppColors.text_color_main, width: 1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
-              Icons.calculate,
-              size: 60,
-              color: AppColors.primary_main,
-            ),
+            child: Icon(icon, size: 60, color: AppColors.primary_main),
           ),
           SizedBox(
             width: 80,
             child: Text(
-              'Tính toán phân bón',
+              text,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
