@@ -1,12 +1,387 @@
 import 'package:flutter/material.dart';
+import 'package:se501_plantheon/presentation/screens/diary/widget/navigation.dart';
+import 'package:se501_plantheon/shared/constraint.dart';
+import 'package:se501_plantheon/presentation/screens/diary/month.dart';
+import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
 
-class Diary extends StatelessWidget {
+class Diary extends StatefulWidget {
   const Diary({super.key});
+
+  @override
+  State<Diary> createState() => _DiaryState();
+}
+
+class _DiaryState extends State<Diary> {
+  int selectedYear = DateTime.now().year;
+  int? selectedMonth;
+  bool showYearSelector = false;
+  bool isLoading = false;
+
+  void _toggleYearSelector() async {
+    setState(() {
+      isLoading = true;
+    });
+    
+    // Simulate loading delay
+    await Future.delayed(const Duration(milliseconds: 300));
+    
+    setState(() {
+      showYearSelector = !showYearSelector;
+      isLoading = false;
+    });
+  }
+
+  void _selectYear(int year) async {
+    setState(() {
+      isLoading = true;
+    });
+    
+    // Simulate loading delay
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    setState(() {
+      selectedYear = year;
+      showYearSelector = false;
+      isLoading = false;
+    });
+  }
+
+  void _selectMonth(int month) async {
+    setState(() {
+      isLoading = true;
+    });
+    
+    // Simulate loading delay
+    await Future.delayed(const Duration(milliseconds: 800));
+    
+    setState(() {
+      selectedMonth = month;
+      showYearSelector = false;
+      isLoading = false;
+    });
+  }
+
+  void _backToMonthSelection() async {
+    setState(() {
+      isLoading = true;
+    });
+    
+    // Simulate loading delay
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    setState(() {
+      selectedMonth = null;
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Text("Diary")
+      appBar: DiaryNavigationBar(
+        selectedYear: selectedYear,
+        selectedMonth: selectedMonth,
+        showYearSelector: showYearSelector,
+        onToggleYearSelector: _toggleYearSelector,
+        onBackToMonthSelection: _backToMonthSelection,
+        showBackButton: selectedMonth != null,
+        onBackPressed: selectedMonth != null ? _backToMonthSelection : null,
+        actions: [
+          CommonNavigationActions.add(
+            onPressed: () => _showAddNewModal(context),
+          ),
+          CommonNavigationActions.search(
+            onPressed: () => _showSearchModal(context),
+          ),
+          CommonNavigationActions.menu(
+            onPressed: () => _showMenuModal(context),
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(AppConstraints.mainPadding),
+            child: _buildContent(),
+          ),
+          if (isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.3),
+              child: const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                      strokeWidth: 3,
+                    ),
+                    SizedBox(height: 16),
+
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    if (showYearSelector) {
+      return _buildYearSelector();
+    } else if (selectedMonth != null) {
+      return MonthScreen(
+        month: selectedMonth!,
+        year: selectedYear,
+      );
+    } else {
+      return _buildMonthGrid();
+    }
+  }
+
+ 
+  void _showAddNewModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.95,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: const AddNewScreen(),
+      ),
+    );
+  }
+
+  void _showSearchModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Tìm kiếm nhật ký"),
+        content: const TextField(
+          decoration: InputDecoration(
+            hintText: "Nhập từ khóa tìm kiếm...",
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.search),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Hủy"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Tìm"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showMenuModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.settings, color: Colors.blue),
+              title: const Text("Cài đặt"),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.help_outline, color: Colors.green),
+              title: const Text("Trợ giúp"),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.info_outline, color: Colors.orange),
+              title: const Text("Thông tin ứng dụng"),
+              onTap: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Lazy load 12 tháng
+  Widget _buildMonthGrid() {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        childAspectRatio: 0.9,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      itemCount: 12,
+      itemBuilder: (context, index) {
+        return MonthWidget(
+          key: ValueKey("${selectedYear}-${index + 1}"),
+          month: index + 1,
+          year: selectedYear,
+          onMonthSelected: _selectMonth,
+        );
+      },
+    );
+  }
+
+  /// Grid chọn năm (3 năm 1 hàng)
+  Widget _buildYearSelector() {
+    final startYear = 2000;
+    final endYear = 2100;
+    final years = List.generate(endYear - startYear + 1, (i) => startYear + i);
+    final currentYear = DateTime.now().year;
+
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        childAspectRatio: 2,
+      ),
+      itemCount: years.length,
+      itemBuilder: (context, index) {
+        final year = years[index];
+        final isSelected = year == selectedYear;
+        final isCurrentYear = year == currentYear;
+
+        return GestureDetector(
+          onTap: isLoading ? null : () => _selectYear(year),
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: isSelected ? Colors.green : Colors.transparent,
+              borderRadius: BorderRadius.circular(8),
+              border: isCurrentYear
+                  ? Border.all(color: Colors.red, width: 2)
+                  : null,
+            ),
+            child: Text(
+              "$year",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: isSelected ? Colors.white : Colors.black,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class MonthWidget extends StatefulWidget {
+  final int month;
+  final int year;
+  final Function(int)? onMonthSelected;
+
+  const MonthWidget({
+    super.key, 
+    required this.month, 
+    required this.year,
+    this.onMonthSelected,
+  });
+
+  @override
+  State<MonthWidget> createState() => _MonthWidgetState();
+}
+
+class _MonthWidgetState extends State<MonthWidget> {
+  void _navigateToMonth(BuildContext context) {
+    if (widget.onMonthSelected != null) {
+      widget.onMonthSelected!(widget.month);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MonthScreen(
+            month: widget.month,
+            year: widget.year,
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final bool isCurrentMonth = (now.year == widget.year && now.month == widget.month);
+    final int daysInMonth = DateUtils.getDaysInMonth(widget.year, widget.month);
+
+    return GestureDetector(
+      onTap: () => _navigateToMonth(context),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Tháng ${widget.month}",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isCurrentMonth ? Colors.green : Colors.black,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Expanded(
+                child: GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 7,
+                  ),
+                  itemCount: daysInMonth,
+                  itemBuilder: (context, day) {
+                    final bool isToday = isCurrentMonth && (day + 1 == now.day);
+
+                    return Center(
+                      child: isToday
+                          ? Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.green,
+                                shape: BoxShape.circle,
+                              ),
+                              padding: const EdgeInsets.all(6),
+                              child: Text(
+                                "${day + 1}",
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              "${day + 1}",
+                              style: const TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
