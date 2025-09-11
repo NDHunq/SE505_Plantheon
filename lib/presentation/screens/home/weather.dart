@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
+import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/enums/weather_type.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
@@ -36,7 +37,23 @@ class Weather extends StatelessWidget {
               height: 24,
               color: AppColors.white,
             ),
-            onPressed: () {},
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => BasicDialog(
+                  title:
+                      "Cho phép truy cập vị trí của bạn khi bạn dùng ứng dụng?",
+                  content:
+                      "Vị trí của bạn sẽ được sử dụng để tra cứu thời tiết.",
+                  onConfirm: () {
+                    Navigator.of(context).pop();
+                  },
+                  onCancel: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              );
+            },
           ),
         ],
       ),

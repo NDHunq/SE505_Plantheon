@@ -1,0 +1,108 @@
+import 'package:flutter/material.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+
+class BasicDialog extends StatelessWidget {
+  final String title;
+  final String content;
+  final String confirmText;
+  final String cancelText;
+  final VoidCallback? onConfirm;
+  final VoidCallback? onCancel;
+
+  const BasicDialog({
+    super.key,
+    required this.title,
+    required this.content,
+    this.confirmText = 'Có',
+    this.cancelText = 'Không',
+    this.onConfirm,
+    this.onCancel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      contentPadding: const EdgeInsets.all(16),
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.8,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: AppColors.primary_600,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    if (onCancel != null) onCancel!();
+                    Navigator.of(context).pop();
+                  },
+                  icon: Icon(Icons.close, color: AppColors.primary_700),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              content,
+              style: TextStyle(color: AppColors.text_color_main, fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.text_color_100,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (onCancel != null) onCancel!();
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    cancelText,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary_main,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (onConfirm != null) onConfirm!();
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    confirmText,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
