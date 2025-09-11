@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
-import 'package:se501_plantheon/presentation/screens/home/widgets/history_card.dart';
+import 'package:se501_plantheon/presentation/screens/home/widgets/card/history_card.dart';
 
 class HistorySection extends StatelessWidget {
   const HistorySection({super.key});

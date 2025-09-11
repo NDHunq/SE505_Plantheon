@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
-import 'package:se501_plantheon/presentation/screens/home/widgets/disease_card.dart';
+import 'package:se501_plantheon/presentation/screens/home/widgets/card/disease_card.dart';
 
 class DiseaseWarningSection extends StatelessWidget {
   const DiseaseWarningSection({super.key});

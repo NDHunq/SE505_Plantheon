@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:se501_plantheon/common/widgets/card/weather_card.dart';
+import 'package:se501_plantheon/presentation/screens/home/widgets/card/weather_card.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/home/chat_bot.dart';
