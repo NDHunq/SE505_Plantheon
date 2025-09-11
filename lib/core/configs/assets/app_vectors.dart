@@ -13,4 +13,10 @@ class AppVectors {
   static const String arrowBack = '${basePath}arrow_back$format';
   static const String send = '${basePath}send$format';
   static const String gallery = '${basePath}gallery$format';
+  static const String location = '${basePath}location$format';
+  static const String weatherMoon = '${basePath}moon$format';
+  static const String weatherSunny = '${basePath}sunny$format';
+  static const String weatherRainy = '${basePath}rainy$format';
+  static const String weatherRainThunder = '${basePath}rain_thunder$format';
+  static const String weatherPartlyCloudy = '${basePath}partly_cloudy$format';
 }

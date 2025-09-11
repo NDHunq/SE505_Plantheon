@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
