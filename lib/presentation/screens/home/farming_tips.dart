@@ -62,6 +62,28 @@ class FarmingTips extends StatelessWidget {
                 stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
                 stageTime: 'Ngày 1-7',
                 isNow: true,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Giai đoạn 1: Gieo hạt",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary_700,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      "Thời điểm thích hợp để gieo hạt giống.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.text_color_400,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               FarmingTipStageCard(
                 vectorAsset: AppVectors.weatherSunny,
@@ -69,6 +91,28 @@ class FarmingTips extends StatelessWidget {
                 stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
                 stageTime: 'Ngày 1-7',
                 isNow: false,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Giai đoạn 1: Gieo hạt",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary_700,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      "Thời điểm thích hợp để gieo hạt giống.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.text_color_400,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               FarmingTipStageCard(
                 vectorAsset: AppVectors.weatherSunny,

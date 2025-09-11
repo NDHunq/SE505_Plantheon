@@ -5,8 +5,8 @@ import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/enums/weather_type.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
-import 'package:se501_plantheon/presentation/screens/home/widgets/weather_card.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/weather_horizontal_card.dart';
+import 'package:se501_plantheon/presentation/screens/home/widgets/card/weather_vertical_card.dart';
 
 class Weather extends StatelessWidget {
   const Weather({super.key});

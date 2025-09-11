@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/common/widgets/button/sized_button.dart';
 import 'package:se501_plantheon/presentation/screens/Navigator/navigator.dart';
-
-import '../../../core/configs/assets/app_vectors.dart';
 import '../../../core/configs/constants/app_info.dart';
 import '../../../core/configs/theme/app_colors.dart';
 
@@ -29,72 +27,77 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: _bottomText(context),
-        body: Padding(
-          padding: const EdgeInsets.all(AppInfo.main_padding),
-          child: SingleChildScrollView(
-            reverse: true,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 50),
-                _registerText(),
-                const SizedBox(height: 20),
-                _supportText(),
-                const SizedBox(height: 25),
-                _buildFormLogin(),
-                const SizedBox(height: 40),
-                _dividerWithText('hoặc'),
-                const SizedBox(height: 40),
-                _iconGroup(context),
-              ],
-            ),
+      bottomNavigationBar: _bottomText(context),
+      body: Padding(
+        padding: const EdgeInsets.all(AppInfo.main_padding),
+        child: SingleChildScrollView(
+          reverse: true,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 50),
+              _registerText(),
+              const SizedBox(height: 20),
+              _supportText(),
+              const SizedBox(height: 25),
+              _buildFormLogin(),
+              const SizedBox(height: 40),
+              _dividerWithText('hoặc'),
+              const SizedBox(height: 40),
+              _iconGroup(context),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Widget _buildFormLogin() {
     return Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            _userNameField(context),
-            const SizedBox(height: 15),
-            _passField(context),
-            const SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.only(left: 5),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  onTap: () async {
-                    _showForgotPasswordBottomSheet(context);
-                  },
-                  child: const Text(
-                    'Quên mật khẩu',
-                    style: TextStyle(
-                        color: AppColors.primary_main,
-                        fontWeight: FontWeight.w500),
+      key: _formKey,
+      child: Column(
+        children: [
+          _userNameField(context),
+          const SizedBox(height: 15),
+          _passField(context),
+          const SizedBox(height: 15),
+          Padding(
+            padding: const EdgeInsets.only(left: 5),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: GestureDetector(
+                onTap: () async {
+                  _showForgotPasswordBottomSheet(context);
+                },
+                child: const Text(
+                  'Quên mật khẩu',
+                  style: TextStyle(
+                    color: AppColors.primary_main,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 15),
-            SizedBox(
-              width: double.infinity, // Chiều rộng bằng chiều rộng màn hình
-              child: Sizedbutton(
-                  text: 'Đăng nhập',
-                  onPressFun: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                Navigation()));
-                  }),
+          ),
+          const SizedBox(height: 15),
+          SizedBox(
+            width: double.infinity, // Chiều rộng bằng chiều rộng màn hình
+            child: Sizedbutton(
+              text: 'Đăng nhập',
+              onPressFun: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => Navigation(),
+                  ),
+                );
+              },
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _dividerWithText(String text) {
@@ -139,10 +142,7 @@ class _SignInPageState extends State<SignInPage> {
   Widget _registerText() {
     return const Text(
       'Đăng nhập',
-      style: TextStyle(
-        fontSize: 30,
-        fontWeight: FontWeight.w600,
-      ),
+      style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
     );
   }
 
@@ -154,25 +154,17 @@ class _SignInPageState extends State<SignInPage> {
           children: [
             const TextSpan(
               text: 'Nếu bạn cần hỗ trợ, vui lòng liên hệ  ',
-              style: TextStyle(
-                color: Colors.grey,
-              ),
+              style: TextStyle(color: Colors.grey),
             ),
             WidgetSpan(
               child: GestureDetector(
-                onTap: () async {
-                  const url = 'https://flutter.dev/';
-                  // if (await canLaunch(url)) {
-                  //   await launch(url);
-                  // } else {
-                  //   throw 'Could not launch $url';
-                  // }
-                },
+                onTap: () async {},
                 child: const Text(
                   'Tại đây',
                   style: TextStyle(
-                      color: AppColors.primary_main,
-                      fontWeight: FontWeight.w600),
+                    color: AppColors.primary_main,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -190,18 +182,17 @@ class _SignInPageState extends State<SignInPage> {
         children: [
           const Text('Bạn chưa có tài khoản?'),
           TextButton(
-              onPressed: () {
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (BuildContext context) => SignUpPage()));
-              },
-              child: const Text(
-                'Đăng kí ngay',
-                style: TextStyle(
-                  color: AppColors.primary_main,
-                ),
-              )),
+            onPressed: () {
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (BuildContext context) => SignUpPage()));
+            },
+            child: const Text(
+              'Đăng kí ngay',
+              style: TextStyle(color: AppColors.primary_main),
+            ),
+          ),
         ],
       ),
     );
@@ -211,10 +202,11 @@ class _SignInPageState extends State<SignInPage> {
     return TextFormField(
       controller: _email,
       decoration: const InputDecoration(
-          labelText: 'Số điện thoại',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
-          )),
+        labelText: 'Số điện thoại',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+        ),
+      ),
       validator: (String? value) {
         if (value == null || value.isEmpty) {
           return 'Vui lòng nhập số điện thoại';
@@ -232,21 +224,22 @@ class _SignInPageState extends State<SignInPage> {
     return TextFormField(
       controller: _password,
       decoration: InputDecoration(
-          labelText: 'Mật khẩu',
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+        labelText: 'Mật khẩu',
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _obscureText ? Icons.visibility_off : Icons.visibility,
+            color: const Color.fromARGB(255, 63, 63, 63),
           ),
-          suffixIcon: IconButton(
-            icon: Icon(
-              _obscureText ? Icons.visibility_off : Icons.visibility,
-              color: const Color.fromARGB(255, 63, 63, 63),
-            ),
-            onPressed: () {
-              setState(() {
-                _obscureText = !_obscureText;
-              });
-            },
-          )),
+          onPressed: () {
+            setState(() {
+              _obscureText = !_obscureText;
+            });
+          },
+        ),
+      ),
       obscureText: _obscureText,
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -265,9 +258,7 @@ class _SignInPageState extends State<SignInPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // SvgPicture.asset(AppVectors.google, height: 35),
-        const SizedBox(
-          width: 50,
-        ),
+        const SizedBox(width: 50),
         // SvgPicture.asset(AppVectors.facebook, height: 35),
       ],
     );
@@ -280,9 +271,9 @@ class _SignInPageState extends State<SignInPage> {
       builder: (BuildContext context) {
         return Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context)
-                .viewInsets
-                .bottom, // Lấy khoảng trống của bàn phím
+            bottom: MediaQuery.of(
+              context,
+            ).viewInsets.bottom, // Lấy khoảng trống của bàn phím
             left: 25.0,
             right: 25.0,
             top: 25.0,
@@ -306,10 +297,7 @@ class _SignInPageState extends State<SignInPage> {
                 const SizedBox(height: 30),
                 const Text(
                   'Quên mật khẩu',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
                 const Text(
@@ -354,9 +342,9 @@ class _SignInPageState extends State<SignInPage> {
           builder: (BuildContext context, StateSetter setState) {
             return Padding(
               padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context)
-                    .viewInsets
-                    .bottom, // Lấy khoảng trống của bàn phím
+                bottom: MediaQuery.of(
+                  context,
+                ).viewInsets.bottom, // Lấy khoảng trống của bàn phím
                 left: 25.0,
                 right: 25.0,
                 top: 25.0,
@@ -447,48 +435,46 @@ class _SignInPageState extends State<SignInPage> {
         bool obscureText = true;
         bool isOtpError = false;
         return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context)
-                  .viewInsets
-                  .bottom, // Lấy khoảng trống của bàn phím
-              left: 25.0,
-              right: 25.0,
-              top: 25.0,
-            ),
-            child: SingleChildScrollView(
-              // Bao bọc nội dung để cho phép cuộn
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 100,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(10),
+          builder: (BuildContext context, StateSetter setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(
+                  context,
+                ).viewInsets.bottom, // Lấy khoảng trống của bàn phím
+                left: 25.0,
+                right: 25.0,
+                top: 25.0,
+              ),
+              child: SingleChildScrollView(
+                // Bao bọc nội dung để cho phép cuộn
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 100,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                  const Text(
-                    'Cập nhật mật khẩu',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    const SizedBox(height: 30),
+                    const Text(
+                      'Cập nhật mật khẩu',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Vui lòng nhập mật khẩu mới của bạn.',
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _newPasswordController,
-                    decoration: InputDecoration(
+                    const SizedBox(height: 20),
+                    const Text('Vui lòng nhập mật khẩu mới của bạn.'),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _newPasswordController,
+                      decoration: InputDecoration(
                         labelText: 'Mật khẩu mới',
                         border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -505,22 +491,23 @@ class _SignInPageState extends State<SignInPage> {
                               obscureText = !obscureText;
                             });
                           },
-                        )),
-                    obscureText: obscureText,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng nhập mật khẩu';
-                      }
-                      if (value.length < 6) {
-                        return 'Mật khẩu phải có ít nhất 6 ký tự';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _confirmPasswordController,
-                    decoration: InputDecoration(
+                        ),
+                      ),
+                      obscureText: obscureText,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Vui lòng nhập mật khẩu';
+                        }
+                        if (value.length < 6) {
+                          return 'Mật khẩu phải có ít nhất 6 ký tự';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _confirmPasswordController,
+                      decoration: InputDecoration(
                         labelText: 'Xác nhận mật khẩu mới',
                         border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -537,49 +524,52 @@ class _SignInPageState extends State<SignInPage> {
                               obscureText = !obscureText;
                             });
                           },
-                        )),
-                    obscureText: obscureText,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng nhập mật khẩu';
-                      }
-                      if (value.length < 6) {
-                        return 'Mật khẩu phải có ít nhất 6 ký tự';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  Visibility(
-                    visible: isOtpError,
-                    child: const Text(
-                      "Mật khẩu không khớp",
-                      style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      obscureText: obscureText,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Vui lòng nhập mật khẩu';
+                        }
+                        if (value.length < 6) {
+                          return 'Mật khẩu phải có ít nhất 6 ký tự';
+                        }
+                        return null;
+                      },
                     ),
-                  ),
-                  const SizedBox(height: 15),
-                  Sizedbutton(
-                    onPressFun: () {
-                      // Xử lý đổi mật khẩu ở đây
-                      String newPassword = _newPasswordController.text;
-                      String confirmPassword = _confirmPasswordController.text;
-                      if (newPassword == confirmPassword) {
-                        //Navigator.pop(context); // Đóng BottomSheet
-                      } else {
-                        setState(() {
-                          isOtpError = true;
-                        });
-                      }
-                    },
-                    text: 'Cập nhật mật khẩu',
-                    width: double.infinity,
-                  ),
-                  const SizedBox(height: 10),
-                ],
+                    const SizedBox(height: 10),
+                    Visibility(
+                      visible: isOtpError,
+                      child: const Text(
+                        "Mật khẩu không khớp",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    Sizedbutton(
+                      onPressFun: () {
+                        // Xử lý đổi mật khẩu ở đây
+                        String newPassword = _newPasswordController.text;
+                        String confirmPassword =
+                            _confirmPasswordController.text;
+                        if (newPassword == confirmPassword) {
+                          //Navigator.pop(context); // Đóng BottomSheet
+                        } else {
+                          setState(() {
+                            isOtpError = true;
+                          });
+                        }
+                      },
+                      text: 'Cập nhật mật khẩu',
+                      width: double.infinity,
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
               ),
-            ),
-          );
-        });
+            );
+          },
+        );
       },
     );
   }
