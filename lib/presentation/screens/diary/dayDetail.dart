@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
-import 'package:se501_plantheon/presentation/screens/diary/widget/navigation.dart';
+import 'package:se501_plantheon/presentation/screens/diary/widgets/navigation.dart';
 
 class DayDetailScreen extends StatefulWidget {
   final Map<String, dynamic>? arguments;

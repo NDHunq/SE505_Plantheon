@@ -1,6 +1,9 @@
-
-
 import 'package:flutter/material.dart';
+import 'package:se501_plantheon/common/widgets/textfield/text_field.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/presentation/screens/diary/widgets/addNew_Row_1_1.dart';
+import 'package:se501_plantheon/presentation/screens/diary/widgets/addNew_Row_1_2.dart';
+
 class climateWidget extends StatefulWidget {
   const climateWidget({super.key});
 
@@ -26,7 +29,7 @@ class _climateWidgetState extends State<climateWidget> {
   String purchasedFor = "Chú hàng xóm";
   String buyer = "Vợ";
   String note = "Bón vụ thu hè";
-  
+
   // Danh sách phân loại và đơn vị tính
   List<String> categories = ["A", "B", "C"];
   List<String> units = ["Kg", "Tấn", "Lít", "Mét", "Cái"];
@@ -40,7 +43,8 @@ class _climateWidgetState extends State<climateWidget> {
     );
     if (picked != null) {
       setState(() {
-        selectedTime = "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}";
+        selectedTime =
+            "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}";
       });
     }
   }
@@ -65,9 +69,9 @@ class _climateWidgetState extends State<climateWidget> {
     final List<String> repeatOptions = [
       "Không",
       "Hàng ngày",
-      "Hàng tuần", 
+      "Hàng tuần",
       "Hàng tháng",
-      "Hàng năm"
+      "Hàng năm",
     ];
 
     await showDialog(
@@ -86,7 +90,9 @@ class _climateWidgetState extends State<climateWidget> {
                   });
                   Navigator.of(context).pop();
                 },
-                trailing: repeatType == option ? const Icon(Icons.check, color: Colors.green) : null,
+                trailing: repeatType == option
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
               );
             }).toList(),
           ),
@@ -97,10 +103,7 @@ class _climateWidgetState extends State<climateWidget> {
 
   // Phương thức hiển thị dialog chọn kết thúc lặp lại
   Future<void> _showEndRepeatDialog(BuildContext context) async {
-    final List<String> endRepeatOptions = [
-      "Không",
-      "Ngày"
-    ];
+    final List<String> endRepeatOptions = ["Không", "Ngày"];
 
     await showDialog(
       context: context,
@@ -118,7 +121,9 @@ class _climateWidgetState extends State<climateWidget> {
                   });
                   Navigator.of(context).pop();
                 },
-                trailing: endRepeatType == option ? const Icon(Icons.check, color: Colors.green) : null,
+                trailing: endRepeatType == option
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
               );
             }).toList(),
           ),
@@ -144,11 +149,7 @@ class _climateWidgetState extends State<climateWidget> {
 
   // Phương thức hiển thị dialog chọn cảnh báo
   Future<void> _showAlertDialog(BuildContext context) async {
-    final List<String> alertOptions = [
-      "Không",
-      "Trước 5 phút",
-      "Trước 1 ngày"
-    ];
+    final List<String> alertOptions = ["Không", "Trước 5 phút", "Trước 1 ngày"];
 
     await showDialog(
       context: context,
@@ -166,7 +167,9 @@ class _climateWidgetState extends State<climateWidget> {
                   });
                   Navigator.of(context).pop();
                 },
-                trailing: alertTime == option ? const Icon(Icons.check, color: Colors.green) : null,
+                trailing: alertTime == option
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
               );
             }).toList(),
           ),
@@ -193,7 +196,9 @@ class _climateWidgetState extends State<climateWidget> {
                   });
                   Navigator.of(context).pop();
                 },
-                trailing: category == cat ? const Icon(Icons.check, color: Colors.green) : null,
+                trailing: category == cat
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
               );
             }).toList(),
           ),
@@ -205,18 +210,15 @@ class _climateWidgetState extends State<climateWidget> {
   // Phương thức hiển thị dialog thêm phân loại
   Future<void> _showAddCategoryDialog(BuildContext context) async {
     final TextEditingController controller = TextEditingController();
-    
+
     await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Thêm phân loại"),
-          content: TextField(
+          content: AppTextField(
             controller: controller,
-            decoration: const InputDecoration(
-              labelText: "Nhập tên phân loại",
-              border: OutlineInputBorder(),
-            ),
+            labelText: "Nhập tên phân loại",
           ),
           actions: [
             TextButton(
@@ -259,7 +261,9 @@ class _climateWidgetState extends State<climateWidget> {
                   });
                   Navigator.of(context).pop();
                 },
-                trailing: unit == unitItem ? const Icon(Icons.check, color: Colors.green) : null,
+                trailing: unit == unitItem
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
               );
             }).toList(),
           ),
@@ -286,7 +290,9 @@ class _climateWidgetState extends State<climateWidget> {
                   });
                   Navigator.of(context).pop();
                 },
-                trailing: currency == currencyItem ? const Icon(Icons.check, color: Colors.green) : null,
+                trailing: currency == currencyItem
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
               );
             }).toList(),
           ),
@@ -300,58 +306,85 @@ class _climateWidgetState extends State<climateWidget> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          TextField(
-            decoration: InputDecoration(
-              labelText: "Thêm tiêu đề",
-              
-              border: OutlineInputBorder(),
+          // Row trên cùng: Loại nhật ký (trái) | Nút sát phải
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Loại nhật ký",
+                  style: TextStyle(fontSize: 16),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFE6F4EA),
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(color: Colors.grey.shade200, width: 1),
+                  ),
+                  child: const Text(
+                    "Thích ứng với BĐKH và môi trường",
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
+          ),
+
+          AppTextField(
+            contentPaddingVertical: 16,
+            hintText: "Thêm tiêu đề",
+
             onChanged: (value) => setState(() => note = value),
           ),
-        
-          Container(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Column(
-                children: [
-                 Text("Chi Tiêu"),
-                ],
-              ),
-            ),
-          ),
           // Cả ngày
-          _buildFormRow2(
+          AddNewRow(
             label: "Cả ngày",
             child: Switch(
               value: allDay,
               onChanged: (value) => setState(() => allDay = value),
-              activeColor: Colors.green,
+              activeThumbColor: Colors.green,
             ),
           ),
-          
+
           // Thời gian
-          _buildFormRow(
+          AddNewRow(
             label: "Thời gian",
             child: Row(
               children: [
-                // Chọn giờ
-                GestureDetector(
-                  onTap: () => _selectTime(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
+                if (!allDay) ...[
+                  GestureDetector(
+                    onTap: () => _selectTime(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(selectedTime),
                     ),
-                    child: Text(selectedTime),
                   ),
-                ),
-                const SizedBox(width: 8),
+                  const SizedBox(width: 8),
+                ],
                 // Chọn ngày
                 GestureDetector(
                   onTap: () => _selectDate(context),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey.shade300),
                       borderRadius: BorderRadius.circular(8),
@@ -362,14 +395,19 @@ class _climateWidgetState extends State<climateWidget> {
               ],
             ),
           ),
-          
+
+          Divider(height: 1, color: AppColors.text_color_100),
+
           // Lặp lại
-          _buildFormRow(
+          AddNewRow(
             label: "Lặp lại",
             child: GestureDetector(
               onTap: () => _showRepeatDialog(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(8),
@@ -384,14 +422,17 @@ class _climateWidgetState extends State<climateWidget> {
               ),
             ),
           ),
-          
+
           // Kết thúc lặp lại
-          _buildFormRow(
+          AddNewRow(
             label: "Kết thúc lặp lại",
             child: GestureDetector(
               onTap: () => _showEndRepeatDialog(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(8),
@@ -406,15 +447,18 @@ class _climateWidgetState extends State<climateWidget> {
               ),
             ),
           ),
-          
+
           // Ngày kết thúc - chỉ hiển thị khi chọn "Ngày"
           if (endRepeatType == "Ngày") ...[
-            _buildFormRow(
+            AddNewRow(
               label: "Ngày kết thúc",
               child: GestureDetector(
                 onTap: () => _selectEndDate(context),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade300),
                     borderRadius: BorderRadius.circular(8),
@@ -424,14 +468,18 @@ class _climateWidgetState extends State<climateWidget> {
               ),
             ),
           ],
-          
+          Divider(height: 1, color: AppColors.text_color_100),
+
           // Cảnh báo
-          _buildFormRow(
+          AddNewRow(
             label: "Cảnh báo",
             child: GestureDetector(
               onTap: () => _showAlertDialog(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(8),
@@ -446,22 +494,33 @@ class _climateWidgetState extends State<climateWidget> {
               ),
             ),
           ),
-          
+          Divider(height: 1, color: AppColors.text_color_100),
+
           // Vật mua
-          _buildFormRow(
-            label: "Vật mua",
-            child: TextField(
+          AddNewRowVertical(
+            label: "Biến đổi khí hậu và môi trường",
+            child: AppTextField(
               controller: TextEditingController(text: purchasedItem),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-              ),
               onChanged: (value) => purchasedItem = value,
             ),
           ),
-          
-          // Phân loại
-          _buildFormRow(
+
+          // Kỹ thuật áp dụng
+          AddNewRowVertical(
+            label: "Các hành động thích ứng với BĐKH và môi trường",
+            child: AppTextField(
+              controller: TextEditingController(text: purchasedItem),
+              onChanged: (value) => purchasedItem = value,
+            ),
+          ),
+          AddNewRowVertical(
+            label: "Mô tả",
+            child: AppTextField(
+              controller: TextEditingController(text: purchasedItem),
+              onChanged: (value) => purchasedItem = value,
+            ),
+          ),
+          AddNewRow(
             label: "Phân loại",
             child: Row(
               children: [
@@ -469,7 +528,10 @@ class _climateWidgetState extends State<climateWidget> {
                   child: GestureDetector(
                     onTap: () => _showCategoryDialog(context),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey.shade300),
                         borderRadius: BorderRadius.circular(8),
@@ -499,137 +561,26 @@ class _climateWidgetState extends State<climateWidget> {
               ],
             ),
           ),
-          
-          // Số lượng mua
-          _buildFormRow(
-            label: "Số lượng mua",
-            child: TextField(
-              controller: TextEditingController(text: quantity),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-              ),
-              keyboardType: TextInputType.number,
-              onChanged: (value) => quantity = value,
+
+          AddNewRow(
+            label: "Người thực hiện",
+            child: AppTextField(
+              controller: TextEditingController(text: purchasedItem),
+              onChanged: (value) => purchasedItem = value,
             ),
           ),
-          
-          // Đơn vị tính
-          _buildFormRow(
-            label: "Đơn vị tính",
-            child: GestureDetector(
-              onTap: () => _showUnitDialog(context),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(unit),
-                    const Icon(Icons.arrow_drop_down, size: 20),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          
-          // Số tiền đã chi
-          _buildFormRow(
-            label: "Số tiền đã chi",
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: TextEditingController(text: amount),
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                    ),
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) => amount = value,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => _showCurrencyDialog(context),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(currency),
-                          const Icon(Icons.arrow_drop_down, size: 20),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          // Mục đích
-          _buildFormRow(
-            label: "Mục đích",
-            child: TextField(
-              controller: TextEditingController(text: purpose),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-              ),
-              onChanged: (value) => purpose = value,
-            ),
-          ),
-          
-          // Mua cho ai
-          _buildFormRow(
-            label: "Mua cho ai",
-            child: TextField(
-              controller: TextEditingController(text: purchasedFor),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-              ),
-              onChanged: (value) => purchasedFor = value,
-            ),
-          ),
-          
-          // Người mua
-          _buildFormRow(
-            label: "Người mua",
-            child: TextField(
-              controller: TextEditingController(text: buyer),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-              ),
-              onChanged: (value) => buyer = value,
-            ),
-          ),
-          
-          // Thêm tệp đính kèm
-          _buildFormRow(
+
+          Divider(height: 1, color: AppColors.text_color_100),
+          AddNewRow(
             label: "Thêm tệp đính kèm...",
             child: const SizedBox.shrink(),
           ),
-          
+          Divider(height: 1, color: AppColors.text_color_100),
           // Ghi chú
-          _buildFormRow(
+          AddNewRow(
             label: "Ghi chú",
-            child: TextField(
+            child: AppTextField(
               controller: TextEditingController(text: note),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-              ),
               onChanged: (value) => note = value,
             ),
           ),
@@ -638,32 +589,7 @@ class _climateWidgetState extends State<climateWidget> {
     );
   }
 
-  Widget _buildFormRow({required String label, required Widget child}) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Text(
-                  label,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: child,
-              ),
-            ],
-          ),
-        ),
-        const Divider(height: 1, color: Colors.grey),
-      ],
-    );
-  }
-   Widget _buildFormRow2({required String label, required Widget child}) {
+  Widget _buildFormRow2({required String label, required Widget child}) {
     return Column(
       children: [
         Padding(
@@ -672,19 +598,15 @@ class _climateWidgetState extends State<climateWidget> {
             children: [
               Expanded(
                 flex: 2,
-                child: Text(
-                  label,
-                  style: const TextStyle(fontSize: 16),
-                ),
+                child: Text(label, style: const TextStyle(fontSize: 16)),
               ),
               Expanded(
                 flex: 3,
-                child: child,
+                child: Align(alignment: Alignment.centerRight, child: child),
               ),
             ],
           ),
         ),
-       
       ],
     );
   }
