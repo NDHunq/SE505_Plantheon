@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/presentation/screens/home/scan_history.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/history_card.dart';
 
 class HistorySection extends StatelessWidget {
@@ -22,10 +23,18 @@ class HistorySection extends StatelessWidget {
                 color: AppColors.primary_700,
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: AppColors.primary_700,
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ScanHistory()),
+                );
+              },
+              icon: Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: AppColors.primary_700,
+              ),
             ),
           ],
         ),
