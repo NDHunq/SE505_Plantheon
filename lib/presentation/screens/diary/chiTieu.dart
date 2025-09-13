@@ -1,6 +1,5 @@
-
-
 import 'package:flutter/material.dart';
+
 class TargetsWidget extends StatefulWidget {
   const TargetsWidget({super.key});
 
@@ -26,7 +25,7 @@ class _TargetsWidgetState extends State<TargetsWidget> {
   String purchasedFor = "Chú hàng xóm";
   String buyer = "Vợ";
   String note = "Bón vụ thu hè";
-  
+
   // Danh sách phân loại và đơn vị tính
   List<String> categories = ["A", "B", "C"];
   List<String> units = ["Kg", "Tấn", "Lít", "Mét", "Cái"];
@@ -40,7 +39,8 @@ class _TargetsWidgetState extends State<TargetsWidget> {
     );
     if (picked != null) {
       setState(() {
-        selectedTime = "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}";
+        selectedTime =
+            "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}";
       });
     }
   }
@@ -65,9 +65,9 @@ class _TargetsWidgetState extends State<TargetsWidget> {
     final List<String> repeatOptions = [
       "Không",
       "Hàng ngày",
-      "Hàng tuần", 
+      "Hàng tuần",
       "Hàng tháng",
-      "Hàng năm"
+      "Hàng năm",
     ];
 
     await showDialog(
@@ -86,7 +86,9 @@ class _TargetsWidgetState extends State<TargetsWidget> {
                   });
                   Navigator.of(context).pop();
                 },
-                trailing: repeatType == option ? const Icon(Icons.check, color: Colors.green) : null,
+                trailing: repeatType == option
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
               );
             }).toList(),
           ),
@@ -97,10 +99,7 @@ class _TargetsWidgetState extends State<TargetsWidget> {
 
   // Phương thức hiển thị dialog chọn kết thúc lặp lại
   Future<void> _showEndRepeatDialog(BuildContext context) async {
-    final List<String> endRepeatOptions = [
-      "Không",
-      "Ngày"
-    ];
+    final List<String> endRepeatOptions = ["Không", "Ngày"];
 
     await showDialog(
       context: context,
@@ -118,7 +117,9 @@ class _TargetsWidgetState extends State<TargetsWidget> {
                   });
                   Navigator.of(context).pop();
                 },
-                trailing: endRepeatType == option ? const Icon(Icons.check, color: Colors.green) : null,
+                trailing: endRepeatType == option
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
               );
             }).toList(),
           ),
@@ -144,11 +145,7 @@ class _TargetsWidgetState extends State<TargetsWidget> {
 
   // Phương thức hiển thị dialog chọn cảnh báo
   Future<void> _showAlertDialog(BuildContext context) async {
-    final List<String> alertOptions = [
-      "Không",
-      "Trước 5 phút",
-      "Trước 1 ngày"
-    ];
+    final List<String> alertOptions = ["Không", "Trước 5 phút", "Trước 1 ngày"];
 
     await showDialog(
       context: context,
@@ -166,7 +163,9 @@ class _TargetsWidgetState extends State<TargetsWidget> {
                   });
                   Navigator.of(context).pop();
                 },
-                trailing: alertTime == option ? const Icon(Icons.check, color: Colors.green) : null,
+                trailing: alertTime == option
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
               );
             }).toList(),
           ),
@@ -193,7 +192,9 @@ class _TargetsWidgetState extends State<TargetsWidget> {
                   });
                   Navigator.of(context).pop();
                 },
-                trailing: category == cat ? const Icon(Icons.check, color: Colors.green) : null,
+                trailing: category == cat
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
               );
             }).toList(),
           ),
@@ -205,7 +206,7 @@ class _TargetsWidgetState extends State<TargetsWidget> {
   // Phương thức hiển thị dialog thêm phân loại
   Future<void> _showAddCategoryDialog(BuildContext context) async {
     final TextEditingController controller = TextEditingController();
-    
+
     await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -259,7 +260,9 @@ class _TargetsWidgetState extends State<TargetsWidget> {
                   });
                   Navigator.of(context).pop();
                 },
-                trailing: unit == unitItem ? const Icon(Icons.check, color: Colors.green) : null,
+                trailing: unit == unitItem
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
               );
             }).toList(),
           ),
@@ -286,7 +289,9 @@ class _TargetsWidgetState extends State<TargetsWidget> {
                   });
                   Navigator.of(context).pop();
                 },
-                trailing: currency == currencyItem ? const Icon(Icons.check, color: Colors.green) : null,
+                trailing: currency == currencyItem
+                    ? const Icon(Icons.check, color: Colors.green)
+                    : null,
               );
             }).toList(),
           ),
@@ -300,58 +305,88 @@ class _TargetsWidgetState extends State<TargetsWidget> {
     return SingleChildScrollView(
       child: Column(
         children: [
+          // Row trên cùng: Loại nhật ký (trái) | Nút sát phải
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Loại nhật ký",
+                  style: TextStyle(fontSize: 16),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFE6F4EA),
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(color: Colors.grey.shade200, width: 1),
+                  ),
+                  child: const Text(
+                    "Chi tiêu",
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
           TextField(
             decoration: InputDecoration(
               labelText: "Thêm tiêu đề",
-              
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey.shade200),
+              ),
             ),
             onChanged: (value) => setState(() => note = value),
           ),
-        
-          Container(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Column(
-                children: [
-                 Text("Chi Tiêu"),
-                ],
-              ),
-            ),
-          ),
           // Cả ngày
-          _buildFormRow2(
+          _buildFormRow(
             label: "Cả ngày",
             child: Switch(
               value: allDay,
               onChanged: (value) => setState(() => allDay = value),
-              activeColor: Colors.green,
+              activeThumbColor: Colors.green,
             ),
           ),
-          
+
           // Thời gian
           _buildFormRow(
             label: "Thời gian",
             child: Row(
               children: [
-                // Chọn giờ
-                GestureDetector(
-                  onTap: () => _selectTime(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
+                if (!allDay) ...[
+                  GestureDetector(
+                    onTap: () => _selectTime(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(selectedTime),
                     ),
-                    child: Text(selectedTime),
                   ),
-                ),
-                const SizedBox(width: 8),
+                  const SizedBox(width: 8),
+                ],
                 // Chọn ngày
                 GestureDetector(
                   onTap: () => _selectDate(context),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey.shade300),
                       borderRadius: BorderRadius.circular(8),
@@ -362,14 +397,17 @@ class _TargetsWidgetState extends State<TargetsWidget> {
               ],
             ),
           ),
-          
+
           // Lặp lại
           _buildFormRow(
             label: "Lặp lại",
             child: GestureDetector(
               onTap: () => _showRepeatDialog(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(8),
@@ -384,14 +422,17 @@ class _TargetsWidgetState extends State<TargetsWidget> {
               ),
             ),
           ),
-          
+
           // Kết thúc lặp lại
           _buildFormRow(
             label: "Kết thúc lặp lại",
             child: GestureDetector(
               onTap: () => _showEndRepeatDialog(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(8),
@@ -406,7 +447,7 @@ class _TargetsWidgetState extends State<TargetsWidget> {
               ),
             ),
           ),
-          
+
           // Ngày kết thúc - chỉ hiển thị khi chọn "Ngày"
           if (endRepeatType == "Ngày") ...[
             _buildFormRow(
@@ -414,7 +455,10 @@ class _TargetsWidgetState extends State<TargetsWidget> {
               child: GestureDetector(
                 onTap: () => _selectEndDate(context),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade300),
                     borderRadius: BorderRadius.circular(8),
@@ -424,14 +468,17 @@ class _TargetsWidgetState extends State<TargetsWidget> {
               ),
             ),
           ],
-          
+
           // Cảnh báo
           _buildFormRow(
             label: "Cảnh báo",
             child: GestureDetector(
               onTap: () => _showAlertDialog(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(8),
@@ -446,20 +493,26 @@ class _TargetsWidgetState extends State<TargetsWidget> {
               ),
             ),
           ),
-          
+
           // Vật mua
           _buildFormRow(
             label: "Vật mua",
             child: TextField(
               controller: TextEditingController(text: purchasedItem),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
                 isDense: true,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
               ),
               onChanged: (value) => purchasedItem = value,
             ),
           ),
-          
+
           // Phân loại
           _buildFormRow(
             label: "Phân loại",
@@ -469,7 +522,10 @@ class _TargetsWidgetState extends State<TargetsWidget> {
                   child: GestureDetector(
                     onTap: () => _showCategoryDialog(context),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey.shade300),
                         borderRadius: BorderRadius.circular(8),
@@ -499,28 +555,37 @@ class _TargetsWidgetState extends State<TargetsWidget> {
               ],
             ),
           ),
-          
+
           // Số lượng mua
           _buildFormRow(
             label: "Số lượng mua",
             child: TextField(
               controller: TextEditingController(text: quantity),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
                 isDense: true,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
               ),
               keyboardType: TextInputType.number,
               onChanged: (value) => quantity = value,
             ),
           ),
-          
+
           // Đơn vị tính
           _buildFormRow(
             label: "Đơn vị tính",
             child: GestureDetector(
               onTap: () => _showUnitDialog(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(8),
@@ -535,7 +600,7 @@ class _TargetsWidgetState extends State<TargetsWidget> {
               ),
             ),
           ),
-          
+
           // Số tiền đã chi
           _buildFormRow(
             label: "Số tiền đã chi",
@@ -557,7 +622,10 @@ class _TargetsWidgetState extends State<TargetsWidget> {
                   child: GestureDetector(
                     onTap: () => _showCurrencyDialog(context),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey.shade300),
                         borderRadius: BorderRadius.circular(8),
@@ -575,60 +643,84 @@ class _TargetsWidgetState extends State<TargetsWidget> {
               ],
             ),
           ),
-          
+
           // Mục đích
           _buildFormRow(
             label: "Mục đích",
             child: TextField(
               controller: TextEditingController(text: purpose),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
                 isDense: true,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
               ),
               onChanged: (value) => purpose = value,
             ),
           ),
-          
+
           // Mua cho ai
           _buildFormRow(
             label: "Mua cho ai",
             child: TextField(
               controller: TextEditingController(text: purchasedFor),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
                 isDense: true,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
               ),
               onChanged: (value) => purchasedFor = value,
             ),
           ),
-          
+
           // Người mua
           _buildFormRow(
             label: "Người mua",
             child: TextField(
               controller: TextEditingController(text: buyer),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
                 isDense: true,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
               ),
               onChanged: (value) => buyer = value,
             ),
           ),
-          
+
           // Thêm tệp đính kèm
           _buildFormRow(
             label: "Thêm tệp đính kèm...",
             child: const SizedBox.shrink(),
           ),
-          
+
           // Ghi chú
           _buildFormRow(
             label: "Ghi chú",
             child: TextField(
               controller: TextEditingController(text: note),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
                 isDense: true,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
               ),
               onChanged: (value) => note = value,
             ),
@@ -647,14 +739,11 @@ class _TargetsWidgetState extends State<TargetsWidget> {
             children: [
               Expanded(
                 flex: 2,
-                child: Text(
-                  label,
-                  style: const TextStyle(fontSize: 16),
-                ),
+                child: Text(label, style: const TextStyle(fontSize: 16)),
               ),
               Expanded(
                 flex: 3,
-                child: child,
+                child: Align(alignment: Alignment.centerRight, child: child),
               ),
             ],
           ),
@@ -663,7 +752,8 @@ class _TargetsWidgetState extends State<TargetsWidget> {
       ],
     );
   }
-   Widget _buildFormRow2({required String label, required Widget child}) {
+
+  Widget _buildFormRow2({required String label, required Widget child}) {
     return Column(
       children: [
         Padding(
@@ -672,19 +762,15 @@ class _TargetsWidgetState extends State<TargetsWidget> {
             children: [
               Expanded(
                 flex: 2,
-                child: Text(
-                  label,
-                  style: const TextStyle(fontSize: 16),
-                ),
+                child: Text(label, style: const TextStyle(fontSize: 16)),
               ),
               Expanded(
                 flex: 3,
-                child: child,
+                child: Align(alignment: Alignment.centerRight, child: child),
               ),
             ],
           ),
         ),
-       
       ],
     );
   }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:se501_plantheon/shared/constraint.dart';
+import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 
 /// Custom Navigation Bar dựa theo thiết kế Diary với nút back và 3 nút chức năng bên phải
-class CustomNavigationBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomNavigationBar extends StatelessWidget
+    implements PreferredSizeWidget {
   final String title;
   final VoidCallback? onBackPressed;
   final List<NavigationAction> actions;
@@ -38,7 +39,10 @@ class CustomNavigationBar extends StatelessWidget implements PreferredSizeWidget
     return Container(
       height: AppConstraints.appBarHeight,
       decoration: BoxDecoration(
-        color: backgroundColor ?? Theme.of(context).appBarTheme.backgroundColor ?? Colors.white,
+        color:
+            backgroundColor ??
+            Theme.of(context).appBarTheme.backgroundColor ??
+            Colors.white,
         boxShadow: elevation != null
             ? [
                 BoxShadow(
@@ -61,16 +65,17 @@ class CustomNavigationBar extends StatelessWidget implements PreferredSizeWidget
                 _buildBackButton(context),
                 const SizedBox(width: AppConstraints.smallPadding),
               ],
-              
+
               // Title với khả năng tap (như trong Diary)
-              Expanded(
-                child: titleWidget ?? _buildTitle(context),
-              ),
-              
+              Expanded(child: titleWidget ?? _buildTitle(context)),
+
               // Actions bên phải (tối đa 3 nút)
               Row(
                 mainAxisSize: MainAxisSize.min,
-                children: actions.take(3).map((action) => _buildActionButton(context, action)).toList(),
+                children: actions
+                    .take(3)
+                    .map((action) => _buildActionButton(context, action))
+                    .toList(),
               ),
             ],
           ),
@@ -90,14 +95,20 @@ class CustomNavigationBar extends StatelessWidget implements PreferredSizeWidget
             style: TextStyle(
               fontSize: AppConstraints.titleLargeFontSize,
               fontWeight: FontWeight.bold,
-              color: textColor ?? Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
+              color:
+                  textColor ??
+                  Theme.of(context).textTheme.titleLarge?.color ??
+                  Colors.black,
             ),
           ),
           if (showYearSelector) ...[
             const SizedBox(width: 4),
             Icon(
               showYearSelector ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-              color: iconColor ?? Theme.of(context).iconTheme.color ?? Colors.black,
+              color:
+                  iconColor ??
+                  Theme.of(context).iconTheme.color ??
+                  Colors.black,
             ),
           ],
         ],
@@ -121,7 +132,9 @@ class CustomNavigationBar extends StatelessWidget implements PreferredSizeWidget
         height: 40,
         decoration: BoxDecoration(
           color: Colors.grey.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+          borderRadius: BorderRadius.circular(
+            AppConstraints.mediumBorderRadius,
+          ),
         ),
         child: Icon(
           Icons.arrow_back_ios_new,
@@ -148,7 +161,9 @@ class CustomNavigationBar extends StatelessWidget implements PreferredSizeWidget
           height: 40,
           decoration: BoxDecoration(
             color: action.backgroundColor ?? Colors.grey.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+            borderRadius: BorderRadius.circular(
+              AppConstraints.mediumBorderRadius,
+            ),
             border: action.borderColor != null
                 ? Border.all(color: action.borderColor!, width: 1)
                 : null,
@@ -157,7 +172,11 @@ class CustomNavigationBar extends StatelessWidget implements PreferredSizeWidget
               ? Icon(
                   action.icon,
                   size: AppConstraints.mediumIconSize,
-                  color: action.iconColor ?? iconColor ?? Theme.of(context).iconTheme.color ?? Colors.black,
+                  color:
+                      action.iconColor ??
+                      iconColor ??
+                      Theme.of(context).iconTheme.color ??
+                      Colors.black,
                 )
               : action.child,
         ),
@@ -224,7 +243,8 @@ class NavigationAction {
 }
 
 /// Diary Navigation Bar - Dựa theo thiết kế Diary hiện tại
-class DiaryNavigationBar extends StatelessWidget implements PreferredSizeWidget {
+class DiaryNavigationBar extends StatelessWidget
+    implements PreferredSizeWidget {
   final int selectedYear;
   final int? selectedMonth;
   final bool showYearSelector;
@@ -253,13 +273,13 @@ class DiaryNavigationBar extends StatelessWidget implements PreferredSizeWidget 
   Widget build(BuildContext context) {
     // Nếu đang ở chế độ tháng, hiển thị "Tháng X năm Y"
     final bool isMonthMode = selectedMonth != null;
-    final String titleText = isMonthMode 
+    final String titleText = isMonthMode
         ? "Tháng $selectedMonth $selectedYear"
         : "$selectedYear";
-    
+
     // Chỉ cho phép tap title khi không ở chế độ tháng
-    final VoidCallback? titleTapCallback = !isMonthMode 
-        ? onToggleYearSelector 
+    final VoidCallback? titleTapCallback = !isMonthMode
+        ? onToggleYearSelector
         : null;
 
     return CustomNavigationBar(
@@ -269,7 +289,7 @@ class DiaryNavigationBar extends StatelessWidget implements PreferredSizeWidget 
       showYearSelector: showYearSelector && !isMonthMode,
       onTitleTap: titleTapCallback,
       actions: actions,
-      titleWidget: titleTapCallback != null 
+      titleWidget: titleTapCallback != null
           ? GestureDetector(
               onTap: titleTapCallback,
               child: Row(
@@ -285,7 +305,9 @@ class DiaryNavigationBar extends StatelessWidget implements PreferredSizeWidget 
                   if (!isMonthMode) ...[
                     const SizedBox(width: 4),
                     Icon(
-                      showYearSelector ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                      showYearSelector
+                          ? Icons.arrow_drop_up
+                          : Icons.arrow_drop_down,
                     ),
                   ],
                 ],
@@ -293,10 +315,7 @@ class DiaryNavigationBar extends StatelessWidget implements PreferredSizeWidget 
             )
           : Text(
               titleText,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
     );
   }

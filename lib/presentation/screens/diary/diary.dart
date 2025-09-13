@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widget/navigation.dart';
-import 'package:se501_plantheon/shared/constraint.dart';
+import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/presentation/screens/diary/month.dart';
 import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
 
@@ -21,10 +21,10 @@ class _DiaryState extends State<Diary> {
     setState(() {
       isLoading = true;
     });
-    
+
     // Simulate loading delay
     await Future.delayed(const Duration(milliseconds: 300));
-    
+
     setState(() {
       showYearSelector = !showYearSelector;
       isLoading = false;
@@ -35,10 +35,10 @@ class _DiaryState extends State<Diary> {
     setState(() {
       isLoading = true;
     });
-    
+
     // Simulate loading delay
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     setState(() {
       selectedYear = year;
       showYearSelector = false;
@@ -50,10 +50,10 @@ class _DiaryState extends State<Diary> {
     setState(() {
       isLoading = true;
     });
-    
+
     // Simulate loading delay
     await Future.delayed(const Duration(milliseconds: 800));
-    
+
     setState(() {
       selectedMonth = month;
       showYearSelector = false;
@@ -65,10 +65,10 @@ class _DiaryState extends State<Diary> {
     setState(() {
       isLoading = true;
     });
-    
+
     // Simulate loading delay
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     setState(() {
       selectedMonth = null;
       isLoading = false;
@@ -116,7 +116,6 @@ class _DiaryState extends State<Diary> {
                       strokeWidth: 3,
                     ),
                     SizedBox(height: 16),
-
                   ],
                 ),
               ),
@@ -130,16 +129,12 @@ class _DiaryState extends State<Diary> {
     if (showYearSelector) {
       return _buildYearSelector();
     } else if (selectedMonth != null) {
-      return MonthScreen(
-        month: selectedMonth!,
-        year: selectedYear,
-      );
+      return MonthScreen(month: selectedMonth!, year: selectedYear);
     } else {
       return _buildMonthGrid();
     }
   }
 
- 
   void _showAddNewModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -226,7 +221,7 @@ class _DiaryState extends State<Diary> {
       itemCount: 12,
       itemBuilder: (context, index) {
         return MonthWidget(
-          key: ValueKey("${selectedYear}-${index + 1}"),
+          key: ValueKey("$selectedYear-${index + 1}"),
           month: index + 1,
           year: selectedYear,
           onMonthSelected: _selectMonth,
@@ -287,8 +282,8 @@ class MonthWidget extends StatefulWidget {
   final Function(int)? onMonthSelected;
 
   const MonthWidget({
-    super.key, 
-    required this.month, 
+    super.key,
+    required this.month,
     required this.year,
     this.onMonthSelected,
   });
@@ -305,10 +300,8 @@ class _MonthWidgetState extends State<MonthWidget> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => MonthScreen(
-            month: widget.month,
-            year: widget.year,
-          ),
+          builder: (context) =>
+              MonthScreen(month: widget.month, year: widget.year),
         ),
       );
     }
@@ -317,15 +310,14 @@ class _MonthWidgetState extends State<MonthWidget> {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    final bool isCurrentMonth = (now.year == widget.year && now.month == widget.month);
+    final bool isCurrentMonth =
+        (now.year == widget.year && now.month == widget.month);
     final int daysInMonth = DateUtils.getDaysInMonth(widget.year, widget.month);
 
     return GestureDetector(
       onTap: () => _navigateToMonth(context),
       child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
         child: Padding(
           padding: const EdgeInsets.all(4),
           child: Column(
@@ -357,21 +349,37 @@ class _MonthWidgetState extends State<MonthWidget> {
                                 color: Colors.green,
                                 shape: BoxShape.circle,
                               ),
-                              padding: const EdgeInsets.all(6),
-                              child: Text(
-                                "${day + 1}",
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                              alignment: Alignment.center,
+                              constraints: const BoxConstraints(
+                                minWidth: 20,
+                                minHeight: 20,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 2,
+                              ),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  "${day + 1}",
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             )
-                          : Text(
-                              "${day + 1}",
-                              style: const TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
+                          : FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                "${day + 1}",
+                                maxLines: 1,
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                     );

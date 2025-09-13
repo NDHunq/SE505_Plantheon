@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:se501_plantheon/shared/constraint.dart';
+import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/presentation/screens/diary/dayDetail.dart';
 
 class MonthScreen extends StatefulWidget {
   final int year;
   final int month;
-  
-  const MonthScreen({
-    super.key,
-    required this.year,
-    required this.month,
-  });
+
+  const MonthScreen({super.key, required this.year, required this.month});
 
   @override
   State<MonthScreen> createState() => _MonthScreenState();
@@ -21,8 +17,18 @@ class _MonthScreenState extends State<MonthScreen> {
 
   String _getMonthName(int month) {
     const monthNames = [
-      'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
-      'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
+      'Tháng 1',
+      'Tháng 2',
+      'Tháng 3',
+      'Tháng 4',
+      'Tháng 5',
+      'Tháng 6',
+      'Tháng 7',
+      'Tháng 8',
+      'Tháng 9',
+      'Tháng 10',
+      'Tháng 11',
+      'Tháng 12',
     ];
     return monthNames[month - 1];
   }
@@ -31,20 +37,16 @@ class _MonthScreenState extends State<MonthScreen> {
     setState(() {
       isLoading = true;
     });
-    
+
     // Simulate loading delay
     await Future.delayed(const Duration(milliseconds: 600));
-    
+
     if (mounted) {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => DayDetailScreen(
-            arguments: {
-              'day': day,
-              'month': widget.month,
-              'year': widget.year,
-            },
+            arguments: {'day': day, 'month': widget.month, 'year': widget.year},
           ),
         ),
       ).then((_) {
@@ -62,12 +64,10 @@ class _MonthScreenState extends State<MonthScreen> {
     return Stack(
       children: [
         Scaffold(
-         
           body: Padding(
             padding: const EdgeInsets.all(AppConstraints.mainPadding),
             child: Column(
               children: [
-               
                 Row(
                   children: [
                     Expanded(child: Center(child: Text("T2"))),
@@ -80,11 +80,8 @@ class _MonthScreenState extends State<MonthScreen> {
                   ],
                 ),
                 const Divider(),
-                
+
                 // Tên tháng (không có navigation)
-                
-                
-                
                 Expanded(child: _buildCalendar()),
               ],
             ),
@@ -93,7 +90,6 @@ class _MonthScreenState extends State<MonthScreen> {
         if (isLoading)
           Positioned.fill(
             child: Container(
-         
               child: const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -130,14 +126,16 @@ class _MonthScreenState extends State<MonthScreen> {
       ),
       itemCount: totalCells,
       itemBuilder: (context, index) {
-        if (index < leadingEmptyCells || index >= leadingEmptyCells + daysInMonth) {
+        if (index < leadingEmptyCells ||
+            index >= leadingEmptyCells + daysInMonth) {
           return const SizedBox.shrink();
         }
         final day = index - leadingEmptyCells + 1;
-        final bool isToday = (year == now.year && month == now.month && day == now.day);
-        
+        final bool isToday =
+            (year == now.year && month == now.month && day == now.day);
+
         return ADayWidget(
-          day: day, 
+          day: day,
           isToday: isToday,
           onTap: isLoading ? () {} : () => _navigateToDayDetail(day),
         );
@@ -152,8 +150,8 @@ class ADayWidget extends StatelessWidget {
   final VoidCallback onTap;
 
   const ADayWidget({
-    super.key, 
-    required this.day, 
+    super.key,
+    required this.day,
     required this.isToday,
     required this.onTap,
   });
@@ -168,8 +166,8 @@ class ADayWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 24,
-              height: 24,
+              width: 28,
+              height: 28,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: isToday ? Colors.green : Colors.transparent,
@@ -190,25 +188,19 @@ class ADayWidget extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                 ArrayTaskWidget(["T1", "T2"]),
+                  ArrayTaskWidget(["T1", "T2"]),
                 ],
               ),
             ),
             SizedBox(height: 4),
-            Container(
-              width: double.infinity,
-              height: 1,
-              color: Colors.grey,
-            ),
-           
-            
+            Container(width: double.infinity, height: 1, color: Colors.grey),
           ],
         ),
       ),
     );
   }
 }
- 
+
 class ArrayTaskWidget extends StatelessWidget {
   final List<String> tasks;
 
@@ -219,7 +211,9 @@ class ArrayTaskWidget extends StatelessWidget {
     if (tasks.isEmpty) {
       return const SizedBox.shrink();
     }
-    final List<String> tasksToShow = tasks.length <= 2 ? tasks : tasks.take(2).toList();
+    final List<String> tasksToShow = tasks.length <= 2
+        ? tasks
+        : tasks.take(2).toList();
     final int remaining = tasks.length - tasksToShow.length;
 
     const List<Color> palette = [

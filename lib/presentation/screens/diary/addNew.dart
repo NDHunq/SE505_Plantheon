@@ -5,7 +5,7 @@ import 'package:se501_plantheon/presentation/screens/diary/climamate.dart';
 import 'package:se501_plantheon/presentation/screens/diary/dichBenh.dart';
 import 'package:se501_plantheon/presentation/screens/diary/kyThuat.dart';
 import 'package:se501_plantheon/presentation/screens/diary/other.dart';
-import 'package:se501_plantheon/shared/constraint.dart';
+import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 
 class AddNewScreen extends StatefulWidget {
   const AddNewScreen({super.key});
@@ -19,36 +19,20 @@ class _AddNewScreenState extends State<AddNewScreen> {
   bool showCategorySelection = true;
 
   final List<Map<String, dynamic>> categories = [
-    {
-      'id': 'targets',
-      'title': 'Chỉ tiêu',
-      'icon': Icons.track_changes,
-    },
+    {'id': 'targets', 'title': 'Chỉ tiêu', 'icon': Icons.track_changes},
     {
       'id': 'sales',
       'title': 'Bán sản phẩm, vật tư',
       'icon': Icons.shopping_cart,
     },
-    {
-      'id': 'disasters',
-      'title': 'Dịch bệnh thiên tai',
-      'icon': Icons.warning,
-    },
-    {
-      'id': 'techniques',
-      'title': 'Kỹ thuật chăm sóc',
-      'icon': Icons.science,
-    },
+    {'id': 'disasters', 'title': 'Dịch bệnh thiên tai', 'icon': Icons.warning},
+    {'id': 'techniques', 'title': 'Kỹ thuật chăm sóc', 'icon': Icons.science},
     {
       'id': 'climate',
       'title': 'Thích ứng với BĐKH và mô...',
       'icon': Icons.cloud,
     },
-    {
-      'id': 'other',
-      'title': 'Khác',
-      'icon': Icons.more_horiz,
-    },
+    {'id': 'other', 'title': 'Khác', 'icon': Icons.more_horiz},
   ];
 
   Widget _buildCategoryContent() {
@@ -102,10 +86,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
               ),
               const Text(
                 'Thêm mới',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               TextButton(
                 onPressed: () {
@@ -126,10 +107,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
             // Subtitle
             const Text(
               'Chọn chủ đề cho nhật ký hôm nay',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 20),
 
@@ -157,7 +135,9 @@ class _AddNewScreenState extends State<AddNewScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: isSelected ? Colors.purple : Colors.grey.shade300,
+                          color: isSelected
+                              ? Colors.purple
+                              : Colors.grey.shade300,
                           width: isSelected ? 2 : 1,
                         ),
                         borderRadius: BorderRadius.circular(8),
@@ -179,8 +159,12 @@ class _AddNewScreenState extends State<AddNewScreen> {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: isSelected ? Colors.purple : Colors.black87,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                color: isSelected
+                                    ? Colors.purple
+                                    : Colors.black87,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                               ),
                             ),
                           ),
@@ -204,9 +188,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.white,
                 ),
-                child: SingleChildScrollView(
-                  child: _buildCategoryContent(),
-                ),
+                child: SingleChildScrollView(child: _buildCategoryContent()),
               ),
             ),
           ],
@@ -215,8 +197,6 @@ class _AddNewScreenState extends State<AddNewScreen> {
     );
   }
 }
-
-
 
 class SalesWidget extends StatelessWidget {
   const SalesWidget({super.key});
