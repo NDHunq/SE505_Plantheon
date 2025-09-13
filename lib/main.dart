@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
-import 'package:se501_plantheon/presentation/screens/fullscreen_loading.dart';
-
 void main() {
   runApp(const MainApp());
 }
