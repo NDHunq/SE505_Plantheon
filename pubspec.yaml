@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_svg:
+  styled_divider: ^1.0.5
 
 dev_dependencies:
   flutter_test:

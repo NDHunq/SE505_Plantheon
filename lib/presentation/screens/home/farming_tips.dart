@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/datepicker/basic_datepicker.dart';
+import 'package:se501_plantheon/common/widgets/divider/dash_divider.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
@@ -63,7 +64,15 @@ class FarmingTips extends StatelessWidget {
                 stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
                 stageTime: 'Ngày 1-7',
                 isNow: true,
-                child: StageSection(),
+                child: Column(
+                  children: [
+                    StageSection(),
+                    DashDivider(),
+                    StageSection(),
+                    DashDivider(),
+                    StageSection(),
+                  ],
+                ),
               ),
               FarmingTipStageCard(
                 vectorAsset: AppVectors.weatherSunny,
@@ -72,23 +81,12 @@ class FarmingTips extends StatelessWidget {
                 stageTime: 'Ngày 1-7',
                 isNow: false,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Giai đoạn 1: Gieo hạt",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary_700,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      "Thời điểm thích hợp để gieo hạt giống.",
-                      style: AppTextStyles.s14Regular(
-                        color: AppColors.text_color_400,
-                      ),
-                    ),
+                    StageSection(),
+                    DashDivider(),
+                    StageSection(),
+                    DashDivider(),
+                    StageSection(),
                   ],
                 ),
               ),
@@ -126,19 +124,116 @@ class StageSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 4,
-      children: [
-        Text(
-          "Tuần 1",
-          style: AppTextStyles.s16SemiBold(color: AppColors.primary_700),
+    return Container(
+      decoration: BoxDecoration(color: AppColors.white),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 4,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4,
+                children: [
+                  Text(
+                    "Tuần 1",
+                    style: AppTextStyles.s16SemiBold(
+                      color: AppColors.primary_700,
+                    ),
+                  ),
+                  Text(
+                    "07/08/2025 - 14/08/2025",
+                    style: AppTextStyles.s14Regular(
+                      color: AppColors.text_color_400,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 150,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 6,
+                      separatorBuilder: (context, index) => SizedBox(width: 8),
+                      itemBuilder: (context, index) => StagePreviewCard(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        Text(
-          "07/08/2025 - 14/08/2025",
-          style: AppTextStyles.s14Regular(color: AppColors.text_color_400),
-        ),
-      ],
+      ),
+    );
+  }
+}
+
+class StagePreviewCard extends StatelessWidget {
+  const StagePreviewCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 140,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.text_color_50, width: 1),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 140,
+            height: 69,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              image: DecorationImage(
+                image: AssetImage('assets/images/plants.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 4,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary_100,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    "Làm cỏ",
+                    style: AppTextStyles.s12Medium(
+                      color: AppColors.primary_700,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  "Những điều cần biết về việc chăm sóc cây trồng trong giai đoạn đầu.",
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.text_color_400,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
