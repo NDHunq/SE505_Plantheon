@@ -3,6 +3,7 @@ import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/datepicker/basic_datepicker.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/farming_tip_stage_card.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/plants_dropdown.dart';
 
@@ -62,28 +63,7 @@ class FarmingTips extends StatelessWidget {
                 stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
                 stageTime: 'Ngày 1-7',
                 isNow: true,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Giai đoạn 1: Gieo hạt",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary_700,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      "Thời điểm thích hợp để gieo hạt giống.",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.text_color_400,
-                      ),
-                    ),
-                  ],
-                ),
+                child: StageSection(),
               ),
               FarmingTipStageCard(
                 vectorAsset: AppVectors.weatherSunny,
@@ -105,9 +85,7 @@ class FarmingTips extends StatelessWidget {
                     SizedBox(height: 8),
                     Text(
                       "Thời điểm thích hợp để gieo hạt giống.",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
+                      style: AppTextStyles.s14Regular(
                         color: AppColors.text_color_400,
                       ),
                     ),
@@ -139,6 +117,28 @@ class FarmingTips extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class StageSection extends StatelessWidget {
+  const StageSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 4,
+      children: [
+        Text(
+          "Tuần 1",
+          style: AppTextStyles.s16SemiBold(color: AppColors.primary_700),
+        ),
+        Text(
+          "07/08/2025 - 14/08/2025",
+          style: AppTextStyles.s14Regular(color: AppColors.text_color_400),
+        ),
+      ],
     );
   }
 }
