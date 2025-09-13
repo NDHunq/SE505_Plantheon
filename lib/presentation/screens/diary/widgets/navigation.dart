@@ -113,7 +113,7 @@ class CustomNavigationBar extends StatelessWidget
               color:
                   iconColor ??
                   Theme.of(context).iconTheme.color ??
-                  Colors.black,
+                  Colors.white,
             ),
           ],
         ],
@@ -134,8 +134,8 @@ class CustomNavigationBar extends StatelessWidget
       },
       child: SvgPicture.asset(
         AppVectors.arrowBack,
-        width: 24,
-        height: 24,
+        width: 30,
+        height: 30,
         color: AppColors.primary_600,
       ),
     );
@@ -152,27 +152,16 @@ class CustomNavigationBar extends StatelessWidget
             action.onPressed!();
           }
         },
-        child: Container(
+        child: SizedBox(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(
-            color: action.backgroundColor ?? Colors.grey.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(
-              AppConstraints.mediumBorderRadius,
-            ),
-            border: action.borderColor != null
-                ? Border.all(color: action.borderColor!, width: 1)
-                : null,
-          ),
+
           child: action.icon != null
               ? Icon(
                   action.icon,
+
                   size: AppConstraints.mediumIconSize,
-                  color:
-                      action.iconColor ??
-                      iconColor ??
-                      Theme.of(context).iconTheme.color ??
-                      Colors.black,
+                  color: AppColors.primary_600,
                 )
               : action.child,
         ),

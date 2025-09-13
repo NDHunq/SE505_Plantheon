@@ -30,7 +30,7 @@ class AppConstraints {
   static const double smallIconSize = 16.0;
 
   /// Kích thước icon trung bình
-  static const double mediumIconSize = 24.0;
+  static const double mediumIconSize = 30.0;
 
   /// Kích thước icon lớn
   static const double largeIconSize = 32.0;

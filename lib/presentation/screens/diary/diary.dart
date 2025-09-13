@@ -3,6 +3,8 @@ import 'package:se501_plantheon/presentation/screens/diary/widgets/navigation.da
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/presentation/screens/diary/month.dart';
 import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
+import 'package:se501_plantheon/presentation/screens/diary/billOfMonth.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
 class Diary extends StatefulWidget {
   const Diary({super.key});
@@ -75,6 +77,45 @@ class _DiaryState extends State<Diary> {
     });
   }
 
+  void _openBillOfMonth() {
+    final now = DateTime.now();
+    final targetDate = DateTime(selectedYear, selectedMonth ?? now.month, 1);
+
+    // Kiểm tra nếu là tháng/năm tương lai
+    if (targetDate.isAfter(DateTime(now.year, now.month, 1))) {
+      _showFutureWarning();
+      return;
+    }
+
+    _navigateWithLoading(() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BillOfMonth(initialDate: targetDate),
+        ),
+      );
+    });
+  }
+
+  void _navigateWithLoading(VoidCallback navigationAction) {
+    // Hiển thị loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(color: AppColors.primary_600),
+        );
+      },
+    );
+
+    // Simulate loading delay và navigate
+    Future.delayed(const Duration(milliseconds: 500), () {
+      Navigator.of(context).pop(); // Đóng loading dialog
+      navigationAction(); // Thực hiện navigation
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,14 +128,15 @@ class _DiaryState extends State<Diary> {
         showBackButton: selectedMonth != null,
         onBackPressed: selectedMonth != null ? _backToMonthSelection : null,
         actions: [
-          CommonNavigationActions.add(
-            onPressed: () => _showAddNewModal(context),
+          NavigationAction(
+            icon: Icons.bar_chart,
+            onPressed: () => _openBillOfMonth(),
           ),
           CommonNavigationActions.search(
             onPressed: () => _showSearchModal(context),
           ),
-          CommonNavigationActions.menu(
-            onPressed: () => _showMenuModal(context),
+          CommonNavigationActions.add(
+            onPressed: () => _showAddNewModal(context),
           ),
         ],
       ),
@@ -180,35 +222,6 @@ class _DiaryState extends State<Diary> {
     );
   }
 
-  void _showMenuModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.settings, color: Colors.blue),
-              title: const Text("Cài đặt"),
-              onTap: () => Navigator.pop(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.help_outline, color: Colors.green),
-              title: const Text("Trợ giúp"),
-              onTap: () => Navigator.pop(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.info_outline, color: Colors.orange),
-              title: const Text("Thông tin ứng dụng"),
-              onTap: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   /// Lazy load 12 tháng
   Widget _buildMonthGrid() {
     return GridView.builder(
@@ -272,6 +285,34 @@ class _DiaryState extends State<Diary> {
           ),
         );
       },
+    );
+  }
+
+  void _showFutureWarning() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          "Thông báo",
+          style: TextStyle(
+            color: AppColors.primary_600,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: const Text(
+          "Không có thống kê trong tương lai",
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              "Đóng",
+              style: TextStyle(color: AppColors.primary_600),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
