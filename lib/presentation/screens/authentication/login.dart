@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/common/widgets/button/sized_button.dart';
-import 'package:se501_plantheon/presentation/screens/Navigator/navigator.dart';
+import 'package:se501_plantheon/presentation/screens/navigator/navigator.dart';
 import '../../../core/configs/constants/app_info.dart';
 import '../../../core/configs/theme/app_colors.dart';
 
@@ -89,7 +89,7 @@ class _SignInPageState extends State<SignInPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) => Navigation(),
+                    builder: (BuildContext context) => CustomNavigator(),
                   ),
                 );
               },
