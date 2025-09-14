@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:se501_plantheon/presentation/screens/diary/widgets/navigation.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfYear.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
-import 'package:se501_plantheon/presentation/screens/diary/diary.dart';
 
 class BillOfMonth extends StatefulWidget {
   final DateTime? initialDate;
+  final Function(String)? onTitleChange;
+  final Function()? onBackToCalendar;
+  final Function(DateTime)? onNavigateToBillOfYear;
+  final Function(DateTime)? onNavigateToBillOfDay;
 
-  const BillOfMonth({super.key, this.initialDate});
+  const BillOfMonth({
+    super.key,
+    this.initialDate,
+    this.onTitleChange,
+    this.onBackToCalendar,
+    this.onNavigateToBillOfYear,
+    this.onNavigateToBillOfDay,
+  });
 
   @override
   State<BillOfMonth> createState() => _BillOfMonthState();
@@ -45,6 +54,11 @@ class _BillOfMonthState extends State<BillOfMonth> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final targetMonth = widget.initialDate?.month ?? DateTime.now().month;
       _scrollToMonth(targetMonth);
+
+      // Cập nhật title
+      if (widget.onTitleChange != null) {
+        widget.onTitleChange!('Báo cáo tháng');
+      }
     });
   }
 
@@ -56,58 +70,39 @@ class _BillOfMonthState extends State<BillOfMonth> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Custom Navigation Bar
-            CustomNavigationBar(
-              title: "Báo cáo tháng",
-              backgroundColor: Colors.white,
-              actions: [
-                NavigationAction(
-                  icon: Icons.calendar_today,
-                  onPressed: () => _navigateWithLoading(context),
-                ),
-                NavigationAction(icon: Icons.search, onPressed: () {}),
-                NavigationAction(icon: Icons.add, onPressed: () {}),
-              ],
+    return Column(
+      children: [
+        // Tổng kết năm
+        _buildYearSummary(),
+
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Divider(),
+        ),
+
+        // Danh sách tháng
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: AppConstraints.mainPadding,
             ),
-
-            // Tổng kết năm
-            _buildYearSummary(),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Divider(),
-            ),
-
-            // Danh sách tháng
-            Expanded(
-              child: Container(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: AppConstraints.mainPadding,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(
-                    AppConstraints.mediumBorderRadius,
-                  ),
-                ),
-                child: ListView(
-                  controller: scrollController,
-                  children: [
-                    // Danh sách 12 tháng
-                    for (int month = 1; month <= 12; month++)
-                      _buildMonthItem(month),
-                  ],
-                ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(
+                AppConstraints.mediumBorderRadius,
               ),
             ),
-          ],
+            child: ListView(
+              controller: scrollController,
+              children: [
+                // Danh sách 12 tháng
+                for (int month = 1; month <= 12; month++)
+                  _buildMonthItem(month),
+              ],
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -152,13 +147,17 @@ class _BillOfMonthState extends State<BillOfMonth> {
                     return;
                   }
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          BillOfYear(initialDate: currentYear),
-                    ),
-                  );
+                  if (widget.onNavigateToBillOfYear != null) {
+                    widget.onNavigateToBillOfYear!(currentYear);
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            BillOfYear(initialDate: currentYear),
+                      ),
+                    );
+                  }
                 },
                 child: Text(
                   "Năm ${currentYear.year}",
@@ -216,14 +215,20 @@ class _BillOfMonthState extends State<BillOfMonth> {
       children: [
         InkWell(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BillOfDay(
-                  initialDate: DateTime(currentYear.year, month, 1),
+            if (widget.onNavigateToBillOfDay != null) {
+              widget.onNavigateToBillOfDay!(
+                DateTime(currentYear.year, month, 1),
+              );
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BillOfDay(
+                    initialDate: DateTime(currentYear.year, month, 1),
+                  ),
                 ),
-              ),
-            );
+              );
+            }
           },
           child: Container(
             padding: const EdgeInsets.symmetric(
@@ -332,52 +337,6 @@ class _BillOfMonthState extends State<BillOfMonth> {
     return monthNames[month];
   }
 
-  void _scrollToMonth(int targetMonth) {
-    if (scrollController.hasClients) {
-      // Tính toán offset dựa trên vị trí tháng
-      final double itemHeight = 50.0; // Chiều cao cơ bản của mỗi tháng
-      final double targetOffset = (targetMonth - 1) * itemHeight;
-
-      scrollController.animateTo(
-        targetOffset,
-        duration: const Duration(milliseconds: 800),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-}
-
-class MonthSummary {
-  final int income;
-  final int expense;
-
-  MonthSummary(this.income, this.expense);
-}
-
-extension BillOfMonthExtension on _BillOfMonthState {
-  void _navigateWithLoading(BuildContext context) {
-    // Hiển thị loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary_600),
-        );
-      },
-    );
-
-    // Simulate loading delay và navigate
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.of(context).pop(); // Đóng loading dialog
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const Diary()),
-        (route) => false,
-      );
-    });
-  }
-
   void _showFutureWarning() {
     showDialog(
       context: context,
@@ -405,4 +364,25 @@ extension BillOfMonthExtension on _BillOfMonthState {
       ),
     );
   }
+
+  void _scrollToMonth(int targetMonth) {
+    if (scrollController.hasClients) {
+      // Tính toán offset dựa trên vị trí tháng
+      final double itemHeight = 50.0; // Chiều cao cơ bản của mỗi tháng
+      final double targetOffset = (targetMonth - 1) * itemHeight;
+
+      scrollController.animateTo(
+        targetOffset,
+        duration: const Duration(milliseconds: 800),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+}
+
+class MonthSummary {
+  final int income;
+  final int expense;
+
+  MonthSummary(this.income, this.expense);
 }

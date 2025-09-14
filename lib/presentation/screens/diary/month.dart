@@ -5,8 +5,14 @@ import 'package:se501_plantheon/presentation/screens/diary/dayDetail.dart';
 class MonthScreen extends StatefulWidget {
   final int year;
   final int month;
+  final Function(int day, int month, int year)? onDaySelected;
 
-  const MonthScreen({super.key, required this.year, required this.month});
+  const MonthScreen({
+    super.key,
+    required this.year,
+    required this.month,
+    this.onDaySelected,
+  });
 
   @override
   State<MonthScreen> createState() => _MonthScreenState();
@@ -42,20 +48,33 @@ class _MonthScreenState extends State<MonthScreen> {
     await Future.delayed(const Duration(milliseconds: 600));
 
     if (mounted) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DayDetailScreen(
-            arguments: {'day': day, 'month': widget.month, 'year': widget.year},
+      // Nếu có callback, gọi callback thay vì Navigator.push
+      if (widget.onDaySelected != null) {
+        widget.onDaySelected!(day, widget.month, widget.year);
+        setState(() {
+          isLoading = false;
+        });
+      } else {
+        // Fallback cho trường hợp không có callback
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DayDetailScreen(
+              arguments: {
+                'day': day,
+                'month': widget.month,
+                'year': widget.year,
+              },
+            ),
           ),
-        ),
-      ).then((_) {
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-          });
-        }
-      });
+        ).then((_) {
+          if (mounted) {
+            setState(() {
+              isLoading = false;
+            });
+          }
+        });
+      }
     }
   }
 

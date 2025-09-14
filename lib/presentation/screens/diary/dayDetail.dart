@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/navigation.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/task.dart';
-import 'package:se501_plantheon/presentation/screens/diary/diary.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
-import 'package:se501_plantheon/presentation/screens/diary/billOfMonth.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
+import 'package:se501_plantheon/presentation/screens/navigator/navigator.dart';
 
 class DayDetailScreen extends StatefulWidget {
   final Map<String, dynamic>? arguments;
+  final Function(String)? onTitleChange;
+  final Function(int day, int month, int year)? onDateChange;
 
-  const DayDetailScreen({super.key, this.arguments});
+  const DayDetailScreen({
+    super.key,
+    this.arguments,
+    this.onTitleChange,
+    this.onDateChange,
+  });
 
   @override
   State<DayDetailScreen> createState() => _DayDetailScreenState();
@@ -50,6 +58,28 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
 
     // Show loading briefly when navigating from MonthScreen
     _showInitialLoading();
+
+    // Gọi callback để cập nhật title
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.onTitleChange != null) {
+        final monthNames = [
+          'Tháng 1',
+          'Tháng 2',
+          'Tháng 3',
+          'Tháng 4',
+          'Tháng 5',
+          'Tháng 6',
+          'Tháng 7',
+          'Tháng 8',
+          'Tháng 9',
+          'Tháng 10',
+          'Tháng 11',
+          'Tháng 12',
+        ];
+        final monthName = monthNames[selectedMonth - 1];
+        widget.onTitleChange!('$selectedDay $monthName $selectedYear');
+      }
+    });
   }
 
   Future<void> _showInitialLoading() async {
@@ -68,23 +98,8 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
-      appBar: CustomNavigationBar(
-        title: "$selectedDay/$selectedMonth/$selectedYear",
-        showBackButton: true,
+      backgroundColor: Colors.white,
 
-        actions: [
-          NavigationAction(
-            icon: Icons.bar_chart,
-            onPressed: () => _openBillOfDay(),
-          ),
-          NavigationAction(icon: Icons.search, onPressed: () {}),
-          NavigationAction(
-            icon: Icons.add,
-            onPressed: () => _showAddNewModal(context),
-          ),
-        ],
-      ),
       body: Stack(
         children: [
           Column(
@@ -265,6 +280,37 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                         selectedMonth = d.month;
                         selectedDay = d.day;
                       });
+
+                      // Cập nhật date trong Diary để khi back lại hiển thị đúng tháng
+                      if (widget.onDateChange != null) {
+                        widget.onDateChange!(
+                          selectedDay,
+                          selectedMonth,
+                          selectedYear,
+                        );
+                      }
+
+                      // Cập nhật title khi chọn ngày khác
+                      if (widget.onTitleChange != null) {
+                        final monthNames = [
+                          'Tháng 1',
+                          'Tháng 2',
+                          'Tháng 3',
+                          'Tháng 4',
+                          'Tháng 5',
+                          'Tháng 6',
+                          'Tháng 7',
+                          'Tháng 8',
+                          'Tháng 9',
+                          'Tháng 10',
+                          'Tháng 11',
+                          'Tháng 12',
+                        ];
+                        final monthName = monthNames[selectedMonth - 1];
+                        widget.onTitleChange!(
+                          '$selectedDay $monthName $selectedYear',
+                        );
+                      }
                     },
                     child: Container(
                       width: 32,
@@ -527,7 +573,7 @@ extension DayDetailExtension on _DayDetailScreenState {
       Navigator.of(context).pop(); // Đóng loading dialog
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const Diary()),
+        MaterialPageRoute(builder: (context) => Navigation(tab: 2)),
         (route) => false,
       );
     });
@@ -563,5 +609,97 @@ extension DayDetailExtension on _DayDetailScreenState {
       Navigator.of(context).pop(); // Đóng loading dialog
       navigationAction(); // Thực hiện navigation
     });
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return NavigationBar(
+      onDestinationSelected: (int index) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Navigation(tab: index)),
+        );
+      },
+      height: 56,
+      indicatorColor: Colors.transparent,
+      destinations: [
+        NavigationDestination(
+          selectedIcon: Padding(
+            padding: const EdgeInsets.only(top: 3),
+            child: SvgPicture.asset(
+              AppVectors.homeSolid,
+              height: 23,
+              width: 23,
+            ),
+          ),
+          icon: Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: SvgPicture.asset(
+              AppVectors.homeStroke,
+              height: 23,
+              width: 23,
+            ),
+          ),
+          label: '',
+        ),
+        NavigationDestination(
+          selectedIcon: Padding(
+            padding: const EdgeInsets.only(top: 3),
+            child: SvgPicture.asset(
+              AppVectors.diarySolid,
+              height: 23,
+              width: 23,
+            ),
+          ),
+          icon: Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: SvgPicture.asset(
+              AppVectors.diaryStroke,
+              height: 23,
+              width: 23,
+            ),
+          ),
+          label: '',
+        ),
+        NavigationDestination(
+          selectedIcon: Padding(
+            padding: const EdgeInsets.only(top: 3),
+            child: SvgPicture.asset(
+              AppVectors.communitySolid,
+              height: 23,
+              width: 23,
+            ),
+          ),
+          icon: Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: SvgPicture.asset(
+              AppVectors.communityStroke,
+              height: 23,
+              width: 23,
+            ),
+          ),
+          label: '',
+        ),
+        NavigationDestination(
+          selectedIcon: Padding(
+            padding: const EdgeInsets.only(top: 3),
+            child: SvgPicture.asset(
+              AppVectors.accountSolid,
+              height: 23,
+              width: 23,
+            ),
+          ),
+          icon: Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: SvgPicture.asset(
+              AppVectors.accountStroke,
+              height: 23,
+              width: 23,
+            ),
+          ),
+          label: '',
+        ),
+      ],
+      selectedIndex: 2, // Diary tab
+    );
   }
 }

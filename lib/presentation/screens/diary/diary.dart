@@ -4,7 +4,20 @@ import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/presentation/screens/diary/month.dart';
 import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfMonth.dart';
+import 'package:se501_plantheon/presentation/screens/diary/billOfYear.dart';
+import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
+import 'package:se501_plantheon/presentation/screens/diary/dayDetail.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+
+enum DiaryViewType {
+  monthGrid,
+  monthDetail,
+  yearSelector,
+  billOfMonth,
+  billOfYear,
+  billOfDay,
+  dayDetail,
+}
 
 class Diary extends StatefulWidget {
   const Diary({super.key});
@@ -16,8 +29,11 @@ class Diary extends StatefulWidget {
 class _DiaryState extends State<Diary> {
   int selectedYear = DateTime.now().year;
   int? selectedMonth;
-  bool showYearSelector = false;
+  int? selectedDay;
+  DiaryViewType currentView = DiaryViewType.monthGrid;
   bool isLoading = false;
+  DateTime? billDate; // For bill views
+  String? customTitle; // For dynamic title
 
   void _toggleYearSelector() async {
     setState(() {
@@ -28,7 +44,9 @@ class _DiaryState extends State<Diary> {
     await Future.delayed(const Duration(milliseconds: 300));
 
     setState(() {
-      showYearSelector = !showYearSelector;
+      currentView = currentView == DiaryViewType.yearSelector
+          ? DiaryViewType.monthGrid
+          : DiaryViewType.yearSelector;
       isLoading = false;
     });
   }
@@ -43,7 +61,7 @@ class _DiaryState extends State<Diary> {
 
     setState(() {
       selectedYear = year;
-      showYearSelector = false;
+      currentView = DiaryViewType.monthGrid;
       isLoading = false;
     });
   }
@@ -58,7 +76,7 @@ class _DiaryState extends State<Diary> {
 
     setState(() {
       selectedMonth = month;
-      showYearSelector = false;
+      currentView = DiaryViewType.monthDetail;
       isLoading = false;
     });
   }
@@ -73,6 +91,9 @@ class _DiaryState extends State<Diary> {
 
     setState(() {
       selectedMonth = null;
+      selectedDay = null;
+      currentView = DiaryViewType.monthGrid;
+      customTitle = null; // Reset custom title
       isLoading = false;
     });
   }
@@ -87,33 +108,187 @@ class _DiaryState extends State<Diary> {
       return;
     }
 
-    _navigateWithLoading(() {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => BillOfMonth(initialDate: targetDate),
-        ),
-      );
+    setState(() {
+      billDate = targetDate;
+      currentView = DiaryViewType.billOfMonth;
     });
   }
 
-  void _navigateWithLoading(VoidCallback navigationAction) {
-    // Hiển thị loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary_600),
-        );
-      },
-    );
+  void _openBillOfYear(DateTime date) {
+    final now = DateTime.now();
 
-    // Simulate loading delay và navigate
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.of(context).pop(); // Đóng loading dialog
-      navigationAction(); // Thực hiện navigation
+    // Kiểm tra nếu là năm tương lai
+    if (date.year > now.year) {
+      _showFutureWarning();
+      return;
+    }
+
+    setState(() {
+      billDate = date;
+      currentView = DiaryViewType.billOfYear;
     });
+  }
+
+  void _openBillOfDay(DateTime date) {
+    final now = DateTime.now();
+
+    // Kiểm tra nếu là ngày tương lai
+    if (date.isAfter(DateTime(now.year, now.month, now.day))) {
+      _showFutureWarning();
+      return;
+    }
+
+    setState(() {
+      billDate = date;
+      currentView = DiaryViewType.billOfDay;
+    });
+  }
+
+  void navigateToDay(int day, int month, int year) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    // Simulate loading delay tương tự navigateToMonth
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    setState(() {
+      selectedDay = day;
+      selectedMonth = month;
+      selectedYear = year;
+      currentView = DiaryViewType.dayDetail;
+      customTitle = null; // Reset custom title
+      isLoading = false;
+    });
+  }
+
+  void updateSelectedDate(int day, int month, int year) {
+    setState(() {
+      selectedDay = day;
+      selectedMonth = month;
+      selectedYear = year;
+    });
+  }
+
+  void changeTitle(String title) {
+    setState(() {
+      customTitle = title;
+    });
+  }
+
+  void _backToCalendar() {
+    setState(() {
+      // Dựa vào currentView để quyết định quay về đâu
+      if (currentView == DiaryViewType.billOfMonth) {
+        // Từ BillOfMonth → quay về MonthDetail của tháng đó
+        currentView = DiaryViewType.monthDetail;
+        selectedMonth = billDate?.month ?? DateTime.now().month;
+        selectedYear = billDate?.year ?? DateTime.now().year;
+        selectedDay = null;
+      } else if (currentView == DiaryViewType.billOfDay) {
+        // Từ BillOfDay → quay về DayDetail của ngày đó
+        currentView = DiaryViewType.dayDetail;
+        selectedMonth = billDate?.month ?? DateTime.now().month;
+        selectedYear = billDate?.year ?? DateTime.now().year;
+        selectedDay = billDate?.day ?? DateTime.now().day;
+      } else {
+        // Các trường hợp khác → quay về monthGrid
+        currentView = DiaryViewType.monthGrid;
+        selectedMonth = null;
+        selectedDay = null;
+      }
+
+      billDate = null;
+      customTitle = null;
+    });
+  }
+
+  void _navigateToBillOfMonth(DateTime date) {
+    setState(() {
+      billDate = date;
+      currentView = DiaryViewType.billOfMonth;
+    });
+  }
+
+  void _navigateToBillOfYear(DateTime date) {
+    setState(() {
+      billDate = date;
+      currentView = DiaryViewType.billOfYear;
+    });
+  }
+
+  void _navigateToBillOfDay(DateTime date) {
+    setState(() {
+      billDate = date;
+      currentView = DiaryViewType.billOfDay;
+    });
+  }
+
+  List<NavigationAction> _getActions() {
+    // Nếu đang ở bill views, hiển thị calendar action
+    if (currentView == DiaryViewType.billOfMonth ||
+        currentView == DiaryViewType.billOfYear ||
+        currentView == DiaryViewType.billOfDay) {
+      return [
+        NavigationAction(
+          icon: Icons.calendar_month,
+          onPressed: _backToCalendar,
+        ),
+        CommonNavigationActions.search(
+          onPressed: () => _showSearchModal(context),
+        ),
+        CommonNavigationActions.add(onPressed: () => _showAddNewModal(context)),
+      ];
+    } else {
+      // Default actions cho các view khác
+      VoidCallback billAction;
+
+      // Nếu đang ở monthDetail hoặc dayDetail, mở billOfDay
+      if (currentView == DiaryViewType.monthDetail ||
+          currentView == DiaryViewType.dayDetail) {
+        billAction = () => _navigateToBillOfDay(
+          DateTime(selectedYear, selectedMonth!, selectedDay ?? 1),
+        );
+      } else {
+        // Các view khác mở billOfMonth
+        billAction = () => _navigateToBillOfMonth(
+          DateTime(selectedYear, selectedMonth ?? DateTime.now().month, 1),
+        );
+      }
+
+      return [
+        NavigationAction(icon: Icons.bar_chart, onPressed: billAction),
+        CommonNavigationActions.search(
+          onPressed: () => _showSearchModal(context),
+        ),
+        CommonNavigationActions.add(onPressed: () => _showAddNewModal(context)),
+      ];
+    }
+  }
+
+  bool _shouldShowBackButton() {
+    return currentView != DiaryViewType.monthGrid &&
+        currentView != DiaryViewType.yearSelector;
+  }
+
+  void _handleBackPressed() {
+    switch (currentView) {
+      case DiaryViewType.dayDetail:
+        // Từ dayDetail quay về monthDetail
+        setState(() {
+          currentView = DiaryViewType.monthDetail;
+          customTitle = null; // Reset custom title
+        });
+        break;
+      case DiaryViewType.monthDetail:
+      case DiaryViewType.billOfMonth:
+      case DiaryViewType.billOfYear:
+      case DiaryViewType.billOfDay:
+        _backToMonthSelection();
+        break;
+      default:
+        break;
+    }
   }
 
   @override
@@ -122,30 +297,17 @@ class _DiaryState extends State<Diary> {
       appBar: DiaryNavigationBar(
         selectedYear: selectedYear,
         selectedMonth: selectedMonth,
-        showYearSelector: showYearSelector,
+        showYearSelector: currentView == DiaryViewType.yearSelector,
         onToggleYearSelector: _toggleYearSelector,
         onBackToMonthSelection: _backToMonthSelection,
-        showBackButton: selectedMonth != null,
-        onBackPressed: selectedMonth != null ? _backToMonthSelection : null,
-        actions: [
-          NavigationAction(
-            icon: Icons.bar_chart,
-            onPressed: () => _openBillOfMonth(),
-          ),
-          CommonNavigationActions.search(
-            onPressed: () => _showSearchModal(context),
-          ),
-          CommonNavigationActions.add(
-            onPressed: () => _showAddNewModal(context),
-          ),
-        ],
+        showBackButton: _shouldShowBackButton(),
+        onBackPressed: _shouldShowBackButton() ? _handleBackPressed : null,
+        customTitle: customTitle,
+        actions: _getActions(),
       ),
       body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(AppConstraints.mainPadding),
-            child: _buildContent(),
-          ),
+          _buildContent(),
           if (isLoading)
             Container(
               color: Colors.black.withOpacity(0.3),
@@ -168,12 +330,54 @@ class _DiaryState extends State<Diary> {
   }
 
   Widget _buildContent() {
-    if (showYearSelector) {
-      return _buildYearSelector();
-    } else if (selectedMonth != null) {
-      return MonthScreen(month: selectedMonth!, year: selectedYear);
-    } else {
-      return _buildMonthGrid();
+    switch (currentView) {
+      case DiaryViewType.yearSelector:
+        return _buildYearSelector();
+      case DiaryViewType.monthDetail:
+        return MonthScreen(
+          month: selectedMonth!,
+          year: selectedYear,
+          onDaySelected: navigateToDay,
+        );
+      case DiaryViewType.billOfMonth:
+        return _BillWrapper(
+          child: BillOfMonth(
+            initialDate: billDate,
+            onTitleChange: changeTitle,
+            onBackToCalendar: _backToCalendar,
+            onNavigateToBillOfYear: _navigateToBillOfYear,
+            onNavigateToBillOfDay: _navigateToBillOfDay,
+          ),
+        );
+      case DiaryViewType.billOfYear:
+        return _BillWrapper(
+          child: BillOfYear(
+            initialDate: billDate,
+            onTitleChange: changeTitle,
+            onBackToCalendar: _backToCalendar,
+            onNavigateToBillOfMonth: _navigateToBillOfMonth,
+          ),
+        );
+      case DiaryViewType.billOfDay:
+        return _BillWrapper(
+          child: BillOfDay(
+            initialDate: billDate,
+            onTitleChange: changeTitle,
+            onBackToCalendar: _backToCalendar,
+          ),
+        );
+      case DiaryViewType.dayDetail:
+        return DayDetailScreen(
+          arguments: {
+            'day': selectedDay,
+            'month': selectedMonth,
+            'year': selectedYear,
+          },
+          onTitleChange: changeTitle,
+          onDateChange: updateSelectedDate,
+        );
+      case DiaryViewType.monthGrid:
+        return _buildMonthGrid();
     }
   }
 
@@ -314,6 +518,23 @@ class _DiaryState extends State<Diary> {
         ],
       ),
     );
+  }
+}
+
+class _BillWrapper extends StatelessWidget {
+  final Widget child;
+
+  const _BillWrapper({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    // Extract the body content from the Bill widgets by removing Scaffold wrapper
+    if (child is StatefulWidget) {
+      // For now, return the child as is. We'll need to modify the Bill widgets
+      // to not use Scaffold when used as embedded widgets
+      return child;
+    }
+    return child;
   }
 }
 

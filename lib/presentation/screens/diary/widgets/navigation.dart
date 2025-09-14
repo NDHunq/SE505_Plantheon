@@ -238,6 +238,7 @@ class DiaryNavigationBar extends StatelessWidget
   final VoidCallback? onBackToMonthSelection;
   final List<NavigationAction> actions;
   final bool showBackButton;
+  final String? customTitle;
 
   const DiaryNavigationBar({
     super.key,
@@ -249,6 +250,7 @@ class DiaryNavigationBar extends StatelessWidget
     this.onBackToMonthSelection,
     required this.actions,
     this.showBackButton = true,
+    this.customTitle,
   });
 
   @override
@@ -256,22 +258,32 @@ class DiaryNavigationBar extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    // Nếu đang ở chế độ tháng, hiển thị "Tháng X năm Y"
-    final bool isMonthMode = selectedMonth != null;
-    final String titleText = isMonthMode
-        ? "Tháng $selectedMonth $selectedYear"
-        : "$selectedYear";
+    // Nếu có customTitle, sử dụng customTitle
+    // Nếu không, sử dụng logic cũ
+    final String titleText;
+    final VoidCallback? titleTapCallback;
 
-    // Chỉ cho phép tap title khi không ở chế độ tháng
-    final VoidCallback? titleTapCallback = !isMonthMode
-        ? onToggleYearSelector
-        : null;
+    if (customTitle != null) {
+      titleText = customTitle!;
+      titleTapCallback = null; // Không cho phép tap khi có custom title
+    } else {
+      // Logic cũ
+      final bool isMonthMode = selectedMonth != null;
+      titleText = isMonthMode
+          ? "Tháng $selectedMonth $selectedYear"
+          : "$selectedYear";
+
+      // Chỉ cho phép tap title khi không ở chế độ tháng
+      titleTapCallback = (selectedMonth == null) ? onToggleYearSelector : null;
+    }
 
     return CustomNavigationBar(
       title: titleText,
       showBackButton: showBackButton,
       onBackPressed: onBackPressed,
-      showYearSelector: showYearSelector && !isMonthMode,
+      showYearSelector: customTitle == null
+          ? (showYearSelector && (selectedMonth == null))
+          : false,
       onTitleTap: titleTapCallback,
       actions: actions,
       titleWidget: titleTapCallback != null
@@ -287,7 +299,7 @@ class DiaryNavigationBar extends StatelessWidget
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  if (!isMonthMode) ...[
+                  if (selectedMonth == null) ...[
                     const SizedBox(width: 4),
                     Icon(
                       showYearSelector

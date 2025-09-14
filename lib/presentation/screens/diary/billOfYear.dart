@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:se501_plantheon/presentation/screens/diary/widgets/navigation.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
+import 'package:se501_plantheon/presentation/screens/Navigator/navigator.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfMonth.dart';
-import 'package:se501_plantheon/presentation/screens/diary/diary.dart';
 
 class BillOfYear extends StatefulWidget {
   final DateTime? initialDate;
+  final Function(String)? onTitleChange;
+  final Function()? onBackToCalendar;
+  final Function(DateTime)? onNavigateToBillOfMonth;
 
-  const BillOfYear({super.key, this.initialDate});
+  const BillOfYear({
+    super.key,
+    this.initialDate,
+    this.onTitleChange,
+    this.onBackToCalendar,
+    this.onNavigateToBillOfMonth,
+  });
 
   @override
   State<BillOfYear> createState() => _BillOfYearState();
@@ -51,61 +59,49 @@ class _BillOfYearState extends State<BillOfYear> {
   void initState() {
     super.initState();
     currentDecade = widget.initialDate ?? DateTime.now();
+
+    // Cập nhật title
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.onTitleChange != null) {
+        widget.onTitleChange!('Báo cáo năm');
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Custom Navigation Bar
-            CustomNavigationBar(
-              title: "Báo cáo năm",
-              backgroundColor: Colors.white,
-              actions: [
-                NavigationAction(
-                  icon: Icons.calendar_today,
-                  onPressed: () => _navigateWithLoading(context),
-                ),
-                NavigationAction(icon: Icons.search, onPressed: () {}),
-                NavigationAction(icon: Icons.add, onPressed: () {}),
-              ],
+    return Column(
+      children: [
+        // Tổng kết thập kỷ
+        _buildDecadeSummary(),
+
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Divider(),
+        ),
+
+        // Danh sách năm
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: AppConstraints.mainPadding,
             ),
-
-            // Tổng kết thập kỷ
-            _buildDecadeSummary(),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Divider(),
-            ),
-
-            // Danh sách năm
-            Expanded(
-              child: Container(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: AppConstraints.mainPadding,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(
-                    AppConstraints.mediumBorderRadius,
-                  ),
-                ),
-                child: ListView(
-                  children: [
-                    // Danh sách các năm trong thập kỷ
-                    for (int year in _getDecadeYears())
-                      _buildYearItem(year, yearlyTransactions[year] ?? []),
-                  ],
-                ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(
+                AppConstraints.mediumBorderRadius,
               ),
             ),
-          ],
+            child: ListView(
+              children: [
+                // Danh sách các năm trong thập kỷ
+                for (int year in _getDecadeYears())
+                  _buildYearItem(year, yearlyTransactions[year] ?? []),
+              ],
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -206,13 +202,17 @@ class _BillOfYearState extends State<BillOfYear> {
       children: [
         InkWell(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    BillOfMonth(initialDate: DateTime(year, 1, 1)),
-              ),
-            );
+            if (widget.onNavigateToBillOfMonth != null) {
+              widget.onNavigateToBillOfMonth!(DateTime(year, 1, 1));
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      BillOfMonth(initialDate: DateTime(year, 1, 1)),
+                ),
+              );
+            }
           },
           child: Container(
             padding: const EdgeInsets.symmetric(
@@ -345,29 +345,6 @@ class _BillOfYearState extends State<BillOfYear> {
     }
 
     return years;
-  }
-
-  void _navigateWithLoading(BuildContext context) {
-    // Hiển thị loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary_600),
-        );
-      },
-    );
-
-    // Simulate loading delay và navigate
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.of(context).pop(); // Đóng loading dialog
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const Diary()),
-        (route) => false,
-      );
-    });
   }
 }
 

@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:se501_plantheon/presentation/screens/diary/widgets/navigation.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
+import 'package:se501_plantheon/presentation/screens/Navigator/navigator.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/task.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfMonth.dart';
-import 'package:se501_plantheon/presentation/screens/diary/diary.dart';
 
 class BillOfDay extends StatefulWidget {
   final DateTime? initialDate;
+  final Function(String)? onTitleChange;
+  final Function()? onBackToCalendar;
 
-  const BillOfDay({super.key, this.initialDate});
+  const BillOfDay({
+    super.key,
+    this.initialDate,
+    this.onTitleChange,
+    this.onBackToCalendar,
+  });
 
   @override
   State<BillOfDay> createState() => _BillOfDayState();
@@ -50,6 +56,11 @@ class _BillOfDayState extends State<BillOfDay> {
     // Auto scroll to selected day after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToDay(expandedDay);
+
+      // Cập nhật title
+      if (widget.onTitleChange != null) {
+        widget.onTitleChange!('Báo cáo ngày');
+      }
     });
   }
 
@@ -61,71 +72,56 @@ class _BillOfDayState extends State<BillOfDay> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: CustomNavigationBar(
-        title: "Báo cáo ngày",
-        backgroundColor: Colors.white,
-        actions: [
-          NavigationAction(
-            icon: Icons.calendar_today,
-            onPressed: () => _navigateWithLoading(context),
-          ),
-          NavigationAction(icon: Icons.search, onPressed: () {}),
-          NavigationAction(icon: Icons.add, onPressed: () {}),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Tổng kết tháng
-          _buildMonthSummary(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Divider(),
-          ),
+    return Column(
+      children: [
+        // Tổng kết tháng
+        _buildMonthSummary(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Divider(),
+        ),
 
-          // Danh sách ngày
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.symmetric(
-                horizontal: AppConstraints.mainPadding,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(
-                  AppConstraints.mediumBorderRadius,
-                ),
-              ),
-              child: Column(
-                children: [
-                  // Header tháng
-
-                  // Danh sách ngày
-                  Expanded(
-                    child: ListView.builder(
-                      controller: scrollController,
-                      itemCount: _getDaysInMonth(),
-                      itemBuilder: (context, index) {
-                        final day = index + 1;
-                        final isExpanded = day == expandedDay;
-                        final transactions = dailyTransactions[day] ?? [];
-                        final dayBalance = _calculateDayBalance(transactions);
-
-                        return _buildDayItem(
-                          day: day,
-                          balance: dayBalance,
-                          transactions: transactions,
-                          isExpanded: isExpanded,
-                        );
-                      },
-                    ),
-                  ),
-                ],
+        // Danh sách ngày
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: AppConstraints.mainPadding,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(
+                AppConstraints.mediumBorderRadius,
               ),
             ),
+            child: Column(
+              children: [
+                // Header tháng
+
+                // Danh sách ngày
+                Expanded(
+                  child: ListView.builder(
+                    controller: scrollController,
+                    itemCount: _getDaysInMonth(),
+                    itemBuilder: (context, index) {
+                      final day = index + 1;
+                      final isExpanded = day == expandedDay;
+                      final transactions = dailyTransactions[day] ?? [];
+                      final dayBalance = _calculateDayBalance(transactions);
+
+                      return _buildDayItem(
+                        day: day,
+                        balance: dayBalance,
+                        transactions: transactions,
+                        isExpanded: isExpanded,
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -202,40 +198,6 @@ class _BillOfDayState extends State<BillOfDay> {
                 style: const TextStyle(color: Colors.black, fontSize: 16),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMonthHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppConstraints.mainPadding,
-        vertical: AppConstraints.smallPadding,
-      ),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey, width: 0.5)),
-      ),
-      child: const Row(
-        children: [
-          Expanded(
-            child: Text(
-              "Ngày",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: AppConstraints.normalTextFontSize,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              "Số dư",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: AppConstraints.normalTextFontSize,
-              ),
-            ),
           ),
         ],
       ),
@@ -411,29 +373,4 @@ class Transaction {
     required this.description,
     required this.amount,
   });
-}
-
-extension BillOfDayExtension on _BillOfDayState {
-  void _navigateWithLoading(BuildContext context) {
-    // Hiển thị loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary_600),
-        );
-      },
-    );
-
-    // Simulate loading delay và navigate
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.of(context).pop(); // Đóng loading dialog
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const Diary()),
-        (route) => false,
-      );
-    });
-  }
 }
