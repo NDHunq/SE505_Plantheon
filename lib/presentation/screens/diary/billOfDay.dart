@@ -9,12 +9,14 @@ class BillOfDay extends StatefulWidget {
   final DateTime? initialDate;
   final Function(String)? onTitleChange;
   final Function()? onBackToCalendar;
+  final Function(DateTime)? onNavigateToBillOfMonth;
 
   const BillOfDay({
     super.key,
     this.initialDate,
     this.onTitleChange,
     this.onBackToCalendar,
+    this.onNavigateToBillOfMonth,
   });
 
   @override
@@ -152,13 +154,17 @@ class _BillOfDayState extends State<BillOfDay> {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          BillOfMonth(initialDate: currentMonth),
-                    ),
-                  );
+                  if (widget.onNavigateToBillOfMonth != null) {
+                    widget.onNavigateToBillOfMonth!(currentMonth);
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            BillOfMonth(initialDate: currentMonth),
+                      ),
+                    );
+                  }
                 },
                 child: Text(
                   "Thg ${currentMonth.month}, ${currentMonth.year}",

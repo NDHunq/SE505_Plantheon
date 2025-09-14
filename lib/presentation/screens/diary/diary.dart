@@ -34,6 +34,7 @@ class _DiaryState extends State<Diary> {
   bool isLoading = false;
   DateTime? billDate; // For bill views
   String? customTitle; // For dynamic title
+  DiaryViewType? latestCalendarView; // Track latest calendar view accessed
 
   void _toggleYearSelector() async {
     setState(() {
@@ -77,6 +78,7 @@ class _DiaryState extends State<Diary> {
     setState(() {
       selectedMonth = month;
       currentView = DiaryViewType.monthDetail;
+      latestCalendarView = DiaryViewType.monthDetail; // Track calendar view
       isLoading = false;
     });
   }
@@ -93,6 +95,7 @@ class _DiaryState extends State<Diary> {
       selectedMonth = null;
       selectedDay = null;
       currentView = DiaryViewType.monthGrid;
+      latestCalendarView = DiaryViewType.monthGrid; // Track calendar view
       customTitle = null; // Reset custom title
       isLoading = false;
     });
@@ -157,6 +160,7 @@ class _DiaryState extends State<Diary> {
       selectedMonth = month;
       selectedYear = year;
       currentView = DiaryViewType.dayDetail;
+      latestCalendarView = DiaryViewType.dayDetail; // Track calendar view
       customTitle = null; // Reset custom title
       isLoading = false;
     });
@@ -180,20 +184,31 @@ class _DiaryState extends State<Diary> {
     setState(() {
       // Dựa vào currentView để quyết định quay về đâu
       if (currentView == DiaryViewType.billOfMonth) {
-        // Từ BillOfMonth → quay về MonthDetail của tháng đó
-        currentView = DiaryViewType.monthDetail;
-        selectedMonth = billDate?.month ?? DateTime.now().month;
-        selectedYear = billDate?.year ?? DateTime.now().year;
+        // Từ BillOfMonth → quay về monthGrid (màn hình các tháng trong năm)
+        currentView = DiaryViewType.monthGrid;
+        latestCalendarView = DiaryViewType.monthGrid; // Track calendar view
+        selectedMonth = null;
         selectedDay = null;
-      } else if (currentView == DiaryViewType.billOfDay) {
-        // Từ BillOfDay → quay về DayDetail của ngày đó
-        currentView = DiaryViewType.dayDetail;
-        selectedMonth = billDate?.month ?? DateTime.now().month;
         selectedYear = billDate?.year ?? DateTime.now().year;
-        selectedDay = billDate?.day ?? DateTime.now().day;
+      } else if (currentView == DiaryViewType.billOfDay) {
+        // Từ BillOfDay → dựa vào latestCalendarView để quyết định
+        if (latestCalendarView == DiaryViewType.dayDetail) {
+          // Nếu latest calendar là dayDetail → quay về dayDetail
+          currentView = DiaryViewType.dayDetail;
+          selectedMonth = billDate?.month ?? DateTime.now().month;
+          selectedYear = billDate?.year ?? DateTime.now().year;
+          selectedDay = billDate?.day ?? DateTime.now().day;
+        } else {
+          // Nếu không → quay về monthDetail (month.dart)
+          currentView = DiaryViewType.monthDetail;
+          selectedMonth = billDate?.month ?? DateTime.now().month;
+          selectedYear = billDate?.year ?? DateTime.now().year;
+          selectedDay = null;
+        }
       } else {
         // Các trường hợp khác → quay về monthGrid
         currentView = DiaryViewType.monthGrid;
+        latestCalendarView = DiaryViewType.monthGrid; // Track calendar view
         selectedMonth = null;
         selectedDay = null;
       }
@@ -277,6 +292,8 @@ class _DiaryState extends State<Diary> {
         // Từ dayDetail quay về monthDetail
         setState(() {
           currentView = DiaryViewType.monthDetail;
+          latestCalendarView =
+              DiaryViewType.monthDetail; // Update latest calendar view
           customTitle = null; // Reset custom title
         });
         break;
@@ -364,6 +381,7 @@ class _DiaryState extends State<Diary> {
             initialDate: billDate,
             onTitleChange: changeTitle,
             onBackToCalendar: _backToCalendar,
+            onNavigateToBillOfMonth: _navigateToBillOfMonth,
           ),
         );
       case DiaryViewType.dayDetail:
