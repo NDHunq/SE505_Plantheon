@@ -594,51 +594,68 @@ class _MonthWidgetState extends State<MonthWidget> {
         (now.year == widget.year && now.month == widget.month);
     final int daysInMonth = DateUtils.getDaysInMonth(widget.year, widget.month);
 
-    return GestureDetector(
-      onTap: () => _navigateToMonth(context),
-      child: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-        child: Padding(
-          padding: const EdgeInsets.all(4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Tháng ${widget.month}",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isCurrentMonth ? Colors.green : Colors.black,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Expanded(
-                child: GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 7,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GestureDetector(
+        onTap: () => _navigateToMonth(context),
+        child: Container(
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+          child: Padding(
+            padding: const EdgeInsets.all(4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Tháng ${widget.month}",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isCurrentMonth ? Colors.green : Colors.black,
                   ),
-                  itemCount: daysInMonth,
-                  itemBuilder: (context, day) {
-                    final bool isToday = isCurrentMonth && (day + 1 == now.day);
+                ),
+                const SizedBox(height: 4),
+                Expanded(
+                  child: GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 7,
+                        ),
+                    itemCount: daysInMonth,
+                    itemBuilder: (context, day) {
+                      final bool isToday =
+                          isCurrentMonth && (day + 1 == now.day);
 
-                    return Center(
-                      child: isToday
-                          ? Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.green,
-                                shape: BoxShape.circle,
-                              ),
-                              alignment: Alignment.center,
-                              constraints: const BoxConstraints(
-                                minWidth: 20,
-                                minHeight: 20,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 2,
-                              ),
-                              child: FittedBox(
+                      return Center(
+                        child: isToday
+                            ? Container(
+                                decoration: const BoxDecoration(
+                                  color: Colors.green,
+                                  shape: BoxShape.circle,
+                                ),
+                                alignment: Alignment.center,
+                                constraints: const BoxConstraints(
+                                  minWidth: 20,
+                                  minHeight: 20,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 2,
+                                ),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    "${day + 1}",
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : FittedBox(
                                 fit: BoxFit.scaleDown,
                                 child: Text(
                                   "${day + 1}",
@@ -646,27 +663,15 @@ class _MonthWidgetState extends State<MonthWidget> {
                                   style: const TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
                                   ),
                                 ),
                               ),
-                            )
-                          : FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                "${day + 1}",
-                                maxLines: 1,
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
