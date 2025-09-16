@@ -18,7 +18,7 @@ class CustomNavigator extends StatefulWidget {
 class _CustomNavigatorState extends State<CustomNavigator> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [Home(), Diary(), Scan(), Community(), Account()];
+  final List<Widget> _pages = [Home(), Diary(), Community(), Account()];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -40,7 +40,11 @@ class _CustomNavigatorState extends State<CustomNavigator> {
         ),
 
         child: FloatingActionButton(
-          onPressed: () => _onItemTapped(2),
+          onPressed: () {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => const Scan()));
+          },
           backgroundColor: AppColors.primary_main,
           elevation: 0,
           shape: CircleBorder(),
@@ -117,12 +121,12 @@ class _CustomNavigatorState extends State<CustomNavigator> {
               children: [
                 MaterialButton(
                   minWidth: 40,
-                  onPressed: () => _onItemTapped(3),
+                  onPressed: () => _onItemTapped(2),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SvgPicture.asset(
-                        _selectedIndex == 3
+                        _selectedIndex == 2
                             ? AppVectors.communitySolid
                             : AppVectors.communityStroke,
                         height: 25,
@@ -131,7 +135,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                       Text(
                         'Cộng đồng',
                         style: TextStyle(
-                          color: _selectedIndex == 3
+                          color: _selectedIndex == 2
                               ? Colors.green
                               : Colors.grey,
                           fontSize: 10,
@@ -142,12 +146,12 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                 ),
                 MaterialButton(
                   minWidth: 40,
-                  onPressed: () => _onItemTapped(4),
+                  onPressed: () => _onItemTapped(3),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SvgPicture.asset(
-                        _selectedIndex == 4
+                        _selectedIndex == 3
                             ? AppVectors.accountSolid
                             : AppVectors.accountStroke,
                         height: 25,
@@ -156,7 +160,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                       Text(
                         'Tài khoản',
                         style: TextStyle(
-                          color: _selectedIndex == 4
+                          color: _selectedIndex == 3
                               ? Colors.green
                               : Colors.grey,
                           fontSize: 10,
