@@ -112,41 +112,44 @@ class Weather extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              spacing: 24,
-              children: [
-                WeatherVerticalCard(
-                  temperature: 27,
-                  hour: 14,
-                  weatherType: WeatherType.partlyCloudy,
-                ),
-                WeatherVerticalCard(
-                  temperature: 26,
-                  hour: 15,
-                  weatherType: WeatherType.sunny,
-                ),
-                WeatherVerticalCard(
-                  temperature: 26,
-                  hour: 16,
-                  weatherType: WeatherType.sunny,
-                  isNow: true,
-                ),
-                WeatherVerticalCard(
-                  temperature: 25,
-                  hour: 17,
-                  weatherType: WeatherType.partlyCloudy,
-                ),
-                WeatherVerticalCard(
-                  temperature: 24,
-                  hour: 18,
-                  weatherType: WeatherType.rainy,
-                ),
-                WeatherVerticalCard(
-                  temperature: 24,
-                  hour: 19,
-                  weatherType: WeatherType.moon,
-                ),
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                spacing: 24,
+                children: [
+                  WeatherVerticalCard(
+                    temperature: 27,
+                    hour: 14,
+                    weatherType: WeatherType.partlyCloudy,
+                  ),
+                  WeatherVerticalCard(
+                    temperature: 26,
+                    hour: 15,
+                    weatherType: WeatherType.sunny,
+                  ),
+                  WeatherVerticalCard(
+                    temperature: 26,
+                    hour: 16,
+                    weatherType: WeatherType.sunny,
+                    isNow: true,
+                  ),
+                  WeatherVerticalCard(
+                    temperature: 25,
+                    hour: 17,
+                    weatherType: WeatherType.partlyCloudy,
+                  ),
+                  WeatherVerticalCard(
+                    temperature: 24,
+                    hour: 18,
+                    weatherType: WeatherType.rainy,
+                  ),
+                  WeatherVerticalCard(
+                    temperature: 24,
+                    hour: 19,
+                    weatherType: WeatherType.moon,
+                  ),
+                ],
+              ),
             ),
           ),
           Expanded(

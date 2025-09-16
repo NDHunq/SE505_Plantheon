@@ -12,6 +12,7 @@ dependencies:
   flutter_svg:
   table_calendar: ^3.0.9
   styled_divider: ^1.0.5
+  image_picker: ^1.2.0
 
 dev_dependencies:
   flutter_test:

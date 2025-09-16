@@ -1,5 +1,5 @@
 class AppVectors {
-  static const String basePath = 'vectors/';
+  static const String basePath = 'assets/vectors/';
   static const String format = '.svg';
   static const String homeSolid = '${basePath}home_solid$format';
   static const String homeStroke = '${basePath}home_stroke$format';

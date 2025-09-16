@@ -56,121 +56,118 @@ class _CustomNavigatorState extends State<CustomNavigator> {
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 8.0,
-        child: SizedBox(
-          height: 70,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Row(
-                children: [
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: () => _onItemTapped(0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          _selectedIndex == 0
-                              ? AppVectors.homeSolid
-                              : AppVectors.homeStroke,
-                          height: 23,
-                          width: 23,
-                        ),
-                        Text(
-                          'Trang chủ',
-                          style: TextStyle(
-                            color: _selectedIndex == 0
-                                ? Colors.green
-                                : Colors.grey,
-                            fontSize: 12,
-                          ), // Removed ANSI color code
-                        ),
-                      ],
-                    ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Row(
+              children: [
+                MaterialButton(
+                  minWidth: 40,
+                  onPressed: () => _onItemTapped(0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        _selectedIndex == 0
+                            ? AppVectors.homeSolid
+                            : AppVectors.homeStroke,
+                        height: 25,
+                        width: 25,
+                      ),
+                      Text(
+                        'Trang chủ',
+                        style: TextStyle(
+                          color: _selectedIndex == 0
+                              ? Colors.green
+                              : Colors.grey,
+                          fontSize: 10,
+                        ), // Removed ANSI color code
+                      ),
+                    ],
                   ),
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: () => _onItemTapped(1),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          _selectedIndex == 1
-                              ? AppVectors.diarySolid
-                              : AppVectors.diaryStroke,
-                          height: 23,
-                          width: 23,
+                ),
+                MaterialButton(
+                  minWidth: 40,
+                  onPressed: () => _onItemTapped(1),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        _selectedIndex == 1
+                            ? AppVectors.diarySolid
+                            : AppVectors.diaryStroke,
+                        height: 25,
+                        width: 25,
+                      ),
+                      Text(
+                        'Nhật ký',
+                        style: TextStyle(
+                          color: _selectedIndex == 1
+                              ? Colors.green
+                              : Colors.grey,
+                          fontSize: 10,
                         ),
-                        Text(
-                          'Nhật ký',
-                          style: TextStyle(
-                            color: _selectedIndex == 1
-                                ? Colors.green
-                                : Colors.grey,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              Row(
-                children: [
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: () => _onItemTapped(3),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          _selectedIndex == 3
-                              ? AppVectors.communitySolid
-                              : AppVectors.communityStroke,
-                          height: 23,
-                          width: 23,
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                MaterialButton(
+                  minWidth: 40,
+                  onPressed: () => _onItemTapped(3),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        _selectedIndex == 3
+                            ? AppVectors.communitySolid
+                            : AppVectors.communityStroke,
+                        height: 25,
+                        width: 25,
+                      ),
+                      Text(
+                        'Cộng đồng',
+                        style: TextStyle(
+                          color: _selectedIndex == 3
+                              ? Colors.green
+                              : Colors.grey,
+                          fontSize: 10,
                         ),
-                        Text(
-                          'Cộng đồng',
-                          style: TextStyle(
-                            color: _selectedIndex == 3
-                                ? Colors.green
-                                : Colors.grey,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: () => _onItemTapped(4),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          _selectedIndex == 4
-                              ? AppVectors.accountSolid
-                              : AppVectors.accountStroke,
-                          height: 23,
-                          width: 23,
+                ),
+                MaterialButton(
+                  minWidth: 40,
+                  onPressed: () => _onItemTapped(4),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        _selectedIndex == 4
+                            ? AppVectors.accountSolid
+                            : AppVectors.accountStroke,
+                        height: 25,
+                        width: 25,
+                      ),
+                      Text(
+                        'Tài khoản',
+                        style: TextStyle(
+                          color: _selectedIndex == 4
+                              ? Colors.green
+                              : Colors.grey,
+                          fontSize: 10,
                         ),
-                        Text(
-                          'Tài khoản',
-                          style: TextStyle(
-                            color: _selectedIndex == 4
-                                ? Colors.green
-                                : Colors.grey,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
