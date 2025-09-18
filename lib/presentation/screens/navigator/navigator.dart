@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
@@ -129,8 +130,8 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                         _selectedIndex == 2
                             ? AppVectors.communitySolid
                             : AppVectors.communityStroke,
-                        height: 25,
-                        width: 25,
+                        height: 25.sp,
+                        width: 25.sp,
                       ),
                       Text(
                         'Cộng đồng',
@@ -154,8 +155,8 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                         _selectedIndex == 3
                             ? AppVectors.accountSolid
                             : AppVectors.accountStroke,
-                        height: 25,
-                        width: 25,
+                        height: 25.sp,
+                        width: 25.sp,
                       ),
                       Text(
                         'Tài khoản',
@@ -163,7 +164,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                           color: _selectedIndex == 3
                               ? Colors.green
                               : Colors.grey,
-                          fontSize: 10,
+                          fontSize: 10.sp,
                         ),
                       ),
                     ],

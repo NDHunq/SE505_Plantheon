@@ -22,4 +22,5 @@ class AppVectors {
   static const String trash = '${basePath}trash$format';
   static const String scan = '${basePath}scan$format';
   static const String camera = '${basePath}camera$format';
+  static const String qr = '${basePath}qr$format';
 }

@@ -236,6 +236,18 @@ class _ScanState extends State<Scan> {
                 ],
               ),
             ),
+          if (_image == null)
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  AppVectors.qr,
+                  color: AppColors.primary_600,
+                  height: 350,
+                  width: 350,
+                ),
+              ),
+            ),
         ],
       ),
     );
