@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:se501_plantheon/presentation/screens/diary/widgets/navigation.dart';
+import 'package:se501_plantheon/common/widgets/topnavigation/navigation.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/presentation/screens/diary/month.dart';
 import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';

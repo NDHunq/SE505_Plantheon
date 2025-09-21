@@ -1,6 +1,6 @@
 name: se501_plantheon
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -12,6 +12,7 @@ dependencies:
   flutter_svg:
   table_calendar: ^3.0.9
   styled_divider: ^1.0.5
+  flutter_html: ^3.0.0-beta.2
 
 dev_dependencies:
   flutter_test:
