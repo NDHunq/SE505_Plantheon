@@ -33,11 +33,11 @@ class _CustomNavigatorState extends State<CustomNavigator> {
       extendBody: true,
       body: _pages[_selectedIndex],
       floatingActionButton: Container(
-        height: 70,
-        width: 70,
+        height: 70.sp,
+        width: 70.sp,
         decoration: BoxDecoration(
           border: Border.all(color: AppColors.primary_300, width: 5),
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: BorderRadius.circular(50.sp),
         ),
 
         child: FloatingActionButton(
@@ -51,8 +51,8 @@ class _CustomNavigatorState extends State<CustomNavigator> {
           shape: CircleBorder(),
           child: SvgPicture.asset(
             AppVectors.scan,
-            height: 30,
-            width: 30,
+            height: 30.sp,
+            width: 30.sp,
             color: Colors.white,
           ),
         ),
@@ -76,8 +76,8 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                         _selectedIndex == 0
                             ? AppVectors.homeSolid
                             : AppVectors.homeStroke,
-                        height: 25,
-                        width: 25,
+                        height: 25.sp,
+                        width: 25.sp,
                       ),
                       Text(
                         'Trang chủ',
@@ -85,7 +85,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                           color: _selectedIndex == 0
                               ? Colors.green
                               : Colors.grey,
-                          fontSize: 10,
+                          fontSize: 10.sp,
                         ), // Removed ANSI color code
                       ),
                     ],
@@ -101,8 +101,8 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                         _selectedIndex == 1
                             ? AppVectors.diarySolid
                             : AppVectors.diaryStroke,
-                        height: 25,
-                        width: 25,
+                        height: 25.sp,
+                        width: 25.sp,
                       ),
                       Text(
                         'Nhật ký',
@@ -110,7 +110,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                           color: _selectedIndex == 1
                               ? Colors.green
                               : Colors.grey,
-                          fontSize: 10,
+                          fontSize: 10.sp,
                         ),
                       ),
                     ],
@@ -139,7 +139,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                           color: _selectedIndex == 2
                               ? Colors.green
                               : Colors.grey,
-                          fontSize: 10,
+                          fontSize: 10.sp,
                         ),
                       ),
                     ],

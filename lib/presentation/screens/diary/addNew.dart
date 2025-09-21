@@ -38,7 +38,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
   Widget _buildCategoryContent() {
     switch (selectedCategory) {
       case 'targets':
-        return const TargetsWidget();
+        return const chiTieuWidget();
       case 'sales':
         return const banSanPhamWidget();
       case 'disasters':

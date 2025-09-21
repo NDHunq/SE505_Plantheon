@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:se501_plantheon/presentation/screens/diary/widget/navigation.dart';
+import 'package:se501_plantheon/common/widgets/topnavigation/navigation.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/presentation/screens/diary/month.dart';
 import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
+import 'package:se501_plantheon/presentation/screens/diary/billOfMonth.dart';
+import 'package:se501_plantheon/presentation/screens/diary/billOfYear.dart';
+import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
+import 'package:se501_plantheon/presentation/screens/diary/dayDetail.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+
+enum DiaryViewType {
+  monthGrid,
+  monthDetail,
+  yearSelector,
+  billOfMonth,
+  billOfYear,
+  billOfDay,
+  dayDetail,
+}
 
 class Diary extends StatefulWidget {
   const Diary({super.key});
@@ -14,8 +29,12 @@ class Diary extends StatefulWidget {
 class _DiaryState extends State<Diary> {
   int selectedYear = DateTime.now().year;
   int? selectedMonth;
-  bool showYearSelector = false;
+  int? selectedDay;
+  DiaryViewType currentView = DiaryViewType.monthGrid;
   bool isLoading = false;
+  DateTime? billDate; // For bill views
+  String? customTitle; // For dynamic title
+  DiaryViewType? latestCalendarView; // Track latest calendar view accessed
 
   void _toggleYearSelector() async {
     setState(() {
@@ -26,7 +45,9 @@ class _DiaryState extends State<Diary> {
     await Future.delayed(const Duration(milliseconds: 300));
 
     setState(() {
-      showYearSelector = !showYearSelector;
+      currentView = currentView == DiaryViewType.yearSelector
+          ? DiaryViewType.monthGrid
+          : DiaryViewType.yearSelector;
       isLoading = false;
     });
   }
@@ -41,7 +62,7 @@ class _DiaryState extends State<Diary> {
 
     setState(() {
       selectedYear = year;
-      showYearSelector = false;
+      currentView = DiaryViewType.monthGrid;
       isLoading = false;
     });
   }
@@ -56,7 +77,8 @@ class _DiaryState extends State<Diary> {
 
     setState(() {
       selectedMonth = month;
-      showYearSelector = false;
+      currentView = DiaryViewType.monthDetail;
+      latestCalendarView = DiaryViewType.monthDetail; // Track calendar view
       isLoading = false;
     });
   }
@@ -71,8 +93,219 @@ class _DiaryState extends State<Diary> {
 
     setState(() {
       selectedMonth = null;
+      selectedDay = null;
+      currentView = DiaryViewType.monthGrid;
+      latestCalendarView = DiaryViewType.monthGrid; // Track calendar view
+      customTitle = null; // Reset custom title
       isLoading = false;
     });
+  }
+
+  void _openBillOfMonth() {
+    final now = DateTime.now();
+    final targetDate = DateTime(selectedYear, selectedMonth ?? now.month, 1);
+
+    // Kiểm tra nếu là tháng/năm tương lai
+    if (targetDate.isAfter(DateTime(now.year, now.month, 1))) {
+      _showFutureWarning();
+      return;
+    }
+
+    setState(() {
+      billDate = targetDate;
+      currentView = DiaryViewType.billOfMonth;
+    });
+  }
+
+  void _openBillOfYear(DateTime date) {
+    final now = DateTime.now();
+
+    // Kiểm tra nếu là năm tương lai
+    if (date.year > now.year) {
+      _showFutureWarning();
+      return;
+    }
+
+    setState(() {
+      billDate = date;
+      currentView = DiaryViewType.billOfYear;
+    });
+  }
+
+  void _openBillOfDay(DateTime date) {
+    final now = DateTime.now();
+
+    // Kiểm tra nếu là ngày tương lai
+    if (date.isAfter(DateTime(now.year, now.month, now.day))) {
+      _showFutureWarning();
+      return;
+    }
+
+    setState(() {
+      billDate = date;
+      currentView = DiaryViewType.billOfDay;
+    });
+  }
+
+  void navigateToDay(int day, int month, int year) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    // Simulate loading delay tương tự navigateToMonth
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    setState(() {
+      selectedDay = day;
+      selectedMonth = month;
+      selectedYear = year;
+      currentView = DiaryViewType.dayDetail;
+      latestCalendarView = DiaryViewType.dayDetail; // Track calendar view
+      customTitle = null; // Reset custom title
+      isLoading = false;
+    });
+  }
+
+  void updateSelectedDate(int day, int month, int year) {
+    setState(() {
+      selectedDay = day;
+      selectedMonth = month;
+      selectedYear = year;
+    });
+  }
+
+  void changeTitle(String title) {
+    setState(() {
+      customTitle = title;
+    });
+  }
+
+  void _backToCalendar() {
+    setState(() {
+      // Dựa vào currentView để quyết định quay về đâu
+      if (currentView == DiaryViewType.billOfMonth) {
+        // Từ BillOfMonth → quay về monthGrid (màn hình các tháng trong năm)
+        currentView = DiaryViewType.monthGrid;
+        latestCalendarView = DiaryViewType.monthGrid; // Track calendar view
+        selectedMonth = null;
+        selectedDay = null;
+        selectedYear = billDate?.year ?? DateTime.now().year;
+      } else if (currentView == DiaryViewType.billOfDay) {
+        // Từ BillOfDay → dựa vào latestCalendarView để quyết định
+        if (latestCalendarView == DiaryViewType.dayDetail) {
+          // Nếu latest calendar là dayDetail → quay về dayDetail
+          currentView = DiaryViewType.dayDetail;
+          selectedMonth = billDate?.month ?? DateTime.now().month;
+          selectedYear = billDate?.year ?? DateTime.now().year;
+          selectedDay = billDate?.day ?? DateTime.now().day;
+        } else {
+          // Nếu không → quay về monthDetail (month.dart)
+          currentView = DiaryViewType.monthDetail;
+          selectedMonth = billDate?.month ?? DateTime.now().month;
+          selectedYear = billDate?.year ?? DateTime.now().year;
+          selectedDay = null;
+        }
+      } else {
+        // Các trường hợp khác → quay về monthGrid
+        currentView = DiaryViewType.monthGrid;
+        latestCalendarView = DiaryViewType.monthGrid; // Track calendar view
+        selectedMonth = null;
+        selectedDay = null;
+      }
+
+      billDate = null;
+      customTitle = null;
+    });
+  }
+
+  void _navigateToBillOfMonth(DateTime date) {
+    setState(() {
+      billDate = date;
+      currentView = DiaryViewType.billOfMonth;
+    });
+  }
+
+  void _navigateToBillOfYear(DateTime date) {
+    setState(() {
+      billDate = date;
+      currentView = DiaryViewType.billOfYear;
+    });
+  }
+
+  void _navigateToBillOfDay(DateTime date) {
+    setState(() {
+      billDate = date;
+      currentView = DiaryViewType.billOfDay;
+    });
+  }
+
+  List<NavigationAction> _getActions() {
+    // Nếu đang ở bill views, hiển thị calendar action
+    if (currentView == DiaryViewType.billOfMonth ||
+        currentView == DiaryViewType.billOfYear ||
+        currentView == DiaryViewType.billOfDay) {
+      return [
+        NavigationAction(
+          icon: Icons.calendar_month,
+          onPressed: _backToCalendar,
+        ),
+        CommonNavigationActions.search(
+          onPressed: () => _showSearchModal(context),
+        ),
+        CommonNavigationActions.add(onPressed: () => _showAddNewModal(context)),
+      ];
+    } else {
+      // Default actions cho các view khác
+      VoidCallback billAction;
+
+      // Nếu đang ở monthDetail hoặc dayDetail, mở billOfDay
+      if (currentView == DiaryViewType.monthDetail ||
+          currentView == DiaryViewType.dayDetail) {
+        billAction = () => _navigateToBillOfDay(
+          DateTime(selectedYear, selectedMonth!, selectedDay ?? 1),
+        );
+      } else {
+        // Các view khác mở billOfMonth
+        billAction = () => _navigateToBillOfMonth(
+          DateTime(selectedYear, selectedMonth ?? DateTime.now().month, 1),
+        );
+      }
+
+      return [
+        NavigationAction(icon: Icons.bar_chart, onPressed: billAction),
+        CommonNavigationActions.search(
+          onPressed: () => _showSearchModal(context),
+        ),
+        CommonNavigationActions.add(onPressed: () => _showAddNewModal(context)),
+      ];
+    }
+  }
+
+  bool _shouldShowBackButton() {
+    return currentView != DiaryViewType.monthGrid &&
+        currentView != DiaryViewType.yearSelector;
+  }
+
+  void _handleBackPressed() {
+    switch (currentView) {
+      case DiaryViewType.dayDetail:
+        // Từ dayDetail quay về monthDetail
+        setState(() {
+          currentView = DiaryViewType.monthDetail;
+          latestCalendarView =
+              DiaryViewType.monthDetail; // Update latest calendar view
+          customTitle = null; // Reset custom title
+        });
+        break;
+      case DiaryViewType.monthDetail:
+      case DiaryViewType.billOfMonth:
+      case DiaryViewType.billOfYear:
+      case DiaryViewType.billOfDay:
+        _backToMonthSelection();
+        break;
+      default:
+        break;
+    }
   }
 
   @override
@@ -81,29 +314,17 @@ class _DiaryState extends State<Diary> {
       appBar: DiaryNavigationBar(
         selectedYear: selectedYear,
         selectedMonth: selectedMonth,
-        showYearSelector: showYearSelector,
+        showYearSelector: currentView == DiaryViewType.yearSelector,
         onToggleYearSelector: _toggleYearSelector,
         onBackToMonthSelection: _backToMonthSelection,
-        showBackButton: selectedMonth != null,
-        onBackPressed: selectedMonth != null ? _backToMonthSelection : null,
-        actions: [
-          CommonNavigationActions.add(
-            onPressed: () => _showAddNewModal(context),
-          ),
-          CommonNavigationActions.search(
-            onPressed: () => _showSearchModal(context),
-          ),
-          CommonNavigationActions.menu(
-            onPressed: () => _showMenuModal(context),
-          ),
-        ],
+        showBackButton: _shouldShowBackButton(),
+        onBackPressed: _shouldShowBackButton() ? _handleBackPressed : null,
+        customTitle: customTitle,
+        actions: _getActions(),
       ),
       body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(AppConstraints.mainPadding),
-            child: _buildContent(),
-          ),
+          _buildContent(),
           if (isLoading)
             Container(
               color: Colors.black.withOpacity(0.3),
@@ -126,12 +347,55 @@ class _DiaryState extends State<Diary> {
   }
 
   Widget _buildContent() {
-    if (showYearSelector) {
-      return _buildYearSelector();
-    } else if (selectedMonth != null) {
-      return MonthScreen(month: selectedMonth!, year: selectedYear);
-    } else {
-      return _buildMonthGrid();
+    switch (currentView) {
+      case DiaryViewType.yearSelector:
+        return _buildYearSelector();
+      case DiaryViewType.monthDetail:
+        return MonthScreen(
+          month: selectedMonth!,
+          year: selectedYear,
+          onDaySelected: navigateToDay,
+        );
+      case DiaryViewType.billOfMonth:
+        return _BillWrapper(
+          child: BillOfMonth(
+            initialDate: billDate,
+            onTitleChange: changeTitle,
+            onBackToCalendar: _backToCalendar,
+            onNavigateToBillOfYear: _navigateToBillOfYear,
+            onNavigateToBillOfDay: _navigateToBillOfDay,
+          ),
+        );
+      case DiaryViewType.billOfYear:
+        return _BillWrapper(
+          child: BillOfYear(
+            initialDate: billDate,
+            onTitleChange: changeTitle,
+            onBackToCalendar: _backToCalendar,
+            onNavigateToBillOfMonth: _navigateToBillOfMonth,
+          ),
+        );
+      case DiaryViewType.billOfDay:
+        return _BillWrapper(
+          child: BillOfDay(
+            initialDate: billDate,
+            onTitleChange: changeTitle,
+            onBackToCalendar: _backToCalendar,
+            onNavigateToBillOfMonth: _navigateToBillOfMonth,
+          ),
+        );
+      case DiaryViewType.dayDetail:
+        return DayDetailScreen(
+          arguments: {
+            'day': selectedDay,
+            'month': selectedMonth,
+            'year': selectedYear,
+          },
+          onTitleChange: changeTitle,
+          onDateChange: updateSelectedDate,
+        );
+      case DiaryViewType.monthGrid:
+        return _buildMonthGrid();
     }
   }
 
@@ -176,35 +440,6 @@ class _DiaryState extends State<Diary> {
             child: const Text("Tìm"),
           ),
         ],
-      ),
-    );
-  }
-
-  void _showMenuModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.settings, color: Colors.blue),
-              title: const Text("Cài đặt"),
-              onTap: () => Navigator.pop(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.help_outline, color: Colors.green),
-              title: const Text("Trợ giúp"),
-              onTap: () => Navigator.pop(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.info_outline, color: Colors.orange),
-              title: const Text("Thông tin ứng dụng"),
-              onTap: () => Navigator.pop(context),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -274,6 +509,51 @@ class _DiaryState extends State<Diary> {
       },
     );
   }
+
+  void _showFutureWarning() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          "Thông báo",
+          style: TextStyle(
+            color: AppColors.primary_600,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: const Text(
+          "Không có thống kê trong tương lai",
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              "Đóng",
+              style: TextStyle(color: AppColors.primary_600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BillWrapper extends StatelessWidget {
+  final Widget child;
+
+  const _BillWrapper({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    // Extract the body content from the Bill widgets by removing Scaffold wrapper
+    if (child is StatefulWidget) {
+      // For now, return the child as is. We'll need to modify the Bill widgets
+      // to not use Scaffold when used as embedded widgets
+      return child;
+    }
+    return child;
+  }
 }
 
 class MonthWidget extends StatefulWidget {
@@ -314,51 +594,68 @@ class _MonthWidgetState extends State<MonthWidget> {
         (now.year == widget.year && now.month == widget.month);
     final int daysInMonth = DateUtils.getDaysInMonth(widget.year, widget.month);
 
-    return GestureDetector(
-      onTap: () => _navigateToMonth(context),
-      child: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-        child: Padding(
-          padding: const EdgeInsets.all(4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Tháng ${widget.month}",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isCurrentMonth ? Colors.green : Colors.black,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Expanded(
-                child: GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 7,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GestureDetector(
+        onTap: () => _navigateToMonth(context),
+        child: Container(
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+          child: Padding(
+            padding: const EdgeInsets.all(4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Tháng ${widget.month}",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isCurrentMonth ? Colors.green : Colors.black,
                   ),
-                  itemCount: daysInMonth,
-                  itemBuilder: (context, day) {
-                    final bool isToday = isCurrentMonth && (day + 1 == now.day);
+                ),
+                const SizedBox(height: 4),
+                Expanded(
+                  child: GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 7,
+                        ),
+                    itemCount: daysInMonth,
+                    itemBuilder: (context, day) {
+                      final bool isToday =
+                          isCurrentMonth && (day + 1 == now.day);
 
-                    return Center(
-                      child: isToday
-                          ? Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.green,
-                                shape: BoxShape.circle,
-                              ),
-                              alignment: Alignment.center,
-                              constraints: const BoxConstraints(
-                                minWidth: 20,
-                                minHeight: 20,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 2,
-                              ),
-                              child: FittedBox(
+                      return Center(
+                        child: isToday
+                            ? Container(
+                                decoration: const BoxDecoration(
+                                  color: Colors.green,
+                                  shape: BoxShape.circle,
+                                ),
+                                alignment: Alignment.center,
+                                constraints: const BoxConstraints(
+                                  minWidth: 20,
+                                  minHeight: 20,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 2,
+                                ),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    "${day + 1}",
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : FittedBox(
                                 fit: BoxFit.scaleDown,
                                 child: Text(
                                   "${day + 1}",
@@ -366,27 +663,15 @@ class _MonthWidgetState extends State<MonthWidget> {
                                   style: const TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
                                   ),
                                 ),
                               ),
-                            )
-                          : FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                "${day + 1}",
-                                maxLines: 1,
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

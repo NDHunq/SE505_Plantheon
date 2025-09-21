@@ -1,6 +1,6 @@
 name: se501_plantheon
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -16,6 +16,7 @@ dependencies:
   camera: ^0.11.2
   permission_handler: ^12.0.1
   flutter_screenutil:
+  flutter_html: ^3.0.0-beta.2
 
 dev_dependencies:
   flutter_test:

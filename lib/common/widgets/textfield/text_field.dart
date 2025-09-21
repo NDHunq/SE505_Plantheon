@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
 /// Custom TextField widget có thể tái sử dụng toàn app
 class AppTextField extends StatelessWidget {
@@ -32,6 +33,7 @@ class AppTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final bool autofocus;
   final bool isDense;
+  final double? contentPaddingVertical;
   final InputDecoration? decoration;
 
   const AppTextField({
@@ -60,6 +62,7 @@ class AppTextField extends StatelessWidget {
     this.contentPadding,
     this.textStyle,
     this.labelStyle,
+    this.contentPaddingVertical = 10,
     this.hintStyle,
     this.textAlign,
     this.focusNode,
@@ -71,7 +74,11 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: controller ?? (initialValue != null ? TextEditingController(text: initialValue) : null),
+      controller:
+          controller ??
+          (initialValue != null
+              ? TextEditingController(text: initialValue)
+              : null),
       keyboardType: keyboardType,
       obscureText: obscureText,
       enabled: enabled,
@@ -91,7 +98,8 @@ class AppTextField extends StatelessWidget {
 
   InputDecoration _buildDefaultDecoration(BuildContext context) {
     final defaultBorderColor = borderColor ?? AppConstraints.lightGray;
-    final defaultFocusedBorderColor = focusedBorderColor ?? Colors.blue;
+    final defaultFocusedBorderColor =
+        focusedBorderColor ?? AppColors.primary_600;
     final defaultErrorBorderColor = errorBorderColor ?? Colors.red;
 
     return InputDecoration(
@@ -102,9 +110,9 @@ class AppTextField extends StatelessWidget {
       isDense: isDense,
       contentPadding:
           contentPadding ??
-          const EdgeInsets.symmetric(
+          EdgeInsets.symmetric(
             horizontal: AppConstraints.smallPadding,
-            vertical: AppConstraints.smallPadding,
+            vertical: contentPaddingVertical!,
           ),
       labelStyle: labelStyle,
       hintStyle: hintStyle,
@@ -236,8 +244,9 @@ class AppTextFormField extends StatelessWidget {
 
   InputDecoration _buildDefaultDecoration(BuildContext context) {
     final defaultBorderColor = borderColor ?? AppConstraints.lightGray;
-    final defaultFocusedBorderColor = focusedBorderColor ?? Colors.blue;
-    final defaultErrorBorderColor = errorBorderColor ?? Colors.red;
+    final defaultFocusedBorderColor =
+        focusedBorderColor ?? AppColors.primary_600;
+    final defaultErrorBorderColor = errorBorderColor ?? AppColors.red;
 
     return InputDecoration(
       labelText: labelText,
@@ -249,7 +258,7 @@ class AppTextFormField extends StatelessWidget {
           contentPadding ??
           const EdgeInsets.symmetric(
             horizontal: AppConstraints.smallPadding,
-            vertical: AppConstraints.smallPadding,
+            vertical: AppConstraints.largePadding,
           ),
       labelStyle: labelStyle,
       hintStyle: hintStyle,

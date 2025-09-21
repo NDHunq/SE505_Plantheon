@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:se501_plantheon/common/widgets/textfield/text_field.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/presentation/screens/diary/widgets/addNew_Row_1_2.dart';
 
-class TargetsWidget extends StatefulWidget {
-  const TargetsWidget({super.key});
+class chiTieuWidget extends StatefulWidget {
+  const chiTieuWidget({super.key});
 
   @override
-  State<TargetsWidget> createState() => _TargetsWidgetState();
+  State<chiTieuWidget> createState() => _chiTieuWidgetState();
 }
 
-class _TargetsWidgetState extends State<TargetsWidget> {
+class _chiTieuWidgetState extends State<chiTieuWidget> {
   bool allDay = false;
   String selectedTime = "14:20";
   String selectedDate = "ngày 13 thg 7, 2025";
@@ -212,12 +215,9 @@ class _TargetsWidgetState extends State<TargetsWidget> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Thêm phân loại"),
-          content: TextField(
+          content: AppTextField(
             controller: controller,
-            decoration: const InputDecoration(
-              labelText: "Nhập tên phân loại",
-              border: OutlineInputBorder(),
-            ),
+            labelText: "Nhập tên phân loại",
           ),
           actions: [
             TextButton(
@@ -338,17 +338,14 @@ class _TargetsWidgetState extends State<TargetsWidget> {
             ),
           ),
 
-          TextField(
-            decoration: InputDecoration(
-              labelText: "Thêm tiêu đề",
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey.shade200),
-              ),
-            ),
+          AppTextField(
+            contentPaddingVertical: 16,
+            hintText: "Thêm tiêu đề",
+
             onChanged: (value) => setState(() => note = value),
           ),
           // Cả ngày
-          _buildFormRow(
+          AddNewRow(
             label: "Cả ngày",
             child: Switch(
               value: allDay,
@@ -358,7 +355,7 @@ class _TargetsWidgetState extends State<TargetsWidget> {
           ),
 
           // Thời gian
-          _buildFormRow(
+          AddNewRow(
             label: "Thời gian",
             child: Row(
               children: [
@@ -397,9 +394,10 @@ class _TargetsWidgetState extends State<TargetsWidget> {
               ],
             ),
           ),
+          Divider(height: 1, color: AppColors.text_color_100),
 
           // Lặp lại
-          _buildFormRow(
+          AddNewRow(
             label: "Lặp lại",
             child: GestureDetector(
               onTap: () => _showRepeatDialog(context),
@@ -424,7 +422,7 @@ class _TargetsWidgetState extends State<TargetsWidget> {
           ),
 
           // Kết thúc lặp lại
-          _buildFormRow(
+          AddNewRow(
             label: "Kết thúc lặp lại",
             child: GestureDetector(
               onTap: () => _showEndRepeatDialog(context),
@@ -450,7 +448,7 @@ class _TargetsWidgetState extends State<TargetsWidget> {
 
           // Ngày kết thúc - chỉ hiển thị khi chọn "Ngày"
           if (endRepeatType == "Ngày") ...[
-            _buildFormRow(
+            AddNewRow(
               label: "Ngày kết thúc",
               child: GestureDetector(
                 onTap: () => _selectEndDate(context),
@@ -468,9 +466,10 @@ class _TargetsWidgetState extends State<TargetsWidget> {
               ),
             ),
           ],
+          Divider(height: 1, color: AppColors.text_color_100),
 
           // Cảnh báo
-          _buildFormRow(
+          AddNewRow(
             label: "Cảnh báo",
             child: GestureDetector(
               onTap: () => _showAlertDialog(context),
@@ -493,28 +492,19 @@ class _TargetsWidgetState extends State<TargetsWidget> {
               ),
             ),
           ),
+          Divider(height: 1, color: AppColors.text_color_100),
 
           // Vật mua
-          _buildFormRow(
+          AddNewRow(
             label: "Vật mua",
-            child: TextField(
+            child: AppTextField(
               controller: TextEditingController(text: purchasedItem),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-              ),
               onChanged: (value) => purchasedItem = value,
             ),
           ),
 
           // Phân loại
-          _buildFormRow(
+          AddNewRow(
             label: "Phân loại",
             child: Row(
               children: [
@@ -557,27 +547,17 @@ class _TargetsWidgetState extends State<TargetsWidget> {
           ),
 
           // Số lượng mua
-          _buildFormRow(
+          AddNewRow(
             label: "Số lượng mua",
-            child: TextField(
+            child: AppTextField(
               controller: TextEditingController(text: quantity),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-              ),
               keyboardType: TextInputType.number,
               onChanged: (value) => quantity = value,
             ),
           ),
 
           // Đơn vị tính
-          _buildFormRow(
+          AddNewRow(
             label: "Đơn vị tính",
             child: GestureDetector(
               onTap: () => _showUnitDialog(context),
@@ -602,17 +582,13 @@ class _TargetsWidgetState extends State<TargetsWidget> {
           ),
 
           // Số tiền đã chi
-          _buildFormRow(
+          AddNewRow(
             label: "Số tiền đã chi",
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
+                  child: AppTextField(
                     controller: TextEditingController(text: amount),
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                    ),
                     keyboardType: TextInputType.number,
                     onChanged: (value) => amount = value,
                   ),
@@ -645,111 +621,50 @@ class _TargetsWidgetState extends State<TargetsWidget> {
           ),
 
           // Mục đích
-          _buildFormRow(
+          AddNewRow(
             label: "Mục đích",
-            child: TextField(
+            child: AppTextField(
               controller: TextEditingController(text: purpose),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-              ),
               onChanged: (value) => purpose = value,
             ),
           ),
 
           // Mua cho ai
-          _buildFormRow(
+          AddNewRow(
             label: "Mua cho ai",
-            child: TextField(
+            child: AppTextField(
               controller: TextEditingController(text: purchasedFor),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-              ),
               onChanged: (value) => purchasedFor = value,
             ),
           ),
 
           // Người mua
-          _buildFormRow(
+          AddNewRow(
             label: "Người mua",
-            child: TextField(
+            child: AppTextField(
               controller: TextEditingController(text: buyer),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-              ),
               onChanged: (value) => buyer = value,
             ),
           ),
+          Divider(height: 1, color: AppColors.text_color_100),
 
           // Thêm tệp đính kèm
-          _buildFormRow(
+          AddNewRow(
             label: "Thêm tệp đính kèm...",
             child: const SizedBox.shrink(),
           ),
+          Divider(height: 1, color: AppColors.text_color_100),
 
           // Ghi chú
-          _buildFormRow(
+          AddNewRow(
             label: "Ghi chú",
-            child: TextField(
+            child: AppTextField(
               controller: TextEditingController(text: note),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-              ),
               onChanged: (value) => note = value,
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildFormRow({required String label, required Widget child}) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Text(label, style: const TextStyle(fontSize: 16)),
-              ),
-              Expanded(
-                flex: 3,
-                child: Align(alignment: Alignment.centerRight, child: child),
-              ),
-            ],
-          ),
-        ),
-        const Divider(height: 1, color: Colors.grey),
-      ],
     );
   }
 

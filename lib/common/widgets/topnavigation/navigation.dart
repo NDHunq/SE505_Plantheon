@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
 /// Custom Navigation Bar dựa theo thiết kế Diary với nút back và 3 nút chức năng bên phải
 class CustomNavigationBar extends StatelessWidget
@@ -93,12 +98,12 @@ class CustomNavigationBar extends StatelessWidget
           Text(
             title,
             style: TextStyle(
-              fontSize: AppConstraints.titleLargeFontSize,
+              fontSize: AppConstraints.titleMediumFontSize,
               fontWeight: FontWeight.bold,
               color:
                   textColor ??
                   Theme.of(context).textTheme.titleLarge?.color ??
-                  Colors.black,
+                  AppColors.primary_600,
             ),
           ),
           if (showYearSelector) ...[
@@ -108,7 +113,7 @@ class CustomNavigationBar extends StatelessWidget
               color:
                   iconColor ??
                   Theme.of(context).iconTheme.color ??
-                  Colors.black,
+                  Colors.white,
             ),
           ],
         ],
@@ -127,20 +132,11 @@ class CustomNavigationBar extends StatelessWidget
           Navigator.of(context).pop();
         }
       },
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(
-            AppConstraints.mediumBorderRadius,
-          ),
-        ),
-        child: Icon(
-          Icons.arrow_back_ios_new,
-          size: AppConstraints.mediumIconSize,
-          color: iconColor ?? Theme.of(context).iconTheme.color ?? Colors.black,
-        ),
+      child: SvgPicture.asset(
+        AppVectors.arrowBack,
+        width: 30,
+        height: 30,
+        color: AppColors.primary_600,
       ),
     );
   }
@@ -156,27 +152,16 @@ class CustomNavigationBar extends StatelessWidget
             action.onPressed!();
           }
         },
-        child: Container(
+        child: SizedBox(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(
-            color: action.backgroundColor ?? Colors.grey.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(
-              AppConstraints.mediumBorderRadius,
-            ),
-            border: action.borderColor != null
-                ? Border.all(color: action.borderColor!, width: 1)
-                : null,
-          ),
+
           child: action.icon != null
               ? Icon(
                   action.icon,
+
                   size: AppConstraints.mediumIconSize,
-                  color:
-                      action.iconColor ??
-                      iconColor ??
-                      Theme.of(context).iconTheme.color ??
-                      Colors.black,
+                  color: AppColors.primary_600,
                 )
               : action.child,
         ),
@@ -253,6 +238,7 @@ class DiaryNavigationBar extends StatelessWidget
   final VoidCallback? onBackToMonthSelection;
   final List<NavigationAction> actions;
   final bool showBackButton;
+  final String? customTitle;
 
   const DiaryNavigationBar({
     super.key,
@@ -264,6 +250,7 @@ class DiaryNavigationBar extends StatelessWidget
     this.onBackToMonthSelection,
     required this.actions,
     this.showBackButton = true,
+    this.customTitle,
   });
 
   @override
@@ -271,22 +258,32 @@ class DiaryNavigationBar extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    // Nếu đang ở chế độ tháng, hiển thị "Tháng X năm Y"
-    final bool isMonthMode = selectedMonth != null;
-    final String titleText = isMonthMode
-        ? "Tháng $selectedMonth $selectedYear"
-        : "$selectedYear";
+    // Nếu có customTitle, sử dụng customTitle
+    // Nếu không, sử dụng logic cũ
+    final String titleText;
+    final VoidCallback? titleTapCallback;
 
-    // Chỉ cho phép tap title khi không ở chế độ tháng
-    final VoidCallback? titleTapCallback = !isMonthMode
-        ? onToggleYearSelector
-        : null;
+    if (customTitle != null) {
+      titleText = customTitle!;
+      titleTapCallback = null; // Không cho phép tap khi có custom title
+    } else {
+      // Logic cũ
+      final bool isMonthMode = selectedMonth != null;
+      titleText = isMonthMode
+          ? "Tháng $selectedMonth $selectedYear"
+          : "$selectedYear";
+
+      // Chỉ cho phép tap title khi không ở chế độ tháng
+      titleTapCallback = (selectedMonth == null) ? onToggleYearSelector : null;
+    }
 
     return CustomNavigationBar(
       title: titleText,
       showBackButton: showBackButton,
       onBackPressed: onBackPressed,
-      showYearSelector: showYearSelector && !isMonthMode,
+      showYearSelector: customTitle == null
+          ? (showYearSelector && (selectedMonth == null))
+          : false,
       onTitleTap: titleTapCallback,
       actions: actions,
       titleWidget: titleTapCallback != null
@@ -302,7 +299,7 @@ class DiaryNavigationBar extends StatelessWidget
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  if (!isMonthMode) ...[
+                  if (selectedMonth == null) ...[
                     const SizedBox(width: 4),
                     Icon(
                       showYearSelector
