@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/presentation/screens/account/contact.dart';
+import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
+import 'package:se501_plantheon/presentation/screens/home/scan_history.dart';
 
 class Account extends StatelessWidget {
   const Account({super.key});
@@ -20,21 +24,46 @@ class Account extends StatelessWidget {
           children: [
             PersonalSetting(),
             HelpingSetting(),
-            Container(
-              decoration: BoxDecoration(
-                color: Color(0xFFE6F3F1),
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: SettingListItem(
-                  leading: SizedBox(),
-                  text: "Đăng xuất",
-                  action: SvgPicture.asset(
-                    AppVectors.logout,
-                    width: 24,
-                    height: 24,
-                    color: AppColors.primary_700,
+            GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => BasicDialog(
+                    title: 'Xác nhận đăng xuất',
+                    content: 'Bạn có chắc chắn muốn đăng xuất?',
+                    confirmText: 'Đăng xuất',
+                    cancelText: 'Huỷ',
+                    onConfirm: () {
+                      Navigator.of(context).pop();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) => SignInPage(),
+                        ),
+                      );
+                    },
+                    onCancel: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFFE6F3F1),
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: SettingListItem(
+                    leading: SizedBox(),
+                    text: "Đăng xuất",
+                    action: SvgPicture.asset(
+                      AppVectors.logout,
+                      width: 24,
+                      height: 24,
+                      color: AppColors.primary_700,
+                    ),
                   ),
                 ),
               ),
@@ -79,7 +108,6 @@ class _PersonalSettingState extends State<PersonalSetting> {
                   });
                 },
                 onCancel: () {},
-                // Custom content with radio buttons
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -146,15 +174,25 @@ class _PersonalSettingState extends State<PersonalSetting> {
               action: Icon(Icons.keyboard_arrow_right_rounded),
             ),
             Divider(height: 1, color: AppColors.white),
-            SettingListItem(
-              leading: SvgPicture.asset(
-                AppVectors.history,
-                width: 24,
-                height: 24,
-                color: AppColors.primary_700,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => ScanHistory(),
+                  ),
+                );
+              },
+              child: SettingListItem(
+                leading: SvgPicture.asset(
+                  AppVectors.history,
+                  width: 24,
+                  height: 24,
+                  color: AppColors.primary_700,
+                ),
+                text: "Lịch sử quét bệnh",
+                action: Icon(Icons.keyboard_arrow_right_rounded),
               ),
-              text: "Lịch sử quét bệnh",
-              action: Icon(Icons.keyboard_arrow_right_rounded),
             ),
             Divider(height: 1, color: AppColors.white),
             SettingListItem(
@@ -224,15 +262,25 @@ class HelpingSetting extends StatelessWidget {
           children: [
             SettingTitleItem(text: "Hỗ trợ"),
             Divider(height: 1, color: AppColors.white),
-            SettingListItem(
-              leading: SvgPicture.asset(
-                AppVectors.phone,
-                width: 24,
-                height: 24,
-                color: AppColors.primary_700,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => Contact(),
+                  ),
+                );
+              },
+              child: SettingListItem(
+                leading: SvgPicture.asset(
+                  AppVectors.phone,
+                  width: 24,
+                  height: 24,
+                  color: AppColors.primary_700,
+                ),
+                text: "Liên hệ",
+                action: Icon(Icons.keyboard_arrow_right_rounded),
               ),
-              text: "Liên hệ",
-              action: Icon(Icons.keyboard_arrow_right_rounded),
             ),
             Divider(height: 1, color: AppColors.white),
             SettingListItem(
@@ -284,7 +332,13 @@ class SettingListItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
       child: Row(
-        children: [leading, SizedBox(width: 16), Text(text), Spacer(), action],
+        children: [
+          leading,
+          SizedBox(width: 16),
+          Text(text, style: AppTextStyles.s14Medium()),
+          Spacer(),
+          action,
+        ],
       ),
     );
   }
