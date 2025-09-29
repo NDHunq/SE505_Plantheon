@@ -8,6 +8,8 @@ class BasicDialog extends StatelessWidget {
   final String cancelText;
   final VoidCallback? onConfirm;
   final VoidCallback? onCancel;
+  final Widget? child;
+  final double width;
 
   const BasicDialog({
     super.key,
@@ -17,6 +19,8 @@ class BasicDialog extends StatelessWidget {
     this.cancelText = 'Không',
     this.onConfirm,
     this.onCancel,
+    this.child,
+    this.width = 0,
   });
 
   @override
@@ -25,7 +29,7 @@ class BasicDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       contentPadding: const EdgeInsets.all(16),
       content: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.8,
+        width: width < 0 ? MediaQuery.of(context).size.width * 0.8 : width,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -51,10 +55,15 @@ class BasicDialog extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              content,
-              style: TextStyle(color: AppColors.text_color_main, fontSize: 14),
-            ),
+            if (content.isNotEmpty)
+              Text(
+                content,
+                style: TextStyle(
+                  color: AppColors.text_color_main,
+                  fontSize: 14,
+                ),
+              ),
+            if (child != null) ...[const SizedBox(height: 8), child!],
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,

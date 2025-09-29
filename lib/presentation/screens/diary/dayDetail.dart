@@ -571,11 +571,11 @@ extension DayDetailExtension on _DayDetailScreenState {
     // Simulate loading delay và navigate
     Future.delayed(const Duration(milliseconds: 500), () {
       Navigator.of(context).pop(); // Đóng loading dialog
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => Navigation(tab: 2)),
-        (route) => false,
-      );
+      // Navigator.pushAndRemoveUntil(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => Navigation(tab: 2)),
+      //   (route) => false,
+      // );
     });
   }
 
@@ -614,10 +614,10 @@ extension DayDetailExtension on _DayDetailScreenState {
   Widget _buildBottomNavigationBar() {
     return NavigationBar(
       onDestinationSelected: (int index) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Navigation(tab: index)),
-        );
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => Navigation(tab: index)),
+        // );
       },
       height: 56,
       indicatorColor: Colors.transparent,

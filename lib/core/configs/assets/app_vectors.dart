@@ -23,4 +23,13 @@ class AppVectors {
   static const String scan = '${basePath}scan$format';
   static const String camera = '${basePath}camera$format';
   static const String qr = '${basePath}qr$format';
+  static const String userEdit = '${basePath}user_edit$format';
+  static const String logout = '${basePath}logout$format';
+  static const String phone = '${basePath}phone$format';
+  static const String history = '${basePath}history$format';
+  static const String bell = '${basePath}bell$format';
+  static const String global = '${basePath}global$format';
+  static const String report = '${basePath}report$format';
+  static const String vi = '${basePath}vi$format';
+  static const String en = '${basePath}en$format';
 }
