@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
 class Contact extends StatelessWidget {
   const Contact({super.key});
@@ -14,174 +15,176 @@ class Contact extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Card(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
+              // Company Info Header
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary_400, AppColors.primary_600],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary_400.withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 20,
-                    horizontal: 14,
-                  ),
+                  padding: const EdgeInsets.all(24.0),
                   child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.blue[50],
-                        child: Icon(
-                          Icons.person,
-                          size: 44,
-                          color: Colors.blue[700],
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.3),
+                            width: 2,
+                          ),
                         ),
+                        child: Icon(Icons.eco, size: 40, color: Colors.white),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       Text(
-                        'Nguyễn Văn A',
+                        'CÔNG TY TNHH PLANTHEON',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Text(
-                        'Thành viên Plantheon',
-                        style: TextStyle(fontSize: 15, color: Colors.grey),
+                        'Giải pháp thông minh cho sức khỏe cây trồng',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
+
+              // Contact Information
+              _buildSectionTitle('Thông tin liên hệ'),
+              const SizedBox(height: 12),
               Card(
-                elevation: 0,
-                color: Colors.blue[50],
+                elevation: 2,
+                shadowColor: Colors.black.withOpacity(0.1),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(14.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ListTile(
-                        leading: Icon(Icons.email, color: Colors.blue[700]),
-                        title: Text(
-                          'nguyenvana@example.com',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        subtitle: Text('Email', style: TextStyle(fontSize: 13)),
-                        contentPadding: EdgeInsets.zero,
-                        minVerticalPadding: 0,
+                      _buildContactItem(
+                        icon: Icons.location_on,
+                        iconColor: Colors.red[600]!,
+                        title: 'Địa chỉ',
+                        content: '123 Đường Lê Lợi, Quận 1, TP. Hồ Chí Minh',
                       ),
-                      ListTile(
-                        leading: Icon(Icons.phone, color: Colors.green[700]),
-                        title: Text(
-                          '0123 456 789',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        subtitle: Text(
-                          'Số điện thoại',
-                          style: TextStyle(fontSize: 13),
-                        ),
-                        contentPadding: EdgeInsets.zero,
-                        minVerticalPadding: 0,
+                      _buildDivider(),
+                      _buildContactItem(
+                        icon: Icons.phone,
+                        iconColor: Colors.green[600]!,
+                        title: 'Điện thoại',
+                        content: '(028) 3823 4567',
                       ),
-                      ListTile(
-                        leading: Icon(
-                          Icons.location_on,
-                          color: Colors.red[700],
-                        ),
-                        title: Text(
-                          '123 Đường ABC, Quận 1, TP.HCM',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        subtitle: Text(
-                          'Địa chỉ',
-                          style: TextStyle(fontSize: 13),
-                        ),
-                        contentPadding: EdgeInsets.zero,
-                        minVerticalPadding: 0,
+                      _buildDivider(),
+                      _buildContactItem(
+                        icon: Icons.email,
+                        iconColor: Colors.blue[600]!,
+                        title: 'Email',
+                        content: 'info@plantheon.com',
+                      ),
+                      _buildDivider(),
+                      _buildContactItem(
+                        icon: Icons.language,
+                        iconColor: Colors.purple[600]!,
+                        title: 'Website',
+                        content: 'www.plantheon.com',
                       ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Text(
-                'Thông tin hỗ trợ',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 24),
+
+              // Support Information
+              _buildSectionTitle('Thông tin hỗ trợ'),
+              const SizedBox(height: 12),
               Card(
-                color: Colors.blue[50],
-                elevation: 0,
+                elevation: 2,
+                shadowColor: Colors.black.withOpacity(0.1),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(14.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 4,
                     children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.support_agent,
-                            color: Colors.blue[700],
-                            size: 22,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Hotline: ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                          Text('1900 1234', style: TextStyle(fontSize: 15)),
-                        ],
+                      _buildContactItem(
+                        icon: Icons.support_agent,
+                        iconColor: Colors.orange[600]!,
+                        title: 'Hotline hỗ trợ',
+                        content: '1900 PLANT (1900 75268)',
                       ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.email_outlined,
-                            color: Colors.blue[700],
-                            size: 22,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Email hỗ trợ: ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                          Text(
-                            'support@plantheon.com',
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ],
+                      _buildDivider(),
+                      _buildContactItem(
+                        icon: Icons.email_outlined,
+                        iconColor: Colors.teal[600]!,
+                        title: 'Email hỗ trợ',
+                        content: 'support@plantheon.com',
                       ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Icon(Icons.web, color: Colors.blue[700], size: 22),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Website: ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                          Text(
-                            'www.plantheon.com',
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ],
+                      _buildDivider(),
+                      _buildContactItem(
+                        icon: Icons.schedule,
+                        iconColor: Colors.indigo[600]!,
+                        title: 'Giờ làm việc',
+                        content: 'T2-T6: 8:00 - 17:30, T7: 8:00 - 12:00',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Business Information
+              _buildSectionTitle('Thông tin doanh nghiệp'),
+              const SizedBox(height: 12),
+              Card(
+                elevation: 2,
+                shadowColor: Colors.black.withOpacity(0.1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      _buildContactItem(
+                        icon: Icons.business,
+                        iconColor: Colors.brown[600]!,
+                        title: 'Mã số thuế',
+                        content: '0123456789',
+                      ),
+                      _buildDivider(),
+                      _buildContactItem(
+                        icon: Icons.account_balance,
+                        iconColor: Colors.cyan[600]!,
+                        title: 'Ngân hàng',
+                        content: 'Vietcombank - STK: 1234567890',
                       ),
                     ],
                   ),
@@ -191,6 +194,76 @@ class Contact extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: Colors.grey[800],
+      ),
+    );
+  }
+
+  Widget _buildContactItem({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String content,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: iconColor, size: 20),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  content,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[800],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDivider() {
+    return Divider(
+      height: 1,
+      thickness: 1,
+      color: Colors.grey[200],
+      indent: 0,
+      endIndent: 0,
     );
   }
 }

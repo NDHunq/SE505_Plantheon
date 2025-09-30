@@ -19,56 +19,167 @@ class Account extends StatelessWidget {
       appBar: BasicAppbar(title: "Tài khoản", leading: SizedBox()),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          spacing: 16,
-          children: [
-            PersonalSetting(),
-            HelpingSetting(),
-            GestureDetector(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => BasicDialog(
-                    title: 'Xác nhận đăng xuất',
-                    content: 'Bạn có chắc chắn muốn đăng xuất?',
-                    confirmText: 'Đăng xuất',
-                    cancelText: 'Huỷ',
-                    onConfirm: () {
-                      Navigator.of(context).pop();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) => SignInPage(),
-                        ),
-                      );
-                    },
-                    onCancel: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                );
-              },
-              child: Container(
+        child: SingleChildScrollView(
+          child: Column(
+            spacing: 16,
+            children: [
+              Container(
                 decoration: BoxDecoration(
-                  color: Color(0xFFE6F3F1),
-                  borderRadius: BorderRadius.circular(12.0),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 12,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                  border: Border.all(
+                    color: AppColors.primary_200.withOpacity(0.3),
+                    width: 1,
+                  ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: SettingListItem(
-                    leading: SizedBox(),
-                    text: "Đăng xuất",
-                    action: SvgPicture.asset(
-                      AppVectors.logout,
-                      width: 24,
-                      height: 24,
-                      color: AppColors.primary_700,
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 60,
+                        width: 60,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.primary_400,
+                              AppColors.primary_600,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary_400.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 38,
+                          backgroundColor: Colors.transparent,
+                          child: Icon(
+                            Icons.person,
+                            size: 40,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          spacing: 8,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Nguyễn Di Hưng',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[800],
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary_50,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: AppColors.primary_200,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                'Thành viên Plantheon',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.primary_700,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary_50,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.edit_outlined,
+                          size: 20,
+                          color: AppColors.primary_600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              PersonalSetting(),
+              HelpingSetting(),
+              GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => BasicDialog(
+                      title: 'Xác nhận đăng xuất',
+                      content: 'Bạn có chắc chắn muốn đăng xuất?',
+                      confirmText: 'Đăng xuất',
+                      cancelText: 'Huỷ',
+                      onConfirm: () {
+                        Navigator.of(context).pop();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => SignInPage(),
+                          ),
+                        );
+                      },
+                      onCancel: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color(0xFFE6F3F1),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: SettingListItem(
+                      leading: SizedBox(),
+                      text: "Đăng xuất",
+                      action: SvgPicture.asset(
+                        AppVectors.logout,
+                        width: 24,
+                        height: 24,
+                        color: AppColors.primary_700,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: 130),
+            ],
+          ),
         ),
       ),
     );
