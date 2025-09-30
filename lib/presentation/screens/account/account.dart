@@ -7,6 +7,7 @@ import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/account/contact.dart';
+import 'package:se501_plantheon/presentation/screens/account/edit_info.dart';
 import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
 import 'package:se501_plantheon/presentation/screens/home/scan_history.dart';
 
@@ -274,15 +275,25 @@ class _PersonalSettingState extends State<PersonalSetting> {
           children: [
             SettingTitleItem(text: "Cá nhân"),
             Divider(height: 1, color: AppColors.white),
-            SettingListItem(
-              leading: SvgPicture.asset(
-                AppVectors.userEdit,
-                width: 24,
-                height: 24,
-                color: AppColors.primary_700,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => EditInfo(),
+                  ),
+                );
+              },
+              child: SettingListItem(
+                leading: SvgPicture.asset(
+                  AppVectors.userEdit,
+                  width: 24,
+                  height: 24,
+                  color: AppColors.primary_700,
+                ),
+                text: "Chỉnh sửa hồ sơ",
+                action: Icon(Icons.keyboard_arrow_right_rounded),
               ),
-              text: "Chỉnh sửa hồ sơ",
-              action: Icon(Icons.keyboard_arrow_right_rounded),
             ),
             Divider(height: 1, color: AppColors.white),
             GestureDetector(

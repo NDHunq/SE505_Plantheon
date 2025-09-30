@@ -4,8 +4,8 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 class BasicDialog extends StatelessWidget {
   final String title;
   final String content;
-  final String confirmText;
-  final String cancelText;
+  final String? confirmText;
+  final String? cancelText;
   final VoidCallback? onConfirm;
   final VoidCallback? onCancel;
   final Widget? child;
@@ -15,8 +15,8 @@ class BasicDialog extends StatelessWidget {
     super.key,
     required this.title,
     required this.content,
-    this.confirmText = 'Có',
-    this.cancelText = 'Không',
+    this.confirmText,
+    this.cancelText,
     this.onConfirm,
     this.onCancel,
     this.child,
@@ -64,51 +64,56 @@ class BasicDialog extends StatelessWidget {
                 ),
               ),
             if (child != null) ...[const SizedBox(height: 8), child!],
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.text_color_100,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+            if (cancelText != null || confirmText != null) ...[
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (cancelText != null)
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.text_color_100,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (onCancel != null) onCancel!();
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        cancelText!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.white,
+                        ),
+                      ),
                     ),
-                  ),
-                  onPressed: () {
-                    if (onCancel != null) onCancel!();
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(
-                    cancelText,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.white,
+                  if (cancelText != null && confirmText != null)
+                    const SizedBox(width: 8),
+                  if (confirmText != null)
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary_main,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (onConfirm != null) onConfirm!();
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        confirmText!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.white,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary_main,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: () {
-                    if (onConfirm != null) onConfirm!();
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(
-                    confirmText,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
