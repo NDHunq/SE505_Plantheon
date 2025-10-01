@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
@@ -42,8 +43,8 @@ class _ChatBotState extends State<ChatBot> {
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 10,
-          right: 10,
+          left: 10.sp,
+          right: 10.sp,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -51,34 +52,38 @@ class _ChatBotState extends State<ChatBot> {
             controller: messageController,
             decoration: InputDecoration(
               hintText: 'Nhập tin nhắn...',
-              hintStyle: const TextStyle(
-                fontSize: 14,
+              hintStyle: TextStyle(
+                fontSize: 14.sp,
                 color: AppColors.text_color_50,
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-                borderSide: const BorderSide(
+                borderRadius: BorderRadius.circular(15.sp),
+                borderSide: BorderSide(
                   color: AppColors.text_color_50,
-                  width: 1,
+                  width: 1.sp,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-                borderSide: const BorderSide(
+                borderRadius: BorderRadius.circular(15.sp),
+                borderSide: BorderSide(
                   color: AppColors.primary_main,
-                  width: 1,
+                  width: 1.sp,
                 ),
               ),
               prefixIcon: IconButton(
                 icon: SvgPicture.asset(
                   AppVectors.gallery,
-                  width: 24,
-                  height: 24,
+                  width: 24.sp,
+                  height: 24.sp,
                 ),
                 onPressed: () {},
               ),
               suffixIcon: IconButton(
-                icon: SvgPicture.asset(AppVectors.send, width: 24, height: 24),
+                icon: SvgPicture.asset(
+                  AppVectors.send,
+                  width: 24.sp,
+                  height: 24.sp,
+                ),
                 onPressed: () {
                   if (messageController.text.isNotEmpty) {
                     sendMessage(messageController.text);
@@ -86,16 +91,13 @@ class _ChatBotState extends State<ChatBot> {
                   }
                 },
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 0,
-                horizontal: 0,
-              ),
+              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
             ),
           ),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 16.sp),
         child: ListView.builder(
           itemCount: messages.length,
           controller: _scrollController,
@@ -130,8 +132,8 @@ class _messageCard extends StatelessWidget {
       children: [
         Container(
           margin: isMe
-              ? const EdgeInsets.only(top: 5, bottom: 5, left: 50)
-              : const EdgeInsets.only(top: 5, bottom: 5, right: 50),
+              ? EdgeInsets.only(top: 5.sp, bottom: 5.sp, left: 50.sp)
+              : EdgeInsets.only(top: 5.sp, bottom: 5.sp, right: 50.sp),
           child: Row(
             mainAxisAlignment: isMe
                 ? MainAxisAlignment.end
@@ -139,28 +141,28 @@ class _messageCard extends StatelessWidget {
             children: [
               Flexible(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 10,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 15.sp,
+                    vertical: 10.sp,
                   ),
                   decoration: BoxDecoration(
                     color: isMe ? AppColors.primary_400 : Color(0xFFECE6F0),
                     borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(15),
-                      topRight: const Radius.circular(15),
+                      topLeft: Radius.circular(15.sp),
+                      topRight: Radius.circular(15.sp),
                       bottomLeft: isMe
-                          ? const Radius.circular(15)
-                          : const Radius.circular(3),
+                          ? Radius.circular(15.sp)
+                          : Radius.circular(3.sp),
                       bottomRight: isMe
-                          ? const Radius.circular(3)
-                          : const Radius.circular(15),
+                          ? Radius.circular(3.sp)
+                          : Radius.circular(15.sp),
                     ),
                   ),
                   child: Text(
                     message,
                     style: TextStyle(
                       color: isMe ? Colors.white : Colors.black,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                     ),
                     softWrap: true,
                   ),

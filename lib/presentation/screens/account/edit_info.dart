@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
@@ -72,12 +73,12 @@ class _EditInfoState extends State<EditInfo> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary_main,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.sp),
                   ),
-                  minimumSize: Size(double.infinity, 44),
+                  minimumSize: Size(double.infinity, 44.sp),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.sp),
               // Camera Button
               ElevatedButton.icon(
                 onPressed: () async {
@@ -99,9 +100,9 @@ class _EditInfoState extends State<EditInfo> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary_600,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.sp),
                   ),
-                  minimumSize: Size(double.infinity, 44),
+                  minimumSize: Size(double.infinity, 44.sp),
                 ),
               ),
             ],
@@ -158,7 +159,7 @@ class _EditInfoState extends State<EditInfo> {
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.sp),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -167,24 +168,24 @@ class _EditInfoState extends State<EditInfo> {
                 child: Stack(
                   children: [
                     Container(
-                      width: 120,
-                      height: 120,
+                      width: 120.sp,
+                      height: 120.sp,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: AppColors.primary_200,
-                          width: 3,
+                          width: 3.sp,
                         ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: Offset(0, 4),
+                            blurRadius: 10.sp,
+                            offset: Offset(0, 4.sp),
                           ),
                         ],
                       ),
                       child: CircleAvatar(
-                        radius: 57,
+                        radius: 57.sp,
                         backgroundColor: AppColors.primary_50,
                         backgroundImage: _selectedImage != null
                             ? FileImage(_selectedImage!)
@@ -192,7 +193,7 @@ class _EditInfoState extends State<EditInfo> {
                         child: _selectedImage == null
                             ? Icon(
                                 Icons.person,
-                                size: 60,
+                                size: 60.sp,
                                 color: AppColors.primary_400,
                               )
                             : null,
@@ -204,23 +205,26 @@ class _EditInfoState extends State<EditInfo> {
                       child: GestureDetector(
                         onTap: _pickImage,
                         child: Container(
-                          width: 36,
-                          height: 36,
+                          width: 36.sp,
+                          height: 36.sp,
                           decoration: BoxDecoration(
                             color: AppColors.primary_main,
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2.sp,
+                            ),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.2),
-                                blurRadius: 6,
-                                offset: Offset(0, 2),
+                                blurRadius: 6.sp,
+                                offset: Offset(0, 2.sp),
                               ),
                             ],
                           ),
                           child: Icon(
                             Icons.camera_alt,
-                            size: 18,
+                            size: 18.sp,
                             color: Colors.white,
                           ),
                         ),
@@ -247,11 +251,11 @@ class _EditInfoState extends State<EditInfo> {
 
               // Gender Field
               _buildSectionTitle('Giới tính'),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.sp),
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.sp),
                   border: Border.all(color: AppColors.primary_200),
                 ),
                 child: Row(
@@ -285,18 +289,18 @@ class _EditInfoState extends State<EditInfo> {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.sp),
 
               // Date of Birth Field
               _buildSectionTitle('Ngày sinh'),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.sp),
               GestureDetector(
                 onTap: _selectDate,
                 child: Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16.sp),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.sp),
                     border: Border.all(color: AppColors.primary_200),
                   ),
                   child: Row(
@@ -304,12 +308,15 @@ class _EditInfoState extends State<EditInfo> {
                       Icon(
                         Icons.calendar_today_outlined,
                         color: AppColors.primary_main,
-                        size: 20,
+                        size: 20.sp,
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.sp),
                       Text(
                         '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                        style: TextStyle(fontSize: 16, color: Colors.grey[800]),
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.grey[800],
+                        ),
                       ),
                       Spacer(),
                       Icon(
@@ -320,7 +327,7 @@ class _EditInfoState extends State<EditInfo> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.sp),
 
               // Address Field
               _buildInputField(
@@ -335,7 +342,7 @@ class _EditInfoState extends State<EditInfo> {
                   return null;
                 },
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32.sp),
 
               // Save Button
               ElevatedButton(
@@ -343,15 +350,18 @@ class _EditInfoState extends State<EditInfo> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary_main,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(vertical: 16.sp),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.sp),
                   ),
-                  elevation: 2,
+                  elevation: 2.sp,
                 ),
                 child: Text(
                   'Cập nhật thông tin',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -365,7 +375,7 @@ class _EditInfoState extends State<EditInfo> {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 16,
+        fontSize: 16.sp,
         fontWeight: FontWeight.w600,
         color: Colors.grey[800],
       ),
@@ -383,32 +393,35 @@ class _EditInfoState extends State<EditInfo> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionTitle(label),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.sp),
         TextFormField(
           controller: controller,
           maxLines: maxLines,
           validator: validator,
           decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: AppColors.primary_main, size: 20),
+            prefixIcon: Icon(icon, color: AppColors.primary_main, size: 20.sp),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.sp),
               borderSide: BorderSide(color: AppColors.primary_200),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.sp),
               borderSide: BorderSide(color: AppColors.primary_200),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.primary_main, width: 2),
+              borderRadius: BorderRadius.circular(12.sp),
+              borderSide: BorderSide(
+                color: AppColors.primary_main,
+                width: 2.sp,
+              ),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.sp),
               borderSide: BorderSide(color: Colors.red),
             ),
             filled: true,
             fillColor: Colors.white,
-            contentPadding: const EdgeInsets.all(16),
+            contentPadding: EdgeInsets.all(16.sp),
           ),
         ),
       ],

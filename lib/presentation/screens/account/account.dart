@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
@@ -19,15 +20,15 @@ class Account extends StatelessWidget {
     return Scaffold(
       appBar: BasicAppbar(title: "Tài khoản", leading: SizedBox()),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16.sp),
         child: SingleChildScrollView(
           child: Column(
-            spacing: 16,
+            spacing: 16.sp,
             children: [
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.0),
+                  borderRadius: BorderRadius.circular(16.sp),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.08),
@@ -41,12 +42,12 @@ class Account extends StatelessWidget {
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.sp),
                   child: Row(
                     children: [
                       Container(
-                        height: 60,
-                        width: 60,
+                        height: 60.sp,
+                        width: 60.sp,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
 
@@ -71,43 +72,43 @@ class Account extends StatelessWidget {
                           backgroundColor: Colors.transparent,
                           child: Icon(
                             Icons.person,
-                            size: 40,
+                            size: 40.sp,
                             color: Colors.white,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16.sp),
                       Expanded(
                         child: Column(
-                          spacing: 8,
+                          spacing: 8.sp,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Nguyễn Di Hưng',
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 18.sp,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey[800],
-                                letterSpacing: 0.5,
+                                letterSpacing: 0.5.sp,
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8.sp,
+                                vertical: 4.sp,
                               ),
                               decoration: BoxDecoration(
                                 color: AppColors.primary_50,
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
                                   color: AppColors.primary_200,
-                                  width: 1,
+                                  width: 1.sp,
                                 ),
                               ),
                               child: Text(
                                 'Thành viên Plantheon',
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 12.sp,
                                   color: AppColors.primary_700,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -117,14 +118,14 @@ class Account extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8.sp),
                         decoration: BoxDecoration(
                           color: AppColors.primary_50,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.edit_outlined,
-                          size: 20,
+                          size: 20.sp,
                           color: AppColors.primary_600,
                         ),
                       ),
@@ -170,15 +171,15 @@ class Account extends StatelessWidget {
                       text: "Đăng xuất",
                       action: SvgPicture.asset(
                         AppVectors.logout,
-                        width: 24,
-                        height: 24,
+                        width: 24.sp,
+                        height: 24.sp,
                         color: AppColors.primary_700,
                       ),
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 130),
+              SizedBox(height: 130.sp),
             ],
           ),
         ),
@@ -226,8 +227,8 @@ class _PersonalSettingState extends State<PersonalSetting> {
                     RadioListTile<String>(
                       title: SvgPicture.asset(
                         AppVectors.vi,
-                        width: 40,
-                        height: 40,
+                        width: 40.sp,
+                        height: 40.sp,
                       ),
                       value: 'vi',
                       groupValue: tempLanguage,
@@ -242,8 +243,8 @@ class _PersonalSettingState extends State<PersonalSetting> {
                     RadioListTile<String>(
                       title: SvgPicture.asset(
                         AppVectors.en,
-                        width: 40,
-                        height: 40,
+                        width: 40.sp,
+                        height: 40.sp,
                       ),
                       value: 'en',
                       activeColor: AppColors.primary_main,
@@ -287,8 +288,8 @@ class _PersonalSettingState extends State<PersonalSetting> {
               child: SettingListItem(
                 leading: SvgPicture.asset(
                   AppVectors.userEdit,
-                  width: 24,
-                  height: 24,
+                  width: 24.sp,
+                  height: 24.sp,
                   color: AppColors.primary_700,
                 ),
                 text: "Chỉnh sửa hồ sơ",
@@ -308,8 +309,8 @@ class _PersonalSettingState extends State<PersonalSetting> {
               child: SettingListItem(
                 leading: SvgPicture.asset(
                   AppVectors.history,
-                  width: 24,
-                  height: 24,
+                  width: 22.sp,
+                  height: 22.sp,
                   color: AppColors.primary_700,
                 ),
                 text: "Lịch sử quét bệnh",
@@ -318,10 +319,11 @@ class _PersonalSettingState extends State<PersonalSetting> {
             ),
             Divider(height: 1, color: AppColors.white),
             SettingListItem(
+              isHavePadding: false,
               leading: SvgPicture.asset(
                 AppVectors.bell,
-                width: 24,
-                height: 24,
+                width: 24.sp,
+                height: 24.sp,
                 color: AppColors.primary_700,
               ),
               text: "Thông báo",
@@ -352,8 +354,8 @@ class _PersonalSettingState extends State<PersonalSetting> {
               child: SettingListItem(
                 leading: SvgPicture.asset(
                   AppVectors.global,
-                  width: 24,
-                  height: 24,
+                  width: 24.sp,
+                  height: 24.sp,
                   color: AppColors.primary_700,
                 ),
                 text: "Ngôn ngữ",
@@ -378,7 +380,7 @@ class HelpingSetting extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        padding: EdgeInsets.symmetric(horizontal: 12.sp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -396,8 +398,8 @@ class HelpingSetting extends StatelessWidget {
               child: SettingListItem(
                 leading: SvgPicture.asset(
                   AppVectors.phone,
-                  width: 24,
-                  height: 24,
+                  width: 24.sp,
+                  height: 24.sp,
                   color: AppColors.primary_700,
                 ),
                 text: "Liên hệ",
@@ -408,8 +410,8 @@ class HelpingSetting extends StatelessWidget {
             SettingListItem(
               leading: SvgPicture.asset(
                 AppVectors.report,
-                width: 24,
-                height: 24,
+                width: 24.sp,
+                height: 24.sp,
                 color: AppColors.primary_700,
               ),
               text: "Báo cáo",
@@ -429,10 +431,10 @@ class SettingTitleItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      padding: EdgeInsets.symmetric(vertical: 8.sp),
       child: Text(
         text,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        style: AppTextStyles.s16Bold(color: AppColors.text_color_main),
       ),
     );
   }
@@ -442,21 +444,26 @@ class SettingListItem extends StatelessWidget {
   final Widget leading;
   final String text;
   final Widget action;
+  final bool isHavePadding;
   const SettingListItem({
     super.key,
     required this.leading,
     required this.text,
     required this.action,
+    this.isHavePadding = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: 8.sp,
+        vertical: isHavePadding ? 12.sp : 0,
+      ),
       child: Row(
         children: [
           leading,
-          SizedBox(width: 16),
+          SizedBox(width: 16.sp),
           Text(text, style: AppTextStyles.s14Medium()),
           Spacer(),
           action,

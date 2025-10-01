@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
@@ -11,7 +12,7 @@ class Contact extends StatelessWidget {
       appBar: BasicAppbar(title: "Liên hệ"),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 20.sp),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -23,48 +24,52 @@ class Contact extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(16.sp),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.primary_400.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: Offset(0, 4),
+                      blurRadius: 12.sp,
+                      offset: Offset(0, 4.sp),
                     ),
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: EdgeInsets.all(24.sp),
                   child: Column(
                     children: [
                       Container(
-                        width: 80,
-                        height: 80,
+                        width: 80.sp,
+                        height: 80.sp,
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: Colors.white.withOpacity(0.3),
-                            width: 2,
+                            width: 2.sp,
                           ),
                         ),
-                        child: Icon(Icons.eco, size: 40, color: Colors.white),
+                        child: Icon(
+                          Icons.eco,
+                          size: 40.sp,
+                          color: Colors.white,
+                        ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16.sp),
                       Text(
                         'CÔNG TY TNHH PLANTHEON',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
-                          letterSpacing: 0.5,
+                          letterSpacing: 0.5.sp,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.sp),
                       Text(
                         'Giải pháp thông minh cho sức khỏe cây trồng',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 14.sp,
                           color: Colors.white.withOpacity(0.9),
                         ),
                         textAlign: TextAlign.center,
@@ -201,7 +206,7 @@ class Contact extends StatelessWidget {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 18,
+        fontSize: 18.sp,
         fontWeight: FontWeight.bold,
         color: Colors.grey[800],
       ),
@@ -215,19 +220,19 @@ class Contact extends StatelessWidget {
     required String content,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: EdgeInsets.symmetric(vertical: 8.sp),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8.sp),
             decoration: BoxDecoration(
               color: iconColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8.sp),
             ),
-            child: Icon(icon, color: iconColor, size: 20),
+            child: Icon(icon, color: iconColor, size: 20.sp),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16.sp),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,16 +240,16 @@ class Contact extends StatelessWidget {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[600],
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.sp),
                 Text(
                   content,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
                     color: Colors.grey[800],
                   ),
@@ -259,8 +264,8 @@ class Contact extends StatelessWidget {
 
   Widget _buildDivider() {
     return Divider(
-      height: 1,
-      thickness: 1,
+      height: 1.sp,
+      thickness: 1.sp,
       color: Colors.grey[200],
       indent: 0,
       endIndent: 0,

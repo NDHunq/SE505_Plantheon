@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -154,8 +155,8 @@ class _WeatherState extends State<Weather> {
         leading: IconButton(
           icon: SvgPicture.asset(
             AppVectors.arrowBack,
-            width: 28,
-            height: 28,
+            width: 28.sp,
+            height: 28.sp,
             color: AppColors.white,
           ),
           onPressed: () {
@@ -166,8 +167,8 @@ class _WeatherState extends State<Weather> {
           IconButton(
             icon: SvgPicture.asset(
               AppVectors.location,
-              width: 24,
-              height: 24,
+              width: 24.sp,
+              height: 24.sp,
               color: AppColors.white,
             ),
             onPressed: () {
@@ -214,25 +215,25 @@ class _WeatherState extends State<Weather> {
                   children: [
                     SvgPicture.asset(
                       _getWeatherIcon(_weatherData!.currentWeatherType),
-                      width: 110,
-                      height: 110,
+                      width: 110.sp,
+                      height: 110.sp,
                     ),
-                    const SizedBox(width: 60),
+                    SizedBox(width: 60.sp),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           _formatCurrentDate(),
-                          style: const TextStyle(
-                            fontSize: 14,
+                          style: TextStyle(
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w700,
                             color: AppColors.primary_700,
                           ),
                         ),
                         Text(
                           '${_weatherData!.currentTemperature.toDouble().round()}°C',
-                          style: const TextStyle(
-                            fontSize: 36,
+                          style: TextStyle(
+                            fontSize: 36.sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.white,
                           ),
@@ -241,16 +242,16 @@ class _WeatherState extends State<Weather> {
                           _getWeatherDescription(
                             _weatherData!.currentWeatherType,
                           ),
-                          style: const TextStyle(
-                            fontSize: 14,
+                          style: TextStyle(
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w500,
                             color: AppColors.primary_700,
                           ),
                         ),
                         Text(
                           'Độ ẩm: ${_weatherData!.currentHumidity.toDouble().round()}% - Gió: ${_weatherData!.currentWindSpeed.toDouble().round()} km/h',
-                          style: const TextStyle(
-                            fontSize: 12,
+                          style: TextStyle(
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w500,
                             color: AppColors.primary_700,
                           ),
@@ -259,13 +260,13 @@ class _WeatherState extends State<Weather> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.sp),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 22.0),
+                  padding: EdgeInsets.symmetric(horizontal: 22.sp),
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      spacing: 20,
+                      spacing: 20.sp,
                       children: _weatherData!.hourlyWeather
                           .where(
                             (hourly) =>
@@ -287,28 +288,28 @@ class _WeatherState extends State<Weather> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.sp),
                 Expanded(
                   child: Container(
                     width: double.infinity,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: AppColors.primary_200,
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
+                        topLeft: Radius.circular(20.sp),
+                        topRight: Radius.circular(20.sp),
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16.sp),
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: 12,
+                          spacing: 12.sp,
                           children: [
-                            const Text(
+                            Text(
                               'Dự báo kế tiếp',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.primary_700,
                               ),

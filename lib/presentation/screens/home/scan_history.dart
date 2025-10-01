@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
@@ -50,18 +51,22 @@ class _ScanHistoryState extends State<ScanHistory> {
                 ),
               );
             },
-            icon: SvgPicture.asset(AppVectors.trash, width: 24, height: 24),
+            icon: SvgPicture.asset(
+              AppVectors.trash,
+              width: 24.sp,
+              height: 24.sp,
+            ),
           ),
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: EdgeInsets.symmetric(horizontal: 16.sp),
         child: ListView.separated(
           itemCount: _historyList.length,
           separatorBuilder: (context, index) => Divider(
-            height: 16,
+            height: 16.sp,
             color: AppColors.text_color_100,
-            thickness: 1,
+            thickness: 1.sp,
           ),
           itemBuilder: (context, index) {
             final item = _historyList[index];
@@ -71,7 +76,7 @@ class _ScanHistoryState extends State<ScanHistory> {
               background: Container(
                 alignment: Alignment.centerRight,
                 color: Colors.red,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: 20.sp),
                 child: Icon(Icons.delete, color: Colors.white),
               ),
               onDismissed: (direction) {
