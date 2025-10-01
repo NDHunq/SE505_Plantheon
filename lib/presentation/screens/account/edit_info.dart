@@ -327,7 +327,7 @@ class _EditInfoState extends State<EditInfo> {
                 label: 'Địa chỉ',
                 controller: _addressController,
                 icon: Icons.location_on_outlined,
-                maxLines: 3,
+                maxLines: 2,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Vui lòng nhập địa chỉ';

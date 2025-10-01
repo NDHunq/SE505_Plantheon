@@ -9,7 +9,7 @@ class BasicDialog extends StatelessWidget {
   final VoidCallback? onConfirm;
   final VoidCallback? onCancel;
   final Widget? child;
-  final double width;
+  final double? width;
 
   const BasicDialog({
     super.key,
@@ -20,7 +20,7 @@ class BasicDialog extends StatelessWidget {
     this.onConfirm,
     this.onCancel,
     this.child,
-    this.width = 0,
+    this.width,
   });
 
   @override
@@ -29,7 +29,7 @@ class BasicDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       contentPadding: const EdgeInsets.all(16),
       content: SizedBox(
-        width: width < 0 ? MediaQuery.of(context).size.width * 0.8 : width,
+        width: width ?? MediaQuery.of(context).size.width * 0.8,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -79,7 +79,6 @@ class BasicDialog extends StatelessWidget {
                       ),
                       onPressed: () {
                         if (onCancel != null) onCancel!();
-                        Navigator.of(context).pop();
                       },
                       child: Text(
                         cancelText!,
@@ -101,7 +100,6 @@ class BasicDialog extends StatelessWidget {
                       ),
                       onPressed: () {
                         if (onConfirm != null) onConfirm!();
-                        Navigator.of(context).pop();
                       },
                       child: Text(
                         confirmText!,
