@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 
 class Contact extends StatelessWidget {
   const Contact({super.key});
@@ -57,19 +58,15 @@ class Contact extends StatelessWidget {
                       SizedBox(height: 16.sp),
                       Text(
                         'CÔNG TY TNHH PLANTHEON',
-                        style: TextStyle(
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.bold,
+                        style: AppTextStyles.s20Bold(
                           color: Colors.white,
-                          letterSpacing: 0.5.sp,
-                        ),
+                        ).copyWith(letterSpacing: 0.5.sp),
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 8.sp),
                       Text(
                         'Giải pháp thông minh cho sức khỏe cây trồng',
-                        style: TextStyle(
-                          fontSize: 14.sp,
+                        style: AppTextStyles.s14Regular(
                           color: Colors.white.withOpacity(0.9),
                         ),
                         textAlign: TextAlign.center,
@@ -78,11 +75,11 @@ class Contact extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.sp),
 
               // Contact Information
               _buildSectionTitle('Thông tin liên hệ'),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.sp),
               Card(
                 elevation: 2,
                 shadowColor: Colors.black.withOpacity(0.1),
@@ -90,7 +87,7 @@ class Contact extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.sp),
                   child: Column(
                     children: [
                       _buildContactItem(
@@ -124,19 +121,19 @@ class Contact extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.sp),
 
               // Support Information
               _buildSectionTitle('Thông tin hỗ trợ'),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.sp),
               Card(
-                elevation: 2,
+                elevation: 2.sp,
                 shadowColor: Colors.black.withOpacity(0.1),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.sp),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.sp),
                   child: Column(
                     children: [
                       _buildContactItem(
@@ -163,19 +160,19 @@ class Contact extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.sp),
 
               // Business Information
               _buildSectionTitle('Thông tin doanh nghiệp'),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.sp),
               Card(
-                elevation: 2,
+                elevation: 2.sp,
                 shadowColor: Colors.black.withOpacity(0.1),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.sp),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.sp),
                   child: Column(
                     children: [
                       _buildContactItem(
@@ -203,14 +200,7 @@ class Contact extends StatelessWidget {
   }
 
   Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: TextStyle(
-        fontSize: 18.sp,
-        fontWeight: FontWeight.bold,
-        color: Colors.grey[800],
-      ),
-    );
+    return Text(title, style: AppTextStyles.s20Bold(color: Colors.grey[800]));
   }
 
   Widget _buildContactItem({
@@ -239,20 +229,12 @@ class Contact extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[600],
-                  ),
+                  style: AppTextStyles.s14SemiBold(color: Colors.grey[600]),
                 ),
                 SizedBox(height: 4.sp),
                 Text(
                   content,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[800],
-                  ),
+                  style: AppTextStyles.s16Medium(color: Colors.grey[800]),
                 ),
               ],
             ),

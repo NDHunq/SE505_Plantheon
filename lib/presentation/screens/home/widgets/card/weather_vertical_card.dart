@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/enums/weather_type.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 
 class WeatherVerticalCard extends StatelessWidget {
   final bool isNow;
@@ -52,20 +53,12 @@ class WeatherVerticalCard extends StatelessWidget {
           children: [
             Text(
               "$temperature°C",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColors.white,
-              ),
+              style: AppTextStyles.s16Medium(color: AppColors.white),
             ),
             SvgPicture.asset(weatherAsset, width: 40, height: 40),
             Text(
               "${hour.toString().padLeft(2, '0')}:00",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColors.white,
-              ),
+              style: AppTextStyles.s16Medium(color: AppColors.white),
             ),
           ],
         ),

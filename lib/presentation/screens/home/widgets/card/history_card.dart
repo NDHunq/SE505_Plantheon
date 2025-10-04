@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/scan_status.dart';
 
 class HistoryCard extends StatelessWidget {
@@ -35,20 +36,12 @@ class HistoryCard extends StatelessWidget {
           children: [
             Text(
               title,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.text_color_main,
-              ),
+              style: AppTextStyles.s14Medium(color: AppColors.text_color_main),
             ),
             const SizedBox(height: 4),
             Text(
               dateTime,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: AppColors.text_color_200,
-              ),
+              style: AppTextStyles.s12Regular(color: AppColors.text_color_200),
             ),
             const SizedBox(height: 4),
             ScanStatus(isSuccess: isSuccess),

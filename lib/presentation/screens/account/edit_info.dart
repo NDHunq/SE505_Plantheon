@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -68,7 +69,7 @@ class _EditInfoState extends State<EditInfo> {
                 icon: Icon(Icons.photo_library, color: Colors.white),
                 label: Text(
                   'Chọn từ thư viện',
-                  style: TextStyle(color: Colors.white),
+                  style: AppTextStyles.s16Medium(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary_main,
@@ -96,7 +97,10 @@ class _EditInfoState extends State<EditInfo> {
                   }
                 },
                 icon: Icon(Icons.photo_camera, color: Colors.white),
-                label: Text('Chụp ảnh', style: TextStyle(color: Colors.white)),
+                label: Text(
+                  'Chụp ảnh',
+                  style: AppTextStyles.s16Medium(color: Colors.white),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary_600,
                   shape: RoundedRectangleBorder(
@@ -144,7 +148,10 @@ class _EditInfoState extends State<EditInfo> {
       // Handle save logic here
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Cập nhật thông tin thành công!'),
+          content: Text(
+            'Cập nhật thông tin thành công!',
+            style: AppTextStyles.s16Medium(color: Colors.white),
+          ),
           backgroundColor: AppColors.primary_main,
         ),
       );
@@ -262,7 +269,7 @@ class _EditInfoState extends State<EditInfo> {
                   children: [
                     Expanded(
                       child: RadioListTile<String>(
-                        title: Text('Nam'),
+                        title: Text('Nam', style: AppTextStyles.s16Regular()),
                         value: 'Nam',
                         groupValue: _selectedGender,
                         activeColor: AppColors.primary_main,
@@ -275,7 +282,7 @@ class _EditInfoState extends State<EditInfo> {
                     ),
                     Expanded(
                       child: RadioListTile<String>(
-                        title: Text('Nữ'),
+                        title: Text('Nữ', style: AppTextStyles.s16Regular()),
                         value: 'Nữ',
                         groupValue: _selectedGender,
                         activeColor: AppColors.primary_main,
@@ -313,8 +320,7 @@ class _EditInfoState extends State<EditInfo> {
                       SizedBox(width: 12.sp),
                       Text(
                         '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                        style: TextStyle(
-                          fontSize: 16.sp,
+                        style: AppTextStyles.s16Regular(
                           color: Colors.grey[800],
                         ),
                       ),
@@ -358,10 +364,7 @@ class _EditInfoState extends State<EditInfo> {
                 ),
                 child: Text(
                   'Cập nhật thông tin',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyles.s16Bold(),
                 ),
               ),
             ],
@@ -374,11 +377,7 @@ class _EditInfoState extends State<EditInfo> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: TextStyle(
-        fontSize: 16.sp,
-        fontWeight: FontWeight.w600,
-        color: Colors.grey[800],
-      ),
+      style: AppTextStyles.s16SemiBold(color: Colors.grey[800]),
     );
   }
 

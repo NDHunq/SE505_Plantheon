@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 
 class ServiceCard extends StatelessWidget {
   final String text;
@@ -25,12 +26,7 @@ class ServiceCard extends StatelessWidget {
             width: 80,
             child: Text(
               text,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: AppColors.primary_900,
-                overflow: TextOverflow.clip,
-              ),
+              style: AppTextStyles.s12Medium(color: AppColors.primary_900),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

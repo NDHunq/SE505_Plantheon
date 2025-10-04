@@ -9,6 +9,7 @@ import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/enums/weather_type.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/services/weather_service.dart';
 import 'package:se501_plantheon/data/models/weather.model.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/weather_horizontal_card.dart';
@@ -200,12 +201,15 @@ class _WeatherState extends State<Weather> {
           ? Center(
               child: Text(
                 'Error: $_error',
-                style: const TextStyle(color: AppColors.white),
+                style: AppTextStyles.s14Regular(color: AppColors.white),
               ),
             )
           : _weatherData == null
-          ? const Center(
-              child: Text('No data', style: TextStyle(color: AppColors.white)),
+          ? Center(
+              child: Text(
+                'No data',
+                style: AppTextStyles.s14Regular(color: AppColors.white),
+              ),
             )
           : Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -224,35 +228,25 @@ class _WeatherState extends State<Weather> {
                       children: [
                         Text(
                           _formatCurrentDate(),
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w700,
+                          style: AppTextStyles.s14Bold(
                             color: AppColors.primary_700,
                           ),
                         ),
                         Text(
                           '${_weatherData!.currentTemperature.toDouble().round()}°C',
-                          style: TextStyle(
-                            fontSize: 36.sp,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.white,
-                          ),
+                          style: AppTextStyles.s36Bold(color: AppColors.white),
                         ),
                         Text(
                           _getWeatherDescription(
                             _weatherData!.currentWeatherType,
                           ),
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
+                          style: AppTextStyles.s14Medium(
                             color: AppColors.primary_700,
                           ),
                         ),
                         Text(
                           'Độ ẩm: ${_weatherData!.currentHumidity.toDouble().round()}% - Gió: ${_weatherData!.currentWindSpeed.toDouble().round()} km/h',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w500,
+                          style: AppTextStyles.s12Medium(
                             color: AppColors.primary_700,
                           ),
                         ),
@@ -308,9 +302,7 @@ class _WeatherState extends State<Weather> {
                           children: [
                             Text(
                               'Dự báo kế tiếp',
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w600,
+                              style: AppTextStyles.s16SemiBold(
                                 color: AppColors.primary_700,
                               ),
                             ),

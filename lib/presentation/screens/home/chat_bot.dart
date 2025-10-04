@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
@@ -52,8 +53,7 @@ class _ChatBotState extends State<ChatBot> {
             controller: messageController,
             decoration: InputDecoration(
               hintText: 'Nhập tin nhắn...',
-              hintStyle: TextStyle(
-                fontSize: 14.sp,
+              hintStyle: AppTextStyles.s14Regular(
                 color: AppColors.text_color_50,
               ),
               border: OutlineInputBorder(
@@ -160,9 +160,8 @@ class _messageCard extends StatelessWidget {
                   ),
                   child: Text(
                     message,
-                    style: TextStyle(
+                    style: AppTextStyles.s14Regular(
                       color: isMe ? Colors.white : Colors.black,
-                      fontSize: 14.sp,
                     ),
                     softWrap: true,
                   ),
