@@ -1,5 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
+import 'package:se501_plantheon/data/models/activities_models.dart';
+import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
+import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
+import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
+import 'package:se501_plantheon/domain/usecases/create_activity.dart';
+import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
+import 'package:se501_plantheon/presentation/bloc/activities/activities_state.dart';
 import 'package:se501_plantheon/presentation/screens/diary/dayDetail.dart';
 
 class MonthScreen extends StatefulWidget {
@@ -20,24 +31,6 @@ class MonthScreen extends StatefulWidget {
 
 class _MonthScreenState extends State<MonthScreen> {
   bool isLoading = false;
-
-  String _getMonthName(int month) {
-    const monthNames = [
-      'Tháng 1',
-      'Tháng 2',
-      'Tháng 3',
-      'Tháng 4',
-      'Tháng 5',
-      'Tháng 6',
-      'Tháng 7',
-      'Tháng 8',
-      'Tháng 9',
-      'Tháng 10',
-      'Tháng 11',
-      'Tháng 12',
-    ];
-    return monthNames[month - 1];
-  }
 
   Future<void> _navigateToDayDetail(int day) async {
     setState(() {
@@ -80,53 +73,82 @@ class _MonthScreenState extends State<MonthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.all(AppConstraints.mainPadding),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(child: Center(child: Text("T2"))),
-                    Expanded(child: Center(child: Text("T3"))),
-                    Expanded(child: Center(child: Text("T4"))),
-                    Expanded(child: Center(child: Text("T5"))),
-                    Expanded(child: Center(child: Text("T6"))),
-                    Expanded(child: Center(child: Text("T7"))),
-                    Expanded(child: Center(child: Text("CN"))),
-                  ],
-                ),
-                const Divider(),
-
-                // Tên tháng (không có navigation)
-                Expanded(child: _buildCalendar()),
-              ],
-            ),
+    return BlocProvider(
+      create: (_) {
+        final repository = ActivitiesRepositoryImpl(
+          remoteDataSource: ActivitiesRemoteDataSourceImpl(
+            client: http.Client(),
           ),
-        ),
-        if (isLoading)
-          Positioned.fill(
-            child: Container(
-              child: const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                      strokeWidth: 3,
+        );
+        return ActivitiesBloc(
+          getActivitiesByMonth: GetActivitiesByMonth(repository),
+          getActivitiesByDay: GetActivitiesByDay(repository),
+          createActivity: CreateActivity(repository),
+        )..add(FetchActivitiesByMonth(year: widget.year, month: widget.month));
+      },
+      child: Stack(
+        children: [
+          Scaffold(
+            body: Padding(
+              padding: const EdgeInsets.all(AppConstraints.mainPadding),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(child: Center(child: Text("T2"))),
+                      Expanded(child: Center(child: Text("T3"))),
+                      Expanded(child: Center(child: Text("T4"))),
+                      Expanded(child: Center(child: Text("T5"))),
+                      Expanded(child: Center(child: Text("T6"))),
+                      Expanded(child: Center(child: Text("T7"))),
+                      Expanded(child: Center(child: Text("CN"))),
+                    ],
+                  ),
+                  const Divider(),
+                  Expanded(
+                    child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
+                      builder: (context, state) {
+                        if (state is ActivitiesLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (state is ActivitiesLoaded) {
+                          return _buildCalendar(state);
+                        }
+                        if (state is ActivitiesError) {
+                          return Center(child: Text(state.message));
+                        }
+                        return _buildCalendar(null);
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-      ],
+          if (isLoading)
+            Positioned.fill(
+              child: Container(
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                        strokeWidth: 3,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
-  Widget _buildCalendar() {
+  Widget _buildCalendar(ActivitiesLoaded? loadedState) {
     final now = DateTime.now();
     final int year = widget.year;
     final int month = widget.month;
@@ -153,13 +175,40 @@ class _MonthScreenState extends State<MonthScreen> {
         final bool isToday =
             (year == now.year && month == now.month && day == now.day);
 
+        // Build tasks for this day
+        final List<String> tasks = _getTasksForDay(
+          day,
+          month,
+          year,
+          loadedState,
+        );
+
         return ADayWidget(
           day: day,
           isToday: isToday,
           onTap: isLoading ? () {} : () => _navigateToDayDetail(day),
+          tasks: tasks,
         );
       },
     );
+  }
+
+  List<String> _getTasksForDay(
+    int day,
+    int month,
+    int year,
+    ActivitiesLoaded? loadedState,
+  ) {
+    if (loadedState == null) return const [];
+    final days = loadedState.data.days;
+    final match = days.firstWhere(
+      (d) => d.date.year == year && d.date.month == month && d.date.day == day,
+      orElse: () => DayActivitiesModel(
+        date: DateTime(year, month, day),
+        activities: const [],
+      ),
+    );
+    return match.activities.map((a) => a.title).toList();
   }
 }
 
@@ -167,12 +216,14 @@ class ADayWidget extends StatelessWidget {
   final int day;
   final bool isToday;
   final VoidCallback onTap;
+  final List<String> tasks;
 
   const ADayWidget({
     super.key,
     required this.day,
     required this.isToday,
     required this.onTap,
+    required this.tasks,
   });
 
   @override
@@ -206,9 +257,7 @@ class ADayWidget extends StatelessWidget {
             Flexible(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: [
-                  ArrayTaskWidget(["T1", "T2"]),
-                ],
+                children: [ArrayTaskWidget(tasks)],
               ),
             ),
             SizedBox(height: 4),
