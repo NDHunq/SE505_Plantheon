@@ -13,11 +13,15 @@ class climateWidget extends StatefulWidget {
 
 class _climateWidgetState extends State<climateWidget> {
   bool allDay = false;
-  String selectedTime = "14:20";
-  String selectedDate = "ngày 13 thg 7, 2025";
+  String startTime = "14:20";
+  String endTime = "15:00";
+  String startDate = "ngày 13 thg 7, 2025";
+  String endDate = "ngày 13 thg 7, 2025";
+  DateTime? startDateTime;
+  DateTime? endDateTime;
   String repeatType = "Không";
   String endRepeatType = "Không";
-  String endDate = "ngày 13 thg 7, 2025";
+  String repeatEndDate = "ngày 13 thg 7, 2025";
   String alertTime = "Không";
   String purchasedItem = "Phân bón";
   String category = "Trồng chè";
@@ -35,31 +39,86 @@ class _climateWidgetState extends State<climateWidget> {
   List<String> units = ["Kg", "Tấn", "Lít", "Mét", "Cái"];
   List<String> currencies = ["đ", "USD", "VND", "EUR"];
 
-  // Phương thức chọn thời gian
-  Future<void> _selectTime(BuildContext context) async {
+  // Phương thức chọn thời gian bắt đầu
+  Future<void> _selectStartTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
     if (picked != null) {
       setState(() {
-        selectedTime =
+        startTime =
             "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}";
       });
     }
   }
 
-  // Phương thức chọn ngày tháng
-  Future<void> _selectDate(BuildContext context) async {
+  // Phương thức chọn thời gian kết thúc
+  Future<void> _selectEndTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        endTime =
+            "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}";
+      });
+    }
+  }
+
+  // Phương thức chọn ngày bắt đầu
+  Future<void> _selectStartDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: startDateTime ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
     );
     if (picked != null) {
       setState(() {
-        selectedDate = "ngày ${picked.day} thg ${picked.month}, ${picked.year}";
+        startDateTime = picked;
+        startDate = "ngày ${picked.day} thg ${picked.month}, ${picked.year}";
+      });
+    }
+  }
+
+  // Phương thức chọn ngày kết thúc
+  Future<void> _selectEndDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: endDateTime ?? startDateTime ?? DateTime.now(),
+      firstDate: startDateTime ?? DateTime(2020),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null) {
+      if (startDateTime != null && picked.isBefore(startDateTime!)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ngày kết thúc không được nhỏ hơn ngày bắt đầu'),
+          ),
+        );
+        return;
+      }
+      setState(() {
+        endDateTime = picked;
+        endDate = "ngày ${picked.day} thg ${picked.month}, ${picked.year}";
+      });
+    }
+  }
+
+  // Phương thức chọn ngày kết thúc lặp lại
+  Future<void> _selectRepeatEndDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null) {
+      setState(() {
+        repeatEndDate =
+            "ngày ${picked.day} thg ${picked.month}, ${picked.year}";
       });
     }
   }
@@ -130,21 +189,6 @@ class _climateWidgetState extends State<climateWidget> {
         );
       },
     );
-  }
-
-  // Phương thức chọn ngày kết thúc
-  Future<void> _selectEndDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2030),
-    );
-    if (picked != null) {
-      setState(() {
-        endDate = "ngày ${picked.day} thg ${picked.month}, ${picked.year}";
-      });
-    }
   }
 
   // Phương thức hiển thị dialog chọn cảnh báo
@@ -355,14 +399,14 @@ class _climateWidgetState extends State<climateWidget> {
             ),
           ),
 
-          // Thời gian
+          // Ngày bắt đầu
           AddNewRow(
-            label: "Thời gian",
+            label: "Ngày bắt đầu",
             child: Row(
               children: [
                 if (!allDay) ...[
                   GestureDetector(
-                    onTap: () => _selectTime(context),
+                    onTap: () => _selectStartTime(context),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -372,24 +416,67 @@ class _climateWidgetState extends State<climateWidget> {
                         border: Border.all(color: Colors.grey.shade300),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(selectedTime),
+                      child: Text(startTime),
                     ),
                   ),
                   const SizedBox(width: 8),
                 ],
-                // Chọn ngày
-                GestureDetector(
-                  onTap: () => _selectDate(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => _selectStartDate(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(startDate),
                     ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Ngày kết thúc
+          AddNewRow(
+            label: "Ngày kết thúc",
+            child: Row(
+              children: [
+                if (!allDay) ...[
+                  GestureDetector(
+                    onTap: () => _selectEndTime(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(endTime),
                     ),
-                    child: Text(selectedDate),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => _selectEndDate(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(endDate),
+                    ),
                   ),
                 ),
               ],

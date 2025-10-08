@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/presentation/screens/diary/banSanPham.dart';
 import 'package:se501_plantheon/presentation/screens/diary/chiTieu.dart';
 import 'package:se501_plantheon/presentation/screens/diary/climamate.dart';
@@ -6,6 +8,12 @@ import 'package:se501_plantheon/presentation/screens/diary/dichBenh.dart';
 import 'package:se501_plantheon/presentation/screens/diary/kyThuat.dart';
 import 'package:se501_plantheon/presentation/screens/diary/other.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
+import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
+import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
+import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
+import 'package:se501_plantheon/domain/usecases/create_activity.dart';
+import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 
 class AddNewScreen extends StatefulWidget {
   const AddNewScreen({super.key});
@@ -56,143 +64,159 @@ class _AddNewScreenState extends State<AddNewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppConstraints.mainPadding),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header với nút Hủy/Quay lại và Thêm
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TextButton(
-                onPressed: () {
-                  if (showCategorySelection) {
-                    Navigator.pop(context);
-                  } else {
-                    setState(() {
-                      showCategorySelection = true;
-                      selectedCategory = null;
-                    });
-                  }
-                },
-                child: Text(
-                  showCategorySelection ? 'Hủy' : 'Quay lại',
-                  style: TextStyle(
-                    color: showCategorySelection ? Colors.red : Colors.blue,
-                    fontSize: 16,
+    return BlocProvider(
+      create: (_) {
+        final repository = ActivitiesRepositoryImpl(
+          remoteDataSource: ActivitiesRemoteDataSourceImpl(
+            client: http.Client(),
+          ),
+        );
+        return ActivitiesBloc(
+          getActivitiesByMonth: GetActivitiesByMonth(repository),
+          getActivitiesByDay: GetActivitiesByDay(repository),
+          createActivity: CreateActivity(repository),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(AppConstraints.mainPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header với nút Hủy/Quay lại và Thêm
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    if (showCategorySelection) {
+                      Navigator.pop(context);
+                    } else {
+                      setState(() {
+                        showCategorySelection = true;
+                        selectedCategory = null;
+                      });
+                    }
+                  },
+                  child: Text(
+                    showCategorySelection ? 'Hủy' : 'Quay lại',
+                    style: TextStyle(
+                      color: showCategorySelection ? Colors.red : Colors.blue,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
-              ),
-              const Text(
-                'Thêm mới',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              TextButton(
-                onPressed: () {
-                  // Xử lý thêm mới
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  'Thêm',
-                  style: TextStyle(color: Colors.green, fontSize: 16),
+                const Text(
+                  'Thêm mới',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // Hiển thị subtitle và grid khi chưa chọn category
-          if (showCategorySelection) ...[
-            // Subtitle
-            const Text(
-              'Chọn chủ đề cho nhật ký hôm nay',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+                TextButton(
+                  onPressed: () {
+                    // Xử lý thêm mới
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'Thêm',
+                    style: TextStyle(color: Colors.green, fontSize: 16),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
 
-            // Grid 6 mục
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1.2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  final category = categories[index];
-                  final isSelected = selectedCategory == category['id'];
+            // Hiển thị subtitle và grid khi chưa chọn category
+            if (showCategorySelection) ...[
+              // Subtitle
+              const Text(
+                'Chọn chủ đề cho nhật ký hôm nay',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+              const SizedBox(height: 20),
 
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedCategory = category['id'];
-                        showCategorySelection = false;
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: isSelected
-                              ? Colors.purple
-                              : Colors.grey.shade300,
-                          width: isSelected ? 2 : 1,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.grey.shade50,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            category['icon'],
-                            size: 32,
-                            color: isSelected ? Colors.purple : Colors.grey,
+              // Grid 6 mục
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                  ),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    final isSelected = selectedCategory == category['id'];
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedCategory = category['id'];
+                          showCategorySelection = false;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: isSelected
+                                ? Colors.purple
+                                : Colors.grey.shade300,
+                            width: isSelected ? 2 : 1,
                           ),
-                          const SizedBox(height: 8),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Text(
-                              category['title'],
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: isSelected
-                                    ? Colors.purple
-                                    : Colors.black87,
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.grey.shade50,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              category['icon'],
+                              size: 32,
+                              color: isSelected ? Colors.purple : Colors.grey,
+                            ),
+                            const SizedBox(height: 8),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              child: Text(
+                                category['title'],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: isSelected
+                                      ? Colors.purple
+                                      : Colors.black87,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-
-          // Nội dung được chọn
-          if (!showCategorySelection && selectedCategory != null) ...[
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.white,
+                    );
+                  },
                 ),
-                child: SingleChildScrollView(child: _buildCategoryContent()),
               ),
-            ),
+            ],
+
+            // Nội dung được chọn
+            if (!showCategorySelection && selectedCategory != null) ...[
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white,
+                  ),
+                  child: SingleChildScrollView(child: _buildCategoryContent()),
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

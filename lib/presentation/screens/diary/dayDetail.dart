@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
+import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
+import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
+import 'package:se501_plantheon/domain/usecases/create_activity.dart';
+import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
+import 'package:se501_plantheon/presentation/bloc/activities/activities_state.dart';
 import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
 import 'package:se501_plantheon/common/widgets/topnavigation/navigation.dart';
@@ -29,23 +39,6 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
   int selectedMonth = DateTime.now().month;
   int selectedDay = DateTime.now().day;
   bool isLoading = false;
-
-  // Demo danh sách task theo giờ có thời gian bắt đầu/kết thúc
-  final List<_DayEvent> _events = [
-    _DayEvent(
-      startHour: 4,
-      endHour: 6,
-      title: 'Mua phân bón và ghi chú rất dài để test overflow ellipsis',
-      amountText: '-100 000 đ',
-      color: Colors.blue,
-    ),
-    _DayEvent(
-      startHour: 7,
-      endHour: 8,
-      title: 'Bạn có thể thêm sự kiện tại đây',
-      color: Colors.green,
-    ),
-  ];
 
   @override
   void initState() {
@@ -97,36 +90,67 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    final String dateIso =
+        '${selectedYear.toString().padLeft(4, '0')}-'
+        '${selectedMonth.toString().padLeft(2, '0')}-'
+        '${selectedDay.toString().padLeft(2, '0')}';
 
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              // Weekday and Date Header
-              _buildDateHeader(),
-
-              // Weather Widget
-              _buildWeatherWidget(),
-
-              // All Day Events
-              _buildAllDayEvents(),
-
-              // Hourly Schedule
-              Expanded(child: _buildHourlySchedule()),
-            ],
+    return BlocProvider(
+      create: (_) {
+        final repository = ActivitiesRepositoryImpl(
+          remoteDataSource: ActivitiesRemoteDataSourceImpl(
+            client: http.Client(),
           ),
-          if (isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.3),
-              child: const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+        );
+        return ActivitiesBloc(
+          getActivitiesByMonth: GetActivitiesByMonth(repository),
+          getActivitiesByDay: GetActivitiesByDay(repository),
+          createActivity: CreateActivity(repository),
+        )..add(FetchActivitiesByDay(dateIso: dateIso));
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: BlocBuilder<ActivitiesBloc, ActivitiesState>(
+          builder: (context, state) {
+            final List<_DayEvent> events = state is DayActivitiesLoaded
+                ? _mapDayActivitiesToEvents(state)
+                : [];
+
+            if (state is DayActivitiesLoaded) {
+              final d = state.data;
+              print(
+                '[DayDetail] Loaded activities for date=${d.date.toIso8601String()}, count=${d.count}',
+              );
+              for (final a in d.activities) {
+                print(
+                  '[DayDetail] Activity: id=${a.id}, title=${a.title}, type=${a.type}, start=${a.timeStart.toIso8601String()}, end=${a.timeEnd.toIso8601String()}',
+                );
+              }
+            }
+
+            return Stack(
+              children: [
+                Column(
+                  children: [
+                    _buildDateHeader(),
+                    _buildWeatherWidget(),
+                    _buildAllDayEvents(),
+                    Expanded(child: _buildHourlySchedule(events)),
+                  ],
                 ),
-              ),
-            ),
-        ],
+                if (isLoading || state is DayActivitiesLoading)
+                  Container(
+                    color: Colors.black.withOpacity(0.3),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -281,6 +305,15 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                         selectedDay = d.day;
                       });
 
+                      // Fetch activities for the newly selected day
+                      final String dateIso =
+                          '${d.year.toString().padLeft(4, '0')}-'
+                          '${d.month.toString().padLeft(2, '0')}-'
+                          '${d.day.toString().padLeft(2, '0')}';
+                      context.read<ActivitiesBloc>().add(
+                        FetchActivitiesByDay(dateIso: dateIso),
+                      );
+
                       // Cập nhật date trong Diary để khi back lại hiển thị đúng tháng
                       if (widget.onDateChange != null) {
                         widget.onDateChange!(
@@ -422,15 +455,79 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
     );
   }
 
-  Widget _buildHourlySchedule() {
+  // Tính toán các task overlap với nhau
+  List<List<_DayEvent>> _calculateOverlappingGroups(List<_DayEvent> events) {
+    final List<_DayEvent> sortedEvents = [...events]
+      ..sort((a, b) => a.startHour.compareTo(b.startHour));
+
+    final List<List<_DayEvent>> groups = [];
+
+    for (final event in sortedEvents) {
+      bool addedToGroup = false;
+
+      // Tìm group có task overlap với event hiện tại
+      for (final group in groups) {
+        bool overlaps = false;
+        for (final existingEvent in group) {
+          // Kiểm tra xem event có giao với existingEvent không
+          if (!(event.endHour <= existingEvent.startHour ||
+              event.startHour >= existingEvent.endHour)) {
+            overlaps = true;
+            break;
+          }
+        }
+
+        if (overlaps) {
+          group.add(event);
+          addedToGroup = true;
+          break;
+        }
+      }
+
+      if (!addedToGroup) {
+        groups.add([event]);
+      }
+    }
+
+    return groups;
+  }
+
+  // Tính toán vị trí và width cho mỗi event
+  Map<_DayEvent, Map<String, double>> _calculateEventPositions(
+    List<_DayEvent> events,
+  ) {
+    final overlappingGroups = _calculateOverlappingGroups(events);
+    final Map<_DayEvent, Map<String, double>> positions = {};
+
+    for (final group in overlappingGroups) {
+      if (group.length == 1) {
+        // Không có overlap, dùng full width
+        positions[group[0]] = {'left': 0, 'width': 1.0};
+      } else {
+        // Có overlap, chia đều width
+        final double width = 1.0 / group.length;
+        for (int i = 0; i < group.length; i++) {
+          positions[group[i]] = {'left': i * width, 'width': width};
+        }
+      }
+    }
+
+    return positions;
+  }
+
+  Widget _buildHourlySchedule(List<_DayEvent> events) {
     const double hourHeight = 60; // chiều cao 1 giờ
     const double minEventHeight = 56; // tối thiểu để không overflow
     final double totalHeight = 24 * hourHeight;
+
+    final eventPositions = _calculateEventPositions(events);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: LayoutBuilder(
         builder: (context, constraints) {
+          final double availableWidth = constraints.maxWidth - 50;
+
           return SingleChildScrollView(
             child: SizedBox(
               height: totalHeight,
@@ -478,18 +575,26 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                           );
                         }),
 
-                        // Vẽ các event phủ theo start-end
-                        ..._events.map((e) {
+                        // Vẽ các event phủ theo start-end với vị trí đã tính toán
+                        ...events.map((e) {
                           final double top = e.startHour * hourHeight;
                           final double height = (e.durationHours * hourHeight)
                               .toDouble()
                               .clamp(minEventHeight, double.infinity);
+
+                          final position = eventPositions[e]!;
+                          final double leftFraction = position['left']!;
+                          final double widthFraction = position['width']!;
+
                           return Positioned(
                             top: top,
-                            left: 0,
-                            right: 0,
+                            left: leftFraction * availableWidth,
+                            width: widthFraction * availableWidth,
                             height: height,
-                            child: _buildEventCard(e),
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 2.0),
+                              child: _buildEventCard(e),
+                            ),
                           );
                         }),
                       ],
@@ -519,7 +624,8 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
 
   _DayEvent? _findEventStartingAt(int hour) {
     try {
-      return _events.firstWhere((e) => e.startHour == hour);
+      // Not used with BLoC data; kept for potential future feature
+      return null;
     } catch (_) {
       return null;
     }
@@ -701,5 +807,37 @@ extension DayDetailExtension on _DayDetailScreenState {
       ],
       selectedIndex: 2, // Diary tab
     );
+  }
+}
+
+extension _Mapping on _DayDetailScreenState {
+  List<_DayEvent> _mapDayActivitiesToEvents(DayActivitiesLoaded state) {
+    return state.data.activities.map((a) {
+      final localStart = a.timeStart.toLocal();
+      final localEnd = a.timeEnd.toLocal();
+      final int startHour = localStart.hour;
+      final int endHour = (localEnd.hour == localStart.hour)
+          ? (localStart.hour + 1)
+          : localEnd.hour;
+      final String amountText = _amountTextByType(a.type);
+      return _DayEvent(
+        startHour: startHour.clamp(0, 23),
+        endHour: endHour.clamp(1, 24),
+        title: a.title,
+        amountText: amountText,
+        color: Colors.blueGrey, // keep a neutral color; type shown as text
+      );
+    }).toList();
+  }
+
+  String _amountTextByType(String type) {
+    switch (type.toUpperCase()) {
+      case 'EXPENSE':
+        return 'Chi tiêu';
+      case 'INCOME':
+        return 'Thu nhập';
+      default:
+        return '';
+    }
   }
 }

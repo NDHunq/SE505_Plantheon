@@ -48,10 +48,7 @@ class TaskWidget extends StatelessWidget {
               title,
               maxLines: isShort ? 1 : 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: AppConstraints.normalTextFontSize,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
             ),
 
             // Amount text (if provided)
