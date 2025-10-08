@@ -32,4 +32,5 @@ class AppVectors {
   static const String report = '${basePath}report$format';
   static const String vi = '${basePath}vi$format';
   static const String en = '${basePath}en$format';
+  static const String post = '${basePath}post$format';
 }
