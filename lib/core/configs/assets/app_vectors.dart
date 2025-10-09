@@ -33,4 +33,9 @@ class AppVectors {
   static const String vi = '${basePath}vi$format';
   static const String en = '${basePath}en$format';
   static const String post = '${basePath}post$format';
+  static const String heart = '${basePath}heart$format';
+  static const String heartSolid = '${basePath}heart_solid$format';
+  static const String comment = '${basePath}comment$format';
+  static const String postReport = '${basePath}post_report$format';
+  static const String share = '${basePath}share$format';
 }
