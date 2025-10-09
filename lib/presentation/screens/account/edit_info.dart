@@ -296,7 +296,7 @@ class _EditInfoState extends State<EditInfo> {
                   ],
                 ),
               ),
-              SizedBox(height: 20.sp),
+              SizedBox(height: 16.sp),
 
               // Date of Birth Field
               _buildSectionTitle('Ngày sinh'),
@@ -304,7 +304,7 @@ class _EditInfoState extends State<EditInfo> {
               GestureDetector(
                 onTap: _selectDate,
                 child: Container(
-                  padding: EdgeInsets.all(16.sp),
+                  padding: EdgeInsets.all(12.sp),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12.sp),
@@ -420,7 +420,7 @@ class _EditInfoState extends State<EditInfo> {
             ),
             filled: true,
             fillColor: Colors.white,
-            contentPadding: EdgeInsets.all(16.sp),
+            contentPadding: EdgeInsets.all(12.sp),
           ),
         ),
       ],

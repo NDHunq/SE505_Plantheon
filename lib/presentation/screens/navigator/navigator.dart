@@ -65,10 +65,11 @@ class _CustomNavigatorState extends State<CustomNavigator> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Row(
+              spacing: 24.sp,
               children: [
-                MaterialButton(
-                  minWidth: 40,
-                  onPressed: () => _onItemTapped(0),
+                InkWell(
+                  borderRadius: BorderRadius.all(Radius.circular(20.sp)),
+                  onTap: () => _onItemTapped(0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -85,15 +86,15 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                           color: _selectedIndex == 0
                               ? Colors.green
                               : Colors.grey,
-                          fontSize: 10.sp,
+                          fontSize: 11.sp,
                         ), // Removed ANSI color code
                       ),
                     ],
                   ),
                 ),
-                MaterialButton(
-                  minWidth: 40,
-                  onPressed: () => _onItemTapped(1),
+                InkWell(
+                  borderRadius: BorderRadius.all(Radius.circular(20.sp)),
+                  onTap: () => _onItemTapped(1),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -110,19 +111,21 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                           color: _selectedIndex == 1
                               ? Colors.green
                               : Colors.grey,
-                          fontSize: 10.sp,
+                          fontSize: 11.sp,
                         ),
                       ),
                     ],
                   ),
                 ),
+                SizedBox(width: 0.sp),
               ],
             ),
             Row(
+              spacing: 24.sp,
               children: [
-                MaterialButton(
-                  minWidth: 40,
-                  onPressed: () => _onItemTapped(2),
+                InkWell(
+                  borderRadius: BorderRadius.all(Radius.circular(20.sp)),
+                  onTap: () => _onItemTapped(2),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -139,15 +142,15 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                           color: _selectedIndex == 2
                               ? Colors.green
                               : Colors.grey,
-                          fontSize: 10.sp,
+                          fontSize: 11.sp,
                         ),
                       ),
                     ],
                   ),
                 ),
-                MaterialButton(
-                  minWidth: 40,
-                  onPressed: () => _onItemTapped(3),
+                InkWell(
+                  borderRadius: BorderRadius.all(Radius.circular(20.sp)),
+                  onTap: () => _onItemTapped(3),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -164,7 +167,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                           color: _selectedIndex == 3
                               ? Colors.green
                               : Colors.grey,
-                          fontSize: 10.sp,
+                          fontSize: 11.sp,
                         ),
                       ),
                     ],

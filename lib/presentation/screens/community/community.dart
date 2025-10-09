@@ -12,29 +12,32 @@ class Community extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         elevation: 0,
         title: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16.sp),
           decoration: BoxDecoration(
             color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(25),
+            borderRadius: BorderRadius.circular(25.sp),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.search_rounded, color: Colors.grey),
-              SizedBox(width: 8),
               Expanded(
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'Hinted search text',
                     border: InputBorder.none,
-                    hintStyle: TextStyle(color: AppColors.text_color_100),
+                    hintStyle: AppTextStyles.s14Regular(
+                      color: AppColors.text_color_100,
+                    ),
                   ),
                 ),
               ),
+              SizedBox(width: 8.sp),
+              const Icon(Icons.search_rounded, color: Colors.grey),
             ],
           ),
         ),
@@ -72,7 +75,7 @@ class Community extends StatelessWidget {
       ),
 
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: EdgeInsets.symmetric(horizontal: 16.sp),
         child: ListView(
           children: [
             _buildPost(
@@ -119,7 +122,7 @@ class Community extends StatelessWidget {
     required int shares,
   }) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: EdgeInsets.symmetric(vertical: 8.sp),
       color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,40 +132,31 @@ class Community extends StatelessWidget {
           Row(
             children: [
               CircleAvatar(
-                radius: 20,
+                radius: 20.sp,
                 backgroundColor: Colors.green[200],
                 child: Text(
                   username[0],
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: AppTextStyles.s16Bold(color: Colors.white),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12.sp),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Text(
-                          username,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
+                        Text(username, style: AppTextStyles.s16Bold()),
+                        SizedBox(width: 4.sp),
                         Container(
-                          padding: const EdgeInsets.all(2),
+                          padding: EdgeInsets.all(2.sp),
                           decoration: const BoxDecoration(
                             color: Colors.orange,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.check,
-                            size: 12,
+                            size: 12.sp,
                             color: Colors.white,
                           ),
                         ),
@@ -170,7 +164,7 @@ class Community extends StatelessWidget {
                     ),
                     Text(
                       'Đời sống • $timeAgo',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      style: AppTextStyles.s12Regular(color: Colors.grey[600]),
                     ),
                   ],
                 ),
@@ -179,39 +173,39 @@ class Community extends StatelessWidget {
             ],
           ),
 
-          Text(content, style: const TextStyle(fontSize: 14)),
+          Text(content, style: AppTextStyles.s14Regular()),
 
           // Post image
           SizedBox(
             width: double.infinity,
-            height: 300,
+            height: 300.sp,
             child: Image.network(
               imageUrl,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(16.sp),
                     color: Colors.grey[300],
                   ),
-                  child: const Icon(Icons.eco, size: 100, color: Colors.green),
+                  child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
                 );
               },
             ),
           ),
           Row(
             children: [
-              const Icon(Icons.favorite, color: Colors.red, size: 16),
-              const SizedBox(width: 4),
-              Text('$likes lượt thích', style: AppTextStyles.s10Regular()),
+              Icon(Icons.favorite, color: Colors.red, size: 16.sp),
+              SizedBox(width: 4.sp),
+              Text('$likes lượt thích', style: AppTextStyles.s12Regular()),
               const Spacer(),
-              Text('$comments bình luận', style: AppTextStyles.s10Regular()),
-              const SizedBox(width: 16),
-              Text('$shares lượt chia sẻ', style: AppTextStyles.s10Regular()),
+              Text('$comments bình luận', style: AppTextStyles.s12Regular()),
+              SizedBox(width: 16.sp),
+              Text('$shares lượt chia sẻ', style: AppTextStyles.s12Regular()),
             ],
           ),
           // Action buttons
-          Container(height: 1, color: Colors.grey[200]),
+          Container(height: 1.sp, color: Colors.grey[200]),
           Row(
             children: [
               _ActionButton(
@@ -219,19 +213,19 @@ class Community extends StatelessWidget {
                 label: 'Thích',
                 onPressed: () {},
               ),
-              Container(width: 1, height: 40, color: Colors.grey[200]),
+              Container(width: 1.sp, height: 40.sp, color: Colors.grey[200]),
               _ActionButton(
                 icon: Icons.chat_bubble_outline_rounded,
                 label: 'Bình luận',
                 onPressed: () {},
               ),
-              Container(width: 1, height: 40, color: Colors.grey[200]),
+              Container(width: 1.sp, height: 40.sp, color: Colors.grey[200]),
               _ActionButton(
                 icon: Icons.share_rounded,
                 label: 'Chia sẻ',
                 onPressed: () {},
               ),
-              Container(width: 1, height: 40, color: Colors.grey[200]),
+              Container(width: 1.sp, height: 40.sp, color: Colors.grey[200]),
               _ActionButton(
                 icon: Icons.bookmark_border_rounded,
                 label: 'Báo cáo',
@@ -240,7 +234,7 @@ class Community extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8.sp),
         ],
       ),
     );
@@ -255,8 +249,8 @@ class Community extends StatelessWidget {
       child: Column(
         spacing: 2,
         children: [
-          Icon(icon, color: Colors.grey, size: 24),
-          Text(label, style: AppTextStyles.s10Regular(color: Colors.grey)),
+          Icon(icon, color: Colors.grey, size: 24.sp),
+          Text(label, style: AppTextStyles.s12Regular(color: Colors.grey)),
         ],
       ),
     );
