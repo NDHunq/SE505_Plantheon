@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/presentation/screens/community/post_detail.dart';
+import 'package:se501_plantheon/presentation/screens/community/widgets/acction_button.dart';
 
 class Community extends StatefulWidget {
   const Community({super.key});
@@ -151,7 +153,6 @@ class _CommunityState extends State<Community> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Handle bar
                     Center(
                       child: Container(
                         width: 40.sp,
@@ -163,7 +164,6 @@ class _CommunityState extends State<Community> {
                         ),
                       ),
                     ),
-                    // Header với nút Hủy và Đăng
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -195,8 +195,6 @@ class _CommunityState extends State<Community> {
                       ],
                     ),
                     SizedBox(height: 16.sp),
-
-                    // Thông tin user
                     Row(
                       children: [
                         CircleAvatar(
@@ -576,167 +574,155 @@ class _CommunityState extends State<Community> {
     required int comments,
     required int shares,
   }) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8.sp),
-      color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 8,
-        children: [
-          // User info header
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 20.sp,
-                backgroundColor: Colors.green[200],
-                child: Text(
-                  username[0],
-                  style: AppTextStyles.s16Bold(color: Colors.white),
-                ),
-              ),
-              SizedBox(width: 12.sp),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(username, style: AppTextStyles.s16Bold()),
-                        SizedBox(width: 4.sp),
-                        Container(
-                          padding: EdgeInsets.all(2.sp),
-                          decoration: const BoxDecoration(
-                            color: Colors.orange,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.check,
-                            size: 12.sp,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      '$category • $timeAgo',
-                      style: AppTextStyles.s12Regular(color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ),
-              SvgPicture.asset(
-                AppVectors.postReport,
-                width: 20.sp,
-                height: 20.sp,
-                color: Colors.grey[600],
-              ),
-            ],
-          ),
-
-          Text(content, style: AppTextStyles.s14Regular()),
-
-          // Post image
-          SizedBox(
-            width: double.infinity,
-            height: 300.sp,
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16.sp),
-                    color: Colors.grey[300],
-                  ),
-                  child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
-                );
-              },
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PostDetail(
+              username: username,
+              category: category,
+              timeAgo: timeAgo,
+              content: content,
+              imageUrl: imageUrl,
+              likes: likes,
+              comments: comments,
+              shares: shares,
             ),
           ),
-          Row(
-            children: [
-              SvgPicture.asset(
-                likedPosts[postIndex] == true
-                    ? AppVectors.heartSolid
-                    : AppVectors.heart,
-                color: AppColors.red,
-                width: 16.sp,
-                height: 16.sp,
-              ),
-              SizedBox(width: 4.sp),
-              Text(
-                '${likeCounts[postIndex] ?? likes} lượt thích',
-                style: AppTextStyles.s12Regular(),
-              ),
-              const Spacer(),
-              Text('$comments bình luận', style: AppTextStyles.s12Regular()),
-              SizedBox(width: 16.sp),
-              Text('$shares lượt chia sẻ', style: AppTextStyles.s12Regular()),
-            ],
-          ),
-          // Action buttons
-          Container(height: 1.sp, color: Colors.grey[200]),
-          Row(
-            children: [
-              _ActionButton(
-                iconVector: likedPosts[postIndex] == true
-                    ? AppVectors.heartSolid
-                    : AppVectors.heart,
-                label: 'Thích',
-                onPressed: () => _toggleLike(postIndex, likes),
-                iconColor: likedPosts[postIndex] == true
-                    ? AppColors.red
-                    : AppColors.text_color_200,
-                textColor: likedPosts[postIndex] == true
-                    ? AppColors.red
-                    : AppColors.text_color_400,
-              ),
-              Container(width: 1.sp, height: 40.sp, color: Colors.grey[200]),
-              _ActionButton(
-                iconVector: AppVectors.comment,
-                label: 'Bình luận',
-                onPressed: () {},
-              ),
-              Container(width: 1.sp, height: 40.sp, color: Colors.grey[200]),
-              _ActionButton(
-                iconVector: AppVectors.share,
-                label: 'Chia sẻ',
-                onPressed: () {},
-              ),
-            ],
-          ),
-
-          SizedBox(height: 8.sp),
-        ],
-      ),
-    );
-  }
-
-  Widget _ActionButton({
-    required String iconVector,
-    required String label,
-    required VoidCallback onPressed,
-    Color? iconColor,
-    Color? textColor,
-  }) {
-    return Expanded(
-      child: InkWell(
-        onTap: onPressed,
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 8.sp),
+        color: Colors.white,
         child: Column(
-          spacing: 2,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
           children: [
-            SvgPicture.asset(
-              iconVector,
-              color: iconColor ?? AppColors.text_color_200,
-              width: 24.sp,
-              height: 24.sp,
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 20.sp,
+                  backgroundColor: Colors.green[200],
+                  child: Text(
+                    username[0],
+                    style: AppTextStyles.s16Bold(color: Colors.white),
+                  ),
+                ),
+                SizedBox(width: 12.sp),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(username, style: AppTextStyles.s16Bold()),
+                          SizedBox(width: 4.sp),
+                          Container(
+                            padding: EdgeInsets.all(2.sp),
+                            decoration: const BoxDecoration(
+                              color: Colors.orange,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.check,
+                              size: 12.sp,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '$category • $timeAgo',
+                        style: AppTextStyles.s12Regular(
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SvgPicture.asset(
+                  AppVectors.postReport,
+                  width: 20.sp,
+                  height: 20.sp,
+                  color: Colors.grey[600],
+                ),
+              ],
             ),
-            Text(
-              label,
-              style: AppTextStyles.s12Regular(
-                color: textColor ?? AppColors.text_color_400,
+
+            Text(content, style: AppTextStyles.s14Regular()),
+
+            // Post image
+            SizedBox(
+              width: double.infinity,
+              height: 300.sp,
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16.sp),
+                      color: Colors.grey[300],
+                    ),
+                    child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
+                  );
+                },
               ),
             ),
+            Row(
+              children: [
+                SvgPicture.asset(
+                  likedPosts[postIndex] == true
+                      ? AppVectors.heartSolid
+                      : AppVectors.heart,
+                  color: AppColors.red,
+                  width: 16.sp,
+                  height: 16.sp,
+                ),
+                SizedBox(width: 4.sp),
+                Text(
+                  '${likeCounts[postIndex] ?? likes} lượt thích',
+                  style: AppTextStyles.s12Regular(),
+                ),
+                const Spacer(),
+                Text('$comments bình luận', style: AppTextStyles.s12Regular()),
+                SizedBox(width: 16.sp),
+                Text('$shares lượt chia sẻ', style: AppTextStyles.s12Regular()),
+              ],
+            ),
+            // Action buttons
+            Container(height: 1.sp, color: Colors.grey[200]),
+            Row(
+              children: [
+                ActionButton(
+                  iconVector: likedPosts[postIndex] == true
+                      ? AppVectors.heartSolid
+                      : AppVectors.heart,
+                  label: 'Thích',
+                  onPressed: () => _toggleLike(postIndex, likes),
+                  iconColor: likedPosts[postIndex] == true
+                      ? AppColors.red
+                      : AppColors.text_color_200,
+                  textColor: likedPosts[postIndex] == true
+                      ? AppColors.red
+                      : AppColors.text_color_400,
+                ),
+                Container(width: 1.sp, height: 40.sp, color: Colors.grey[200]),
+                ActionButton(
+                  iconVector: AppVectors.comment,
+                  label: 'Bình luận',
+                  onPressed: () {},
+                ),
+                Container(width: 1.sp, height: 40.sp, color: Colors.grey[200]),
+                ActionButton(
+                  iconVector: AppVectors.share,
+                  label: 'Chia sẻ',
+                  onPressed: () {},
+                ),
+              ],
+            ),
+
+            SizedBox(height: 8.sp),
           ],
         ),
       ),
