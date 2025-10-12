@@ -70,6 +70,18 @@ class DayActivityDetailModel {
   final String type;
   final DateTime timeStart;
   final DateTime timeEnd;
+  final bool day;
+  final String? repeat;
+  final String? isRepeat;
+  final DateTime? endRepeatDay;
+  final String? object;
+  final String? unit;
+  final double? amount;
+  final String? targetPerson;
+  final String? sourcePerson;
+  final String? note;
+  final double? money;
+  final String? purpose;
 
   DayActivityDetailModel({
     required this.id,
@@ -77,15 +89,53 @@ class DayActivityDetailModel {
     required this.type,
     required this.timeStart,
     required this.timeEnd,
+    required this.day,
+    this.repeat,
+    this.isRepeat,
+    this.endRepeatDay,
+    this.object,
+    this.unit,
+    this.amount,
+    this.targetPerson,
+    this.sourcePerson,
+    this.note,
+    this.money,
+    this.purpose,
   });
 
   factory DayActivityDetailModel.fromJson(Map<String, dynamic> json) {
+    // Parse datetime as local time, remove 'Z' if exists
+    String parseLocalDateTime(String dateTimeStr) {
+      // Remove 'Z' suffix if exists to parse as local time
+      return dateTimeStr.endsWith('Z')
+          ? dateTimeStr.substring(0, dateTimeStr.length - 1)
+          : dateTimeStr;
+    }
+
     return DayActivityDetailModel(
       id: json['id'] as String,
       title: json['title'] as String,
       type: json['type'] as String? ?? '',
-      timeStart: DateTime.parse(json['time_start'] as String),
-      timeEnd: DateTime.parse(json['time_end'] as String),
+      timeStart: DateTime.parse(
+        parseLocalDateTime(json['time_start'] as String),
+      ),
+      timeEnd: DateTime.parse(parseLocalDateTime(json['time_end'] as String)),
+      day: json['day'] as bool? ?? false,
+      repeat: json['repeat'] as String?,
+      isRepeat: json['is_repeat'] as String?,
+      endRepeatDay: json['end_repeat_day'] != null
+          ? DateTime.parse(parseLocalDateTime(json['end_repeat_day'] as String))
+          : null,
+      object: json['object'] as String?,
+      unit: json['unit'] as String?,
+      amount: json['amount'] != null
+          ? (json['amount'] as num).toDouble()
+          : null,
+      targetPerson: json['target_person'] as String?,
+      sourcePerson: json['source_person'] as String?,
+      note: json['note'] as String?,
+      money: json['money'] != null ? (json['money'] as num).toDouble() : null,
+      purpose: json['purpose'] as String?,
     );
   }
 
@@ -95,6 +145,18 @@ class DayActivityDetailModel {
     type: type,
     timeStart: timeStart,
     timeEnd: timeEnd,
+    day: day,
+    repeat: repeat,
+    isRepeat: isRepeat,
+    endRepeatDay: endRepeatDay,
+    object: object,
+    unit: unit,
+    amount: amount,
+    targetPerson: targetPerson,
+    sourcePerson: sourcePerson,
+    note: note,
+    money: money,
+    purpose: purpose,
   );
 }
 

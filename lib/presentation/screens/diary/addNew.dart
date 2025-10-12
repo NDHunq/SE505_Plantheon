@@ -13,10 +13,13 @@ import 'package:se501_plantheon/data/repository/activities_repository_impl.dart'
 import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
 import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
 import 'package:se501_plantheon/domain/usecases/create_activity.dart';
+import 'package:se501_plantheon/domain/usecases/update_activity.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 
 class AddNewScreen extends StatefulWidget {
-  const AddNewScreen({super.key});
+  final DateTime? initialDate;
+
+  const AddNewScreen({super.key, this.initialDate});
 
   @override
   State<AddNewScreen> createState() => _AddNewScreenState();
@@ -46,7 +49,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
   Widget _buildCategoryContent() {
     switch (selectedCategory) {
       case 'targets':
-        return const chiTieuWidget();
+        return chiTieuWidget(initialDate: widget.initialDate);
       case 'sales':
         return const banSanPhamWidget();
       case 'disasters':
@@ -75,6 +78,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
           getActivitiesByMonth: GetActivitiesByMonth(repository),
           getActivitiesByDay: GetActivitiesByDay(repository),
           createActivity: CreateActivity(repository),
+          updateActivity: UpdateActivity(repository),
         );
       },
       child: Container(
@@ -109,16 +113,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
                   'Thêm mới',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                TextButton(
-                  onPressed: () {
-                    // Xử lý thêm mới
-                    Navigator.pop(context);
-                  },
-                  child: const Text(
-                    'Thêm',
-                    style: TextStyle(color: Colors.green, fontSize: 16),
-                  ),
-                ),
+                const SizedBox(width: 60),
               ],
             ),
             const SizedBox(height: 20),

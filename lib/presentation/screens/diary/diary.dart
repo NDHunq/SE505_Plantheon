@@ -35,6 +35,18 @@ class _DiaryState extends State<Diary> {
   DateTime? billDate; // For bill views
   String? customTitle; // For dynamic title
   DiaryViewType? latestCalendarView; // Track latest calendar view accessed
+  DateTime? selectedDate; // For add new screen\
+
+  void _setSelectedDate(DateTime date) {
+    // Sử dụng post frame callback để tránh gọi setState trong build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          selectedDate = date;
+        });
+      }
+    });
+  }
 
   void _toggleYearSelector() async {
     setState(() {
@@ -352,6 +364,7 @@ class _DiaryState extends State<Diary> {
         return _buildYearSelector();
       case DiaryViewType.monthDetail:
         return MonthScreen(
+          onSelectedDate: _setSelectedDate,
           month: selectedMonth!,
           year: selectedYear,
           onDaySelected: navigateToDay,
@@ -386,6 +399,7 @@ class _DiaryState extends State<Diary> {
         );
       case DiaryViewType.dayDetail:
         return DayDetailScreen(
+          onSelectedDate: _setSelectedDate,
           arguments: {
             'day': selectedDay,
             'month': selectedMonth,
@@ -413,7 +427,7 @@ class _DiaryState extends State<Diary> {
             topRight: Radius.circular(20),
           ),
         ),
-        child: const AddNewScreen(),
+        child: AddNewScreen(initialDate: selectedDate),
       ),
     );
   }

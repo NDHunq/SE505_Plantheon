@@ -20,3 +20,10 @@ class CreateActivityEvent extends ActivitiesEvent {
 
   CreateActivityEvent({required this.request});
 }
+
+class UpdateActivityEvent extends ActivitiesEvent {
+  final String id;
+  final CreateActivityRequestModel request;
+
+  UpdateActivityEvent({required this.id, required this.request});
+}

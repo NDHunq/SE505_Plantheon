@@ -39,4 +39,22 @@ class ActivitiesRepositoryImpl implements ActivitiesRepository {
     print('[ActivitiesRepository] activity created with id=${response.id}');
     return response;
   }
+
+  @override
+  Future<CreateActivityResponseModel> updateActivity({
+    required String id,
+    required CreateActivityRequestModel request,
+  }) async {
+    print(
+      '[ActivitiesRepository] updateActivity id=$id, title=${request.title}',
+    );
+    final response = await remoteDataSource.updateActivity(
+      id: id,
+      request: request,
+    );
+    print('[ActivitiesRepository] activity updated with id=${response.id}');
+    return response;
+  }
+
+ 
 }

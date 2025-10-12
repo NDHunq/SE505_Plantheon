@@ -8,6 +8,7 @@ import 'package:se501_plantheon/data/repository/activities_repository_impl.dart'
 import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
 import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
 import 'package:se501_plantheon/domain/usecases/create_activity.dart';
+import 'package:se501_plantheon/domain/usecases/update_activity.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_state.dart';
@@ -16,12 +17,14 @@ import 'package:se501_plantheon/presentation/screens/diary/dayDetail.dart';
 class MonthScreen extends StatefulWidget {
   final int year;
   final int month;
+  final Function(DateTime date)? onSelectedDate;
   final Function(int day, int month, int year)? onDaySelected;
 
   const MonthScreen({
     super.key,
     required this.year,
     required this.month,
+    this.onSelectedDate,
     this.onDaySelected,
   });
 
@@ -30,6 +33,16 @@ class MonthScreen extends StatefulWidget {
 }
 
 class _MonthScreenState extends State<MonthScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.onSelectedDate != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onSelectedDate!(DateTime.now());
+      });
+    }
+  }
+
   bool isLoading = false;
 
   Future<void> _navigateToDayDetail(int day) async {
@@ -84,6 +97,7 @@ class _MonthScreenState extends State<MonthScreen> {
           getActivitiesByMonth: GetActivitiesByMonth(repository),
           getActivitiesByDay: GetActivitiesByDay(repository),
           createActivity: CreateActivity(repository),
+          updateActivity: UpdateActivity(repository),
         )..add(FetchActivitiesByMonth(year: widget.year, month: widget.month));
       },
       child: Stack(

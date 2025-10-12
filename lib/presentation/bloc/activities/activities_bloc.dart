@@ -3,6 +3,7 @@ import 'package:se501_plantheon/data/models/activities_models.dart';
 import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
 import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
 import 'package:se501_plantheon/domain/usecases/create_activity.dart';
+import 'package:se501_plantheon/domain/usecases/update_activity.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_state.dart';
 
@@ -10,15 +11,18 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
   final GetActivitiesByMonth getActivitiesByMonth;
   final GetActivitiesByDay getActivitiesByDay;
   final CreateActivity createActivity;
+  final UpdateActivity updateActivity;
 
   ActivitiesBloc({
     required this.getActivitiesByMonth,
     required this.getActivitiesByDay,
     required this.createActivity,
+    required this.updateActivity,
   }) : super(ActivitiesInitial()) {
     on<FetchActivitiesByMonth>(_onFetchMonth);
     on<FetchActivitiesByDay>(_onFetchDay);
     on<CreateActivityEvent>(_onCreateActivity);
+    on<UpdateActivityEvent>(_onUpdateActivity);
   }
 
   Future<void> _onFetchMonth(
@@ -82,22 +86,8 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
           '[ActivitiesBloc] First activity: id=${a.id}, title=${a.title}, type=${a.type}, start=${a.timeStart.toIso8601String()}, end=${a.timeEnd.toIso8601String()}',
         );
       }
-      final model = DayActivitiesOfDayModel(
-        date: entity.date,
-        count: entity.count,
-        activities: entity.activities
-            .map(
-              (a) => DayActivityDetailModel(
-                id: a.id,
-                title: a.title,
-                type: a.type,
-                timeStart: a.timeStart,
-                timeEnd: a.timeEnd,
-              ),
-            )
-            .toList(),
-      );
-      emit(DayActivitiesLoaded(data: model));
+      // Entity is already in the correct format, just pass it directly
+      emit(DayActivitiesLoaded(data: entity));
     } catch (e) {
       emit(ActivitiesError(message: e.toString()));
     }
@@ -118,6 +108,29 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
     } catch (e) {
       print('[ActivitiesBloc] Error creating activity: $e');
       emit(CreateActivityError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onUpdateActivity(
+    UpdateActivityEvent event,
+    Emitter<ActivitiesState> emit,
+  ) async {
+    emit(UpdateActivityLoading());
+    try {
+      print(
+        '[ActivitiesBloc] Updating activity: id=${event.id}, title=${event.request.title}',
+      );
+      final response = await updateActivity(
+        id: event.id,
+        request: event.request,
+      );
+      print(
+        '[ActivitiesBloc] Activity updated successfully: id=${response.id}',
+      );
+      emit(UpdateActivitySuccess(response: response));
+    } catch (e) {
+      print('[ActivitiesBloc] Error updating activity: $e');
+      emit(UpdateActivityError(message: e.toString()));
     }
   }
 }

@@ -7,13 +7,18 @@ import 'package:se501_plantheon/data/repository/activities_repository_impl.dart'
 import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
 import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
 import 'package:se501_plantheon/domain/usecases/create_activity.dart';
+import 'package:se501_plantheon/domain/usecases/update_activity.dart';
+import 'package:se501_plantheon/domain/entities/activities_entities.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_state.dart';
 import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
-import 'package:se501_plantheon/common/widgets/topnavigation/navigation.dart';
+import 'package:se501_plantheon/presentation/screens/diary/chiTieu.dart';
+import 'package:se501_plantheon/presentation/screens/diary/editView.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/task.dart';
+import 'package:se501_plantheon/presentation/screens/diary/models/day_event.dart';
+import 'package:se501_plantheon/presentation/screens/diary/helpers/day_event_mapper.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/presentation/screens/navigator/navigator.dart';
@@ -22,12 +27,14 @@ class DayDetailScreen extends StatefulWidget {
   final Map<String, dynamic>? arguments;
   final Function(String)? onTitleChange;
   final Function(int day, int month, int year)? onDateChange;
+  final Function(DateTime date)? onSelectedDate;
 
   const DayDetailScreen({
     super.key,
     this.arguments,
     this.onTitleChange,
     this.onDateChange,
+    this.onSelectedDate,
   });
 
   @override
@@ -38,19 +45,44 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
   int selectedYear = DateTime.now().year;
   int selectedMonth = DateTime.now().month;
   int selectedDay = DateTime.now().day;
-  bool isLoading = false;
+  late ActivitiesBloc _activitiesBloc;
 
   @override
   void initState() {
     super.initState();
+    // Parse arguments trước
     if (widget.arguments != null) {
       selectedYear = widget.arguments!['year'] ?? DateTime.now().year;
       selectedMonth = widget.arguments!['month'] ?? DateTime.now().month;
       selectedDay = widget.arguments!['day'] ?? DateTime.now().day;
     }
 
-    // Show loading briefly when navigating from MonthScreen
-    _showInitialLoading();
+    // Sau đó gọi callback với giá trị đã được parse (sử dụng post frame callback để đảm bảo widget đã được layout)
+    if (widget.onSelectedDate != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onSelectedDate!(
+          DateTime(selectedYear, selectedMonth, selectedDay),
+        );
+      });
+    }
+
+    // Khởi tạo bloc
+    final repository = ActivitiesRepositoryImpl(
+      remoteDataSource: ActivitiesRemoteDataSourceImpl(client: http.Client()),
+    );
+    _activitiesBloc = ActivitiesBloc(
+      getActivitiesByMonth: GetActivitiesByMonth(repository),
+      getActivitiesByDay: GetActivitiesByDay(repository),
+      createActivity: CreateActivity(repository),
+      updateActivity: UpdateActivity(repository),
+    );
+
+    // Fetch dữ liệu ban đầu
+    final String initialDateIso =
+        '${selectedYear.toString().padLeft(4, '0')}-'
+        '${selectedMonth.toString().padLeft(2, '0')}-'
+        '${selectedDay.toString().padLeft(2, '0')}';
+    _activitiesBloc.add(FetchActivitiesByDay(dateIso: initialDateIso));
 
     // Gọi callback để cập nhật title
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -75,45 +107,25 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
     });
   }
 
-  Future<void> _showInitialLoading() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    // Simulate loading delay for DayDetail
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    setState(() {
-      isLoading = false;
-    });
+  @override
+  void dispose() {
+    _activitiesBloc.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final String dateIso =
-        '${selectedYear.toString().padLeft(4, '0')}-'
-        '${selectedMonth.toString().padLeft(2, '0')}-'
-        '${selectedDay.toString().padLeft(2, '0')}';
-
-    return BlocProvider(
-      create: (_) {
-        final repository = ActivitiesRepositoryImpl(
-          remoteDataSource: ActivitiesRemoteDataSourceImpl(
-            client: http.Client(),
-          ),
-        );
-        return ActivitiesBloc(
-          getActivitiesByMonth: GetActivitiesByMonth(repository),
-          getActivitiesByDay: GetActivitiesByDay(repository),
-          createActivity: CreateActivity(repository),
-        )..add(FetchActivitiesByDay(dateIso: dateIso));
-      },
+    return BlocProvider.value(
+      value: _activitiesBloc,
       child: Scaffold(
         backgroundColor: Colors.white,
         body: BlocBuilder<ActivitiesBloc, ActivitiesState>(
           builder: (context, state) {
-            final List<_DayEvent> events = state is DayActivitiesLoaded
-                ? _mapDayActivitiesToEvents(state)
+            final List<DayEvent> events = state is DayActivitiesLoaded
+                ? DayEventMapper.mapDayActivitiesToEvents(
+                    state,
+                    DateTime(selectedYear, selectedMonth, selectedDay),
+                  )
                 : [];
 
             if (state is DayActivitiesLoaded) {
@@ -128,25 +140,12 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
               }
             }
 
-            return Stack(
+            return Column(
               children: [
-                Column(
-                  children: [
-                    _buildDateHeader(),
-                    _buildWeatherWidget(),
-                    _buildAllDayEvents(),
-                    Expanded(child: _buildHourlySchedule(events)),
-                  ],
-                ),
-                if (isLoading || state is DayActivitiesLoading)
-                  Container(
-                    color: Colors.black.withOpacity(0.3),
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                      ),
-                    ),
-                  ),
+                _buildDateHeader(),
+                _buildWeatherWidget(),
+                _buildAllDayEvents(),
+                Expanded(child: _buildHourlySchedule(events)),
               ],
             );
           },
@@ -156,16 +155,6 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
   }
 
   void _showEditModal(BuildContext context) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    setState(() {
-      isLoading = false;
-    });
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -182,15 +171,8 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
   }
 
   void _showAddNewModal(BuildContext context) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    setState(() {
-      isLoading = false;
-    });
+    // Truyền ngày hiện tại đang được chọn
+    final selectedDate = DateTime(selectedYear, selectedMonth, selectedDay);
 
     showModalBottomSheet(
       context: context,
@@ -205,22 +187,12 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
             topRight: Radius.circular(20),
           ),
         ),
-        child: const AddNewScreen(),
+        child: AddNewScreen(initialDate: selectedDate),
       ),
     );
   }
 
   void _showShareModal(BuildContext context) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    setState(() {
-      isLoading = false;
-    });
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -299,20 +271,22 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                 child: Center(
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        selectedYear = d.year;
-                        selectedMonth = d.month;
-                        selectedDay = d.day;
-                      });
-
                       // Fetch activities for the newly selected day
                       final String dateIso =
                           '${d.year.toString().padLeft(4, '0')}-'
                           '${d.month.toString().padLeft(2, '0')}-'
                           '${d.day.toString().padLeft(2, '0')}';
-                      context.read<ActivitiesBloc>().add(
+
+                      // Gọi API với bloc instance đã tồn tại
+                      _activitiesBloc.add(
                         FetchActivitiesByDay(dateIso: dateIso),
                       );
+
+                      setState(() {
+                        selectedYear = d.year;
+                        selectedMonth = d.month;
+                        selectedDay = d.day;
+                      });
 
                       // Cập nhật date trong Diary để khi back lại hiển thị đúng tháng
                       if (widget.onDateChange != null) {
@@ -320,6 +294,13 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                           selectedDay,
                           selectedMonth,
                           selectedYear,
+                        );
+                      }
+
+                      // Cập nhật selectedDate callback
+                      if (widget.onSelectedDate != null) {
+                        widget.onSelectedDate!(
+                          DateTime(selectedYear, selectedMonth, selectedDay),
                         );
                       }
 
@@ -428,39 +409,107 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
   }
 
   Widget _buildAllDayEvents() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          const Text(
-            'Cả ngày',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.green.shade100,
-                borderRadius: BorderRadius.circular(8),
+    return BlocBuilder<ActivitiesBloc, ActivitiesState>(
+      builder: (context, state) {
+        // Lọc các activities có day = true
+        final allDayActivities = state is DayActivitiesLoaded
+            ? state.data.activities.where((activity) => activity.day).toList()
+            : <DayActivityDetailEntity>[];
+
+        if (allDayActivities.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Cả ngày',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
-              child: const Text(
-                'New Year',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-              ),
-            ),
+              const SizedBox(height: 8),
+              ...allDayActivities.map((activity) {
+                return GestureDetector(
+                  onTap: () => _showEditActivityBottomSheet(activity),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.green.shade300,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            activity.title,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              _getTypeDisplayText(activity.type),
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.green.shade700,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 14,
+                              color: Colors.green.shade700,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
+  String _getTypeDisplayText(String type) {
+    switch (type.toUpperCase()) {
+      case 'EXPENSE':
+        return 'Chi tiêu';
+      case 'INCOME':
+        return 'Thu nhập';
+      case 'TECHNIQUE':
+        return 'Kỹ thuật';
+      case 'DISEASE':
+        return 'Dịch bệnh';
+      default:
+        return type;
+    }
+  }
+
   // Tính toán các task overlap với nhau
-  List<List<_DayEvent>> _calculateOverlappingGroups(List<_DayEvent> events) {
-    final List<_DayEvent> sortedEvents = [...events]
+  List<List<DayEvent>> _calculateOverlappingGroups(List<DayEvent> events) {
+    final List<DayEvent> sortedEvents = [...events]
       ..sort((a, b) => a.startHour.compareTo(b.startHour));
 
-    final List<List<_DayEvent>> groups = [];
+    final List<List<DayEvent>> groups = [];
 
     for (final event in sortedEvents) {
       bool addedToGroup = false;
@@ -493,11 +542,11 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
   }
 
   // Tính toán vị trí và width cho mỗi event
-  Map<_DayEvent, Map<String, double>> _calculateEventPositions(
-    List<_DayEvent> events,
+  Map<DayEvent, Map<String, double>> _calculateEventPositions(
+    List<DayEvent> events,
   ) {
     final overlappingGroups = _calculateOverlappingGroups(events);
-    final Map<_DayEvent, Map<String, double>> positions = {};
+    final Map<DayEvent, Map<String, double>> positions = {};
 
     for (final group in overlappingGroups) {
       if (group.length == 1) {
@@ -515,7 +564,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
     return positions;
   }
 
-  Widget _buildHourlySchedule(List<_DayEvent> events) {
+  Widget _buildHourlySchedule(List<DayEvent> events) {
     const double hourHeight = 60; // chiều cao 1 giờ
     const double minEventHeight = 56; // tối thiểu để không overflow
     final double totalHeight = 24 * hourHeight;
@@ -609,20 +658,87 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
     );
   }
 
-  Widget _buildEventCard(_DayEvent event) {
+  Widget _buildEventCard(DayEvent event) {
     final Color baseColor = event.color ?? Colors.blue;
     final bool isShort = event.durationHours <= 1;
-    return TaskWidget(
-      title: event.title,
-      amountText: event.amountText,
-      startTime: '${event.startHour.toString().padLeft(2, '0')}:00',
-      endTime: '${event.endHour.toString().padLeft(2, '0')}:00',
-      baseColor: baseColor,
-      isShort: isShort,
+
+    // Format thời gian thực tế từ database
+    final String startTimeStr =
+        '${event.realStartTime.day.toString().padLeft(2, '0')}/'
+        '${event.realStartTime.month.toString().padLeft(2, '0')} '
+        '${event.realStartTime.hour.toString().padLeft(2, '0')}:'
+        '${event.realStartTime.minute.toString().padLeft(2, '0')}';
+
+    final String endTimeStr =
+        '${event.realEndTime.day.toString().padLeft(2, '0')}/'
+        '${event.realEndTime.month.toString().padLeft(2, '0')} '
+        '${event.realEndTime.hour.toString().padLeft(2, '0')}:'
+        '${event.realEndTime.minute.toString().padLeft(2, '0')}';
+
+    return GestureDetector(
+      onTap: () => _handleActivityTap(event),
+      child: TaskWidget(
+        title: event.title,
+        amountText: event.amountText,
+        startTime: startTimeStr,
+        endTime: endTimeStr,
+        baseColor: baseColor,
+        isShort: isShort,
+      ),
     );
   }
 
-  _DayEvent? _findEventStartingAt(int hour) {
+  void _handleActivityTap(DayEvent event) {
+    // Chỉ xử lý cho activity type EXPENSE
+    if (event.type.toUpperCase() != 'EXPENSE') {
+      return;
+    }
+
+    // Lấy activity entity từ state để có đầy đủ thông tin
+    final state = _activitiesBloc.state;
+    if (state is! DayActivitiesLoaded) return;
+
+    final activity = state.data.activities.firstWhere(
+      (a) => a.id == event.id,
+      orElse: () => throw Exception('Activity not found'),
+    );
+
+    _showEditActivityBottomSheet(activity);
+  }
+
+  void _showEditActivityBottomSheet(DayActivityDetailEntity activity) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.95,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: EditViewScreen(
+          contentWidget: chiTieuWidget(
+            activityToEdit: activity,
+            bloc: _activitiesBloc,
+            initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+          ),
+        ),
+      ),
+    ).then((_) {
+      // Sau khi đóng dialog, refresh lại data
+      final String dateIso =
+          '${selectedYear.toString().padLeft(4, '0')}-'
+          '${selectedMonth.toString().padLeft(2, '0')}-'
+          '${selectedDay.toString().padLeft(2, '0')}';
+      _activitiesBloc.add(FetchActivitiesByDay(dateIso: dateIso));
+    });
+  }
+
+  DayEvent? _findEventStartingAt(int hour) {
     try {
       // Not used with BLoC data; kept for potential future feature
       return null;
@@ -630,8 +746,6 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
       return null;
     }
   }
-
-  void _showSearchModal(BuildContext context) {}
 
   void _showBillModal(BuildContext context) {
     Navigator.push(
@@ -641,24 +755,6 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
       ),
     );
   }
-}
-
-class _DayEvent {
-  final int startHour;
-  final int endHour;
-  final String title;
-  final String? amountText;
-  final Color? color;
-
-  _DayEvent({
-    required this.startHour,
-    required this.endHour,
-    required this.title,
-    this.amountText,
-    this.color,
-  }) : assert(endHour >= startHour);
-
-  int get durationHours => (endHour - startHour).clamp(1, 24);
 }
 
 extension DayDetailExtension on _DayDetailScreenState {
@@ -807,37 +903,5 @@ extension DayDetailExtension on _DayDetailScreenState {
       ],
       selectedIndex: 2, // Diary tab
     );
-  }
-}
-
-extension _Mapping on _DayDetailScreenState {
-  List<_DayEvent> _mapDayActivitiesToEvents(DayActivitiesLoaded state) {
-    return state.data.activities.map((a) {
-      final localStart = a.timeStart.toLocal();
-      final localEnd = a.timeEnd.toLocal();
-      final int startHour = localStart.hour;
-      final int endHour = (localEnd.hour == localStart.hour)
-          ? (localStart.hour + 1)
-          : localEnd.hour;
-      final String amountText = _amountTextByType(a.type);
-      return _DayEvent(
-        startHour: startHour.clamp(0, 23),
-        endHour: endHour.clamp(1, 24),
-        title: a.title,
-        amountText: amountText,
-        color: Colors.blueGrey, // keep a neutral color; type shown as text
-      );
-    }).toList();
-  }
-
-  String _amountTextByType(String type) {
-    switch (type.toUpperCase()) {
-      case 'EXPENSE':
-        return 'Chi tiêu';
-      case 'INCOME':
-        return 'Thu nhập';
-      default:
-        return '';
-    }
   }
 }

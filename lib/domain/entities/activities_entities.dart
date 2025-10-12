@@ -31,6 +31,18 @@ class DayActivityDetailEntity {
   final String type;
   final DateTime timeStart;
   final DateTime timeEnd;
+  final bool day;
+  final String? repeat;
+  final String? isRepeat;
+  final DateTime? endRepeatDay;
+  final String? object;
+  final String? unit;
+  final double? amount;
+  final String? targetPerson;
+  final String? sourcePerson;
+  final String? note;
+  final double? money;
+  final String? purpose;
 
   DayActivityDetailEntity({
     required this.id,
@@ -38,6 +50,18 @@ class DayActivityDetailEntity {
     required this.type,
     required this.timeStart,
     required this.timeEnd,
+    required this.day,
+    this.repeat,
+    this.isRepeat,
+    this.endRepeatDay,
+    this.object,
+    this.unit,
+    this.amount,
+    this.targetPerson,
+    this.sourcePerson,
+    this.note,
+    this.money,
+    this.purpose,
   });
 }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// File chứa các kích thước và constraints được sử dụng trong ứng dụng
+
 class AppConstraints {
   //===========COLORS===========
   static const lightGray = Color(0xFFC4C6C8);
@@ -192,5 +193,46 @@ class AppConstraints {
   /// Kiểm tra có phải desktop không
   static bool isDesktop(BuildContext context) {
     return MediaQuery.of(context).size.width >= desktopBreakpoint;
+  }
+}
+
+// ========== ACTIVITY TYPES ENUM ==========
+/// Enum định nghĩa các loại activity trong ứng dụng
+enum ActivityType {
+  /// Chi tiêu
+  expense('EXPENSE', 'Chi tiêu'),
+
+  /// Thu nhập
+  income('INCOME', 'Thu nhập'),
+
+  /// Kỹ thuật
+  technique('TECHNIQUE', 'Kỹ thuật'),
+
+  /// Dịch bệnh
+  disease('DISEASE', 'Dịch bệnh');
+
+  /// Giá trị string tương ứng với backend
+  final String value;
+
+  /// Tên hiển thị tiếng Việt
+  final String displayName;
+
+  const ActivityType(this.value, this.displayName);
+
+  /// Chuyển từ string sang enum
+  static ActivityType fromString(String value) {
+    return ActivityType.values.firstWhere(
+      (type) => type.value.toUpperCase() == value.toUpperCase(),
+      orElse: () => ActivityType.expense,
+    );
+  }
+
+  /// Lấy display name từ string value
+  static String getDisplayName(String value) {
+    try {
+      return fromString(value).displayName;
+    } catch (e) {
+      return value;
+    }
   }
 }

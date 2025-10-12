@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
@@ -35,6 +36,7 @@ class AppTextField extends StatelessWidget {
   final bool isDense;
   final double? contentPaddingVertical;
   final InputDecoration? decoration;
+  final List<TextInputFormatter>? inputFormatters;
 
   const AppTextField({
     super.key,
@@ -69,11 +71,13 @@ class AppTextField extends StatelessWidget {
     this.autofocus = false,
     this.isDense = true,
     this.decoration,
+    this.inputFormatters,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      inputFormatters: inputFormatters,
       controller:
           controller ??
           (initialValue != null
@@ -287,6 +291,7 @@ class AppTextFormField extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
       ),
+
       disabledBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: defaultBorderColor.withOpacity(0.5),

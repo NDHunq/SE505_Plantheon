@@ -14,4 +14,9 @@ abstract class ActivitiesRepository {
   Future<CreateActivityResponseModel> createActivity({
     required CreateActivityRequestModel request,
   });
+
+  Future<CreateActivityResponseModel> updateActivity({
+    required String id,
+    required CreateActivityRequestModel request,
+  });
 }

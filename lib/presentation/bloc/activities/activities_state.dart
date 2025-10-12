@@ -1,4 +1,5 @@
 import 'package:se501_plantheon/data/models/activities_models.dart';
+import 'package:se501_plantheon/domain/entities/activities_entities.dart';
 
 abstract class ActivitiesState {}
 
@@ -19,7 +20,7 @@ class ActivitiesError extends ActivitiesState {
 class DayActivitiesLoading extends ActivitiesState {}
 
 class DayActivitiesLoaded extends ActivitiesState {
-  final DayActivitiesOfDayModel data;
+  final DayActivitiesOfDayEntity data;
   DayActivitiesLoaded({required this.data});
 }
 
@@ -33,4 +34,16 @@ class CreateActivitySuccess extends ActivitiesState {
 class CreateActivityError extends ActivitiesState {
   final String message;
   CreateActivityError({required this.message});
+}
+
+class UpdateActivityLoading extends ActivitiesState {}
+
+class UpdateActivitySuccess extends ActivitiesState {
+  final CreateActivityResponseModel response;
+  UpdateActivitySuccess({required this.response});
+}
+
+class UpdateActivityError extends ActivitiesState {
+  final String message;
+  UpdateActivityError({required this.message});
 }
