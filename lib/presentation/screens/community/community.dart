@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:share_plus/share_plus.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
@@ -477,6 +478,23 @@ class _CommunityState extends State<Community> {
     }
   }
 
+  void _handleShare({
+    required String username,
+    required String content,
+    required String category,
+    required int postIndex,
+  }) {
+    String shareText =
+        'Bài viết từ $username\n\n$content\n\n#$category\n\nChia sẻ từ Plantheon';
+
+    Share.share(shareText, subject: 'Bài viết từ Plantheon').then((_) {
+      // Cập nhật số lượt chia sẻ
+      setState(() {
+        posts[postIndex]['shares'] += 1;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -717,7 +735,14 @@ class _CommunityState extends State<Community> {
                 ActionButton(
                   iconVector: AppVectors.share,
                   label: 'Chia sẻ',
-                  onPressed: () {},
+                  onPressed: () {
+                    _handleShare(
+                      username: username,
+                      content: content,
+                      category: category,
+                      postIndex: postIndex,
+                    );
+                  },
                 ),
               ],
             ),
