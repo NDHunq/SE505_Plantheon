@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 
 class FarmingTipStageCard extends StatefulWidget {
   final String vectorAsset;
@@ -76,35 +77,29 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                             ),
                             child: Text(
                               widget.stageLabel,
-                              style: TextStyle(
+                              style: AppTextStyles.s12Medium(
                                 color: widget.isNow
                                     ? AppColors.white
                                     : AppColors.text_color_200,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             widget.stageDescription,
-                            style: TextStyle(
+                            style: AppTextStyles.s14Medium(
                               color: widget.isNow
                                   ? AppColors.white
                                   : AppColors.text_color_200,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             widget.stageTime,
-                            style: TextStyle(
+                            style: AppTextStyles.s20Bold(
                               color: widget.isNow
                                   ? AppColors.white
                                   : AppColors.text_color_400,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],

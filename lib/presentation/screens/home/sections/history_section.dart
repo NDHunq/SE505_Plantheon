@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/presentation/screens/home/scan_history.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/history_card.dart';
 
 class HistorySection extends StatelessWidget {
@@ -9,23 +12,27 @@ class HistorySection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 8,
+      spacing: 8.sp,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'Lịch sử quét bệnh',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+              style: AppTextStyles.s16Medium(color: AppColors.primary_700),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ScanHistory()),
+                );
+              },
+              icon: Icon(
+                Icons.arrow_forward_ios,
+                size: 16.sp,
                 color: AppColors.primary_700,
               ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: AppColors.primary_700,
             ),
           ],
         ),
@@ -36,13 +43,21 @@ class HistorySection extends StatelessWidget {
               dateTime: '20/10/2023 14:30',
               isSuccess: true,
             ),
-            Divider(height: 16, color: AppColors.text_color_100, thickness: 1),
+            Divider(
+              height: 16.sp,
+              color: AppColors.text_color_100,
+              thickness: 1.sp,
+            ),
             HistoryCard(
               title: 'Cây trồng 2',
               dateTime: '21/10/2023 10:00',
               isSuccess: false,
             ),
-            Divider(height: 16, color: AppColors.text_color_100, thickness: 1),
+            Divider(
+              height: 16.sp,
+              color: AppColors.text_color_100,
+              thickness: 1.sp,
+            ),
             HistoryCard(
               title: 'Cây trồng 3',
               dateTime: '22/10/2023 09:00',

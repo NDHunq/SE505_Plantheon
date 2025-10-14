@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/presentation/screens/home/weather.dart';
 
 class WeatherCard extends StatelessWidget {
@@ -39,17 +40,13 @@ class WeatherCard extends StatelessWidget {
                 children: [
                   Text(
                     'Hôm nay,',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                    style: AppTextStyles.s16Medium(
                       color: AppColors.primary_main,
                     ),
                   ),
                   Text(
                     'Mưa có sấm chớp',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
+                    style: AppTextStyles.s12Regular(
                       color: AppColors.text_color_200,
                     ),
                   ),
@@ -58,11 +55,7 @@ class WeatherCard extends StatelessWidget {
               Spacer(),
               Text(
                 '28°C',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primary_600,
-                ),
+                style: AppTextStyles.s20Bold(color: AppColors.primary_600),
               ),
             ],
           ),

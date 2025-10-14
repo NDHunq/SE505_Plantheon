@@ -36,10 +36,8 @@ class FarmingTips extends StatelessWidget {
                   children: [
                     Text(
                       "Ngày gieo:",
-                      style: TextStyle(
+                      style: AppTextStyles.s14Medium(
                         color: AppColors.text_color_200,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     SizedBox(height: 8),
@@ -221,9 +219,7 @@ class StagePreviewCard extends StatelessWidget {
                 ),
                 Text(
                   "Những điều cần biết về việc chăm sóc cây trồng trong giai đoạn đầu.",
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w400,
+                  style: AppTextStyles.s10Regular(
                     color: AppColors.text_color_400,
                   ),
                   maxLines: 2,

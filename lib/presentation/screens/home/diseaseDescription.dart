@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/common/widgets/topnavigation/navigation.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/data/models/diseases.model.dart';
@@ -64,7 +66,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                   const SizedBox(height: 16),
                   Text(
                     'Lỗi: ${state.message}',
-                    style: const TextStyle(fontSize: 16),
+                    style: AppTextStyles.s16Regular(),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -74,7 +76,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                         GetDiseaseEvent(diseaseId: widget.diseaseId),
                       );
                     },
-                    child: const Text('Thử lại'),
+                    child: Text('Thử lại', style: AppTextStyles.s16Medium()),
                   ),
                 ],
               ),
@@ -108,32 +110,24 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
   Widget _buildDiseaseInfoSection(DiseaseModel disease) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(AppConstraints.mainPadding),
+      padding: EdgeInsets.all(AppConstraints.mainPadding.sp),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             disease.name,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary_600,
-            ),
+            style: AppTextStyles.s20Bold(color: AppColors.primary_600),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.sp),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 6.sp),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16.sp),
               border: Border.all(color: AppColors.primary_300),
             ),
             child: Text(
               disease.type,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.primary_700,
-              ),
+              style: AppTextStyles.s14Medium(color: AppColors.primary_700),
             ),
           ),
         ],
@@ -145,9 +139,9 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 8),
+        SizedBox(height: 8.sp),
         SizedBox(
-          height: 200,
+          height: 200.sp,
           child: PageView.builder(
             controller: _pageController,
             onPageChanged: (index) {
@@ -158,8 +152,8 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
             itemCount: disease.imageLink.length,
             itemBuilder: (context, index) {
               return Container(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: AppConstraints.mainPadding,
+                margin: EdgeInsets.symmetric(
+                  horizontal: AppConstraints.mainPadding.sp,
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
@@ -195,7 +189,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
             },
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.sp),
         // Page indicators
         Center(
           child: Row(
@@ -203,20 +197,20 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
             children: List.generate(
               disease.imageLink.length,
               (index) => Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: _currentImageIndex == index ? 24 : 8,
-                height: 8,
+                margin: EdgeInsets.symmetric(horizontal: 4.sp),
+                width: _currentImageIndex == index ? 24.sp : 8.sp,
+                height: 8.sp,
                 decoration: BoxDecoration(
                   color: _currentImageIndex == index
                       ? AppColors.primary_600
                       : AppColors.primary_300,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(4.sp),
                 ),
               ),
             ),
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24.sp),
       ],
     );
   }
@@ -224,7 +218,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
   Widget _buildHtmlContentSection(DiseaseModel disease) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(AppConstraints.mainPadding),
+      padding: EdgeInsets.all(AppConstraints.mainPadding.sp),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

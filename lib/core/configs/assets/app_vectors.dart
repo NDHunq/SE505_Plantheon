@@ -1,5 +1,5 @@
 class AppVectors {
-  static const String basePath = 'vectors/';
+  static const String basePath = 'assets/vectors/';
   static const String format = '.svg';
   static const String homeSolid = '${basePath}home_solid$format';
   static const String homeStroke = '${basePath}home_stroke$format';
@@ -19,4 +19,23 @@ class AppVectors {
   static const String weatherRainy = '${basePath}rainy$format';
   static const String weatherRainThunder = '${basePath}rain_thunder$format';
   static const String weatherPartlyCloudy = '${basePath}partly_cloudy$format';
+  static const String trash = '${basePath}trash$format';
+  static const String scan = '${basePath}scan$format';
+  static const String camera = '${basePath}camera$format';
+  static const String qr = '${basePath}qr$format';
+  static const String userEdit = '${basePath}user_edit$format';
+  static const String logout = '${basePath}logout$format';
+  static const String phone = '${basePath}phone$format';
+  static const String history = '${basePath}history$format';
+  static const String bell = '${basePath}bell$format';
+  static const String global = '${basePath}global$format';
+  static const String report = '${basePath}report$format';
+  static const String vi = '${basePath}vi$format';
+  static const String en = '${basePath}en$format';
+  static const String post = '${basePath}post$format';
+  static const String heart = '${basePath}heart$format';
+  static const String heartSolid = '${basePath}heart_solid$format';
+  static const String comment = '${basePath}comment$format';
+  static const String postReport = '${basePath}post_report$format';
+  static const String share = '${basePath}share$format';
 }

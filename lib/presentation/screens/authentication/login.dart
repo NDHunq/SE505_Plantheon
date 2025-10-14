@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/common/widgets/button/sized_button.dart';
-import 'package:se501_plantheon/presentation/screens/Navigator/navigator.dart';
+import 'package:se501_plantheon/presentation/screens/navigator/navigator.dart';
 import '../../../core/configs/constants/app_info.dart';
 import '../../../core/configs/theme/app_colors.dart';
+import '../../../core/configs/assets/app_text_styles.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -36,15 +38,15 @@ class _SignInPageState extends State<SignInPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 50),
+              SizedBox(height: 50.sp),
               _registerText(),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.sp),
               _supportText(),
-              const SizedBox(height: 25),
+              SizedBox(height: 25.sp),
               _buildFormLogin(),
-              const SizedBox(height: 40),
+              SizedBox(height: 40.sp),
               _dividerWithText('hoặc'),
-              const SizedBox(height: 40),
+              SizedBox(height: 40.sp),
               _iconGroup(context),
             ],
           ),
@@ -59,28 +61,25 @@ class _SignInPageState extends State<SignInPage> {
       child: Column(
         children: [
           _userNameField(context),
-          const SizedBox(height: 15),
+          SizedBox(height: 15.sp),
           _passField(context),
-          const SizedBox(height: 15),
+          SizedBox(height: 15.sp),
           Padding(
-            padding: const EdgeInsets.only(left: 5),
+            padding: EdgeInsets.only(left: 5.sp),
             child: Align(
               alignment: Alignment.centerLeft,
               child: GestureDetector(
                 onTap: () async {
                   _showForgotPasswordBottomSheet(context);
                 },
-                child: const Text(
+                child: Text(
                   'Quên mật khẩu',
-                  style: TextStyle(
-                    color: AppColors.primary_main,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: AppTextStyles.s14Medium(color: AppColors.primary_main),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: 15.sp),
           SizedBox(
             width: double.infinity, // Chiều rộng bằng chiều rộng màn hình
             child: Sizedbutton(
@@ -89,7 +88,7 @@ class _SignInPageState extends State<SignInPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) => Navigation(),
+                    builder: (BuildContext context) => CustomNavigator(),
                   ),
                 );
               },
@@ -105,8 +104,8 @@ class _SignInPageState extends State<SignInPage> {
       children: [
         Expanded(child: _fadingDivider()),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          child: Text(text),
+          padding: EdgeInsets.symmetric(horizontal: 5.sp),
+          child: Text(text, style: AppTextStyles.s14Regular()),
         ),
         Expanded(child: _fadingDivider2()),
       ],
@@ -115,7 +114,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Widget _fadingDivider() {
     return Container(
-      height: 1,
+      height: 1.sp,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.grey, Colors.transparent],
@@ -128,7 +127,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Widget _fadingDivider2() {
     return Container(
-      height: 1,
+      height: 1.sp,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.transparent, Colors.grey],
@@ -140,10 +139,7 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Widget _registerText() {
-    return const Text(
-      'Đăng nhập',
-      style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
-    );
+    return Text('Đăng nhập', style: AppTextStyles.s32SemiBold());
   }
 
   Widget _supportText() {
@@ -152,18 +148,17 @@ class _SignInPageState extends State<SignInPage> {
         textAlign: TextAlign.center,
         text: TextSpan(
           children: [
-            const TextSpan(
+            TextSpan(
               text: 'Nếu bạn cần hỗ trợ, vui lòng liên hệ  ',
-              style: TextStyle(color: Colors.grey),
+              style: AppTextStyles.s14Regular(color: Colors.grey),
             ),
             WidgetSpan(
               child: GestureDetector(
                 onTap: () async {},
-                child: const Text(
+                child: Text(
                   'Tại đây',
-                  style: TextStyle(
+                  style: AppTextStyles.s14SemiBold(
                     color: AppColors.primary_main,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -176,11 +171,11 @@ class _SignInPageState extends State<SignInPage> {
 
   Widget _bottomText(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 30),
+      padding: EdgeInsets.only(bottom: 30.sp),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('Bạn chưa có tài khoản?'),
+          Text('Bạn chưa có tài khoản?', style: AppTextStyles.s14Regular()),
           TextButton(
             onPressed: () {
               // Navigator.push(
@@ -188,9 +183,9 @@ class _SignInPageState extends State<SignInPage> {
               //     MaterialPageRoute(
               //         builder: (BuildContext context) => SignUpPage()));
             },
-            child: const Text(
+            child: Text(
               'Đăng kí ngay',
-              style: TextStyle(color: AppColors.primary_main),
+              style: AppTextStyles.s14Medium(color: AppColors.primary_main),
             ),
           ),
         ],
@@ -201,10 +196,10 @@ class _SignInPageState extends State<SignInPage> {
   Widget _userNameField(BuildContext context) {
     return TextFormField(
       controller: _email,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         labelText: 'Số điện thoại',
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(12.sp)),
         ),
       ),
       validator: (String? value) {
@@ -225,8 +220,8 @@ class _SignInPageState extends State<SignInPage> {
       controller: _password,
       decoration: InputDecoration(
         labelText: 'Mật khẩu',
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12.sp)),
         ),
         suffixIcon: IconButton(
           icon: Icon(
@@ -258,7 +253,7 @@ class _SignInPageState extends State<SignInPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // SvgPicture.asset(AppVectors.google, height: 35),
-        const SizedBox(width: 50),
+        SizedBox(width: 50.sp),
         // SvgPicture.asset(AppVectors.facebook, height: 35),
       ],
     );
@@ -274,9 +269,9 @@ class _SignInPageState extends State<SignInPage> {
             bottom: MediaQuery.of(
               context,
             ).viewInsets.bottom, // Lấy khoảng trống của bàn phím
-            left: 25.0,
-            right: 25.0,
-            top: 25.0,
+            left: 25.sp,
+            right: 25.sp,
+            top: 25.sp,
           ),
           child: SingleChildScrollView(
             // Bao bọc nội dung để cho phép cuộn
@@ -286,40 +281,38 @@ class _SignInPageState extends State<SignInPage> {
               children: [
                 Center(
                   child: Container(
-                    width: 100,
-                    height: 5,
+                    width: 100.sp,
+                    height: 5.sp,
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10.sp),
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
-                const Text(
-                  'Quên mật khẩu',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-                const Text(
+                SizedBox(height: 30.sp),
+                Text('Quên mật khẩu', style: AppTextStyles.s20Bold()),
+                SizedBox(height: 20.sp),
+                Text(
                   'Vui lòng nhập số điện thoại của bạn để nhận OTP đặt lại mật khẩu.',
+                  style: AppTextStyles.s14Regular(),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.sp),
                 TextFormField(
                   controller: _phoneDialogController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Số điện thoại',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      borderRadius: BorderRadius.all(Radius.circular(12.sp)),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.sp),
                 Sizedbutton(
                   onPressFun: () {},
                   text: 'Gửi OTP',
                   width: double.infinity,
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.sp),
               ],
             ),
           ),
@@ -365,19 +358,14 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 30),
-                    const Text(
-                      'Nhập OTP',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
+                    SizedBox(height: 30.sp),
+                    Text('Nhập OTP', style: AppTextStyles.s20Bold()),
+                    SizedBox(height: 20.sp),
+                    Text(
                       'Vui lòng nhập số mã OTP đã được gửi đến số điện thoại của bạn.',
+                      style: AppTextStyles.s14Regular(),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.sp),
                     // PinCodeTextField(
                     //   appContext: context,
                     //   controller: OTPController,
@@ -402,15 +390,15 @@ class _SignInPageState extends State<SignInPage> {
                     //     selectedColor: AppColors.xanh_ngoc_nhat,
                     //   ),
                     // ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10.sp),
                     Visibility(
                       visible: isOtpError,
-                      child: const Text(
+                      child: Text(
                         "OTP không hợp lệ hoặc hết hạn",
-                        style: TextStyle(color: Colors.red),
+                        style: AppTextStyles.s14Regular(color: Colors.red),
                       ),
                     ),
-                    const SizedBox(height: 15),
+                    SizedBox(height: 15.sp),
                     Sizedbutton(
                       onPressFun: () {},
                       text: 'Tiếp tục',
@@ -461,17 +449,14 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 30),
-                    const Text(
-                      'Cập nhật mật khẩu',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    SizedBox(height: 30.sp),
+                    Text('Cập nhật mật khẩu', style: AppTextStyles.s20Bold()),
+                    SizedBox(height: 20.sp),
+                    Text(
+                      'Vui lòng nhập mật khẩu mới của bạn.',
+                      style: AppTextStyles.s14Regular(),
                     ),
-                    const SizedBox(height: 20),
-                    const Text('Vui lòng nhập mật khẩu mới của bạn.'),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.sp),
                     TextFormField(
                       controller: _newPasswordController,
                       decoration: InputDecoration(
@@ -504,13 +489,15 @@ class _SignInPageState extends State<SignInPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.sp),
                     TextFormField(
                       controller: _confirmPasswordController,
                       decoration: InputDecoration(
                         labelText: 'Xác nhận mật khẩu mới',
-                        border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(12.sp),
+                          ),
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -537,15 +524,15 @@ class _SignInPageState extends State<SignInPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10.sp),
                     Visibility(
                       visible: isOtpError,
-                      child: const Text(
+                      child: Text(
                         "Mật khẩu không khớp",
-                        style: TextStyle(color: Colors.red),
+                        style: AppTextStyles.s14Regular(color: Colors.red),
                       ),
                     ),
-                    const SizedBox(height: 15),
+                    SizedBox(height: 15.sp),
                     Sizedbutton(
                       onPressFun: () {
                         // Xử lý đổi mật khẩu ở đây

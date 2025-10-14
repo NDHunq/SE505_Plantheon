@@ -1,154 +1,183 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/account/account.dart';
 import 'package:se501_plantheon/presentation/screens/community/community.dart';
 import 'package:se501_plantheon/presentation/screens/diary/diary.dart';
 import 'package:se501_plantheon/presentation/screens/home/home.dart';
-import 'package:se501_plantheon/core/services/navigation_service.dart';
+import 'package:se501_plantheon/presentation/screens/scan/scan.dart';
 
-class Navigation extends StatefulWidget {
-  final int? tab;
-  final int? userId;
-  const Navigation({super.key, this.tab, this.userId});
+class CustomNavigator extends StatefulWidget {
+  const CustomNavigator({Key? key}) : super(key: key);
 
   @override
-  State<Navigation> createState() => _NavigationState();
+  State<CustomNavigator> createState() => _CustomNavigatorState();
 }
 
-class _NavigationState extends State<Navigation> {
-  int currentPageIndex = 0;
+class _CustomNavigatorState extends State<CustomNavigator> {
+  int _selectedIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.tab != null) {
-      currentPageIndex = widget.tab!;
-    }
+  final List<Widget> _pages = [Home(), Diary(), Community(), Account()];
 
-    // Set up navigation service callback
-    NavigationService.instance.setTabChangeCallback((int tabIndex) {
-      if (mounted) {
-        setState(() {
-          currentPageIndex = tabIndex;
-        });
-      }
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
     });
-  }
-
-  @override
-  void dispose() {
-    NavigationService.instance.removeCallback();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: _navigationBar(),
-      body: [
-        const Home(),
-        const Community(),
-        const Diary(),
-        const Account(),
-      ][currentPageIndex],
-    );
-  }
+      extendBody: true,
+      body: _pages[_selectedIndex],
+      floatingActionButton: Container(
+        height: 70.sp,
+        width: 70.sp,
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.primary_300, width: 5),
+          borderRadius: BorderRadius.circular(50.sp),
+        ),
 
-  Widget _navigationBar() {
-    return NavigationBar(
-      onDestinationSelected: (int index) {
-        setState(() {
-          currentPageIndex = index;
-        });
-      },
-      height: 56,
-      indicatorColor: Colors.transparent,
-      // indicatorShape: const Border(
-      //   top: BorderSide(
-      //     color: AppColors.xanh_main,
-      //     width: 4,
-      //   ),
-      // ),
-      destinations: [
-        NavigationDestination(
-          selectedIcon: Padding(
-            padding: const EdgeInsets.only(top: 3),
-            child: SvgPicture.asset(
-              AppVectors.homeSolid,
-              height: 23,
-              width: 23,
-            ),
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => const Scan()));
+          },
+          backgroundColor: AppColors.primary_main,
+          elevation: 0,
+          shape: CircleBorder(),
+          child: SvgPicture.asset(
+            AppVectors.scan,
+            height: 30.sp,
+            width: 30.sp,
+            color: Colors.white,
           ),
-          icon: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: SvgPicture.asset(
-              AppVectors.homeStroke,
-              height: 23,
-              width: 23,
-            ),
-          ),
-          label: '',
         ),
-        NavigationDestination(
-          selectedIcon: Padding(
-            padding: const EdgeInsets.only(top: 3),
-            child: SvgPicture.asset(
-              AppVectors.diarySolid,
-              height: 23,
-              width: 23,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8.0,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Row(
+              spacing: 24.sp,
+              children: [
+                InkWell(
+                  borderRadius: BorderRadius.all(Radius.circular(20.sp)),
+                  onTap: () => _onItemTapped(0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        _selectedIndex == 0
+                            ? AppVectors.homeSolid
+                            : AppVectors.homeStroke,
+                        height: 25.sp,
+                        width: 25.sp,
+                      ),
+                      Text(
+                        'Trang chủ',
+                        style: TextStyle(
+                          color: _selectedIndex == 0
+                              ? Colors.green
+                              : Colors.grey,
+                          fontSize: 11.sp,
+                        ), // Removed ANSI color code
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.all(Radius.circular(20.sp)),
+                  onTap: () => _onItemTapped(1),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        _selectedIndex == 1
+                            ? AppVectors.diarySolid
+                            : AppVectors.diaryStroke,
+                        height: 25.sp,
+                        width: 25.sp,
+                      ),
+                      Text(
+                        'Nhật ký',
+                        style: TextStyle(
+                          color: _selectedIndex == 1
+                              ? Colors.green
+                              : Colors.grey,
+                          fontSize: 11.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(width: 0.sp),
+              ],
             ),
-          ),
-          icon: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: SvgPicture.asset(
-              AppVectors.diaryStroke,
-              height: 23,
-              width: 23,
+            Row(
+              spacing: 24.sp,
+              children: [
+                InkWell(
+                  borderRadius: BorderRadius.all(Radius.circular(20.sp)),
+                  onTap: () => _onItemTapped(2),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        _selectedIndex == 2
+                            ? AppVectors.communitySolid
+                            : AppVectors.communityStroke,
+                        height: 25.sp,
+                        width: 25.sp,
+                      ),
+                      Text(
+                        'Cộng đồng',
+                        style: TextStyle(
+                          color: _selectedIndex == 2
+                              ? Colors.green
+                              : Colors.grey,
+                          fontSize: 11.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.all(Radius.circular(20.sp)),
+                  onTap: () => _onItemTapped(3),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        _selectedIndex == 3
+                            ? AppVectors.accountSolid
+                            : AppVectors.accountStroke,
+                        height: 25.sp,
+                        width: 25.sp,
+                      ),
+                      Text(
+                        'Tài khoản',
+                        style: TextStyle(
+                          color: _selectedIndex == 3
+                              ? Colors.green
+                              : Colors.grey,
+                          fontSize: 11.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ),
-          label: '',
+          ],
         ),
-        NavigationDestination(
-          selectedIcon: Padding(
-            padding: const EdgeInsets.only(top: 3),
-            child: SvgPicture.asset(
-              AppVectors.communitySolid,
-              height: 23,
-              width: 23,
-            ),
-          ),
-          icon: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: SvgPicture.asset(
-              AppVectors.communityStroke,
-              height: 23,
-              width: 23,
-            ),
-          ),
-          label: '',
-        ),
-        NavigationDestination(
-          selectedIcon: Padding(
-            padding: const EdgeInsets.only(top: 3),
-            child: SvgPicture.asset(
-              AppVectors.accountSolid,
-              height: 23,
-              width: 23,
-            ),
-          ),
-          icon: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: SvgPicture.asset(
-              AppVectors.accountStroke,
-              height: 23,
-              width: 23,
-            ),
-          ),
-          label: '',
-        ),
-      ],
-      selectedIndex: currentPageIndex,
+      ),
     );
   }
 }

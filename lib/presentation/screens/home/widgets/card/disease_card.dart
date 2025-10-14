@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 
 class DiseaseWarningCard extends StatelessWidget {
   final String title;
@@ -40,9 +41,7 @@ class DiseaseWarningCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                  style: AppTextStyles.s12SemiBold(
                     color: AppColors.text_color_400,
                   ),
                   maxLines: 2,
@@ -50,9 +49,7 @@ class DiseaseWarningCard extends StatelessWidget {
                 ),
                 Text(
                   description,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w400,
+                  style: AppTextStyles.s10Regular(
                     color: AppColors.text_color_400,
                   ),
                   maxLines: 2,

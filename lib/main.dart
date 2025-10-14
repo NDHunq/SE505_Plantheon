@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
 
 void main() {
@@ -10,9 +11,17 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: SignInPage(),
-      debugShowCheckedModeBanner: false,
+    return ScreenUtilInit(
+      designSize: const Size(
+        375,
+        812,
+      ), // Kích thước thiết kế tham chiếu (thường là kích thước của thiết kế UI)
+      builder: (context, child) {
+        return MaterialApp(
+          home: SignInPage(),
+          debugShowCheckedModeBanner: false,
+        );
+      },
     );
   }
 }
