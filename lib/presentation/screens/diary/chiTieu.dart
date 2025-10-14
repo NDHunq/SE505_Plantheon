@@ -961,8 +961,8 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                     ),
                     child: Text(
                       widget.activityToEdit != null
-                          ? 'Sửa Chi Tiêu'
-                          : 'Lưu Chi Tiêu',
+                          ? 'Sửa Nhật ký'
+                          : 'Lưu Nhật ký',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,

@@ -77,7 +77,6 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      inputFormatters: inputFormatters,
       controller:
           controller ??
           (initialValue != null
@@ -88,6 +87,9 @@ class AppTextField extends StatelessWidget {
       enabled: enabled,
       readOnly: readOnly,
       maxLines: maxLines,
+      minLines: maxLines != null && maxLines! > 1 ? 1 : null,
+      expands: false,
+      scrollPhysics: const BouncingScrollPhysics(),
       maxLength: maxLength,
       onTap: onTap,
       onChanged: onChanged,
@@ -97,6 +99,7 @@ class AppTextField extends StatelessWidget {
       autofocus: autofocus,
       style: textStyle,
       decoration: decoration ?? _buildDefaultDecoration(context),
+      inputFormatters: inputFormatters,
     );
   }
 
@@ -188,6 +191,7 @@ class AppTextFormField extends StatelessWidget {
   final bool autofocus;
   final bool isDense;
   final InputDecoration? decoration;
+  final bool? isOneLine;
 
   const AppTextFormField({
     super.key,
@@ -221,6 +225,7 @@ class AppTextFormField extends StatelessWidget {
     this.autofocus = false,
     this.isDense = true,
     this.decoration,
+    this.isOneLine = true,
   });
 
   @override
@@ -232,7 +237,12 @@ class AppTextFormField extends StatelessWidget {
       obscureText: obscureText,
       enabled: enabled,
       readOnly: readOnly,
-      maxLines: maxLines,
+      maxLines: isOneLine == true ? 1 : maxLines,
+      minLines: (isOneLine == true)
+          ? 1
+          : (maxLines != null && maxLines! > 1 ? 1 : null),
+      expands: false,
+      scrollPhysics: const BouncingScrollPhysics(),
       maxLength: maxLength,
       onTap: onTap,
       onChanged: onChanged,
