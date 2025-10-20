@@ -35,6 +35,10 @@ class DayActivityDetailEntity {
   final String? repeat;
   final String? isRepeat;
   final DateTime? endRepeatDay;
+  final String? alertTime;
+  final String? description;
+  final String? description2;
+  final String? description3;
   final String? object;
   final String? unit;
   final double? amount;
@@ -54,6 +58,10 @@ class DayActivityDetailEntity {
     this.repeat,
     this.isRepeat,
     this.endRepeatDay,
+    this.alertTime,
+    this.description,
+    this.description2,
+    this.description3,
     this.object,
     this.unit,
     this.amount,

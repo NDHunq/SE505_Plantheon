@@ -15,6 +15,8 @@ import 'package:se501_plantheon/presentation/bloc/activities/activities_state.da
 import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
 import 'package:se501_plantheon/presentation/screens/diary/chiTieu.dart';
+import 'package:se501_plantheon/presentation/screens/diary/dichBenh.dart';
+import 'package:se501_plantheon/presentation/screens/diary/kyThuat.dart';
 import 'package:se501_plantheon/presentation/screens/diary/editView.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/task.dart';
 import 'package:se501_plantheon/presentation/screens/diary/models/day_event.dart';
@@ -689,8 +691,9 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
   }
 
   void _handleActivityTap(DayEvent event) {
-    // Chỉ xử lý cho activity type EXPENSE
-    if (event.type.toUpperCase() != 'EXPENSE') {
+    // Xử lý cho các activity type được hỗ trợ
+    final supportedTypes = ['EXPENSE', 'DISEASE', 'TECHNIQUE'];
+    if (!supportedTypes.contains(event.type.toUpperCase())) {
       return;
     }
 
@@ -707,6 +710,39 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
   }
 
   void _showEditActivityBottomSheet(DayActivityDetailEntity activity) {
+    // Chọn widget phù hợp dựa trên type
+    Widget contentWidget;
+    switch (activity.type.toUpperCase()) {
+      case 'EXPENSE':
+        contentWidget = chiTieuWidget(
+          activityToEdit: activity,
+          bloc: _activitiesBloc,
+          initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+        );
+        break;
+      case 'DISEASE':
+        contentWidget = dichBenhWidget(
+          activityToEdit: activity,
+          bloc: _activitiesBloc,
+          initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+        );
+        break;
+      case 'TECHNIQUE':
+        contentWidget = kyThuatWidget(
+          activityToEdit: activity,
+          bloc: _activitiesBloc,
+          initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+        );
+        break;
+      default:
+        // Fallback to chiTieuWidget for unsupported types
+        contentWidget = chiTieuWidget(
+          activityToEdit: activity,
+          bloc: _activitiesBloc,
+          initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+        );
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -720,13 +756,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
             topRight: Radius.circular(20),
           ),
         ),
-        child: EditViewScreen(
-          contentWidget: chiTieuWidget(
-            activityToEdit: activity,
-            bloc: _activitiesBloc,
-            initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
-          ),
-        ),
+        child: EditViewScreen(contentWidget: contentWidget),
       ),
     ).then((_) {
       // Sau khi đóng dialog, refresh lại data

@@ -53,11 +53,11 @@ class _AddNewScreenState extends State<AddNewScreen> {
       case 'sales':
         return banSanPhamWidget(initialDate: widget.initialDate);
       case 'disasters':
-        return const dichBenhWidget();
+        return dichBenhWidget(initialDate: widget.initialDate);
       case 'techniques':
-        return const kyThuatWidget();
+        return kyThuatWidget(initialDate: widget.initialDate);
       case 'climate':
-        return const climateWidget();
+        return climateWidget();
       case 'other':
         return const otherWidget();
       default:

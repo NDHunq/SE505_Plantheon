@@ -76,6 +76,10 @@ class DayEventMapper {
         return 'Chi tiêu';
       case 'INCOME':
         return 'Thu nhập';
+      case 'DISEASE':
+        return 'Dịch bệnh';
+      case 'TECHNIQUE':
+        return 'Kỹ thuật';
       default:
         return '';
     }

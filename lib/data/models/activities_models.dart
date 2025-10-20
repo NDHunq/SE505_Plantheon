@@ -74,6 +74,10 @@ class DayActivityDetailModel {
   final String? repeat;
   final String? isRepeat;
   final DateTime? endRepeatDay;
+  final String? alertTime;
+  final String? description;
+  final String? description2;
+  final String? description3;
   final String? object;
   final String? unit;
   final double? amount;
@@ -93,6 +97,10 @@ class DayActivityDetailModel {
     this.repeat,
     this.isRepeat,
     this.endRepeatDay,
+    this.alertTime,
+    this.description,
+    this.description2,
+    this.description3,
     this.object,
     this.unit,
     this.amount,
@@ -126,6 +134,10 @@ class DayActivityDetailModel {
       endRepeatDay: json['end_repeat_day'] != null
           ? DateTime.parse(parseLocalDateTime(json['end_repeat_day'] as String))
           : null,
+      alertTime: json['alert_time'] as String?,
+      description: json['description'] as String?,
+      description2: json['description2'] as String?,
+      description3: json['description3'] as String?,
       object: json['object'] as String?,
       unit: json['unit'] as String?,
       amount: json['amount'] != null
@@ -149,6 +161,10 @@ class DayActivityDetailModel {
     repeat: repeat,
     isRepeat: isRepeat,
     endRepeatDay: endRepeatDay,
+    alertTime: alertTime,
+    description: description,
+    description2: description2,
+    description3: description3,
     object: object,
     unit: unit,
     amount: amount,

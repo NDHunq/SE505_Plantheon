@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:se501_plantheon/common/helpers/dayCompare.dart';
-import 'package:se501_plantheon/common/helpers/decimalTextInputFormatter.dart';
 import 'package:se501_plantheon/common/widgets/textfield/text_field.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/addNew_Row_1_1.dart';
@@ -47,6 +46,9 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
     text: "",
   );
   final TextEditingController noteController = TextEditingController(text: "");
+  final TextEditingController amountController = TextEditingController(
+    text: "",
+  );
 
   // State variables
   bool allDay = false;
@@ -113,24 +115,36 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
       if (activity.unit != null) {
         unit = activity.unit!;
       }
-      // if (activity.amount != null) {
-      //   damageDescriptionController.text = activity.amount!.toString();
-      // }
-      // if (activity.targetPerson != null) {
-      //   purchasedForController.text = activity.targetPerson!;
-      // }
-      // if (activity.sourcePerson != null) {
-      //   buyerController.text = activity.sourcePerson!;
-      // }
-      // if (activity.note != null) {
-      //   noteController.text = activity.note!;
-      // }
-      // if (activity.money != null) {
-      //   amountController.text = activity.money!.toString();
-      // }
-      // if (activity.purpose != null) {
-      //   purposeController.text = activity.purpose!.toString();
-      // }
+      if (activity.alertTime != null) {
+        alertTime = activity.alertTime!;
+      }
+
+      // Map fields for DISEASE type
+      // description -> descriptionController (Nội dung)
+      // description2 -> damageDescriptionController (Mô tả thiệt hại)
+      // description3 -> actionController (Biện pháp)
+      // amount -> amountController (Số lượng)
+      // sourcePerson -> implementedByController (Người thực hiện)
+      // note -> noteController (Ghi chú)
+
+      if (activity.description != null) {
+        descriptionController.text = activity.description!;
+      }
+      if (activity.description2 != null) {
+        damageDescriptionController.text = activity.description2!;
+      }
+      if (activity.description3 != null) {
+        actionController.text = activity.description3!;
+      }
+      if (activity.amount != null) {
+        amountController.text = activity.amount!.toString();
+      }
+      if (activity.sourcePerson != null) {
+        implementedByController.text = activity.sourcePerson!;
+      }
+      if (activity.note != null) {
+        noteController.text = activity.note!;
+      }
     } else {
       // Nếu tạo mới, thiết lập ngày và thời gian mặc định
       _initializeDefaultDateTime();
@@ -175,6 +189,7 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
     actionController.dispose();
     implementedByController.dispose();
     noteController.dispose();
+    amountController.dispose();
     super.dispose();
   }
 
@@ -360,64 +375,6 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
     );
   }
 
-  // Phương thức hiển thị dialog chọn đơn vị tính
-  Future<void> _showUnitDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Chọn đơn vị tính"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: units.map((unitItem) {
-              return ListTile(
-                title: Text(unitItem),
-                onTap: () {
-                  setState(() {
-                    unit = unitItem;
-                  });
-                  Navigator.of(context).pop();
-                },
-                trailing: unit == unitItem
-                    ? const Icon(Icons.check, color: Colors.green)
-                    : null,
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
-  }
-
-  // Phương thức hiển thị dialog chọn đơn vị tiền tệ
-  Future<void> _showCurrencyDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Chọn đơn vị tiền tệ"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: currencies.map((currencyItem) {
-              return ListTile(
-                title: Text(currencyItem),
-                onTap: () {
-                  setState(() {
-                    currency = currencyItem;
-                  });
-                  Navigator.of(context).pop();
-                },
-                trailing: currency == currencyItem
-                    ? const Icon(Icons.check, color: Colors.green)
-                    : null,
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
-  }
-
   // Helper method to format DateTime to ISO8601 string
   String _formatDateTimeToISO(DateTime date, String time) {
     if (allDay) {
@@ -469,38 +426,40 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
 
     final request = CreateActivityRequestModel(
       title: titleController.text.trim(),
-      type: "EXPENSE",
+      type: "DISEASE",
       day: allDay,
       timeStart: _formatDateTimeToISO(startDate, startTime),
       timeEnd: _formatDateTimeToISO(endDate, endTime),
-      repeat: repeatType != "Không" ? repeatType : null,
-      isRepeat: endRepeatType != "Không" ? endRepeatType : null,
+      repeat: repeatType != "Không" && repeatType.isNotEmpty
+          ? repeatType
+          : null,
+      isRepeat: endRepeatType != "Không" && endRepeatType.isNotEmpty
+          ? endRepeatType
+          : null,
       endRepeatDay: endRepeatType == "Ngày"
           ? _formatToISO8601(repeatEndDate)
           : null,
-      object: descriptionController.text.trim().isNotEmpty
+      alertTime: alertTime != "Không" && alertTime.isNotEmpty
+          ? alertTime
+          : null,
+      description: descriptionController.text.trim().isNotEmpty
           ? descriptionController.text.trim()
           : null,
-      unit: unit,
-      // amount: quantityController.text.trim().isNotEmpty
-      //     ? double.tryParse(quantityController.text.trim())
-      //     : null,
-      // targetPerson: purchasedForController.text.trim().isNotEmpty
-      //     ? purchasedForController.text.trim()
-      //     : null,
-      // sourcePerson: buyerController.text.trim().isNotEmpty
-      //     ? buyerController.text.trim()
-      //     : null,
-      // note: noteController.text.trim().isNotEmpty
-      //     ? noteController.text.trim()
-      //     : null,
-      // money: amountController.text.trim().isNotEmpty
-      //     ? double.tryParse(amountController.text.trim())
-      //     : null,
-      // purpose: purposeController.text.trim().isNotEmpty
-      //     ? purposeController.text.trim()
-      //     : null,
-      alertTime: alertTime != "Không" ? alertTime : null,
+      description2: damageDescriptionController.text.trim().isNotEmpty
+          ? damageDescriptionController.text.trim()
+          : null,
+      description3: actionController.text.trim().isNotEmpty
+          ? actionController.text.trim()
+          : null,
+      amount: amountController.text.trim().isNotEmpty
+          ? double.tryParse(amountController.text.trim())
+          : null,
+      sourcePerson: implementedByController.text.trim().isNotEmpty
+          ? implementedByController.text.trim()
+          : null,
+      note: noteController.text.trim().isNotEmpty
+          ? noteController.text.trim()
+          : null,
     );
 
     // Lấy bloc instance
@@ -587,7 +546,7 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                         ),
                       ),
                       child: const Text(
-                        "Chi tiêu",
+                        "Dịch bệnh",
                         style: TextStyle(
                           color: Colors.green,
                           fontWeight: FontWeight.w600,
@@ -841,13 +800,27 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                 ),
               ),
 
-              // Đơn vị tính
+              // Biện pháp
               AddNewRowVertical(
                 label: "Biện pháp",
                 child: AppTextField(controller: actionController, maxLines: 5),
               ),
 
-              // Số tiền đã chi
+              // Số lượng
+              AddNewRow(
+                label: "Số lượng",
+                child: AppTextField(
+                  controller: amountController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                  ],
+                ),
+              ),
+
+              // Người thực hiện
               AddNewRow(
                 label: "Người thực hiện ",
                 child: AppTextField(controller: implementedByController),
