@@ -284,12 +284,12 @@ class _PersonalSettingState extends State<PersonalSetting> {
               },
               child: SettingListItem(
                 leading: SvgPicture.asset(
-                  AppVectors.userEdit,
+                  AppVectors.report,
                   width: 20.sp,
                   height: 20.sp,
                   color: AppColors.primary_700,
                 ),
-                text: "Chỉnh sửa hồ sơ",
+                text: "Bài viết của tôi",
                 action: Icon(Icons.keyboard_arrow_right_rounded, size: 20.sp),
               ),
             ),
@@ -406,7 +406,7 @@ class HelpingSetting extends StatelessWidget {
             Divider(height: 1, color: AppColors.white),
             SettingListItem(
               leading: SvgPicture.asset(
-                AppVectors.report,
+                AppVectors.postReport,
                 width: 20.sp,
                 height: 20.sp,
                 color: AppColors.primary_700,

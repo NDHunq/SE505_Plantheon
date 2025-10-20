@@ -16,7 +16,7 @@ class DiseaseWarningSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Cảnh báo sâu hại & dịch bệnh',
+              'Tin tức',
               style: AppTextStyles.s16Medium(color: AppColors.primary_700),
             ),
             Icon(
