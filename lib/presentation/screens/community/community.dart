@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:se501_plantheon/presentation/screens/community/widgets/report_button.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
@@ -9,6 +10,7 @@ import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/community/post_detail.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/acction_button.dart';
+import 'package:se501_plantheon/presentation/screens/community/notification.dart';
 
 class Community extends StatefulWidget {
   const Community({super.key});
@@ -536,7 +538,12 @@ class _CommunityState extends State<Community> {
                 height: 24.sp,
                 color: AppColors.primary_main,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Notification()),
+                );
+              },
             ),
             SizedBox(width: 12.sp),
           ],
@@ -658,12 +665,7 @@ class _CommunityState extends State<Community> {
                     ],
                   ),
                 ),
-                SvgPicture.asset(
-                  AppVectors.postReport,
-                  width: 20.sp,
-                  height: 20.sp,
-                  color: Colors.grey[600],
-                ),
+                ReportButton(context: context),
               ],
             ),
 

@@ -177,34 +177,25 @@ class _EditInfoState extends State<EditInfo> {
                     Container(
                       width: 120.sp,
                       height: 120.sp,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.primary_200,
-                          width: 3.sp,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10.sp,
-                            offset: Offset(0, 4.sp),
-                          ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 57.sp,
-                        backgroundColor: AppColors.primary_50,
-                        backgroundImage: _selectedImage != null
-                            ? FileImage(_selectedImage!)
-                            : null,
-                        child: _selectedImage == null
-                            ? Icon(
-                                Icons.person,
-                                size: 60.sp,
-                                color: AppColors.primary_400,
-                              )
-                            : null,
-                      ),
+                      child: _selectedImage == null
+                          ? Container(
+                              height: 52.sp,
+                              width: 52.sp,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppColors.primary_200,
+                                  width: 2.sp,
+                                ),
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(
+                                    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/WREN_EVANS_-_VIETINBANK_2024_-_P2.jpg/250px-WREN_EVANS_-_VIETINBANK_2024_-_P2.jpg',
+                                  ),
+                                ),
+                              ),
+                            )
+                          : null,
                     ),
                     Positioned(
                       bottom: 0,
@@ -364,7 +355,7 @@ class _EditInfoState extends State<EditInfo> {
                 ),
                 child: Text(
                   'Cập nhật thông tin',
-                  style: AppTextStyles.s16Bold(),
+                  style: AppTextStyles.s16SemiBold(),
                 ),
               ),
             ],
@@ -397,6 +388,7 @@ class _EditInfoState extends State<EditInfo> {
           controller: controller,
           maxLines: maxLines,
           validator: validator,
+          style: AppTextStyles.s16Regular(),
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: AppColors.primary_main, size: 20.sp),
             border: OutlineInputBorder(
@@ -421,6 +413,9 @@ class _EditInfoState extends State<EditInfo> {
             filled: true,
             fillColor: Colors.white,
             contentPadding: EdgeInsets.all(12.sp),
+            hintStyle: AppTextStyles.s16Regular(
+              color: AppColors.text_color_100,
+            ),
           ),
         ),
       ],
