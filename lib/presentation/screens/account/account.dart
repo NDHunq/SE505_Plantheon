@@ -9,6 +9,7 @@ import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/account/contact.dart';
 import 'package:se501_plantheon/presentation/screens/account/edit_info.dart';
+import 'package:se501_plantheon/presentation/screens/account/my_post.dart';
 import 'package:se501_plantheon/presentation/screens/account/widgets/setting_list_item.dart';
 import 'package:se501_plantheon/presentation/screens/account/widgets/setting_title_item.dart';
 import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
@@ -48,34 +49,19 @@ class Account extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                        height: 60.sp,
-                        width: 60.sp,
+                        height: 52.sp,
+                        width: 52.sp,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.primary_400,
-                              AppColors.primary_600,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                          border: Border.all(
+                            color: AppColors.primary_200,
+                            width: 1.sp,
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary_400.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: Offset(0, 3),
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(
+                              'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/WREN_EVANS_-_VIETINBANK_2024_-_P2.jpg/250px-WREN_EVANS_-_VIETINBANK_2024_-_P2.jpg',
                             ),
-                          ],
-                        ),
-                        child: CircleAvatar(
-                          radius: 38,
-                          backgroundColor: Colors.transparent,
-                          child: Icon(
-                            Icons.person,
-                            size: 40.sp,
-                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -87,7 +73,7 @@ class Account extends StatelessWidget {
                           children: [
                             Text(
                               'Nguyễn Di Hưng',
-                              style: AppTextStyles.s20Bold(
+                              style: AppTextStyles.s16Bold(
                                 color: Colors.grey[800],
                               ).copyWith(letterSpacing: 0.5.sp),
                             ),
@@ -114,16 +100,20 @@ class Account extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Container(
-                        padding: EdgeInsets.all(8.sp),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary_50,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.edit_outlined,
-                          size: 20.sp,
-                          color: AppColors.primary_600,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) => EditInfo(),
+                            ),
+                          );
+                        },
+                        child: SvgPicture.asset(
+                          AppVectors.userEdit,
+                          width: 20.sp,
+                          height: 20.sp,
+                          color: AppColors.primary_main,
                         ),
                       ),
                     ],
@@ -278,7 +268,7 @@ class _PersonalSettingState extends State<PersonalSetting> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) => EditInfo(),
+                    builder: (BuildContext context) => MyPost(),
                   ),
                 );
               },

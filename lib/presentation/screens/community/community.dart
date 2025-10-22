@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:se501_plantheon/presentation/screens/community/widgets/report_button.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
@@ -664,12 +665,7 @@ class _CommunityState extends State<Community> {
                     ],
                   ),
                 ),
-                SvgPicture.asset(
-                  AppVectors.postReport,
-                  width: 20.sp,
-                  height: 20.sp,
-                  color: Colors.grey[600],
-                ),
+                ReportButton(context: context),
               ],
             ),
 

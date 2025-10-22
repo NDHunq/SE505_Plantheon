@@ -5,6 +5,7 @@ import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/acction_button.dart';
+import 'package:se501_plantheon/presentation/screens/community/widgets/report_button.dart';
 
 class PostDetail extends StatefulWidget {
   final String username;
@@ -119,12 +120,7 @@ class _PostDetailState extends State<PostDetail> {
                 ],
               ),
             ),
-            SvgPicture.asset(
-              AppVectors.postReport,
-              width: 20.sp,
-              height: 20.sp,
-              color: Colors.grey[600],
-            ),
+            ReportButton(context: context),
           ],
         ),
         centerTitle: true,
@@ -136,9 +132,10 @@ class _PostDetailState extends State<PostDetail> {
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.only(left: 16.sp, right: 16.sp),
+        padding: EdgeInsets.all(16.sp),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 8.sp,
             children: [
               Text(widget.content, style: AppTextStyles.s14Regular()),
