@@ -245,10 +245,11 @@ class ADayWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        alignment: Alignment.center,
+        padding: const EdgeInsets.all(4),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Số ngày - cố định ở đầu
             Container(
               width: 28,
               height: 28,
@@ -257,7 +258,6 @@ class ADayWidget extends StatelessWidget {
                 color: isToday ? Colors.green : Colors.transparent,
                 shape: BoxShape.circle,
               ),
-
               child: Text(
                 '$day',
                 style: TextStyle(
@@ -268,14 +268,19 @@ class ADayWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Flexible(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [ArrayTaskWidget(tasks)],
+            // Phần tasks - co giãn để lấp đầy không gian còn lại
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                child: ArrayTaskWidget(tasks),
               ),
             ),
-            SizedBox(height: 4),
-            Container(width: double.infinity, height: 1, color: Colors.grey),
+            // Gạch dưới - cố định ở cuối
+            Container(
+              width: double.infinity,
+              height: 1,
+              color: Colors.grey.withOpacity(0.3),
+            ),
           ],
         ),
       ),
@@ -308,7 +313,8 @@ class ArrayTaskWidget extends StatelessWidget {
     ];
 
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         ...tasksToShow.asMap().entries.map((entry) {
           final int idx = entry.key;
@@ -318,7 +324,7 @@ class ArrayTaskWidget extends StatelessWidget {
             width: double.infinity,
             height: 8,
             margin: const EdgeInsets.only(top: 1),
-            padding: const EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 2),
             decoration: BoxDecoration(
               color: bgColor,
               borderRadius: BorderRadius.circular(4),
@@ -339,14 +345,16 @@ class ArrayTaskWidget extends StatelessWidget {
           );
         }),
         if (remaining > 0)
-          SizedBox(
+          Container(
             width: double.infinity,
+            margin: const EdgeInsets.only(top: 2),
             child: Text(
               "+$remaining",
               style: const TextStyle(fontSize: 10, color: Colors.grey),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               softWrap: false,
+              textAlign: TextAlign.center,
             ),
           ),
       ],
