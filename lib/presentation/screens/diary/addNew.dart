@@ -57,9 +57,9 @@ class _AddNewScreenState extends State<AddNewScreen> {
       case 'techniques':
         return kyThuatWidget(initialDate: widget.initialDate);
       case 'climate':
-        return climateWidget();
+        return climaMateWidget(initialDate: widget.initialDate);
       case 'other':
-        return const otherWidget();
+        return otherWidget(initialDate: widget.initialDate);
       default:
         return const SizedBox.shrink();
     }

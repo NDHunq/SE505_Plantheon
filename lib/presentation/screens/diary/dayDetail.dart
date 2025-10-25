@@ -17,6 +17,8 @@ import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
 import 'package:se501_plantheon/presentation/screens/diary/chiTieu.dart';
 import 'package:se501_plantheon/presentation/screens/diary/dichBenh.dart';
 import 'package:se501_plantheon/presentation/screens/diary/kyThuat.dart';
+import 'package:se501_plantheon/presentation/screens/diary/climamate.dart';
+import 'package:se501_plantheon/presentation/screens/diary/other.dart';
 import 'package:se501_plantheon/presentation/screens/diary/editView.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/task.dart';
 import 'package:se501_plantheon/presentation/screens/diary/models/day_event.dart';
@@ -501,6 +503,10 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
         return 'Kỹ thuật';
       case 'DISEASE':
         return 'Dịch bệnh';
+      case 'CLIMATE':
+        return 'Thích ứng BĐKH';
+      case 'OTHER':
+        return 'Khác';
       default:
         return type;
     }
@@ -692,7 +698,13 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
 
   void _handleActivityTap(DayEvent event) {
     // Xử lý cho các activity type được hỗ trợ
-    final supportedTypes = ['EXPENSE', 'DISEASE', 'TECHNIQUE'];
+    final supportedTypes = [
+      'EXPENSE',
+      'DISEASE',
+      'TECHNIQUE',
+      'CLIMATE',
+      'OTHER',
+    ];
     if (!supportedTypes.contains(event.type.toUpperCase())) {
       return;
     }
@@ -729,6 +741,20 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
         break;
       case 'TECHNIQUE':
         contentWidget = kyThuatWidget(
+          activityToEdit: activity,
+          bloc: _activitiesBloc,
+          initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+        );
+        break;
+      case 'CLIMATE':
+        contentWidget = climaMateWidget(
+          activityToEdit: activity,
+          bloc: _activitiesBloc,
+          initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+        );
+        break;
+      case 'OTHER':
+        contentWidget = otherWidget(
           activityToEdit: activity,
           bloc: _activitiesBloc,
           initialDate: DateTime(selectedYear, selectedMonth, selectedDay),

@@ -136,4 +136,34 @@ extension TaskWidgetFactory on TaskWidget {
       isShort: isShort,
     );
   }
+
+  static TaskWidget climate({
+    required String title,
+    required String startTime,
+    required String endTime,
+    bool isShort = false,
+  }) {
+    return TaskWidget(
+      title: title,
+      startTime: startTime,
+      endTime: endTime,
+      baseColor: Colors.teal,
+      isShort: isShort,
+    );
+  }
+
+  static TaskWidget other({
+    required String title,
+    required String startTime,
+    required String endTime,
+    bool isShort = false,
+  }) {
+    return TaskWidget(
+      title: title,
+      startTime: startTime,
+      endTime: endTime,
+      baseColor: Colors.purple,
+      isShort: isShort,
+    );
+  }
 }

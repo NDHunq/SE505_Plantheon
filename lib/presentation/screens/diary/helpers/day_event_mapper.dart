@@ -55,6 +55,7 @@ class DayEventMapper {
       );
 
       final String amountText = _amountTextByType(a.type);
+      final Color activityColor = _getColorByType(a.type);
       return DayEvent(
         id: a.id,
         startHour: startHour.clamp(0, 23),
@@ -65,7 +66,7 @@ class DayEventMapper {
         realStartTime: localStart,
         realEndTime: localEnd,
         amountText: amountText,
-        color: Colors.blueGrey, // keep a neutral color; type shown as text
+        color: activityColor,
       );
     }).toList();
   }
@@ -80,8 +81,31 @@ class DayEventMapper {
         return 'Dịch bệnh';
       case 'TECHNIQUE':
         return 'Kỹ thuật';
+      case 'CLIMATE':
+        return 'Thích ứng BĐKH';
+      case 'OTHER':
+        return 'Khác';
       default:
         return '';
+    }
+  }
+
+  static Color _getColorByType(String type) {
+    switch (type.toUpperCase()) {
+      case 'EXPENSE':
+        return Colors.red;
+      case 'INCOME':
+        return Colors.green;
+      case 'DISEASE':
+        return Colors.orange;
+      case 'TECHNIQUE':
+        return Colors.blue;
+      case 'CLIMATE':
+        return Colors.teal;
+      case 'OTHER':
+        return Colors.purple;
+      default:
+        return Colors.blueGrey;
     }
   }
 }

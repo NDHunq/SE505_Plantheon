@@ -86,6 +86,7 @@ class DayActivityDetailModel {
   final String? note;
   final double? money;
   final String? purpose;
+  final String? attachedLink;
 
   DayActivityDetailModel({
     required this.id,
@@ -109,6 +110,7 @@ class DayActivityDetailModel {
     this.note,
     this.money,
     this.purpose,
+    this.attachedLink,
   });
 
   factory DayActivityDetailModel.fromJson(Map<String, dynamic> json) {
@@ -148,6 +150,7 @@ class DayActivityDetailModel {
       note: json['note'] as String?,
       money: json['money'] != null ? (json['money'] as num).toDouble() : null,
       purpose: json['purpose'] as String?,
+      attachedLink: json['attached_link'] as String?,
     );
   }
 
@@ -173,6 +176,7 @@ class DayActivityDetailModel {
     note: note,
     money: money,
     purpose: purpose,
+    attachedLink: attachedLink,
   );
 }
 

@@ -47,6 +47,7 @@ class DayActivityDetailEntity {
   final String? note;
   final double? money;
   final String? purpose;
+  final String? attachedLink;
 
   DayActivityDetailEntity({
     required this.id,
@@ -70,6 +71,7 @@ class DayActivityDetailEntity {
     this.note,
     this.money,
     this.purpose,
+    this.attachedLink,
   });
 }
 
