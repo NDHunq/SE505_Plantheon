@@ -47,3 +47,12 @@ class UpdateActivityError extends ActivitiesState {
   final String message;
   UpdateActivityError({required this.message});
 }
+
+class DeleteActivityLoading extends ActivitiesState {}
+
+class DeleteActivitySuccess extends ActivitiesState {}
+
+class DeleteActivityError extends ActivitiesState {
+  final String message;
+  DeleteActivityError({required this.message});
+}

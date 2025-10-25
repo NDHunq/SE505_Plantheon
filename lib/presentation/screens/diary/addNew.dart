@@ -14,12 +14,14 @@ import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
 import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
 import 'package:se501_plantheon/domain/usecases/create_activity.dart';
 import 'package:se501_plantheon/domain/usecases/update_activity.dart';
+import 'package:se501_plantheon/domain/usecases/delete_activity.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 
 class AddNewScreen extends StatefulWidget {
   final DateTime? initialDate;
+  final VoidCallback? onActivitySaved;
 
-  const AddNewScreen({super.key, this.initialDate});
+  const AddNewScreen({super.key, this.initialDate, this.onActivitySaved});
 
   @override
   State<AddNewScreen> createState() => _AddNewScreenState();
@@ -49,17 +51,35 @@ class _AddNewScreenState extends State<AddNewScreen> {
   Widget _buildCategoryContent() {
     switch (selectedCategory) {
       case 'targets':
-        return chiTieuWidget(initialDate: widget.initialDate);
+        return chiTieuWidget(
+          initialDate: widget.initialDate,
+          onSubmitSuccess: widget.onActivitySaved,
+        );
       case 'sales':
-        return banSanPhamWidget(initialDate: widget.initialDate);
+        return banSanPhamWidget(
+          initialDate: widget.initialDate,
+          onSubmitSuccess: widget.onActivitySaved,
+        );
       case 'disasters':
-        return dichBenhWidget(initialDate: widget.initialDate);
+        return dichBenhWidget(
+          initialDate: widget.initialDate,
+          onSubmitSuccess: widget.onActivitySaved,
+        );
       case 'techniques':
-        return kyThuatWidget(initialDate: widget.initialDate);
+        return kyThuatWidget(
+          initialDate: widget.initialDate,
+          onSubmitSuccess: widget.onActivitySaved,
+        );
       case 'climate':
-        return climaMateWidget(initialDate: widget.initialDate);
+        return climaMateWidget(
+          initialDate: widget.initialDate,
+          onSubmitSuccess: widget.onActivitySaved,
+        );
       case 'other':
-        return otherWidget(initialDate: widget.initialDate);
+        return otherWidget(
+          initialDate: widget.initialDate,
+          onSubmitSuccess: widget.onActivitySaved,
+        );
       default:
         return const SizedBox.shrink();
     }
@@ -79,6 +99,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
           getActivitiesByDay: GetActivitiesByDay(repository),
           createActivity: CreateActivity(repository),
           updateActivity: UpdateActivity(repository),
+          deleteActivity: DeleteActivity(repository),
         );
       },
       child: Container(

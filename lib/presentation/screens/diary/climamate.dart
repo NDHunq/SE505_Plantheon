@@ -16,12 +16,14 @@ class climaMateWidget extends StatefulWidget {
   final DayActivityDetailEntity? activityToEdit;
   final ActivitiesBloc? bloc;
   final DateTime? initialDate;
+  final VoidCallback? onSubmitSuccess;
 
   const climaMateWidget({
     super.key,
     this.activityToEdit,
     this.bloc,
     this.initialDate,
+    this.onSubmitSuccess,
   });
 
   @override
@@ -476,6 +478,37 @@ class _climaMateWidgetState extends State<climaMateWidget> {
     }
   }
 
+  Future<void> _deleteActivity() async {
+    if (widget.activityToEdit == null) {
+      return;
+    }
+
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Xóa hoạt động'),
+        content: const Text('Bạn có chắc chắn muốn xóa hoạt động này?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    final bloc = widget.bloc ?? context.read<ActivitiesBloc>();
+    bloc.add(DeleteActivityEvent(id: widget.activityToEdit!.id));
+  }
+
   @override
   Widget build(BuildContext context) {
     final bloc = widget.bloc ?? context.read<ActivitiesBloc>();
@@ -493,7 +526,12 @@ class _climaMateWidgetState extends State<climaMateWidget> {
               ),
             ),
           );
+        } else if (state is DeleteActivityLoading) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Đang xóa hoạt động...')),
+          );
         } else if (state is CreateActivitySuccess) {
+          widget.onSubmitSuccess?.call();
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Tạo hoạt động thành công!')),
           );
@@ -507,10 +545,17 @@ class _climaMateWidgetState extends State<climaMateWidget> {
           noteController.clear();
           Navigator.of(context).pop(); // Đóng dialog sau khi tạo thành công
         } else if (state is UpdateActivitySuccess) {
+          widget.onSubmitSuccess?.call();
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Cập nhật hoạt động thành công!')),
           );
           Navigator.of(context).pop(); // Đóng dialog sau khi update thành công
+        } else if (state is DeleteActivitySuccess) {
+          widget.onSubmitSuccess?.call();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Xóa hoạt động thành công!')),
+          );
+          Navigator.of(context).pop();
         } else if (state is CreateActivityError) {
           ScaffoldMessenger.of(
             context,
@@ -518,6 +563,10 @@ class _climaMateWidgetState extends State<climaMateWidget> {
         } else if (state is UpdateActivityError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Lỗi cập nhật: ${state.message}')),
+          );
+        } else if (state is DeleteActivityError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Lỗi xóa hoạt động: ${state.message}')),
           );
         }
       },
@@ -840,32 +889,70 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                 child: AppTextField(controller: noteController, maxLines: 5),
               ),
 
-              // Save button
+              // Save / Delete actions
               Padding(
-                padding: const EdgeInsets.all(0),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _createActivity,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                padding: const EdgeInsets.only(top: 16),
+                child: widget.activityToEdit != null
+                    ? Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: _deleteActivity,
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(color: Colors.red),
+                              ),
+                              child: const Text(
+                                'Xóa',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: _createActivity,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(32),
+                                ),
+                              ),
+                              child: const Text(
+                                'Lưu thay đổi',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _createActivity,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            'Lưu Nhật ký',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      widget.activityToEdit != null
-                          ? 'Sửa Nhật ký'
-                          : 'Lưu Nhật ký',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
               ),
             ],
           ),

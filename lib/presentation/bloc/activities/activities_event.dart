@@ -11,8 +11,9 @@ class FetchActivitiesByMonth extends ActivitiesEvent {
 
 class FetchActivitiesByDay extends ActivitiesEvent {
   final String dateIso; // YYYY-MM-DD
+  final bool showLoading;
 
-  FetchActivitiesByDay({required this.dateIso});
+  FetchActivitiesByDay({required this.dateIso, this.showLoading = true});
 }
 
 class CreateActivityEvent extends ActivitiesEvent {
@@ -26,4 +27,10 @@ class UpdateActivityEvent extends ActivitiesEvent {
   final CreateActivityRequestModel request;
 
   UpdateActivityEvent({required this.id, required this.request});
+}
+
+class DeleteActivityEvent extends ActivitiesEvent {
+  final String id;
+
+  DeleteActivityEvent({required this.id});
 }

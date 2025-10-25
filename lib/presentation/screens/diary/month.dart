@@ -9,6 +9,7 @@ import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
 import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
 import 'package:se501_plantheon/domain/usecases/create_activity.dart';
 import 'package:se501_plantheon/domain/usecases/update_activity.dart';
+import 'package:se501_plantheon/domain/usecases/delete_activity.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_state.dart';
@@ -98,6 +99,7 @@ class _MonthScreenState extends State<MonthScreen> {
           getActivitiesByDay: GetActivitiesByDay(repository),
           createActivity: CreateActivity(repository),
           updateActivity: UpdateActivity(repository),
+          deleteActivity: DeleteActivity(repository),
         )..add(FetchActivitiesByMonth(year: widget.year, month: widget.month));
       },
       child: Stack(

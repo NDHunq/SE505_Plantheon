@@ -19,4 +19,6 @@ abstract class ActivitiesRepository {
     required String id,
     required CreateActivityRequestModel request,
   });
+
+  Future<void> deleteActivity({required String id});
 }

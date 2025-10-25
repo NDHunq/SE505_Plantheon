@@ -21,6 +21,8 @@ abstract class ActivitiesRemoteDataSource {
     required String id,
     required CreateActivityRequestModel request,
   });
+
+  Future<void> deleteActivity({required String id});
 }
 
 class ActivitiesRemoteDataSourceImpl implements ActivitiesRemoteDataSource {
@@ -168,5 +170,32 @@ class ActivitiesRemoteDataSourceImpl implements ActivitiesRemoteDataSource {
       );
       throw Exception('Failed to update activity: ${response.statusCode}');
     }
+  }
+
+  @override
+  Future<void> deleteActivity({required String id}) async {
+    final url = Uri.parse('$baseUrl/$apiVersion/activities/$id');
+    print('[ActivitiesRemote] DELETE $url');
+
+    http.Response response;
+    try {
+      response = await client.delete(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+    } catch (e) {
+      print('[ActivitiesRemote][ERROR] Network error on $url: $e');
+      rethrow;
+    }
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      print('[ActivitiesRemote] ${response.statusCode} OK (delete)');
+      return;
+    }
+
+    print(
+      '[ActivitiesRemote][ERROR] Delete activity failed: ${response.statusCode}, body=${response.body}',
+    );
+    throw Exception('Failed to delete activity: ${response.statusCode}');
   }
 }

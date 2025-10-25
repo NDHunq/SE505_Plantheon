@@ -56,5 +56,9 @@ class ActivitiesRepositoryImpl implements ActivitiesRepository {
     return response;
   }
 
- 
+  @override
+  Future<void> deleteActivity({required String id}) async {
+    print('[ActivitiesRepository] deleteActivity id=$id');
+    await remoteDataSource.deleteActivity(id: id);
+  }
 }

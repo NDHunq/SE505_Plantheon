@@ -8,6 +8,7 @@ import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
 import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
 import 'package:se501_plantheon/domain/usecases/create_activity.dart';
 import 'package:se501_plantheon/domain/usecases/update_activity.dart';
+import 'package:se501_plantheon/domain/usecases/delete_activity.dart';
 import 'package:se501_plantheon/domain/entities/activities_entities.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
@@ -15,6 +16,7 @@ import 'package:se501_plantheon/presentation/bloc/activities/activities_state.da
 import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
 import 'package:se501_plantheon/presentation/screens/diary/chiTieu.dart';
+import 'package:se501_plantheon/presentation/screens/diary/banSanPham.dart';
 import 'package:se501_plantheon/presentation/screens/diary/dichBenh.dart';
 import 'package:se501_plantheon/presentation/screens/diary/kyThuat.dart';
 import 'package:se501_plantheon/presentation/screens/diary/climamate.dart';
@@ -79,6 +81,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
       getActivitiesByDay: GetActivitiesByDay(repository),
       createActivity: CreateActivity(repository),
       updateActivity: UpdateActivity(repository),
+      deleteActivity: DeleteActivity(repository),
     );
 
     // Fetch dữ liệu ban đầu
@@ -704,6 +707,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
       'TECHNIQUE',
       'CLIMATE',
       'OTHER',
+      'INCOME',
     ];
     if (!supportedTypes.contains(event.type.toUpperCase())) {
       return;
@@ -721,6 +725,16 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
     _showEditActivityBottomSheet(activity);
   }
 
+  void _refreshCurrentDayActivities() {
+    final String dateIso =
+        '${selectedYear.toString().padLeft(4, '0')}-'
+        '${selectedMonth.toString().padLeft(2, '0')}-'
+        '${selectedDay.toString().padLeft(2, '0')}';
+    _activitiesBloc.add(
+      FetchActivitiesByDay(dateIso: dateIso, showLoading: false),
+    );
+  }
+
   void _showEditActivityBottomSheet(DayActivityDetailEntity activity) {
     // Chọn widget phù hợp dựa trên type
     Widget contentWidget;
@@ -730,6 +744,15 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
           activityToEdit: activity,
           bloc: _activitiesBloc,
           initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+          onSubmitSuccess: _refreshCurrentDayActivities,
+        );
+        break;
+      case 'INCOME':
+        contentWidget = banSanPhamWidget(
+          activityToEdit: activity,
+          bloc: _activitiesBloc,
+          initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+          onSubmitSuccess: _refreshCurrentDayActivities,
         );
         break;
       case 'DISEASE':
@@ -737,6 +760,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
           activityToEdit: activity,
           bloc: _activitiesBloc,
           initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+          onSubmitSuccess: _refreshCurrentDayActivities,
         );
         break;
       case 'TECHNIQUE':
@@ -744,6 +768,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
           activityToEdit: activity,
           bloc: _activitiesBloc,
           initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+          onSubmitSuccess: _refreshCurrentDayActivities,
         );
         break;
       case 'CLIMATE':
@@ -751,6 +776,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
           activityToEdit: activity,
           bloc: _activitiesBloc,
           initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+          onSubmitSuccess: _refreshCurrentDayActivities,
         );
         break;
       case 'OTHER':
@@ -758,6 +784,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
           activityToEdit: activity,
           bloc: _activitiesBloc,
           initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+          onSubmitSuccess: _refreshCurrentDayActivities,
         );
         break;
       default:
@@ -766,6 +793,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
           activityToEdit: activity,
           bloc: _activitiesBloc,
           initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
+          onSubmitSuccess: _refreshCurrentDayActivities,
         );
     }
 

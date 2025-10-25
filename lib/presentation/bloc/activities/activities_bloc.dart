@@ -4,6 +4,7 @@ import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
 import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
 import 'package:se501_plantheon/domain/usecases/create_activity.dart';
 import 'package:se501_plantheon/domain/usecases/update_activity.dart';
+import 'package:se501_plantheon/domain/usecases/delete_activity.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_state.dart';
 
@@ -12,17 +13,20 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
   final GetActivitiesByDay getActivitiesByDay;
   final CreateActivity createActivity;
   final UpdateActivity updateActivity;
+  final DeleteActivity deleteActivity;
 
   ActivitiesBloc({
     required this.getActivitiesByMonth,
     required this.getActivitiesByDay,
     required this.createActivity,
     required this.updateActivity,
+    required this.deleteActivity,
   }) : super(ActivitiesInitial()) {
     on<FetchActivitiesByMonth>(_onFetchMonth);
     on<FetchActivitiesByDay>(_onFetchDay);
     on<CreateActivityEvent>(_onCreateActivity);
     on<UpdateActivityEvent>(_onUpdateActivity);
+    on<DeleteActivityEvent>(_onDeleteActivity);
   }
 
   Future<void> _onFetchMonth(
@@ -73,7 +77,9 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
     FetchActivitiesByDay event,
     Emitter<ActivitiesState> emit,
   ) async {
-    emit(DayActivitiesLoading());
+    if (event.showLoading) {
+      emit(DayActivitiesLoading());
+    }
     try {
       print('[ActivitiesBloc] Fetching day activities: date=${event.dateIso}');
       final entity = await getActivitiesByDay(dateIso: event.dateIso);
@@ -89,7 +95,10 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
       // Entity is already in the correct format, just pass it directly
       emit(DayActivitiesLoaded(data: entity));
     } catch (e) {
-      emit(ActivitiesError(message: e.toString()));
+      if (event.showLoading) {
+        emit(ActivitiesError(message: e.toString()));
+      }
+      // If silent refresh fails, just keep the current state
     }
   }
 
@@ -131,6 +140,20 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
     } catch (e) {
       print('[ActivitiesBloc] Error updating activity: $e');
       emit(UpdateActivityError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onDeleteActivity(
+    DeleteActivityEvent event,
+    Emitter<ActivitiesState> emit,
+  ) async {
+    emit(DeleteActivityLoading());
+    try {
+      await deleteActivity(id: event.id);
+      emit(DeleteActivitySuccess());
+    } catch (e) {
+      print('[ActivitiesBloc] Error deleting activity: $e');
+      emit(DeleteActivityError(message: e.toString()));
     }
   }
 }

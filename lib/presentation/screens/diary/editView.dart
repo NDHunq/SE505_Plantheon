@@ -8,6 +8,7 @@ import 'package:se501_plantheon/data/repository/activities_repository_impl.dart'
 import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
 import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
 import 'package:se501_plantheon/domain/usecases/create_activity.dart';
+import 'package:se501_plantheon/domain/usecases/delete_activity.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 
 class EditViewScreen extends StatefulWidget {
@@ -43,6 +44,7 @@ class _EditViewScreenState extends State<EditViewScreen> {
           getActivitiesByDay: GetActivitiesByDay(repository),
           createActivity: CreateActivity(repository),
           updateActivity: UpdateActivity(repository),
+          deleteActivity: DeleteActivity(repository),
         );
       },
       child: Container(
