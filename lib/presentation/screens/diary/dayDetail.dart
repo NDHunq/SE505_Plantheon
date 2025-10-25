@@ -385,7 +385,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
               color: Colors.green.shade200,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.cloud, color: Colors.green, size: 24),
+            child: const Icon(Icons.cloud, color: Colors.green, size: 25),
           ),
           const SizedBox(width: 12),
 
@@ -578,7 +578,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
   Widget _buildHourlySchedule(List<DayEvent> events) {
     const double hourHeight = 60; // chiều cao 1 giờ
     const double minEventHeight = 56; // tối thiểu để không overflow
-    final double totalHeight = 24 * hourHeight;
+    final double totalHeight = 25 * hourHeight;
 
     final eventPositions = _calculateEventPositions(events);
 
@@ -589,79 +589,86 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
           final double availableWidth = constraints.maxWidth - 50;
 
           return SingleChildScrollView(
-            child: SizedBox(
-              height: totalHeight,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Cột giờ bên trái
-                  SizedBox(
-                    width: 50,
-                    child: Column(
-                      children: List.generate(24, (i) {
-                        final label = '${i.toString().padLeft(2, '0')}:00';
-                        return SizedBox(
-                          height: hourHeight,
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              label,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: totalHeight,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Cột giờ bên trái
+                      SizedBox(
+                        width: 50,
+                        child: Column(
+                          children: List.generate(25, (i) {
+                            final label = '${i.toString().padLeft(2, '0')}:00';
+                            return SizedBox(
+                              height: hourHeight,
+                              child: Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  label,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
+                            );
+                          }),
+                        ),
+                      ),
+
+                      // Khu vực timeline và events
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            // Vẽ lưới các đường giờ
+                            ...List.generate(25, (i) {
+                              final double top = i * hourHeight;
+                              return Positioned(
+                                top: top,
+                                left: 0,
+                                right: 0,
+                                child: Container(
+                                  height: 1,
+                                  color: Colors.grey.shade300,
+                                ),
+                              );
+                            }),
+
+                            // Vẽ các event phủ theo start-end với vị trí đã tính toán
+                            ...events.map((e) {
+                              final double top = e.startHour * hourHeight;
+                              final double height =
+                                  (e.durationHours * hourHeight)
+                                      .toDouble()
+                                      .clamp(minEventHeight, double.infinity);
+
+                              final position = eventPositions[e]!;
+                              final double leftFraction = position['left']!;
+                              final double widthFraction = position['width']!;
+
+                              return Positioned(
+                                top: top,
+                                left: leftFraction * availableWidth,
+                                width: widthFraction * availableWidth,
+                                height: height,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 2.0),
+                                  child: _buildEventCard(e),
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-
-                  // Khu vực timeline và events
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        // Vẽ lưới các đường giờ
-                        ...List.generate(25, (i) {
-                          final double top = i * hourHeight;
-                          return Positioned(
-                            top: top,
-                            left: 0,
-                            right: 0,
-                            child: Container(
-                              height: 1,
-                              color: Colors.grey.shade300,
-                            ),
-                          );
-                        }),
-
-                        // Vẽ các event phủ theo start-end với vị trí đã tính toán
-                        ...events.map((e) {
-                          final double top = e.startHour * hourHeight;
-                          final double height = (e.durationHours * hourHeight)
-                              .toDouble()
-                              .clamp(minEventHeight, double.infinity);
-
-                          final position = eventPositions[e]!;
-                          final double leftFraction = position['left']!;
-                          final double widthFraction = position['width']!;
-
-                          return Positioned(
-                            top: top,
-                            left: leftFraction * availableWidth,
-                            width: widthFraction * availableWidth,
-                            height: height,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 2.0),
-                              child: _buildEventCard(e),
-                            ),
-                          );
-                        }),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+                // Thêm padding dưới cùng để đẩy nội dung lên
+                const SizedBox(height: 100),
+              ],
             ),
           );
         },
