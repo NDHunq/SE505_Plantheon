@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/presentation/screens/blogs/blogs.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/disease_card.dart';
 
 class DiseaseWarningSection extends StatelessWidget {
@@ -19,10 +20,16 @@ class DiseaseWarningSection extends StatelessWidget {
               'Tin tức',
               style: AppTextStyles.s16Medium(color: AppColors.primary_700),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16.sp,
-              color: AppColors.primary_700,
+            InkWell(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Blogs()),
+              ),
+              child: Icon(
+                Icons.arrow_forward_ios,
+                size: 16.sp,
+                color: AppColors.primary_700,
+              ),
             ),
           ],
         ),
