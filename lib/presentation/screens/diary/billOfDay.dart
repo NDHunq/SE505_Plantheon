@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
-import 'package:se501_plantheon/presentation/screens/Navigator/navigator.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/task.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfMonth.dart';
+import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
+import 'package:se501_plantheon/domain/usecases/get_monthly_financial.dart';
+import 'package:se501_plantheon/domain/usecases/get_annual_financial.dart';
+import 'package:se501_plantheon/domain/usecases/get_multi_year_financial.dart';
+import 'package:se501_plantheon/presentation/bloc/financial/financial_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/financial/financial_event.dart';
+import 'package:se501_plantheon/presentation/bloc/financial/financial_state.dart';
+import 'package:se501_plantheon/domain/entities/financial_entities.dart';
 
 class BillOfDay extends StatefulWidget {
   final DateTime? initialDate;
@@ -28,20 +38,7 @@ class _BillOfDayState extends State<BillOfDay> {
   late int expandedDay;
   late ScrollController scrollController;
   final Map<int, GlobalKey> dayKeys = {};
-
-  // Dữ liệu mẫu cho các ngày
-  final Map<int, List<Transaction>> dailyTransactions = {
-    1: [
-      Transaction(
-        startTime: "6:20",
-        endTime: "6:30",
-        description: "Mua phân bón",
-        amount: -100000,
-      ),
-    ],
-    2: [],
-    // Thêm dữ liệu mẫu cho các ngày khác
-  };
+  late FinancialBloc _financialBloc;
 
   @override
   void initState() {
@@ -55,6 +52,19 @@ class _BillOfDayState extends State<BillOfDay> {
       dayKeys[i] = GlobalKey();
     }
 
+    // Initialize Financial BLoC
+    final repository = ActivitiesRepositoryImpl(
+      remoteDataSource: ActivitiesRemoteDataSourceImpl(client: http.Client()),
+    );
+    _financialBloc = FinancialBloc(
+      getMonthlyFinancial: GetMonthlyFinancial(repository),
+      getAnnualFinancial: GetAnnualFinancial(repository),
+      getMultiYearFinancial: GetMultiYearFinancial(repository),
+    );
+
+    // Fetch data
+    _fetchMonthlyData();
+
     // Auto scroll to selected day after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToDay(expandedDay);
@@ -66,20 +76,53 @@ class _BillOfDayState extends State<BillOfDay> {
     });
   }
 
+  void _fetchMonthlyData() {
+    _financialBloc.add(
+      FetchMonthlyFinancial(year: currentMonth.year, month: currentMonth.month),
+    );
+  }
+
   @override
   void dispose() {
     scrollController.dispose();
+    _financialBloc.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<FinancialBloc, FinancialState>(
+      bloc: _financialBloc,
+      builder: (context, state) {
+        if (state is MonthlyFinancialLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is FinancialError) {
+          return Center(child: Text('Lỗi: ${state.message}'));
+        } else if (state is MonthlyFinancialLoaded) {
+          return _buildContent(state.data);
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Widget _buildContent(MonthlyFinancialEntity data) {
+    // Group activities by day
+    final Map<int, List<FinancialActivityEntity>> dailyActivities = {};
+    for (var activity in data.activities) {
+      final day = activity.timeStart.toLocal().day;
+      if (!dailyActivities.containsKey(day)) {
+        dailyActivities[day] = [];
+      }
+      dailyActivities[day]!.add(activity);
+    }
+
     return Column(
       children: [
         // Tổng kết tháng
-        _buildMonthSummary(),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        _buildMonthSummary(data),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Divider(),
         ),
 
@@ -97,8 +140,6 @@ class _BillOfDayState extends State<BillOfDay> {
             ),
             child: Column(
               children: [
-                // Header tháng
-
                 // Danh sách ngày
                 Expanded(
                   child: ListView.builder(
@@ -107,13 +148,13 @@ class _BillOfDayState extends State<BillOfDay> {
                     itemBuilder: (context, index) {
                       final day = index + 1;
                       final isExpanded = day == expandedDay;
-                      final transactions = dailyTransactions[day] ?? [];
-                      final dayBalance = _calculateDayBalance(transactions);
+                      final activities = dailyActivities[day] ?? [];
+                      final dayBalance = _calculateDayBalance(activities);
 
                       return _buildDayItem(
                         day: day,
                         balance: dayBalance,
-                        transactions: transactions,
+                        activities: activities,
                         isExpanded: isExpanded,
                       );
                     },
@@ -127,10 +168,10 @@ class _BillOfDayState extends State<BillOfDay> {
     );
   }
 
-  Widget _buildMonthSummary() {
-    final monthIncome = 200000;
-    final monthExpense = 200000;
-    final monthBalance = monthIncome - monthExpense;
+  Widget _buildMonthSummary(MonthlyFinancialEntity data) {
+    final monthIncome = data.totalIncome.abs();
+    final monthExpense = data.totalExpense.abs();
+    final monthBalance = data.netAmount;
 
     return Container(
       padding: const EdgeInsets.only(right: AppConstraints.largePadding),
@@ -212,8 +253,8 @@ class _BillOfDayState extends State<BillOfDay> {
 
   Widget _buildDayItem({
     required int day,
-    required int balance,
-    required List<Transaction> transactions,
+    required double balance,
+    required List<FinancialActivityEntity> activities,
     required bool isExpanded,
   }) {
     return Column(
@@ -233,7 +274,6 @@ class _BillOfDayState extends State<BillOfDay> {
                     day.toString().padLeft(2, '0'),
                     style: TextStyle(
                       fontSize: 24,
-
                       color: _isToday(day)
                           ? AppColors.primary_600
                           : _isFutureDay(day)
@@ -246,7 +286,7 @@ class _BillOfDayState extends State<BillOfDay> {
                   child: Text(
                     balance == 0
                         ? "0 đ"
-                        : "${balance > 0 ? '+' : ''}${balance.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
+                        : "${balance > 0 ? '+' : ''}${balance.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
                     style: TextStyle(
                       fontSize: AppConstraints.normalTextFontSize,
                       color: balance > 0
@@ -267,14 +307,14 @@ class _BillOfDayState extends State<BillOfDay> {
         ),
 
         // Chi tiết giao dịch
-        if (isExpanded && transactions.isNotEmpty)
-          ...transactions.map(
-            (transaction) => Padding(
+        if (isExpanded && activities.isNotEmpty)
+          ...activities.map(
+            (activity) => Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppConstraints.mainPadding,
                 vertical: AppConstraints.smallPadding / 2,
               ),
-              child: _buildTaskWidget(transaction),
+              child: _buildActivityWidget(activity),
             ),
           ),
 
@@ -284,18 +324,60 @@ class _BillOfDayState extends State<BillOfDay> {
     );
   }
 
-  Widget _buildTaskWidget(Transaction transaction) {
-    final String amountText =
-        "${transaction.amount > 0 ? '+' : ''}${transaction.amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ";
+  Widget _buildActivityWidget(FinancialActivityEntity activity) {
+    final startLocal = activity.timeStart.toLocal();
+    final endLocal = activity.timeEnd.toLocal();
+
+    final String startTime =
+        '${startLocal.day.toString().padLeft(2, '0')}/'
+        '${startLocal.month.toString().padLeft(2, '0')} '
+        '${startLocal.hour.toString().padLeft(2, '0')}:'
+        '${startLocal.minute.toString().padLeft(2, '0')}';
+
+    final String endTime =
+        '${endLocal.day.toString().padLeft(2, '0')}/'
+        '${endLocal.month.toString().padLeft(2, '0')} '
+        '${endLocal.hour.toString().padLeft(2, '0')}:'
+        '${endLocal.minute.toString().padLeft(2, '0')}';
+
+    final String amountText = activity.money != null
+        ? "${activity.money! > 0 ? '+' : ''}${activity.money!.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ"
+        : "0 đ";
+
+    // Determine color based on type
+    Color baseColor;
+    switch (activity.type.toUpperCase()) {
+      case 'EXPENSE':
+        baseColor = Colors.red;
+        break;
+      case 'INCOME':
+      case 'PRODUCT':
+        baseColor = Colors.green;
+        break;
+      case 'DISEASE':
+        baseColor = Colors.orange;
+        break;
+      case 'TECHNIQUE':
+        baseColor = Colors.blue;
+        break;
+      case 'CLIMATE':
+        baseColor = Colors.purple;
+        break;
+      case 'OTHER':
+        baseColor = Colors.grey;
+        break;
+      default:
+        baseColor = Colors.blue;
+    }
 
     return SizedBox(
       width: double.infinity,
       child: TaskWidget(
-        title: transaction.description,
+        title: activity.title,
         amountText: amountText,
-        startTime: transaction.startTime,
-        endTime: transaction.endTime,
-        baseColor: Colors.blue,
+        startTime: startTime,
+        endTime: endTime,
+        baseColor: baseColor,
         isShort: false,
       ),
     );
@@ -310,12 +392,14 @@ class _BillOfDayState extends State<BillOfDay> {
   void _previousMonth() {
     setState(() {
       currentMonth = DateTime(currentMonth.year, currentMonth.month - 1);
+      _fetchMonthlyData();
     });
   }
 
   void _nextMonth() {
     setState(() {
       currentMonth = DateTime(currentMonth.year, currentMonth.month + 1);
+      _fetchMonthlyData();
     });
   }
 
@@ -323,8 +407,8 @@ class _BillOfDayState extends State<BillOfDay> {
     return DateTime(currentMonth.year, currentMonth.month + 1, 0).day;
   }
 
-  int _calculateDayBalance(List<Transaction> transactions) {
-    return transactions.fold(0, (sum, transaction) => sum + transaction.amount);
+  double _calculateDayBalance(List<FinancialActivityEntity> activities) {
+    return activities.fold(0.0, (sum, activity) => sum + (activity.money ?? 0));
   }
 
   bool _isToday(int day) {
@@ -365,18 +449,4 @@ class _BillOfDayState extends State<BillOfDay> {
       );
     }
   }
-}
-
-class Transaction {
-  final String startTime;
-  final String endTime;
-  final String description;
-  final int amount;
-
-  Transaction({
-    required this.startTime,
-    required this.endTime,
-    required this.description,
-    required this.amount,
-  });
 }

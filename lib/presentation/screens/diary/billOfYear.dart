@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
-import 'package:se501_plantheon/presentation/screens/Navigator/navigator.dart';
+import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
+import 'package:se501_plantheon/domain/usecases/get_monthly_financial.dart';
+import 'package:se501_plantheon/domain/usecases/get_annual_financial.dart';
+import 'package:se501_plantheon/domain/usecases/get_multi_year_financial.dart';
+import 'package:se501_plantheon/presentation/bloc/financial/financial_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/financial/financial_event.dart';
+import 'package:se501_plantheon/presentation/bloc/financial/financial_state.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfMonth.dart';
 
 class BillOfYear extends StatefulWidget {
@@ -24,41 +33,25 @@ class BillOfYear extends StatefulWidget {
 
 class _BillOfYearState extends State<BillOfYear> {
   late DateTime currentDecade;
-
-  // Mock data - thay thế bằng data thật từ API
-  final Map<int, List<YearlyTransaction>> yearlyTransactions = {
-    2020: [
-      YearlyTransaction("Q1/2020", "Lương quý 1", 45000000),
-      YearlyTransaction("Q2/2020", "Đầu tư crypto", -10000000),
-      YearlyTransaction("Q4/2020", "Bonus cuối năm", 20000000),
-    ],
-    2021: [
-      YearlyTransaction("Q1/2021", "Lương quý 1", 50000000),
-      YearlyTransaction("Q3/2021", "Mua nhà", -500000000),
-      YearlyTransaction("Q4/2021", "Bonus cuối năm", 25000000),
-    ],
-    2022: [
-      YearlyTransaction("Q1/2022", "Lương quý 1", 55000000),
-      YearlyTransaction("Q2/2022", "Đầu tư chứng khoán", -20000000),
-      YearlyTransaction("Q4/2022", "Bonus cuối năm", 30000000),
-    ],
-    2023: [
-      YearlyTransaction("Q1/2023", "Lương quý 1", 60000000),
-      YearlyTransaction("Q3/2023", "Mua xe", -800000000),
-      YearlyTransaction("Q4/2023", "Bonus cuối năm", 35000000),
-    ],
-    2024: [
-      YearlyTransaction("Q1/2024", "Lương quý 1", 65000000),
-      YearlyTransaction("Q2/2024", "Thu nhập phụ", 15000000),
-      YearlyTransaction("Q3/2024", "Đầu tư bất động sản", -300000000),
-    ],
-    // Thêm data cho các năm khác nếu cần
-  };
+  late FinancialBloc _financialBloc;
 
   @override
   void initState() {
     super.initState();
     currentDecade = widget.initialDate ?? DateTime.now();
+
+    // Initialize Financial BLoC
+    final repository = ActivitiesRepositoryImpl(
+      remoteDataSource: ActivitiesRemoteDataSourceImpl(client: http.Client()),
+    );
+    _financialBloc = FinancialBloc(
+      getMonthlyFinancial: GetMonthlyFinancial(repository),
+      getAnnualFinancial: GetAnnualFinancial(repository),
+      getMultiYearFinancial: GetMultiYearFinancial(repository),
+    );
+
+    // Fetch multi-year data
+    _fetchMultiYearData();
 
     // Cập nhật title
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -68,12 +61,68 @@ class _BillOfYearState extends State<BillOfYear> {
     });
   }
 
+  void _fetchMultiYearData() {
+    final years = _getDecadeYears();
+    if (years.isNotEmpty) {
+      _financialBloc.add(
+        FetchMultiYearFinancial(startYear: years.first, endYear: years.last),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _financialBloc.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<FinancialBloc, FinancialState>(
+      bloc: _financialBloc,
+      builder: (context, state) {
+        if (state is MultiYearFinancialLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is FinancialError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                const SizedBox(height: 16),
+                Text('Lỗi: ${state.message}'),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _fetchMultiYearData,
+                  child: const Text('Thử lại'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (state is MultiYearFinancialLoaded) {
+          return _buildContent(state.data.yearlySummaries);
+        }
+
+        return const Center(child: Text('Không có dữ liệu'));
+      },
+    );
+  }
+
+  Widget _buildContent(List<dynamic> yearlySummaries) {
+    // Convert to map for easier access
+    final Map<int, dynamic> summaryMap = {};
+    for (var summary in yearlySummaries) {
+      summaryMap[summary.year] = summary;
+    }
+
     return Column(
       children: [
         // Tổng kết thập kỷ
-        _buildDecadeSummary(),
+        _buildDecadeSummary(summaryMap),
 
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -96,7 +145,7 @@ class _BillOfYearState extends State<BillOfYear> {
               children: [
                 // Danh sách các năm trong thập kỷ
                 for (int year in _getDecadeYears())
-                  _buildYearItem(year, yearlyTransactions[year] ?? []),
+                  _buildYearItem(year, summaryMap),
               ],
             ),
           ),
@@ -105,23 +154,20 @@ class _BillOfYearState extends State<BillOfYear> {
     );
   }
 
-  Widget _buildDecadeSummary() {
+  Widget _buildDecadeSummary(Map<int, dynamic> summaryMap) {
     // Tính tổng thu nhập và chi tiêu của thập kỷ
-    int decadeIncome = 0;
-    int decadeExpense = 0;
+    double decadeIncome = 0;
+    double decadeExpense = 0;
 
     for (int year in _getDecadeYears()) {
-      final transactions = yearlyTransactions[year] ?? [];
-      for (var transaction in transactions) {
-        if (transaction.amount > 0) {
-          decadeIncome += transaction.amount;
-        } else {
-          decadeExpense += transaction.amount.abs();
-        }
+      final summary = summaryMap[year];
+      if (summary != null) {
+        decadeIncome += summary.totalIncome;
+        decadeExpense += summary.totalExpense.abs();
       }
     }
 
-    int decadeBalance = decadeIncome - decadeExpense;
+    double decadeBalance = decadeIncome - decadeExpense;
     final startYear = _getDecadeStart();
     final currentYear = DateTime.now().year;
     final currentDecadeStart = (currentYear ~/ 10) * 10;
@@ -174,18 +220,18 @@ class _BillOfYearState extends State<BillOfYear> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "+${decadeIncome.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
+                "+${decadeIncome.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
                 style: const TextStyle(
                   fontSize: 16,
                   color: AppColors.primary_600,
                 ),
               ),
               Text(
-                "-${decadeExpense.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
+                "-${decadeExpense.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
                 style: const TextStyle(color: Colors.red, fontSize: 16),
               ),
               Text(
-                "= ${decadeBalance.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
+                "= ${decadeBalance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
                 style: const TextStyle(color: Colors.black, fontSize: 16),
               ),
             ],
@@ -195,8 +241,11 @@ class _BillOfYearState extends State<BillOfYear> {
     );
   }
 
-  Widget _buildYearItem(int year, List<YearlyTransaction> transactions) {
-    final int balance = _calculateYearBalance(transactions);
+  Widget _buildYearItem(int year, Map<int, dynamic> summaryMap) {
+    final summary = summaryMap[year];
+    final double income = summary?.totalIncome ?? 0;
+    final double expense = (summary?.totalExpense ?? 0).abs();
+    final double balance = income - expense;
 
     return Column(
       children: [
@@ -239,7 +288,7 @@ class _BillOfYearState extends State<BillOfYear> {
                   child: Text(
                     balance == 0
                         ? "0 đ"
-                        : "${balance > 0 ? '+' : ''}${balance.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
+                        : "${balance > 0 ? '+' : ''}${balance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
                     textAlign: TextAlign.end,
                     style: TextStyle(
                       fontSize: AppConstraints.normalTextFontSize,
@@ -270,6 +319,7 @@ class _BillOfYearState extends State<BillOfYear> {
         currentDecade.day,
       );
     });
+    _fetchMultiYearData();
   }
 
   void _nextDecade() {
@@ -286,6 +336,7 @@ class _BillOfYearState extends State<BillOfYear> {
           currentDecade.day,
         );
       });
+      _fetchMultiYearData();
     }
   }
 
@@ -294,10 +345,6 @@ class _BillOfYearState extends State<BillOfYear> {
     final currentDecadeStart = (currentYear ~/ 10) * 10;
     final targetDecadeStart = (currentDecade.year ~/ 10) * 10;
     return targetDecadeStart == currentDecadeStart;
-  }
-
-  int _calculateYearBalance(List<YearlyTransaction> transactions) {
-    return transactions.fold(0, (sum, transaction) => sum + transaction.amount);
   }
 
   bool _isCurrentYear(int year) {
@@ -346,12 +393,4 @@ class _BillOfYearState extends State<BillOfYear> {
 
     return years;
   }
-}
-
-class YearlyTransaction {
-  final String period; // Định dạng: "Q1/2024" hoặc "2024"
-  final String description;
-  final int amount;
-
-  YearlyTransaction(this.period, this.description, this.amount);
 }

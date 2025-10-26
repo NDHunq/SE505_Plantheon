@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 import 'package:se501_plantheon/data/models/activities_models.dart';
+import 'package:se501_plantheon/data/models/financial_models.dart';
 
 abstract class ActivitiesRemoteDataSource {
   Future<MonthActivitiesModel> getActivitiesByMonth({
@@ -23,6 +24,18 @@ abstract class ActivitiesRemoteDataSource {
   });
 
   Future<void> deleteActivity({required String id});
+
+  Future<MonthlyFinancialResponseModel> getMonthlyFinancial({
+    required int year,
+    required int month,
+  });
+
+  Future<AnnualFinancialResponseModel> getAnnualFinancial({required int year});
+
+  Future<MultiYearFinancialResponseModel> getMultiYearFinancial({
+    required int startYear,
+    required int endYear,
+  });
 }
 
 class ActivitiesRemoteDataSourceImpl implements ActivitiesRemoteDataSource {
@@ -197,5 +210,96 @@ class ActivitiesRemoteDataSourceImpl implements ActivitiesRemoteDataSource {
       '[ActivitiesRemote][ERROR] Delete activity failed: ${response.statusCode}, body=${response.body}',
     );
     throw Exception('Failed to delete activity: ${response.statusCode}');
+  }
+
+  @override
+  Future<MonthlyFinancialResponseModel> getMonthlyFinancial({
+    required int year,
+    required int month,
+  }) async {
+    final url = Uri.parse(
+      '$baseUrl/$apiVersion/activities/financial/monthly?year=$year&month=$month',
+    );
+    print('[ActivitiesRemote] GET $url');
+
+    http.Response response;
+    try {
+      response = await client.get(url);
+    } catch (e) {
+      print('[ActivitiesRemote][ERROR] Network error on $url: $e');
+      rethrow;
+    }
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      print('[ActivitiesRemote] 200 OK: Monthly financial data retrieved');
+      return MonthlyFinancialResponseModel.fromJson(jsonData);
+    }
+
+    print(
+      '[ActivitiesRemote][ERROR] Get monthly financial failed: ${response.statusCode}, body=${response.body}',
+    );
+    throw Exception('Failed to get monthly financial: ${response.statusCode}');
+  }
+
+  @override
+  Future<AnnualFinancialResponseModel> getAnnualFinancial({
+    required int year,
+  }) async {
+    final url = Uri.parse(
+      '$baseUrl/$apiVersion/activities/financial/annual?year=$year',
+    );
+    print('[ActivitiesRemote] GET $url');
+
+    http.Response response;
+    try {
+      response = await client.get(url);
+    } catch (e) {
+      print('[ActivitiesRemote][ERROR] Network error on $url: $e');
+      rethrow;
+    }
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      print('[ActivitiesRemote] 200 OK: Annual financial data retrieved');
+      return AnnualFinancialResponseModel.fromJson(jsonData);
+    }
+
+    print(
+      '[ActivitiesRemote][ERROR] Get annual financial failed: ${response.statusCode}, body=${response.body}',
+    );
+    throw Exception('Failed to get annual financial: ${response.statusCode}');
+  }
+
+  @override
+  Future<MultiYearFinancialResponseModel> getMultiYearFinancial({
+    required int startYear,
+    required int endYear,
+  }) async {
+    final url = Uri.parse(
+      '$baseUrl/$apiVersion/activities/financial/multi-year?start_year=$startYear&end_year=$endYear',
+    );
+    print('[ActivitiesRemote] GET $url');
+
+    http.Response response;
+    try {
+      response = await client.get(url);
+    } catch (e) {
+      print('[ActivitiesRemote][ERROR] Network error on $url: $e');
+      rethrow;
+    }
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      print('[ActivitiesRemote] 200 OK: Multi-year financial data retrieved');
+      return MultiYearFinancialResponseModel.fromJson(jsonData);
+    }
+
+    print(
+      '[ActivitiesRemote][ERROR] Get multi-year financial failed: ${response.statusCode}, body=${response.body}',
+    );
+    throw Exception(
+      'Failed to get multi-year financial: ${response.statusCode}',
+    );
   }
 }

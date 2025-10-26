@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
+import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
+import 'package:se501_plantheon/domain/usecases/get_monthly_financial.dart';
+import 'package:se501_plantheon/domain/usecases/get_annual_financial.dart';
+import 'package:se501_plantheon/domain/usecases/get_multi_year_financial.dart';
+import 'package:se501_plantheon/presentation/bloc/financial/financial_bloc.dart';
+
+import 'package:se501_plantheon/presentation/bloc/financial/financial_event.dart';
+import 'package:se501_plantheon/presentation/bloc/financial/financial_state.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfYear.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
 
@@ -27,28 +38,26 @@ class BillOfMonth extends StatefulWidget {
 class _BillOfMonthState extends State<BillOfMonth> {
   late DateTime currentYear;
   late ScrollController scrollController;
-
-  // Mock data - thay thế bằng data thật từ API
-  final Map<int, MonthSummary> monthSummaries = {
-    1: MonthSummary(15000000, 1300000),
-    2: MonthSummary(15000000, 300000),
-    3: MonthSummary(15000000, 25000000),
-    4: MonthSummary(16000000, 2000000),
-    5: MonthSummary(16000000, 1800000),
-    6: MonthSummary(17000000, 2200000),
-    7: MonthSummary(17000000, 1900000),
-    8: MonthSummary(18000000, 2100000),
-    9: MonthSummary(18000000, 2300000),
-    10: MonthSummary(19000000, 2400000),
-    11: MonthSummary(19000000, 2500000),
-    12: MonthSummary(20000000, 3000000),
-  };
+  late FinancialBloc _financialBloc;
 
   @override
   void initState() {
     super.initState();
     currentYear = widget.initialDate ?? DateTime.now();
     scrollController = ScrollController();
+
+    // Initialize Financial BLoC
+    final repository = ActivitiesRepositoryImpl(
+      remoteDataSource: ActivitiesRemoteDataSourceImpl(client: http.Client()),
+    );
+    _financialBloc = FinancialBloc(
+      getMonthlyFinancial: GetMonthlyFinancial(repository),
+      getAnnualFinancial: GetAnnualFinancial(repository),
+      getMultiYearFinancial: GetMultiYearFinancial(repository),
+    );
+
+    // Fetch annual data
+    _fetchAnnualData();
 
     // Auto scroll to selected month after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -62,18 +71,64 @@ class _BillOfMonthState extends State<BillOfMonth> {
     });
   }
 
+  void _fetchAnnualData() {
+    _financialBloc.add(FetchAnnualFinancial(year: currentYear.year));
+  }
+
   @override
   void dispose() {
     scrollController.dispose();
+    _financialBloc.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<FinancialBloc, FinancialState>(
+      bloc: _financialBloc,
+      builder: (context, state) {
+        if (state is AnnualFinancialLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is FinancialError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                const SizedBox(height: 16),
+                Text('Lỗi: ${state.message}'),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _fetchAnnualData,
+                  child: const Text('Thử lại'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (state is AnnualFinancialLoaded) {
+          return _buildContent(state.data.monthlySummaries);
+        }
+
+        return const Center(child: Text('Không có dữ liệu'));
+      },
+    );
+  }
+
+  Widget _buildContent(List<dynamic> monthlySummaries) {
+    // Convert to map for easier access
+    final Map<int, dynamic> summaryMap = {};
+    for (var summary in monthlySummaries) {
+      summaryMap[summary.month] = summary;
+    }
+
     return Column(
       children: [
         // Tổng kết năm
-        _buildYearSummary(),
+        _buildYearSummary(summaryMap),
 
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -97,7 +152,7 @@ class _BillOfMonthState extends State<BillOfMonth> {
               children: [
                 // Danh sách 12 tháng
                 for (int month = 1; month <= 12; month++)
-                  _buildMonthItem(month),
+                  _buildMonthItem(month, summaryMap),
               ],
             ),
           ),
@@ -106,17 +161,17 @@ class _BillOfMonthState extends State<BillOfMonth> {
     );
   }
 
-  Widget _buildYearSummary() {
+  Widget _buildYearSummary(Map<int, dynamic> summaryMap) {
     // Tính tổng thu nhập và chi tiêu của năm
-    int yearIncome = 0;
-    int yearExpense = 0;
+    double yearIncome = 0;
+    double yearExpense = 0;
 
-    monthSummaries.forEach((month, summary) {
-      yearIncome += summary.income;
-      yearExpense += summary.expense;
+    summaryMap.forEach((month, summary) {
+      yearIncome += summary.totalIncome;
+      yearExpense += summary.totalExpense.abs();
     });
 
-    int yearBalance = yearIncome - yearExpense;
+    double yearBalance = yearIncome - yearExpense;
 
     return Container(
       padding: const EdgeInsets.only(right: AppConstraints.largePadding),
@@ -183,18 +238,18 @@ class _BillOfMonthState extends State<BillOfMonth> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "+${yearIncome.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
+                "+${yearIncome.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
                 style: const TextStyle(
                   fontSize: 16,
                   color: AppColors.primary_600,
                 ),
               ),
               Text(
-                "-${yearExpense.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
+                "-${yearExpense.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
                 style: const TextStyle(color: Colors.red, fontSize: 16),
               ),
               Text(
-                "= ${yearBalance.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
+                "= ${yearBalance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
                 style: const TextStyle(color: Colors.black, fontSize: 16),
               ),
             ],
@@ -204,11 +259,11 @@ class _BillOfMonthState extends State<BillOfMonth> {
     );
   }
 
-  Widget _buildMonthItem(int month) {
-    final summary = monthSummaries[month];
-    final int income = summary?.income ?? 0;
-    final int expense = summary?.expense ?? 0;
-    final int balance = income - expense;
+  Widget _buildMonthItem(int month, Map<int, dynamic> summaryMap) {
+    final summary = summaryMap[month];
+    final double income = summary?.totalIncome ?? 0;
+    final double expense = (summary?.totalExpense ?? 0).abs();
+    final double balance = income - expense;
     final String monthName = _getMonthName(month);
 
     return Column(
@@ -256,18 +311,18 @@ class _BillOfMonthState extends State<BillOfMonth> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        "+${income.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
+                        "+${income.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
                         style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.primary_600,
                         ),
                       ),
                       Text(
-                        "-${expense.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
+                        "-${expense.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
                         style: const TextStyle(fontSize: 12, color: Colors.red),
                       ),
                       Text(
-                        "= ${balance.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
+                        "= ${balance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
                         style: const TextStyle(
                           fontSize: AppConstraints.normalTextFontSize,
                           color: Colors.black,
@@ -295,6 +350,7 @@ class _BillOfMonthState extends State<BillOfMonth> {
         currentYear.day,
       );
     });
+    _fetchAnnualData();
   }
 
   void _nextYear() {
@@ -308,6 +364,7 @@ class _BillOfMonthState extends State<BillOfMonth> {
           currentYear.day,
         );
       });
+      _fetchAnnualData();
     }
   }
 
@@ -378,11 +435,4 @@ class _BillOfMonthState extends State<BillOfMonth> {
       );
     }
   }
-}
-
-class MonthSummary {
-  final int income;
-  final int expense;
-
-  MonthSummary(this.income, this.expense);
 }

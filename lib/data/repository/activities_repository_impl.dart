@@ -1,5 +1,6 @@
 import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
 import 'package:se501_plantheon/domain/entities/activities_entities.dart';
+import 'package:se501_plantheon/domain/entities/financial_entities.dart';
 import 'package:se501_plantheon/domain/repository/activities_repository.dart';
 import 'package:se501_plantheon/data/models/activities_models.dart';
 
@@ -60,5 +61,42 @@ class ActivitiesRepositoryImpl implements ActivitiesRepository {
   Future<void> deleteActivity({required String id}) async {
     print('[ActivitiesRepository] deleteActivity id=$id');
     await remoteDataSource.deleteActivity(id: id);
+  }
+
+  @override
+  Future<MonthlyFinancialEntity> getMonthlyFinancial({
+    required int year,
+    required int month,
+  }) async {
+    print(
+      '[ActivitiesRepository] getMonthlyFinancial year=$year, month=$month',
+    );
+    final response = await remoteDataSource.getMonthlyFinancial(
+      year: year,
+      month: month,
+    );
+    return response.toEntity();
+  }
+
+  @override
+  Future<AnnualFinancialEntity> getAnnualFinancial({required int year}) async {
+    print('[ActivitiesRepository] getAnnualFinancial year=$year');
+    final response = await remoteDataSource.getAnnualFinancial(year: year);
+    return response.toEntity();
+  }
+
+  @override
+  Future<MultiYearFinancialEntity> getMultiYearFinancial({
+    required int startYear,
+    required int endYear,
+  }) async {
+    print(
+      '[ActivitiesRepository] getMultiYearFinancial startYear=$startYear, endYear=$endYear',
+    );
+    final response = await remoteDataSource.getMultiYearFinancial(
+      startYear: startYear,
+      endYear: endYear,
+    );
+    return response.toEntity();
   }
 }
