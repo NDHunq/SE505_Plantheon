@@ -5,9 +5,9 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
-import 'package:se501_plantheon/domain/usecases/get_monthly_financial.dart';
-import 'package:se501_plantheon/domain/usecases/get_annual_financial.dart';
-import 'package:se501_plantheon/domain/usecases/get_multi_year_financial.dart';
+import 'package:se501_plantheon/domain/usecases/financial/get_monthly_financial.dart';
+import 'package:se501_plantheon/domain/usecases/financial/get_annual_financial.dart';
+import 'package:se501_plantheon/domain/usecases/financial/get_multi_year_financial.dart';
 import 'package:se501_plantheon/presentation/bloc/financial/financial_bloc.dart';
 
 import 'package:se501_plantheon/presentation/bloc/financial/financial_event.dart';

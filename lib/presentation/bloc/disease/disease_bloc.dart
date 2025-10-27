@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:se501_plantheon/data/models/diseases.model.dart';
-import 'package:se501_plantheon/domain/usecases/get_disease.dart';
+import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_event.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_state.dart';
 

@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
-import 'package:se501_plantheon/domain/usecases/get_disease.dart';
+import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
 
 class DiseaseProvider extends StatelessWidget {
