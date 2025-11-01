@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:se501_plantheon/data/models/activities_models.dart';
-import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
-import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
-import 'package:se501_plantheon/domain/usecases/create_activity.dart';
-import 'package:se501_plantheon/domain/usecases/update_activity.dart';
-import 'package:se501_plantheon/domain/usecases/delete_activity.dart';
+import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_month.dart';
+import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_day.dart';
+import 'package:se501_plantheon/domain/usecases/activity/create_activity.dart';
+import 'package:se501_plantheon/domain/usecases/activity/update_activity.dart';
+import 'package:se501_plantheon/domain/usecases/activity/delete_activity.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_state.dart';
 

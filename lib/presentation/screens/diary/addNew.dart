@@ -10,11 +10,11 @@ import 'package:se501_plantheon/presentation/screens/diary/other.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
-import 'package:se501_plantheon/domain/usecases/get_activities_by_month.dart';
-import 'package:se501_plantheon/domain/usecases/get_activities_by_day.dart';
-import 'package:se501_plantheon/domain/usecases/create_activity.dart';
-import 'package:se501_plantheon/domain/usecases/update_activity.dart';
-import 'package:se501_plantheon/domain/usecases/delete_activity.dart';
+import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_month.dart';
+import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_day.dart';
+import 'package:se501_plantheon/domain/usecases/activity/create_activity.dart';
+import 'package:se501_plantheon/domain/usecases/activity/update_activity.dart';
+import 'package:se501_plantheon/domain/usecases/activity/delete_activity.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 
 class AddNewScreen extends StatefulWidget {

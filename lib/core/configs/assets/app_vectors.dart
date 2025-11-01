@@ -38,4 +38,5 @@ class AppVectors {
   static const String comment = '${basePath}comment$format';
   static const String postReport = '${basePath}post_report$format';
   static const String share = '${basePath}share$format';
+  static const String filter = '${basePath}filter$format';
 }

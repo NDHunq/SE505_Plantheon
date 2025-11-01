@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:se501_plantheon/domain/usecases/get_monthly_financial.dart';
-import 'package:se501_plantheon/domain/usecases/get_annual_financial.dart';
-import 'package:se501_plantheon/domain/usecases/get_multi_year_financial.dart';
+import 'package:se501_plantheon/domain/usecases/financial/get_monthly_financial.dart';
+import 'package:se501_plantheon/domain/usecases/financial/get_annual_financial.dart';
+import 'package:se501_plantheon/domain/usecases/financial/get_multi_year_financial.dart';
 import 'package:se501_plantheon/presentation/bloc/financial/financial_event.dart';
 import 'package:se501_plantheon/presentation/bloc/financial/financial_state.dart';
 

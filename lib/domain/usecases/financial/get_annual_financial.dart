@@ -1,5 +1,5 @@
-import '../entities/financial_entities.dart';
-import '../repository/activities_repository.dart';
+import '../../entities/financial_entities.dart';
+import '../../repository/activities_repository.dart';
 
 class GetAnnualFinancial {
   final ActivitiesRepository repository;
