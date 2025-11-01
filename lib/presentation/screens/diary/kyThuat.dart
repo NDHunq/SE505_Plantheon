@@ -657,9 +657,7 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                     ],
                     Expanded(
                       child: GestureDetector(
-                        onTap: (repeatType.isNotEmpty && repeatType != "Không")
-                            ? null
-                            : () => _selectStartDate(context),
+                        onTap: () => _selectStartDate(context),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
@@ -668,21 +666,8 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade300),
                             borderRadius: BorderRadius.circular(8),
-                            color:
-                                (repeatType.isNotEmpty && repeatType != "Không")
-                                ? Colors.grey.shade200
-                                : null,
                           ),
-                          child: Text(
-                            _formatDateDisplay(startDate),
-                            style: TextStyle(
-                              color:
-                                  (repeatType.isNotEmpty &&
-                                      repeatType != "Không")
-                                  ? Colors.grey.shade500
-                                  : null,
-                            ),
-                          ),
+                          child: Text(_formatDateDisplay(startDate)),
                         ),
                       ),
                     ),
@@ -690,62 +675,49 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                 ),
               ),
 
-              // Ngày kết thúc
-              AddNewRow(
-                label: "Ngày kết thúc",
-                child: Row(
-                  children: [
-                    if (!allDay) ...[
-                      GestureDetector(
-                        onTap: () => _selectEndTime(context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(endTime),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                    ],
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: (repeatType.isNotEmpty && repeatType != "Không")
-                            ? null
-                            : () => _selectEndDate(context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(8),
-                            color:
-                                (repeatType.isNotEmpty && repeatType != "Không")
-                                ? Colors.grey.shade200
-                                : null,
-                          ),
-                          child: Text(
-                            _formatDateDisplay(endDate),
-                            style: TextStyle(
-                              color:
-                                  (repeatType.isNotEmpty &&
-                                      repeatType != "Không")
-                                  ? Colors.grey.shade500
-                                  : null,
+              // Ngày kết thúc - Chỉ hiển thị khi "Lặp lại" là "Không"
+              if (repeatType.isEmpty || repeatType == "Không") ...[
+                AddNewRow(
+                  label: "Ngày kết thúc",
+                  child: Row(
+                    children: [
+                      if (!allDay) ...[
+                        GestureDetector(
+                          onTap: () => _selectEndTime(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
                             ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(endTime),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => _selectEndDate(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(_formatDateDisplay(endDate)),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+              ],
               Divider(height: 1, color: AppColors.text_color_100),
 
               // Lặp lại

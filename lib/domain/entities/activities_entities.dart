@@ -1,7 +1,8 @@
 class ActivityEntity {
   final String title;
+  final String type;
 
-  ActivityEntity({required this.title});
+  ActivityEntity({required this.title, required this.type});
 }
 
 class DayActivitiesEntity {

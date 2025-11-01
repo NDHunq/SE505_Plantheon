@@ -2,14 +2,15 @@ import 'package:se501_plantheon/domain/entities/activities_entities.dart';
 
 class ActivityModel {
   final String title;
+  final String type;
 
-  ActivityModel({required this.title});
+  ActivityModel({required this.title, required this.type});
 
   factory ActivityModel.fromJson(Map<String, dynamic> json) {
-    return ActivityModel(title: json['title'] ?? '');
+    return ActivityModel(title: json['title'] ?? '', type: json['type'] ?? '');
   }
 
-  ActivityEntity toEntity() => ActivityEntity(title: title);
+  ActivityEntity toEntity() => ActivityEntity(title: title, type: type);
 }
 
 class DayActivitiesModel {

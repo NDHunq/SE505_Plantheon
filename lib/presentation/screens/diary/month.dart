@@ -192,7 +192,7 @@ class _MonthScreenState extends State<MonthScreen> {
             (year == now.year && month == now.month && day == now.day);
 
         // Build tasks for this day
-        final List<String> tasks = _getTasksForDay(
+        final List<ActivityModel> tasks = _getTasksForDay(
           day,
           month,
           year,
@@ -209,7 +209,7 @@ class _MonthScreenState extends State<MonthScreen> {
     );
   }
 
-  List<String> _getTasksForDay(
+  List<ActivityModel> _getTasksForDay(
     int day,
     int month,
     int year,
@@ -224,7 +224,7 @@ class _MonthScreenState extends State<MonthScreen> {
         activities: const [],
       ),
     );
-    return match.activities.map((a) => a.title).toList();
+    return match.activities;
   }
 }
 
@@ -232,7 +232,7 @@ class ADayWidget extends StatelessWidget {
   final int day;
   final bool isToday;
   final VoidCallback onTap;
-  final List<String> tasks;
+  final List<ActivityModel> tasks;
 
   const ADayWidget({
     super.key,
@@ -291,37 +291,46 @@ class ADayWidget extends StatelessWidget {
 }
 
 class ArrayTaskWidget extends StatelessWidget {
-  final List<String> tasks;
+  final List<ActivityModel> tasks;
 
   const ArrayTaskWidget(this.tasks, {super.key});
+
+  Color _getColorByType(String type) {
+    switch (type.toUpperCase()) {
+      case 'EXPENSE':
+        return Colors.red;
+      case 'INCOME':
+        return Colors.green;
+      case 'DISEASE':
+        return Colors.orange;
+      case 'TECHNIQUE':
+        return Colors.blue;
+      case 'CLIMATE':
+        return Colors.teal;
+      case 'OTHER':
+        return Colors.purple;
+      default:
+        return Colors.grey;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     if (tasks.isEmpty) {
       return const SizedBox.shrink();
     }
-    final List<String> tasksToShow = tasks.length <= 2
+    final List<ActivityModel> tasksToShow = tasks.length <= 2
         ? tasks
         : tasks.take(2).toList();
     final int remaining = tasks.length - tasksToShow.length;
-
-    const List<Color> palette = [
-      Colors.green,
-      Colors.blue,
-      Colors.orange,
-      Colors.purple,
-      Colors.red,
-      Colors.teal,
-    ];
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         ...tasksToShow.asMap().entries.map((entry) {
-          final int idx = entry.key;
-          final String t = entry.value;
-          final Color bgColor = palette[idx % palette.length];
+          final ActivityModel activity = entry.value;
+          final Color bgColor = _getColorByType(activity.type);
           return Container(
             width: double.infinity,
             height: 8,
@@ -333,7 +342,7 @@ class ArrayTaskWidget extends StatelessWidget {
             ),
             alignment: Alignment.center,
             child: Text(
-              t,
+              activity.title,
               style: const TextStyle(
                 fontSize: 8,
                 color: Colors.white,

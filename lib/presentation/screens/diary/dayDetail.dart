@@ -438,6 +438,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
               ),
               const SizedBox(height: 8),
               ...allDayActivities.map((activity) {
+                final activityColor = _getColorByType(activity.type);
                 return GestureDetector(
                   onTap: () => _showEditActivityBottomSheet(activity),
                   child: Container(
@@ -447,10 +448,10 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.green.shade100,
+                      color: activityColor.shade100,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Colors.green.shade300,
+                        color: activityColor.shade300,
                         width: 1,
                       ),
                     ),
@@ -473,14 +474,14 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
-                                color: Colors.green.shade700,
+                                color: activityColor.shade700,
                               ),
                             ),
                             const SizedBox(width: 8),
                             Icon(
                               Icons.arrow_forward_ios,
                               size: 14,
-                              color: Colors.green.shade700,
+                              color: activityColor.shade700,
                             ),
                           ],
                         ),
@@ -512,6 +513,25 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
         return 'Khác';
       default:
         return type;
+    }
+  }
+
+  MaterialColor _getColorByType(String type) {
+    switch (type.toUpperCase()) {
+      case 'EXPENSE':
+        return Colors.red;
+      case 'INCOME':
+        return Colors.green;
+      case 'DISEASE':
+        return Colors.orange;
+      case 'TECHNIQUE':
+        return Colors.blue;
+      case 'CLIMATE':
+        return Colors.teal;
+      case 'OTHER':
+        return Colors.purple;
+      default:
+        return Colors.blueGrey;
     }
   }
 

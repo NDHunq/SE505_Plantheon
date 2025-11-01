@@ -61,7 +61,7 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
               (d) => DayActivitiesModel(
                 date: d.date,
                 activities: d.activities
-                    .map((a) => ActivityModel(title: a.title))
+                    .map((a) => ActivityModel(title: a.title, type: a.type))
                     .toList(),
               ),
             )
