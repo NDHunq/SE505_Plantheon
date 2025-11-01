@@ -30,7 +30,6 @@ class DayEventMapper {
       // Kiểm tra xem có phải là recurring activity không
       final bool isRecurring =
           a.repeat != null && a.repeat!.isNotEmpty && a.repeat != "Không";
-
       if (isRecurring) {
         // Với recurring activities, chỉ hiển thị đúng khung giờ
         startHour = localStart.hour;
