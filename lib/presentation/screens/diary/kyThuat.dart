@@ -53,8 +53,8 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
   String endTime = "15:00";
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now();
-  String repeatType = "";
-  String endRepeatType = "";
+  String repeatType = "Không";
+  String endRepeatType = "Không";
   DateTime repeatEndDate = DateTime.now();
   String alertTime = "";
 
@@ -89,11 +89,15 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
           '${endLocal.hour.toString().padLeft(2, '0')}:${endLocal.minute.toString().padLeft(2, '0')}';
 
       // Fill additional fields
-      if (activity.repeat != null) {
+      if (activity.repeat != null && activity.repeat!.isNotEmpty) {
         repeatType = activity.repeat!;
+      } else {
+        repeatType = "Không";
       }
-      if (activity.isRepeat != null) {
+      if (activity.isRepeat != null && activity.isRepeat!.isNotEmpty) {
         endRepeatType = activity.isRepeat!;
+      } else {
+        endRepeatType = "Không";
       }
       if (activity.endRepeatDay != null) {
         repeatEndDate = activity.endRepeatDay!;
@@ -413,12 +417,10 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
       day: allDay,
       timeStart: _formatDateTimeToISO(startDate, startTime),
       timeEnd: _formatDateTimeToISO(endDate, endTime),
-      repeat: repeatType != "Không" && repeatType.isNotEmpty
-          ? repeatType
-          : null,
-      isRepeat: endRepeatType != "Không" && endRepeatType.isNotEmpty
-          ? endRepeatType
-          : null,
+      repeat: repeatType == "Không" || repeatType.isEmpty ? "" : repeatType,
+      isRepeat: endRepeatType == "Không" || endRepeatType.isEmpty
+          ? ""
+          : endRepeatType,
       endRepeatDay: endRepeatType == "Ngày"
           ? _formatToISO8601(repeatEndDate)
           : null,
@@ -655,7 +657,9 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                     ],
                     Expanded(
                       child: GestureDetector(
-                        onTap: () => _selectStartDate(context),
+                        onTap: (repeatType.isNotEmpty && repeatType != "Không")
+                            ? null
+                            : () => _selectStartDate(context),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
@@ -664,8 +668,21 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade300),
                             borderRadius: BorderRadius.circular(8),
+                            color:
+                                (repeatType.isNotEmpty && repeatType != "Không")
+                                ? Colors.grey.shade200
+                                : null,
                           ),
-                          child: Text(_formatDateDisplay(startDate)),
+                          child: Text(
+                            _formatDateDisplay(startDate),
+                            style: TextStyle(
+                              color:
+                                  (repeatType.isNotEmpty &&
+                                      repeatType != "Không")
+                                  ? Colors.grey.shade500
+                                  : null,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -697,7 +714,9 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                     ],
                     Expanded(
                       child: GestureDetector(
-                        onTap: () => _selectEndDate(context),
+                        onTap: (repeatType.isNotEmpty && repeatType != "Không")
+                            ? null
+                            : () => _selectEndDate(context),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
@@ -706,8 +725,21 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade300),
                             borderRadius: BorderRadius.circular(8),
+                            color:
+                                (repeatType.isNotEmpty && repeatType != "Không")
+                                ? Colors.grey.shade200
+                                : null,
                           ),
-                          child: Text(_formatDateDisplay(endDate)),
+                          child: Text(
+                            _formatDateDisplay(endDate),
+                            style: TextStyle(
+                              color:
+                                  (repeatType.isNotEmpty &&
+                                      repeatType != "Không")
+                                  ? Colors.grey.shade500
+                                  : null,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -741,30 +773,31 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                 ),
               ),
 
-              // Kết thúc lặp lại
-              AddNewRow(
-                label: "Kết thúc lặp lại",
-                child: GestureDetector(
-                  onTap: () => _showEndRepeatDialog(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(endRepeatType),
-                        const Icon(Icons.arrow_drop_down, size: 20),
-                      ],
+              // Kết thúc lặp lại - chỉ hiển thị khi repeatType khác "Không"
+              if (repeatType.isNotEmpty && repeatType != "Không")
+                AddNewRow(
+                  label: "Kết thúc lặp lại",
+                  child: GestureDetector(
+                    onTap: () => _showEndRepeatDialog(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(endRepeatType),
+                          const Icon(Icons.arrow_drop_down, size: 20),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
 
               // Ngày kết thúc - chỉ hiển thị khi chọn "Ngày"
               if (endRepeatType == "Ngày") ...[

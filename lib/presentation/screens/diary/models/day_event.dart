@@ -11,6 +11,7 @@ class DayEvent {
   final Color? color;
   final DateTime realStartTime;
   final DateTime realEndTime;
+  final String? repeat;
 
   DayEvent({
     required this.id,
@@ -23,7 +24,11 @@ class DayEvent {
     required this.realEndTime,
     this.amountText,
     this.color,
+    this.repeat,
   }) : assert(endHour >= startHour);
 
   int get durationHours => (endHour - startHour).clamp(1, 24);
+
+  bool get isRecurring =>
+      repeat != null && repeat!.isNotEmpty && repeat != "Không";
 }

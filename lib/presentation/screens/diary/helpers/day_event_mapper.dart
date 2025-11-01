@@ -27,26 +27,43 @@ class DayEventMapper {
       int startHour;
       int endHour;
 
-      // Nếu activity bắt đầu trước viewDate thì hiển thị từ 0h
-      if (startDate.isBefore(viewDate)) {
-        startHour = 0;
-      } else {
-        startHour = localStart.hour;
-      }
+      // Kiểm tra xem có phải là recurring activity không
+      final bool isRecurring =
+          a.repeat != null && a.repeat!.isNotEmpty && a.repeat != "Không";
 
-      // Nếu activity kết thúc sau viewDate thì hiển thị đến 24h
-      if (endDate.isAfter(viewDate)) {
-        endHour = 24;
-      } else {
-        // Nếu endHour = 0 (midnight) thì coi như activity kéo dài đến 24h của ngày hôm trước
-        if (localEnd.hour == 0 && localEnd.minute == 0) {
-          endHour = 24;
-        } else if (localEnd.hour == localStart.hour && startDate == endDate) {
+      if (isRecurring) {
+        // Với recurring activities, chỉ hiển thị đúng khung giờ
+        startHour = localStart.hour;
+        if (localEnd.hour == localStart.hour && startDate == endDate) {
           // Cùng giờ, thêm 1 để hiển thị ít nhất 1 giờ
           endHour = localStart.hour + 1;
         } else {
           // Nếu có phút thì làm tròn lên giờ tiếp theo
           endHour = localEnd.minute > 0 ? localEnd.hour + 1 : localEnd.hour;
+        }
+      } else {
+        // Với activities thường, áp dụng logic overlap qua nhiều ngày
+        // Nếu activity bắt đầu trước viewDate thì hiển thị từ 0h
+        if (startDate.isBefore(viewDate)) {
+          startHour = 0;
+        } else {
+          startHour = localStart.hour;
+        }
+
+        // Nếu activity kết thúc sau viewDate thì hiển thị đến 24h
+        if (endDate.isAfter(viewDate)) {
+          endHour = 24;
+        } else {
+          // Nếu endHour = 0 (midnight) thì coi như activity kéo dài đến 24h của ngày hôm trước
+          if (localEnd.hour == 0 && localEnd.minute == 0) {
+            endHour = 24;
+          } else if (localEnd.hour == localStart.hour && startDate == endDate) {
+            // Cùng giờ, thêm 1 để hiển thị ít nhất 1 giờ
+            endHour = localStart.hour + 1;
+          } else {
+            // Nếu có phút thì làm tròn lên giờ tiếp theo
+            endHour = localEnd.minute > 0 ? localEnd.hour + 1 : localEnd.hour;
+          }
         }
       }
 
@@ -67,6 +84,7 @@ class DayEventMapper {
         realEndTime: localEnd,
         amountText: amountText,
         color: activityColor,
+        repeat: a.repeat,
       );
     }).toList();
   }

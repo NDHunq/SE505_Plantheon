@@ -680,18 +680,66 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
     final Color baseColor = event.color ?? Colors.blue;
     final bool isShort = event.durationHours <= 1;
 
-    // Format thời gian thực tế từ database
-    final String startTimeStr =
-        '${event.realStartTime.day.toString().padLeft(2, '0')}/'
-        '${event.realStartTime.month.toString().padLeft(2, '0')} '
-        '${event.realStartTime.hour.toString().padLeft(2, '0')}:'
-        '${event.realStartTime.minute.toString().padLeft(2, '0')}';
+    String startTimeStr;
+    String endTimeStr;
 
-    final String endTimeStr =
-        '${event.realEndTime.day.toString().padLeft(2, '0')}/'
-        '${event.realEndTime.month.toString().padLeft(2, '0')} '
-        '${event.realEndTime.hour.toString().padLeft(2, '0')}:'
-        '${event.realEndTime.minute.toString().padLeft(2, '0')}';
+    // Kiểm tra nếu là recurring activity
+    if (event.isRecurring) {
+      // Lấy giờ từ realStartTime và realEndTime
+      final String startHour =
+          '${event.realStartTime.hour.toString().padLeft(2, '0')}:'
+          '${event.realStartTime.minute.toString().padLeft(2, '0')}';
+      final String endHour =
+          '${event.realEndTime.hour.toString().padLeft(2, '0')}:'
+          '${event.realEndTime.minute.toString().padLeft(2, '0')}';
+
+      // Format theo loại repeat
+      switch (event.repeat) {
+        case 'Hàng ngày':
+          startTimeStr = 'Hàng ngày : $startHour';
+          endTimeStr = endHour;
+          break;
+        case 'Hàng tuần':
+          final weekday = _getWeekdayName(event.realStartTime.weekday);
+          startTimeStr = 'Hàng tuần $weekday : $startHour';
+          endTimeStr = endHour;
+          break;
+        case 'Hàng tháng':
+          final day = event.realStartTime.day;
+          startTimeStr = 'Hàng tháng ngày $day : $startHour ';
+          endTimeStr = endHour;
+          break;
+        case 'Hàng năm':
+          final day = event.realStartTime.day;
+          final month = event.realStartTime.month;
+          startTimeStr = 'Hàng năm ngày $day tháng $month : $startHour ';
+          endTimeStr = endHour;
+          break;
+        default:
+          // Fallback to normal format
+          startTimeStr =
+              '${event.realStartTime.day.toString().padLeft(2, '0')}/'
+              '${event.realStartTime.month.toString().padLeft(2, '0')} '
+              '$startHour';
+          endTimeStr =
+              '${event.realEndTime.day.toString().padLeft(2, '0')}/'
+              '${event.realEndTime.month.toString().padLeft(2, '0')} '
+              '$endHour';
+      }
+    } else {
+      // Format thời gian thực tế từ database cho activity thường
+      startTimeStr =
+          '${event.realStartTime.day.toString().padLeft(2, '0')}/'
+          '${event.realStartTime.month.toString().padLeft(2, '0')} '
+          '${event.realStartTime.hour.toString().padLeft(2, '0')}:'
+          '${event.realStartTime.minute.toString().padLeft(2, '0')}';
+
+      endTimeStr =
+          '${event.realEndTime.day.toString().padLeft(2, '0')}/'
+          '${event.realEndTime.month.toString().padLeft(2, '0')} '
+          '${event.realEndTime.hour.toString().padLeft(2, '0')}:'
+          '${event.realEndTime.minute.toString().padLeft(2, '0')}';
+    }
 
     return GestureDetector(
       onTap: () => _handleActivityTap(event),
@@ -827,6 +875,27 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
           '${selectedDay.toString().padLeft(2, '0')}';
       _activitiesBloc.add(FetchActivitiesByDay(dateIso: dateIso));
     });
+  }
+
+  String _getWeekdayName(int weekday) {
+    switch (weekday) {
+      case 1:
+        return 'Thứ 2';
+      case 2:
+        return 'Thứ 3';
+      case 3:
+        return 'Thứ 4';
+      case 4:
+        return 'Thứ 5';
+      case 5:
+        return 'Thứ 6';
+      case 6:
+        return 'Thứ 7';
+      case 7:
+        return 'Chủ nhật';
+      default:
+        return '';
+    }
   }
 
   DayEvent? _findEventStartingAt(int hour) {

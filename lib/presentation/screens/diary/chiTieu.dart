@@ -60,8 +60,8 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
   String endTime = "15:00";
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now();
-  String repeatType = "";
-  String endRepeatType = "";
+  String repeatType = "Không";
+  String endRepeatType = "Không";
   DateTime repeatEndDate = DateTime.now();
   String alertTime = "";
   String category = "";
@@ -104,11 +104,15 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
           '${endLocal.hour.toString().padLeft(2, '0')}:${endLocal.minute.toString().padLeft(2, '0')}';
 
       // Fill additional fields
-      if (activity.repeat != null) {
+      if (activity.repeat != null && activity.repeat!.isNotEmpty) {
         repeatType = activity.repeat!;
+      } else {
+        repeatType = "Không";
       }
-      if (activity.isRepeat != null) {
+      if (activity.isRepeat != null && activity.isRepeat!.isNotEmpty) {
         endRepeatType = activity.isRepeat!;
+      } else {
+        endRepeatType = "Không";
       }
       if (activity.endRepeatDay != null) {
         repeatEndDate = activity.endRepeatDay!;
@@ -481,8 +485,8 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
       day: allDay,
       timeStart: _formatDateTimeToISO(startDate, startTime),
       timeEnd: _formatDateTimeToISO(endDate, endTime),
-      repeat: repeatType != "Không" ? repeatType : null,
-      isRepeat: endRepeatType != "Không" ? endRepeatType : null,
+      repeat: repeatType == "Không" ? "" : repeatType,
+      isRepeat: endRepeatType == "Không" ? "" : endRepeatType,
       endRepeatDay: endRepeatType == "Ngày"
           ? _formatToISO8601(repeatEndDate)
           : null,
@@ -717,7 +721,9 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                     ],
                     Expanded(
                       child: GestureDetector(
-                        onTap: () => _selectStartDate(context),
+                        onTap: (repeatType.isNotEmpty && repeatType != "Không")
+                            ? null
+                            : () => _selectStartDate(context),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
@@ -726,8 +732,21 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade300),
                             borderRadius: BorderRadius.circular(8),
+                            color:
+                                (repeatType.isNotEmpty && repeatType != "Không")
+                                ? Colors.grey.shade200
+                                : null,
                           ),
-                          child: Text(_formatDateDisplay(startDate)),
+                          child: Text(
+                            _formatDateDisplay(startDate),
+                            style: TextStyle(
+                              color:
+                                  (repeatType.isNotEmpty &&
+                                      repeatType != "Không")
+                                  ? Colors.grey.shade500
+                                  : null,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -759,7 +778,9 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                     ],
                     Expanded(
                       child: GestureDetector(
-                        onTap: () => _selectEndDate(context),
+                        onTap: (repeatType.isNotEmpty && repeatType != "Không")
+                            ? null
+                            : () => _selectEndDate(context),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
@@ -768,8 +789,21 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade300),
                             borderRadius: BorderRadius.circular(8),
+                            color:
+                                (repeatType.isNotEmpty && repeatType != "Không")
+                                ? Colors.grey.shade200
+                                : null,
                           ),
-                          child: Text(_formatDateDisplay(endDate)),
+                          child: Text(
+                            _formatDateDisplay(endDate),
+                            style: TextStyle(
+                              color:
+                                  (repeatType.isNotEmpty &&
+                                      repeatType != "Không")
+                                  ? Colors.grey.shade500
+                                  : null,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -803,30 +837,31 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                 ),
               ),
 
-              // Kết thúc lặp lại
-              AddNewRow(
-                label: "Kết thúc lặp lại",
-                child: GestureDetector(
-                  onTap: () => _showEndRepeatDialog(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(endRepeatType),
-                        const Icon(Icons.arrow_drop_down, size: 20),
-                      ],
+              // Kết thúc lặp lại - chỉ hiển thị khi repeatType khác "Không"
+              if (repeatType.isNotEmpty && repeatType != "Không")
+                AddNewRow(
+                  label: "Kết thúc lặp lại",
+                  child: GestureDetector(
+                    onTap: () => _showEndRepeatDialog(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(endRepeatType),
+                          const Icon(Icons.arrow_drop_down, size: 20),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
 
               // Ngày kết thúc - chỉ hiển thị khi chọn "Ngày"
               if (endRepeatType == "Ngày") ...[
