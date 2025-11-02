@@ -416,7 +416,10 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
       type: "TECHNIQUE",
       day: allDay,
       timeStart: _formatDateTimeToISO(startDate, startTime),
-      timeEnd: _formatDateTimeToISO(endDate, endTime),
+      // Khi lặp lại: endDate = startDate, chỉ khác giờ
+      timeEnd: (repeatType.isNotEmpty && repeatType != "Không")
+          ? _formatDateTimeToISO(startDate, endTime)
+          : _formatDateTimeToISO(endDate, endTime),
       repeat: repeatType == "Không" || repeatType.isEmpty ? "" : repeatType,
       isRepeat: endRepeatType == "Không" || endRepeatType.isEmpty
           ? ""
@@ -675,10 +678,12 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                 ),
               ),
 
-              // Ngày kết thúc - Chỉ hiển thị khi "Lặp lại" là "Không"
-              if (repeatType.isEmpty || repeatType == "Không") ...[
+              // Ngày kết thúc - ẩn khi cả ngày VÀ lặp lại
+              if (!(allDay && repeatType.isNotEmpty && repeatType != "Không"))
                 AddNewRow(
-                  label: "Ngày kết thúc",
+                  label: repeatType.isNotEmpty && repeatType != "Không"
+                      ? "Giờ kết thúc"
+                      : "Ngày kết thúc",
                   child: Row(
                     children: [
                       if (!allDay) ...[
@@ -698,26 +703,27 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                         ),
                         const SizedBox(width: 8),
                       ],
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => _selectEndDate(context),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
+                      // Chỉ hiển thị chọn ngày kết thúc khi Lặp lại = "Không"
+                      if (repeatType.isEmpty || repeatType == "Không")
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _selectEndDate(context),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(_formatDateDisplay(endDate)),
                             ),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade300),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(_formatDateDisplay(endDate)),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
-              ],
               Divider(height: 1, color: AppColors.text_color_100),
 
               // Lặp lại

@@ -195,13 +195,6 @@ class _BillOfMonthState extends State<BillOfMonth> {
               ),
               GestureDetector(
                 onTap: () {
-                  final now = DateTime.now();
-                  // Kiểm tra nếu là năm tương lai
-                  if (currentYear.year > now.year) {
-                    _showFutureWarning();
-                    return;
-                  }
-
                   if (widget.onNavigateToBillOfYear != null) {
                     widget.onNavigateToBillOfYear!(currentYear);
                   } else {
@@ -222,14 +215,13 @@ class _BillOfMonthState extends State<BillOfMonth> {
                   ),
                 ),
               ),
-              if (!_isCurrentYear())
-                IconButton(
-                  onPressed: _nextYear,
-                  icon: const Icon(
-                    Icons.chevron_right,
-                    color: AppColors.primary_600,
-                  ),
+              IconButton(
+                onPressed: _nextYear,
+                icon: const Icon(
+                  Icons.chevron_right,
+                  color: AppColors.primary_600,
                 ),
+              ),
             ],
           ),
 
@@ -300,8 +292,6 @@ class _BillOfMonthState extends State<BillOfMonth> {
                       fontSize: 24,
                       color: _isCurrentMonth(month)
                           ? AppColors.primary_600
-                          : _isFutureMonth(month)
-                          ? Colors.grey
                           : AppColors.text_color_900,
                     ),
                   ),
@@ -354,34 +344,19 @@ class _BillOfMonthState extends State<BillOfMonth> {
   }
 
   void _nextYear() {
-    final now = DateTime.now();
-    // Chỉ cho phép chuyển tiếp nếu chưa đến năm hiện tại
-    if (currentYear.year < now.year) {
-      setState(() {
-        currentYear = DateTime(
-          currentYear.year + 1,
-          currentYear.month,
-          currentYear.day,
-        );
-      });
-      _fetchAnnualData();
-    }
-  }
-
-  bool _isCurrentYear() {
-    final now = DateTime.now();
-    return currentYear.year == now.year;
+    setState(() {
+      currentYear = DateTime(
+        currentYear.year + 1,
+        currentYear.month,
+        currentYear.day,
+      );
+    });
+    _fetchAnnualData();
   }
 
   bool _isCurrentMonth(int month) {
     final now = DateTime.now();
     return currentYear.year == now.year && month == now.month;
-  }
-
-  bool _isFutureMonth(int month) {
-    final now = DateTime.now();
-    final monthDate = DateTime(currentYear.year, month, 1);
-    return monthDate.isAfter(DateTime(now.year, now.month, 1));
   }
 
   String _getMonthName(int month) {
@@ -392,34 +367,6 @@ class _BillOfMonthState extends State<BillOfMonth> {
       'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12',
     ];
     return monthNames[month];
-  }
-
-  void _showFutureWarning() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(
-          "Thông báo",
-          style: TextStyle(
-            color: AppColors.primary_600,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: const Text(
-          "Không có thống kê trong tương lai",
-          style: TextStyle(fontSize: 16),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "Đóng",
-              style: TextStyle(color: AppColors.primary_600),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   void _scrollToMonth(int targetMonth) {

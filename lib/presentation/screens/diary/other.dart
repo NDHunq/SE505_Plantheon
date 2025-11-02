@@ -703,8 +703,8 @@ class _otherWidgetState extends State<otherWidget> {
                 ),
               ),
 
-              // Ngày kết thúc - Chỉ hiển thị khi "Lặp lại" là "Không"
-              if (repeatType.isEmpty || repeatType == "Không") ...[
+              // Ngày kết thúc - ẩn khi cả ngày VÀ lặp lại
+              if (!(allDay && repeatType.isNotEmpty && repeatType != "Không"))
                 AddNewRow(
                   label: "Ngày kết thúc",
                   child: Row(
@@ -745,7 +745,6 @@ class _otherWidgetState extends State<otherWidget> {
                     ],
                   ),
                 ),
-              ],
               Divider(height: 1, color: AppColors.text_color_100),
 
               // Lặp lại

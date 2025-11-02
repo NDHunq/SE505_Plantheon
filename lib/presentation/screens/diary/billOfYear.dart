@@ -169,13 +169,7 @@ class _BillOfYearState extends State<BillOfYear> {
 
     double decadeBalance = decadeIncome - decadeExpense;
     final startYear = _getDecadeStart();
-    final currentYear = DateTime.now().year;
-    final currentDecadeStart = (currentYear ~/ 10) * 10;
-    final targetDecadeStart = (currentDecade.year ~/ 10) * 10;
-
-    final endYear = (targetDecadeStart == currentDecadeStart)
-        ? currentYear
-        : startYear + 9;
+    final endYear = startYear + 9;
 
     return Container(
       padding: const EdgeInsets.only(right: AppConstraints.largePadding),
@@ -204,14 +198,13 @@ class _BillOfYearState extends State<BillOfYear> {
                   color: AppColors.primary_600,
                 ),
               ),
-              if (!_isCurrentDecade())
-                IconButton(
-                  onPressed: _nextDecade,
-                  icon: const Icon(
-                    Icons.chevron_right,
-                    color: AppColors.primary_600,
-                  ),
+              IconButton(
+                onPressed: _nextDecade,
+                icon: const Icon(
+                  Icons.chevron_right,
+                  color: AppColors.primary_600,
                 ),
+              ),
             ],
           ),
 
@@ -278,8 +271,6 @@ class _BillOfYearState extends State<BillOfYear> {
                       fontSize: 24,
                       color: _isCurrentYear(year)
                           ? AppColors.primary_600
-                          : _isFutureYear(year)
-                          ? Colors.grey
                           : AppColors.text_color_900,
                     ),
                   ),
@@ -323,28 +314,14 @@ class _BillOfYearState extends State<BillOfYear> {
   }
 
   void _nextDecade() {
-    final currentYear = DateTime.now().year;
-    final currentDecadeStart = (currentYear ~/ 10) * 10;
-    final targetDecadeStart = (currentDecade.year ~/ 10) * 10;
-
-    // Chỉ cho phép chuyển tiếp nếu chưa đến thập kỷ hiện tại
-    if (targetDecadeStart < currentDecadeStart) {
-      setState(() {
-        currentDecade = DateTime(
-          currentDecade.year + 10,
-          currentDecade.month,
-          currentDecade.day,
-        );
-      });
-      _fetchMultiYearData();
-    }
-  }
-
-  bool _isCurrentDecade() {
-    final currentYear = DateTime.now().year;
-    final currentDecadeStart = (currentYear ~/ 10) * 10;
-    final targetDecadeStart = (currentDecade.year ~/ 10) * 10;
-    return targetDecadeStart == currentDecadeStart;
+    setState(() {
+      currentDecade = DateTime(
+        currentDecade.year + 10,
+        currentDecade.month,
+        currentDecade.day,
+      );
+    });
+    _fetchMultiYearData();
   }
 
   bool _isCurrentYear(int year) {
@@ -352,43 +329,18 @@ class _BillOfYearState extends State<BillOfYear> {
     return year == now.year;
   }
 
-  bool _isFutureYear(int year) {
-    final now = DateTime.now();
-    return year > now.year;
-  }
-
   int _getDecadeStart() {
-    final currentYear = DateTime.now().year;
-    final currentDecadeStart = (currentYear ~/ 10) * 10;
     final targetDecadeStart = (currentDecade.year ~/ 10) * 10;
-
-    // Nếu đang ở thập kỷ hiện tại, điều chỉnh để kết thúc tại năm hiện tại
-    if (targetDecadeStart == currentDecadeStart) {
-      return currentYear - 9; // Ví dụ: 2025 -> 2016-2025
-    }
-
     return targetDecadeStart;
   }
 
   List<int> _getDecadeYears() {
     final startYear = _getDecadeStart();
-    final currentYear = DateTime.now().year;
-    final currentDecadeStart = (currentYear ~/ 10) * 10;
-    final targetDecadeStart = (currentDecade.year ~/ 10) * 10;
-
     List<int> years = [];
 
-    // Nếu đang ở thập kỷ hiện tại
-    if (targetDecadeStart == currentDecadeStart) {
-      // Hiển thị từ startYear đến currentYear
-      for (int year = startYear; year <= currentYear; year++) {
-        years.add(year);
-      }
-    } else {
-      // Hiển thị đầy đủ 10 năm của thập kỷ
-      for (int year = startYear; year < startYear + 10; year++) {
-        years.add(year);
-      }
+    // Hiển thị đầy đủ 10 năm của thập kỷ
+    for (int year = startYear; year < startYear + 10; year++) {
+      years.add(year);
     }
 
     return years;

@@ -107,14 +107,42 @@ class _BillOfDayState extends State<BillOfDay> {
   }
 
   Widget _buildContent(MonthlyFinancialEntity data) {
-    // Group activities by day
+    // Group activities by day, including recurring activity occurrences
+    final int daysInMonth = _getDaysInMonth();
     final Map<int, List<FinancialActivityEntity>> dailyActivities = {};
+    for (int d = 1; d <= daysInMonth; d++) {
+      dailyActivities[d] = [];
+    }
+
     for (var activity in data.activities) {
-      final day = activity.timeStart.toLocal().day;
-      if (!dailyActivities.containsKey(day)) {
-        dailyActivities[day] = [];
+      // Normal (non-recurring) instances: add to its start day if within this month
+      final localStart = activity.timeStart.toLocal();
+      if (localStart.year == currentMonth.year &&
+          localStart.month == currentMonth.month) {
+        final day = localStart.day;
+        dailyActivities[day]!.add(activity);
       }
-      dailyActivities[day]!.add(activity);
+
+      // If activity is recurring, generate occurrences within the current month
+      final bool isRecurring =
+          activity.repeat != null &&
+          activity.repeat!.isNotEmpty &&
+          activity.repeat != "Không";
+      if (isRecurring) {
+        for (int d = 1; d <= daysInMonth; d++) {
+          final date = DateTime(currentMonth.year, currentMonth.month, d);
+          // avoid duplicating the original instance if it falls on this date
+          if (localStart.year == date.year &&
+              localStart.month == date.month &&
+              localStart.day == date.day)
+            continue;
+          if (_activityOccursOnDate(activity, date)) {
+            // Create an adjusted copy for display (preserve time-of-day and duration)
+            final occ = _activityInstanceForDate(activity, date);
+            dailyActivities[d]!.add(occ);
+          }
+        }
+      }
     }
 
     return Column(
@@ -328,25 +356,83 @@ class _BillOfDayState extends State<BillOfDay> {
     final startLocal = activity.timeStart.toLocal();
     final endLocal = activity.timeEnd.toLocal();
 
-    final String startTime =
-        '${startLocal.day.toString().padLeft(2, '0')}/'
-        '${startLocal.month.toString().padLeft(2, '0')} '
-        '${startLocal.hour.toString().padLeft(2, '0')}:'
-        '${startLocal.minute.toString().padLeft(2, '0')}';
+    // Check if recurring
+    final bool isRecurring =
+        activity.repeat != null &&
+        activity.repeat!.isNotEmpty &&
+        activity.repeat != "Không";
 
-    final String endTime =
-        '${endLocal.day.toString().padLeft(2, '0')}/'
-        '${endLocal.month.toString().padLeft(2, '0')} '
-        '${endLocal.hour.toString().padLeft(2, '0')}:'
-        '${endLocal.minute.toString().padLeft(2, '0')}';
+    String startTime;
+    String endTime;
+
+    if (activity.day) {
+      // Cả ngày: không hiển thị giờ
+      startTime =
+          '${startLocal.day.toString().padLeft(2, '0')}/'
+          '${startLocal.month.toString().padLeft(2, '0')}';
+      endTime =
+          '${endLocal.day.toString().padLeft(2, '0')}/'
+          '${endLocal.month.toString().padLeft(2, '0')}';
+    } else if (isRecurring) {
+      // Activity lặp lại: hiển thị format giống dayDetail
+      final String hourStart =
+          '${startLocal.hour.toString().padLeft(2, '0')}:'
+          '${startLocal.minute.toString().padLeft(2, '0')}';
+
+      String repeatText = '';
+      switch (activity.repeat) {
+        case 'Hàng ngày':
+          repeatText = 'hàng ngày';
+          break;
+        case 'Hàng tuần':
+          final weekdays = [
+            'CN',
+            'Thứ 2',
+            'Thứ 3',
+            'Thứ 4',
+            'Thứ 5',
+            'Thứ 6',
+            'Thứ 7',
+          ];
+          repeatText = '${weekdays[startLocal.weekday % 7]} hàng tuần:';
+          break;
+        case 'Hàng tháng':
+          repeatText = 'Hàng tháng';
+          break;
+        case 'Hàng năm':
+          repeatText = 'Hàng năm';
+          break;
+        default:
+          repeatText = activity.repeat!.toLowerCase();
+      }
+
+      startTime = '$repeatText $hourStart ';
+      endTime =
+          '${endLocal.hour.toString().padLeft(2, '0')}:'
+          '${endLocal.minute.toString().padLeft(2, '0')}';
+    } else {
+      // Activity thường: hiển thị đầy đủ ngày giờ
+      startTime =
+          '${startLocal.day.toString().padLeft(2, '0')}/'
+          '${startLocal.month.toString().padLeft(2, '0')} '
+          '${startLocal.hour.toString().padLeft(2, '0')}:'
+          '${startLocal.minute.toString().padLeft(2, '0')}';
+      endTime =
+          '${endLocal.day.toString().padLeft(2, '0')}/'
+          '${endLocal.month.toString().padLeft(2, '0')} '
+          '${endLocal.hour.toString().padLeft(2, '0')}:'
+          '${endLocal.minute.toString().padLeft(2, '0')}';
+    }
 
     final String amountText = activity.money != null
         ? "${activity.money! > 0 ? '+' : ''}${activity.money!.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ"
         : "0 đ";
 
-    // Determine color based on type
+    // Determine color based on type (defensive: handle empty string)
+    final String _type = (activity.type.isNotEmpty ? activity.type : 'OTHER')
+        .toUpperCase();
     Color baseColor;
-    switch (activity.type.toUpperCase()) {
+    switch (_type) {
       case 'EXPENSE':
         baseColor = Colors.red;
         break;
@@ -380,6 +466,93 @@ class _BillOfDayState extends State<BillOfDay> {
         baseColor: baseColor,
         isShort: false,
       ),
+    );
+  }
+
+  bool _activityOccursOnDate(FinancialActivityEntity activity, DateTime date) {
+    // Defensive: require repeat to be present
+    if (activity.repeat == null ||
+        activity.repeat!.isEmpty ||
+        activity.repeat == "Không") {
+      return false;
+    }
+
+    // If an endRepeatDay exists and the date is after it, it's not occurring
+    if (activity.endRepeatDay != null) {
+      final end = activity.endRepeatDay!.toLocal();
+      if (date.isAfter(DateTime(end.year, end.month, end.day))) return false;
+    }
+
+    final start = activity.timeStart.toLocal();
+    final repeat = activity.repeat!;
+
+    // Backend already calculated occurrences, so trust it and just match pattern
+    // Don't filter by start date since backend handles that logic
+    switch (repeat) {
+      case 'Hàng ngày':
+        return true;
+      case 'Hàng tuần':
+        return date.weekday == start.weekday;
+      case 'Hàng tháng':
+        return date.day == start.day;
+      case 'Hàng năm':
+        return date.day == start.day && date.month == start.month;
+      default:
+        // Fallback: if repeat stored in english or other formats
+        final r = repeat.toLowerCase();
+        if (r.contains('daily')) return true;
+        if (r.contains('weekly')) return date.weekday == start.weekday;
+        if (r.contains('monthly')) return date.day == start.day;
+        if (r.contains('yearly') || r.contains('annual'))
+          return date.day == start.day && date.month == start.month;
+        return false;
+    }
+  }
+
+  FinancialActivityEntity _activityInstanceForDate(
+    FinancialActivityEntity activity,
+    DateTime date,
+  ) {
+    // Build new start/end preserving time-of-day and duration but adjusted to `date`.
+    final origStart = activity.timeStart.toLocal();
+    final origEnd = activity.timeEnd.toLocal();
+    final duration = origEnd.difference(origStart);
+
+    final newStart = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      origStart.hour,
+      origStart.minute,
+      origStart.second,
+    );
+    final newEnd = newStart.add(duration);
+
+    return FinancialActivityEntity(
+      id: activity.id,
+      description: activity.description,
+      description2: activity.description2,
+      description3: activity.description3,
+      timeStart: newStart.toUtc(),
+      timeEnd: newEnd.toUtc(),
+      day: activity.day,
+      money: activity.money,
+      type: activity.type,
+      title: activity.title,
+      isRepeat: activity.isRepeat,
+      repeat: activity.repeat,
+      endRepeatDay: activity.endRepeatDay,
+      alertTime: activity.alertTime,
+      object: activity.object,
+      amount: activity.amount,
+      unit: activity.unit,
+      purpose: activity.purpose,
+      targetPerson: activity.targetPerson,
+      sourcePerson: activity.sourcePerson,
+      attachedLink: activity.attachedLink,
+      note: activity.note,
+      createdAt: activity.createdAt,
+      updatedAt: activity.updatedAt,
     );
   }
 

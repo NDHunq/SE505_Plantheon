@@ -484,7 +484,10 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
       type: "EXPENSE",
       day: allDay,
       timeStart: _formatDateTimeToISO(startDate, startTime),
-      timeEnd: _formatDateTimeToISO(endDate, endTime),
+      // Khi lặp lại: endDate = startDate, chỉ khác giờ
+      timeEnd: (repeatType.isNotEmpty && repeatType != "Không")
+          ? _formatDateTimeToISO(startDate, endTime)
+          : _formatDateTimeToISO(endDate, endTime),
       repeat: repeatType == "Không" ? "" : repeatType,
       isRepeat: endRepeatType == "Không" ? "" : endRepeatType,
       endRepeatDay: endRepeatType == "Ngày"
@@ -697,56 +700,59 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                 ),
               ),
 
-              // Ngày bắt đầu
-              AddNewRow(
-                label: "Ngày bắt đầu",
-                child: Row(
-                  children: [
-                    if (!allDay) ...[
-                      GestureDetector(
-                        onTap: () => _selectStartTime(context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+              // Khi lặp lại: hiển thị 3 cột (Ngày | Giờ bắt đầu | Giờ kết thúc)
+              if (repeatType.isNotEmpty &&
+                  repeatType != "Không" &&
+                  !allDay) ...[
+                AddNewRow(
+                  label: "Thời gian",
+                  child: Row(
+                    children: [
+                      // Cột 1: Ngày
+                      Expanded(
+                        flex: 2,
+                        child: GestureDetector(
+                          onTap: () => _selectStartDate(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              _formatDateDisplay(startDate),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(startTime),
                         ),
                       ),
                       const SizedBox(width: 8),
-                    ],
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => _selectStartDate(context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+                      // Cột 2: Giờ bắt đầu
+                      Expanded(
+                        flex: 1,
+                        child: GestureDetector(
+                          onTap: () => _selectStartTime(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(startTime, textAlign: TextAlign.center),
                           ),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(_formatDateDisplay(startDate)),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Ngày kết thúc - Chỉ hiển thị khi "Lặp lại" là "Không"
-              if (repeatType.isEmpty || repeatType == "Không") ...[
-                AddNewRow(
-                  label: "Ngày kết thúc",
-                  child: Row(
-                    children: [
-                      if (!allDay) ...[
-                        GestureDetector(
+                      const SizedBox(width: 8),
+                      // Cột 3: Giờ kết thúc
+                      Expanded(
+                        flex: 1,
+                        child: GestureDetector(
                           onTap: () => _selectEndTime(context),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -757,14 +763,25 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                               border: Border.all(color: Colors.grey.shade300),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(endTime),
+                            child: Text(endTime, textAlign: TextAlign.center),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                      ],
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => _selectEndDate(context),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
+              // Khi không lặp lại hoặc cả ngày: hiển thị như cũ
+              if (repeatType.isEmpty || repeatType == "Không" || allDay) ...[
+                // Ngày bắt đầu
+                AddNewRow(
+                  label: "Ngày bắt đầu",
+                  child: Row(
+                    children: [
+                      if (!allDay) ...[
+                        GestureDetector(
+                          onTap: () => _selectStartTime(context),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 12,
@@ -774,13 +791,73 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                               border: Border.all(color: Colors.grey.shade300),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(_formatDateDisplay(endDate)),
+                            child: Text(startTime),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => _selectStartDate(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(_formatDateDisplay(startDate)),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
+
+                // Ngày kết thúc - ẩn khi cả ngày VÀ lặp lại
+                if (!(allDay && repeatType.isNotEmpty && repeatType != "Không"))
+                  AddNewRow(
+                    label: "Ngày kết thúc",
+                    child: Row(
+                      children: [
+                        if (!allDay) ...[
+                          GestureDetector(
+                            onTap: () => _selectEndTime(context),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(endTime),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _selectEndDate(context),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(_formatDateDisplay(endDate)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
               Divider(height: 1, color: AppColors.text_color_100),
 
