@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:se501_plantheon/common/helpers/dayCompare.dart';
 import 'package:se501_plantheon/common/helpers/decimalTextInputFormatter.dart';
 import 'package:se501_plantheon/common/widgets/textfield/text_field.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/core/services/supabase_service.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/addNew_Row_1_1.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/addNew_Row_1_2.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
@@ -55,6 +57,8 @@ class _otherWidgetState extends State<otherWidget> {
   String category = "";
   String unit = "Kg";
   String currency = "đ";
+  String? attachedLink;
+  bool _isUploadingImage = false;
 
   // Danh sách phân loại và đơn vị tính
   List<String> categories = ["A", "B", "C"];
@@ -118,6 +122,10 @@ class _otherWidgetState extends State<otherWidget> {
       }
       if (activity.note != null) {
         noteController.text = activity.note!;
+      }
+      // Load attached image link
+      if (activity.attachedLink != null && activity.attachedLink!.isNotEmpty) {
+        attachedLink = activity.attachedLink;
       }
     } else {
       // Nếu tạo mới, thiết lập ngày và thời gian mặc định
@@ -314,6 +322,103 @@ class _otherWidgetState extends State<otherWidget> {
     }
   }
 
+  // Phương thức upload ảnh
+  Future<void> _pickAndUploadImage(ImageSource source) async {
+    try {
+      setState(() {
+        _isUploadingImage = true;
+      });
+
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: source,
+        maxWidth: 1920,
+        maxHeight: 1920,
+        imageQuality: 85,
+      );
+
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final fileName = '${timestamp}_${image.name}';
+
+        final url = await SupabaseService.uploadFileFromBytes(
+          bucketName: 'uploads',
+          fileBytes: bytes,
+          fileName: fileName,
+        );
+
+        setState(() {
+          attachedLink = url;
+          _isUploadingImage = false;
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✓ Upload ảnh thành công!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        setState(() {
+          _isUploadingImage = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isUploadingImage = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi upload ảnh: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showImageSourceDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Chọn nguồn ảnh'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(
+                Icons.photo_library,
+                color: AppColors.primary_600,
+              ),
+              title: const Text('Thư viện ảnh'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickAndUploadImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.camera_alt,
+                color: AppColors.primary_600,
+              ),
+              title: const Text('Chụp ảnh'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickAndUploadImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // Phương thức hiển thị dialog chọn cảnh báo
   Future<void> _showAlertDialog(BuildContext context) async {
     final List<String> alertOptions = ["Không", "Trước 5 phút", "Trước 1 ngày"];
@@ -474,6 +579,9 @@ class _otherWidgetState extends State<otherWidget> {
       note: noteController.text.trim().isNotEmpty
           ? noteController.text.trim()
           : null,
+      attachedLink: (attachedLink != null && attachedLink!.isNotEmpty)
+          ? attachedLink
+          : "",
     );
 
     // Lấy bloc instance
