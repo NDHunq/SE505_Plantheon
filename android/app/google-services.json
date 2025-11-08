@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "126732798243",
+    "project_id": "kltn-d256a",
+    "storage_bucket": "kltn-d256a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126732798243:android:50fcbcd82f834467fd2496",
+        "android_client_info": {
+          "package_name": "com.example.se501_plantheon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgp7X_CFZsPKCLCox6htHPLEthkllHuqY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

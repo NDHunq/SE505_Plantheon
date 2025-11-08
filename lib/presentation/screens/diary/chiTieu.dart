@@ -7,6 +7,7 @@ import 'package:se501_plantheon/common/helpers/decimalTextInputFormatter.dart';
 import 'package:se501_plantheon/common/widgets/textfield/text_field.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/supabase_service.dart';
+import 'package:se501_plantheon/core/services/firebase_notification_service.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/addNew_Row_1_2.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
@@ -77,12 +78,82 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
   List<String> units = ["Kg", "Tấn", "Lít", "Mét", "Cái"];
   List<String> currencies = ["đ", "USD", "VND", "EUR"];
 
+  // Notification service
+  final FirebaseNotificationService _notificationService =
+      FirebaseNotificationService();
+
   // Validation methods
   String? _validateTitle(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Tiêu đề không được để trống';
     }
     return null;
+  }
+
+  // Schedule notification based on alertTime
+  Future<void> _scheduleNotification() async {
+    try {
+      if (alertTime == "Không" || alertTime.isEmpty) {
+        return; // Không cần gửi notification
+      }
+
+      // Parse start date and time
+      DateTime notificationTime;
+
+      // Tạo DateTime từ startDate và startTime
+      final timeParts = startTime.split(':');
+      final hour = int.parse(timeParts[0]);
+      final minute = int.parse(timeParts[1]);
+
+      DateTime activityStartTime = DateTime(
+        startDate.year,
+        startDate.month,
+        startDate.day,
+        hour,
+        minute,
+      );
+
+      // Tính thời gian gửi notification dựa trên alertTime
+      if (alertTime == "Trước 5 phút") {
+        notificationTime = activityStartTime.subtract(
+          const Duration(minutes: 5),
+        );
+      } else if (alertTime == "Trước 1 ngày") {
+        notificationTime = activityStartTime.subtract(const Duration(days: 1));
+      } else {
+        return;
+      }
+
+      // Tính khoảng cách thời gian
+      final now = DateTime.now();
+      final duration = notificationTime.difference(now);
+
+      // Kiểm tra xem thời gian notification có trong tương lai không
+      if (notificationTime.isBefore(now)) {
+        // Nếu thời gian đã qua, gửi ngay
+        await _notificationService.sendLocalNotification(
+          title: '⏰ Nhắc nhở: ${titleController.text}',
+          body: 'Hoạt động sắp bắt đầu vào $startTime!',
+        );
+      } else {
+        // Schedule notification for future time
+
+        await _notificationService.scheduleNotificationAfterDelay(
+          title: '⏰ Nhắc nhở: ${titleController.text}',
+          body: 'Hoạt động sắp bắt đầu vào $startTime!',
+          delay: duration,
+        );
+
+        // Gửi notification xác nhận
+        await _notificationService.sendLocalNotification(
+          title: 'Đã đặt nhắc nhở',
+          body:
+              'Bạn sẽ nhận được thông báo ${alertTime.toLowerCase()} cho: ${titleController.text}',
+        );
+      }
+    } catch (e) {
+      // Error scheduling notification
+    }
   }
 
   @override
@@ -208,6 +279,12 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: currentHour, minute: currentMinute),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -227,6 +304,12 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: currentHour, minute: currentMinute),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -700,6 +783,10 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
           );
         } else if (state is CreateActivitySuccess) {
           widget.onSubmitSuccess?.call();
+
+          // Schedule notification nếu đã chọn cảnh báo
+          _scheduleNotification();
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Tạo hoạt động thành công!')),
           );
@@ -707,6 +794,10 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
           Navigator.of(context).pop();
         } else if (state is UpdateActivitySuccess) {
           widget.onSubmitSuccess?.call();
+
+          // Schedule notification nếu đã chọn cảnh báo
+          _scheduleNotification();
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Cập nhật hoạt động thành công!')),
           );

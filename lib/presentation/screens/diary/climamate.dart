@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:se501_plantheon/common/helpers/dayCompare.dart';
 import 'package:se501_plantheon/common/widgets/textfield/text_field.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/core/services/firebase_notification_service.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/addNew_Row_1_1.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/addNew_Row_1_2.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
@@ -70,12 +71,72 @@ class _climaMateWidgetState extends State<climaMateWidget> {
   List<String> units = ["Kg", "Tấn", "Lít", "Mét", "Cái"];
   List<String> currencies = ["đ", "USD", "VND", "EUR"];
 
+  // Notification service
+  final FirebaseNotificationService _notificationService =
+      FirebaseNotificationService();
+
   // Validation methods
   String? _validateTitle(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Tiêu đề không được để trống';
     }
     return null;
+  }
+
+  // Schedule notification based on alertTime
+  Future<void> _scheduleNotification() async {
+    try {
+      if (alertTime == "Không" || alertTime.isEmpty) {
+        return;
+      }
+
+      DateTime notificationTime;
+      final timeParts = startTime.split(':');
+      final hour = int.parse(timeParts[0]);
+      final minute = int.parse(timeParts[1]);
+
+      DateTime activityStartTime = DateTime(
+        startDate.year,
+        startDate.month,
+        startDate.day,
+        hour,
+        minute,
+      );
+
+      if (alertTime == "Trước 5 phút") {
+        notificationTime = activityStartTime.subtract(
+          const Duration(minutes: 5),
+        );
+      } else if (alertTime == "Trước 1 ngày") {
+        notificationTime = activityStartTime.subtract(const Duration(days: 1));
+      } else {
+        return;
+      }
+
+      final now = DateTime.now();
+      final duration = notificationTime.difference(now);
+
+      if (notificationTime.isBefore(now)) {
+        await _notificationService.sendLocalNotification(
+          title: '⏰ Nhắc nhở: ${titleController.text}',
+          body: 'Hoạt động sắp bắt đầu vào $startTime!',
+        );
+      } else {
+        await _notificationService.scheduleNotificationAfterDelay(
+          title: '⏰ Nhắc nhở: ${titleController.text}',
+          body: 'Hoạt động sắp bắt đầu vào $startTime!',
+          delay: duration,
+        );
+
+        await _notificationService.sendLocalNotification(
+          title: '✅ Đã đặt nhắc nhở',
+          body:
+              'Bạn sẽ nhận được thông báo ${alertTime.toLowerCase()} cho: ${titleController.text}',
+        );
+      }
+    } catch (e) {
+      // Error scheduling notification
+    }
   }
 
   @override
@@ -208,6 +269,12 @@ class _climaMateWidgetState extends State<climaMateWidget> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: currentHour, minute: currentMinute),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -227,6 +294,12 @@ class _climaMateWidgetState extends State<climaMateWidget> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: currentHour, minute: currentMinute),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -534,6 +607,10 @@ class _climaMateWidgetState extends State<climaMateWidget> {
           );
         } else if (state is CreateActivitySuccess) {
           widget.onSubmitSuccess?.call();
+
+          // Schedule notification
+          _scheduleNotification();
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Tạo hoạt động thành công!')),
           );
@@ -548,6 +625,10 @@ class _climaMateWidgetState extends State<climaMateWidget> {
           Navigator.of(context).pop(); // Đóng dialog sau khi tạo thành công
         } else if (state is UpdateActivitySuccess) {
           widget.onSubmitSuccess?.call();
+
+          // Schedule notification
+          _scheduleNotification();
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Cập nhật hoạt động thành công!')),
           );
