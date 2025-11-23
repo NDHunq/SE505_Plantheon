@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseUrl = 'https://2d2c3caf8551.ngrok-free.app';
+  static const String baseUrl = 'http://localhost:8080';
   static const String baseChatUrl = 'http://localhost:8081';
   static const String apiVersion = 'api/v1';
 

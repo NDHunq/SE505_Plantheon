@@ -1,7 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
+import 'package:se501_plantheon/data/datasources/keyword_activities_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
+import 'package:se501_plantheon/data/repository/keyword_activity_repository_impl.dart';
+import 'package:se501_plantheon/domain/usecases/activity/create_activity.dart';
+import 'package:se501_plantheon/domain/usecases/activity/delete_activity.dart';
+import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_day.dart';
+import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_month.dart';
+import 'package:se501_plantheon/domain/usecases/activity/update_activity.dart';
+import 'package:se501_plantheon/domain/usecases/keyword_activity/get_keyword_activities.dart';
+import 'package:se501_plantheon/presentation/screens/scan/activities_suggestion_screen.dart';
+import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_event.dart';
 
 // Đoạn HTML giải pháp khuyến nghị
 const String _solutionHtml = '''
@@ -92,6 +108,47 @@ class ScanSolution extends StatelessWidget {
                   ),
                 },
               ),
+            ),
+            const SizedBox(height: 20),
+            Divider(height: 32, thickness: 1, color: Color(0xFFE0E0E0)),
+            _SectionTitle(index: 3, title: 'Hoạt động gợi ý'),
+            const SizedBox(height: 12),
+            MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (_) {
+                    final repository = ActivitiesRepositoryImpl(
+                      remoteDataSource: ActivitiesRemoteDataSourceImpl(
+                        client: http.Client(),
+                      ),
+                    );
+                    return ActivitiesBloc(
+                      getActivitiesByMonth: GetActivitiesByMonth(repository),
+                      getActivitiesByDay: GetActivitiesByDay(repository),
+                      createActivity: CreateActivity(repository),
+                      updateActivity: UpdateActivity(repository),
+                      deleteActivity: DeleteActivity(repository),
+                    );
+                  },
+                ),
+                BlocProvider(
+                  create: (_) {
+                    final repository = KeywordActivityRepositoryImpl(
+                      remoteDataSource: KeywordActivitiesRemoteDataSourceImpl(
+                        client: http.Client(),
+                      ),
+                    );
+                    return KeywordActivitiesBloc(
+                      getKeywordActivities: GetKeywordActivities(repository),
+                    )..add(
+                      FetchKeywordActivities(
+                        diseaseId: '006c9e8c-2f71-4608-9134-6b9f3ff9c1e1',
+                      ),
+                    );
+                  },
+                ),
+              ],
+              child: const ActivitiesSuggestionList(),
             ),
           ],
         ),
@@ -263,7 +320,7 @@ class _ProductDropdownState extends State<_ProductDropdown> {
 //             ),
 //             const Icon(Icons.chevron_right_rounded, color: Color(0xFF757575)),
 //           ],
-//         ),
+//         ],
 //       ),
 //     );
 //   }

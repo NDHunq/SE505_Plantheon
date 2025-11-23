@@ -71,12 +71,10 @@ class _AddEventModalState extends State<AddEventModal> {
         children: [
           // Header
           _buildHeader(),
-          
+
           // Form
-          Expanded(
-            child: _buildForm(),
-          ),
-          
+          Expanded(child: _buildForm()),
+
           // Action Buttons
           _buildActionButtons(),
         ],
@@ -96,11 +94,7 @@ class _AddEventModalState extends State<AddEventModal> {
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.add_circle_outline,
-            color: Colors.blue.shade700,
-            size: 28,
-          ),
+          Icon(Icons.add_circle_outline, color: Colors.blue.shade700, size: 28),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -116,20 +110,14 @@ class _AddEventModalState extends State<AddEventModal> {
                 ),
                 Text(
                   '${_selectedDate?.day}/${_selectedDate?.month}/${_selectedDate?.year}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.blue.shade600,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.blue.shade600),
                 ),
               ],
             ),
           ),
           IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.close,
-              color: Colors.blue.shade700,
-            ),
+            icon: Icon(Icons.close, color: Colors.blue.shade700),
           ),
         ],
       ),
@@ -157,9 +145,9 @@ class _AddEventModalState extends State<AddEventModal> {
                 return null;
               },
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Description Field
             _buildTextField(
               controller: _descriptionController,
@@ -168,25 +156,22 @@ class _AddEventModalState extends State<AddEventModal> {
               icon: Icons.description,
               maxLines: 3,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Date Picker
             _buildDatePicker(),
-            
+
             const SizedBox(height: 16),
-            
+
             // Time Picker (if not all day)
-            if (!_isAllDay) ...[
-              _buildTimePicker(),
-              const SizedBox(height: 16),
-            ],
-            
+            if (!_isAllDay) ...[_buildTimePicker(), const SizedBox(height: 16)],
+
             // All Day Toggle
             _buildAllDayToggle(),
-            
+
             const SizedBox(height: 16),
-            
+
             // Category Picker
             _buildCategoryPicker(),
           ],
@@ -208,10 +193,7 @@ class _AddEventModalState extends State<AddEventModal> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         TextFormField(
@@ -247,10 +229,7 @@ class _AddEventModalState extends State<AddEventModal> {
       children: [
         const Text(
           'Ngày',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         InkWell(
@@ -286,10 +265,7 @@ class _AddEventModalState extends State<AddEventModal> {
       children: [
         const Text(
           'Thời gian',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         InkWell(
@@ -331,10 +307,7 @@ class _AddEventModalState extends State<AddEventModal> {
           },
           activeColor: Colors.blue.shade600,
         ),
-        const Text(
-          'Cả ngày',
-          style: TextStyle(fontSize: 16),
-        ),
+        const Text('Cả ngày', style: TextStyle(fontSize: 16)),
       ],
     );
   }
@@ -345,10 +318,7 @@ class _AddEventModalState extends State<AddEventModal> {
       children: [
         const Text(
           'Danh mục',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
@@ -371,10 +341,7 @@ class _AddEventModalState extends State<AddEventModal> {
             fillColor: Colors.grey.shade50,
           ),
           items: _categories.map((category) {
-            return DropdownMenuItem(
-              value: category,
-              child: Text(category),
-            );
+            return DropdownMenuItem(value: category, child: Text(category));
           }).toList(),
           onChanged: (value) {
             setState(() {
@@ -408,10 +375,7 @@ class _AddEventModalState extends State<AddEventModal> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                'Hủy',
-                style: TextStyle(fontSize: 16),
-              ),
+              child: const Text('Hủy', style: TextStyle(fontSize: 16)),
             ),
           ),
           const SizedBox(width: 12),
@@ -457,7 +421,7 @@ class _AddEventModalState extends State<AddEventModal> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
-    
+
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
@@ -470,7 +434,7 @@ class _AddEventModalState extends State<AddEventModal> {
       context: context,
       initialTime: _selectedTime ?? TimeOfDay.now(),
     );
-    
+
     if (picked != null && picked != _selectedTime) {
       setState(() {
         _selectedTime = picked;
@@ -498,9 +462,7 @@ class _AddEventModalState extends State<AddEventModal> {
         content: const Text('Sự kiện đã được thêm thành công!'),
         backgroundColor: Colors.green.shade600,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
 

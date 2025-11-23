@@ -7,7 +7,8 @@ class FullScreenLoadingScreen extends StatefulWidget {
   const FullScreenLoadingScreen({super.key});
 
   @override
-  State<FullScreenLoadingScreen> createState() => _FullScreenLoadingScreenState();
+  State<FullScreenLoadingScreen> createState() =>
+      _FullScreenLoadingScreenState();
 }
 
 class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
@@ -22,16 +23,16 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
   @override
   void initState() {
     super.initState();
-    
+
     // Hide system UI overlays for true full-screen experience
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    
+
     // Logo animation controller
     _logoController = AnimationController(
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
-    
+
     // Loading animation controller
     _loadingController = AnimationController(
       duration: const Duration(milliseconds: 1500),
@@ -45,31 +46,19 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
     );
 
     // Logo animation (fade in + scale + bounce)
-    _logoAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _logoController,
-      curve: Curves.elasticOut,
-    ));
+    _logoAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
+    );
 
     // Loading animation (rotation)
-    _loadingAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _loadingController,
-      curve: Curves.linear,
-    ));
+    _loadingAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _loadingController, curve: Curves.linear),
+    );
 
     // Pulse animation
-    _pulseAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.2,
-    ).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeInOut,
-    ));
+    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
 
     // Start animations
     _logoController.forward();
@@ -84,7 +73,7 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
   void dispose() {
     // Restore system UI overlays
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    
+
     _logoController.dispose();
     _loadingController.dispose();
     _pulseController.dispose();
@@ -94,17 +83,15 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
   Future<void> _navigateToMain() async {
     // Simulate app loading time
     await Future.delayed(const Duration(seconds: 4));
-    
+
     if (mounted) {
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const Diary(),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const Diary(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
+            return FadeTransition(opacity: animation, child: child);
           },
           transitionDuration: const Duration(milliseconds: 800),
         ),
@@ -135,11 +122,9 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
           children: [
             // Background pattern
             Positioned.fill(
-              child: CustomPaint(
-                painter: BackgroundPatternPainter(),
-              ),
+              child: CustomPaint(painter: BackgroundPatternPainter()),
             ),
-            
+
             // Main content
             Center(
               child: Column(
@@ -147,7 +132,10 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                 children: [
                   // Logo/Icon Animation with pulse effect
                   AnimatedBuilder(
-                    animation: Listenable.merge([_logoAnimation, _pulseAnimation]),
+                    animation: Listenable.merge([
+                      _logoAnimation,
+                      _pulseAnimation,
+                    ]),
                     builder: (context, child) {
                       return Transform.scale(
                         scale: _logoAnimation.value * _pulseAnimation.value,
@@ -182,9 +170,9 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                       );
                     },
                   ),
-                  
+
                   const SizedBox(height: 50),
-                  
+
                   // App Name with typing effect
                   AnimatedBuilder(
                     animation: _logoAnimation,
@@ -224,9 +212,9 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                       );
                     },
                   ),
-                  
+
                   const SizedBox(height: 80),
-                  
+
                   // Enhanced Loading Indicator
                   AnimatedBuilder(
                     animation: _loadingAnimation,
@@ -254,9 +242,9 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                               ),
                             ),
                           ),
-                          
+
                           const SizedBox(height: 30),
-                          
+
                           // Loading dots animation
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -265,11 +253,18 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                                 animation: _loadingAnimation,
                                 builder: (context, child) {
                                   final delay = index * 0.2;
-                                  final animationValue = (_loadingAnimation.value - delay).clamp(0.0, 1.0);
-                                  final opacity = (animationValue * 2 - 1).abs();
-                                  
+                                  final animationValue =
+                                      (_loadingAnimation.value - delay).clamp(
+                                        0.0,
+                                        1.0,
+                                      );
+                                  final opacity = (animationValue * 2 - 1)
+                                      .abs();
+
                                   return Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                    ),
                                     child: Opacity(
                                       opacity: opacity,
                                       child: Container(
@@ -290,9 +285,9 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                       );
                     },
                   ),
-                  
+
                   const SizedBox(height: 30),
-                  
+
                   // Loading Text with fade effect
                   AnimatedBuilder(
                     animation: _logoAnimation,
@@ -334,12 +329,8 @@ class BackgroundPatternPainter extends CustomPainter {
       final x = (i * 100.0) % size.width;
       final y = (i * 80.0) % size.height;
       final radius = 20.0 + (i % 3) * 10.0;
-      
-      canvas.drawCircle(
-        Offset(x, y),
-        radius,
-        paint,
-      );
+
+      canvas.drawCircle(Offset(x, y), radius, paint);
     }
   }
 

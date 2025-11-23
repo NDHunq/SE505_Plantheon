@@ -6,6 +6,7 @@ import 'package:se501_plantheon/presentation/screens/push_notification_demo_scre
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/supabase_service.dart';
 import 'package:se501_plantheon/core/services/firebase_notification_service.dart';
+import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,7 +50,7 @@ class MainApp extends StatelessWidget {
           ),
           // Thay đổi home thành PushNotificationDemoScreen để test
           // home: SignInPage(),
-          home: const SignInPage(),
+          home: const ScanSolution(),
           debugShowCheckedModeBanner: false,
         );
       },
