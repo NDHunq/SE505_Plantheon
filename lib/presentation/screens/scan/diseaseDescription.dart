@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:se501_plantheon/common/widgets/topnavigation/navigation.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
+import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/data/models/diseases.model.dart';
@@ -13,8 +16,13 @@ import 'package:se501_plantheon/presentation/bloc/disease/disease_state.dart';
 
 class DiseaseDescriptionScreen extends StatefulWidget {
   final String diseaseId;
+  final List<String>? otherDiseaseIds;
 
-  const DiseaseDescriptionScreen({super.key, required this.diseaseId});
+  const DiseaseDescriptionScreen({
+    super.key,
+    required this.diseaseId,
+    this.otherDiseaseIds,
+  });
 
   @override
   State<DiseaseDescriptionScreen> createState() =>
@@ -44,11 +52,33 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: CustomNavigationBar(
+      backgroundColor: AppColors.primary_100,
+      appBar: BasicAppbar(
         title: "Chẩn đoán",
-        showBackButton: true,
-        actions: [],
+        actions: [
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => BasicDialog(
+                  title: 'Xóa chẩn đoán',
+                  content: 'Bạn có chắc chắn muốn xóa chẩn đoán này?',
+                  confirmText: 'Xóa',
+                  cancelText: 'Huỷ',
+                  onConfirm: () {},
+                  onCancel: () {},
+                ),
+              );
+            },
+            child: SvgPicture.asset(
+              AppVectors.trash,
+              width: 24.sp,
+              height: 24.sp,
+              color: AppColors.red,
+            ),
+          ),
+          SizedBox(width: 16.sp),
+        ],
       ),
       body: BlocBuilder<DiseaseBloc, DiseaseState>(
         builder: (context, state) {
@@ -85,20 +115,139 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
             print(
               '✅ UI: Showing success state with disease: ${state.disease.name}',
             );
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Disease Info Section
-                  _buildDiseaseInfoSection(state.disease),
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Disease Info Section
+                        _buildDiseaseInfoSection(state.disease),
 
-                  // Image Carousel Section
-                  _buildImageCarouselSection(state.disease),
+                        // Image Carousel Section
+                        _buildImageCarouselSection(state.disease),
+                        Container(
+                          padding: EdgeInsets.all(
+                            AppConstraints.mainPadding.sp,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
 
-                  // HTML Content Section
-                  _buildHtmlContentSection(state.disease),
-                ],
-              ),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(16.sp),
+                              topRight: Radius.circular(16.sp),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  // TODO: Handle listen description tap
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        Icons.volume_up,
+                                        color: AppColors.primary_400,
+                                        size: 24.sp,
+                                      ),
+                                      Text(
+                                        ' Nghe mô tả',
+                                        style: AppTextStyles.s16SemiBold(
+                                          color: AppColors.primary_400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              // HTML Content Section
+                              _buildHtmlContentSection(state.disease),
+
+                              // Padding để nội dung không bị che bởi button
+                              SizedBox(height: 80.sp),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.only(
+                        left: 16.sp,
+                        right: 16.sp,
+                        top: 16.sp,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, -2),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // TODO: Handle button press
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary_main,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(vertical: 16.sp),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.sp),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          'Xác nhận & Xem điều trị',
+                          style: AppTextStyles.s16SemiBold(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(16.sp),
+                      decoration: BoxDecoration(color: Colors.white),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // TODO: Handle button press
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.white,
+                          foregroundColor: AppColors.primary_main,
+                          padding: EdgeInsets.symmetric(vertical: 16.sp),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.sp),
+                          ),
+                          side: BorderSide(
+                            color: AppColors.primary_main,
+                            width: 1,
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          'Xem các chẩn đoán tương tự',
+                          style: AppTextStyles.s16SemiBold(
+                            color: AppColors.primary_main,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             );
           }
           return const SizedBox.shrink();
@@ -110,20 +259,20 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
   Widget _buildDiseaseInfoSection(DiseaseModel disease) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(AppConstraints.mainPadding.sp),
+      padding: EdgeInsets.all(16.sp),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             disease.name,
-            style: AppTextStyles.s20Bold(color: AppColors.primary_600),
+            style: AppTextStyles.s20Bold(color: AppColors.primary_700),
           ),
           SizedBox(height: 8.sp),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 6.sp),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16.sp),
-              border: Border.all(color: AppColors.primary_300),
+              border: Border.all(color: AppColors.primary_700),
             ),
             child: Text(
               disease.type,
@@ -172,15 +321,10 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                     fit: BoxFit.cover,
                     width: double.infinity,
                     errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: AppColors.primary_100,
-                        child: const Center(
-                          child: Icon(
-                            Icons.image,
-                            size: 50,
-                            color: AppColors.primary_400,
-                          ),
-                        ),
+                      return Image.network(
+                        'https://wallpapers.com/images/hd/banana-tree-pictures-fta1lapzcih69mdr.jpg',
+                        fit: BoxFit.cover,
+                        width: double.infinity,
                       );
                     },
                   ),

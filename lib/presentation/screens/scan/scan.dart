@@ -3,14 +3,21 @@ import 'package:flutter_svg/svg.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/disease_prediction_service.dart';
 import 'package:se501_plantheon/data/models/disease_prediction_model.dart';
-import 'package:se501_plantheon/core/services/disease_prediction_service.dart';
-import 'package:se501_plantheon/data/models/disease_prediction_model.dart';
+import 'package:se501_plantheon/presentation/screens/scan/diseaseDescription.dart';
+import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
+import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
+import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
+import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
+import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 
 class Scan extends StatefulWidget {
   const Scan({super.key});
@@ -107,6 +114,30 @@ class _ScanState extends State<Scan> {
       });
 
       print('✅ Phân tích thành công: ${result.topPrediction?.label}');
+
+      // Chuyển sang trang scan_solution và truyền label
+      if (mounted && result.topPrediction != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BlocProvider<DiseaseBloc>(
+              create: (context) => DiseaseBloc(
+                getDisease: GetDisease(
+                  repository: DiseaseRepositoryImpl(
+                    remoteDataSource: DiseaseRemoteDataSourceImpl(
+                      client: http.Client(),
+                      baseUrl: ApiConstants.diseaseApiUrl,
+                    ),
+                  ),
+                ),
+              ),
+              child: DiseaseDescriptionScreen(
+                diseaseId: result.topPrediction!.label,
+              ),
+            ),
+          ),
+        );
+      }
     } catch (e) {
       setState(() {
         _loading = false;
@@ -252,128 +283,7 @@ class _ScanState extends State<Scan> {
                             style: AppTextStyles.s16SemiBold(),
                           ),
                   ),
-                  if (_predictionResult != null) ...[
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.black87,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Top prediction
-                          Row(
-                            children: [
-                              Icon(
-                                _predictionResult!.topPrediction!.isHealthy
-                                    ? Icons.check_circle
-                                    : Icons.warning,
-                                color:
-                                    _predictionResult!.topPrediction!.isHealthy
-                                    ? Colors.green
-                                    : Colors.orange,
-                                size: 24,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      _predictionResult!
-                                          .topPrediction!
-                                          .plantType,
-                                      style: const TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                    Text(
-                                      _predictionResult!
-                                          .topPrediction!
-                                          .diseaseName,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Độ tin cậy: ${_predictionResult!.topPrediction!.confidencePercent}',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Thời gian xử lý: ${_predictionResult!.inferenceTimeMs.toStringAsFixed(0)}ms',
-                            style: const TextStyle(
-                              color: Colors.white60,
-                              fontSize: 12,
-                            ),
-                          ),
-                          // Show top 3 predictions
-                          if (_predictionResult!.topPredictions.length > 1) ...[
-                            const SizedBox(height: 12),
-                            const Divider(color: Colors.white24),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Các khả năng khác:',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            ...(_predictionResult!.topPredictions
-                                .skip(1)
-                                .take(2)
-                                .map(
-                                  (pred) => Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 2,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            pred.diseaseName,
-                                            style: const TextStyle(
-                                              color: Colors.white60,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          pred.confidencePercent,
-                                          style: const TextStyle(
-                                            color: Colors.white60,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                                .toList()),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ],
+                  if (_predictionResult != null) ...[],
                 ],
               ),
             ),

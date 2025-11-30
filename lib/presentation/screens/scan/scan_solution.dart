@@ -34,7 +34,8 @@ const String _solutionHtml = '''
 ''';
 
 class ScanSolution extends StatelessWidget {
-  const ScanSolution({super.key});
+  final String diseaseLabel;
+  const ScanSolution({super.key, required this.diseaseLabel});
 
   @override
   Widget build(BuildContext context) {

@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
 // import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
-import 'package:se501_plantheon/presentation/screens/push_notification_demo_screen.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/supabase_service.dart';
 import 'package:se501_plantheon/core/services/firebase_notification_service.dart';
-import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
