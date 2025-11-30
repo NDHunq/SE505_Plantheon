@@ -22,11 +22,13 @@ import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 
 class DiseaseDescriptionScreen extends StatefulWidget {
   final String diseaseLabel;
+  final bool isPreview;
   final List<String>? otherdiseaseLabels;
 
   const DiseaseDescriptionScreen({
     super.key,
     required this.diseaseLabel,
+    this.isPreview = false,
     this.otherdiseaseLabels,
   });
 
@@ -186,98 +188,104 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                     ),
                   ),
                 ),
-                Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.only(
-                        left: 16.sp,
-                        right: 16.sp,
-                        top: 16.sp,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 8,
-                            offset: const Offset(0, -2),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          print(
-                            '➡️ Navigating to ScanSolution with diseaseLabel: ${widget.diseaseLabel}',
-                          );
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => BlocProvider<DiseaseBloc>(
-                                create: (context) => DiseaseBloc(
-                                  getDisease: GetDisease(
-                                    repository: DiseaseRepositoryImpl(
-                                      remoteDataSource:
-                                          DiseaseRemoteDataSourceImpl(
-                                            client: http.Client(),
-                                            baseUrl: ApiConstants.diseaseApiUrl,
-                                          ),
-                                    ),
-                                  ),
+                widget.isPreview
+                    ? const SizedBox.shrink()
+                    : Column(
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.only(
+                              left: 16.sp,
+                              right: 16.sp,
+                              top: 16.sp,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, -2),
                                 ),
-                                child: ScanSolution(
-                                  diseaseLabel: widget.diseaseLabel,
+                              ],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                print(
+                                  '➡️ Navigating to ScanSolution with diseaseLabel: ${widget.diseaseLabel}',
+                                );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        BlocProvider<DiseaseBloc>(
+                                          create: (context) => DiseaseBloc(
+                                            getDisease: GetDisease(
+                                              repository: DiseaseRepositoryImpl(
+                                                remoteDataSource:
+                                                    DiseaseRemoteDataSourceImpl(
+                                                      client: http.Client(),
+                                                      baseUrl: ApiConstants
+                                                          .diseaseApiUrl,
+                                                    ),
+                                              ),
+                                            ),
+                                          ),
+                                          child: ScanSolution(
+                                            diseaseLabel: widget.diseaseLabel,
+                                          ),
+                                        ),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary_main,
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(vertical: 16.sp),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.sp),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: Text(
+                                'Xác nhận & Xem điều trị',
+                                style: AppTextStyles.s16SemiBold(
+                                  color: Colors.white,
                                 ),
                               ),
                             ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary_main,
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(vertical: 16.sp),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.sp),
                           ),
-                          elevation: 0,
-                        ),
-                        child: Text(
-                          'Xác nhận & Xem điều trị',
-                          style: AppTextStyles.s16SemiBold(color: Colors.white),
-                        ),
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.all(16.sp),
+                            decoration: BoxDecoration(color: Colors.white),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // TODO: Handle button press
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.white,
+                                foregroundColor: AppColors.primary_main,
+                                padding: EdgeInsets.symmetric(vertical: 16.sp),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.sp),
+                                ),
+                                side: BorderSide(
+                                  color: AppColors.primary_main,
+                                  width: 1,
+                                ),
+                                elevation: 0,
+                              ),
+                              child: Text(
+                                'Xem các chẩn đoán tương tự',
+                                style: AppTextStyles.s16SemiBold(
+                                  color: AppColors.primary_main,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(16.sp),
-                      decoration: BoxDecoration(color: Colors.white),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // TODO: Handle button press
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.white,
-                          foregroundColor: AppColors.primary_main,
-                          padding: EdgeInsets.symmetric(vertical: 16.sp),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.sp),
-                          ),
-                          side: BorderSide(
-                            color: AppColors.primary_main,
-                            width: 1,
-                          ),
-                          elevation: 0,
-                        ),
-                        child: Text(
-                          'Xem các chẩn đoán tương tự',
-                          style: AppTextStyles.s16SemiBold(
-                            color: AppColors.primary_main,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
               ],
             );
           }

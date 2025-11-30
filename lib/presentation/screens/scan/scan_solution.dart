@@ -22,20 +22,11 @@ import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_event.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_state.dart';
 import 'package:se501_plantheon/data/models/diseases.model.dart';
-
-// Đoạn HTML giải pháp khuyến nghị
-const String _solutionHtml = '''
-<div style="font-family: Arial, sans-serif; line-height: 1.6;">
-  <h3>Giải pháp phòng trừ</h3>
-  <ul>
-    <li><strong>Biện pháp canh tác:</strong> Trồng với mật độ phù hợp, tưới nước vào gốc, vệ sinh đồng ruộng, loại bỏ lá bệnh.</li>
-    <li><strong>Biện pháp hóa học:</strong> Sử dụng thuốc diệt nấm như <b>Edifenphos 50.0% EC</b>, phun định kỳ 7-10 ngày/lần, luân phiên các loại thuốc để tránh kháng thuốc.</li>
-  </ul>
-  <p style="background-color: #FFF3CD; padding: 8px; border-radius: 8px; color: #856404;">
-    <b>⚠️ Lưu ý:</b> Chọn và áp dụng <b>CHỈ MỘT</b> sản phẩm cho cây trồng của bạn.
-  </p>
-</div>
-''';
+import 'package:se501_plantheon/presentation/screens/scan/diseaseDescription.dart';
+import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
+import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
+import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 
 class ScanSolution extends StatefulWidget {
   final String diseaseLabel;
@@ -256,55 +247,139 @@ class _DiagnosisCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+    return InkWell(
+      onTap: () {
+        print(
+          '🚀 DiagnosisCard: Tapped on disease card with label: ${disease.id}',
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BlocProvider<DiseaseBloc>(
+              create: (context) => DiseaseBloc(
+                getDisease: GetDisease(
+                  repository: DiseaseRepositoryImpl(
+                    remoteDataSource: DiseaseRemoteDataSourceImpl(
+                      client: http.Client(),
+                      baseUrl: ApiConstants.diseaseApiUrl,
+                    ),
+                  ),
+                ),
+              ),
+              child: DiseaseDescriptionScreen(
+                diseaseLabel: disease.className,
+                isPreview: true,
+              ),
+            ),
           ),
-        ],
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: disease.imageLink.isNotEmpty
-              ? Image.network(
-                  disease.imageLink[0],
-                  width: 56,
-                  height: 56,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.network(
-                      'https://wallpapers.com/images/hd/banana-tree-pictures-fta1lapzcih69mdr.jpg',
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE0E0E0)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: InkWell(
+          onTap: () {
+            print(
+              '🚀 DiagnosisCard: Tapped on disease card with label: ${disease.id}',
+            );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BlocProvider<DiseaseBloc>(
+                  create: (context) => DiseaseBloc(
+                    getDisease: GetDisease(
+                      repository: DiseaseRepositoryImpl(
+                        remoteDataSource: DiseaseRemoteDataSourceImpl(
+                          client: http.Client(),
+                          baseUrl: ApiConstants.diseaseApiUrl,
+                        ),
+                      ),
+                    ),
+                  ),
+                  child: DiseaseDescriptionScreen(
+                    diseaseLabel: disease.className,
+                    isPreview: true,
+                  ),
+                ),
+              ),
+            );
+          },
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(12),
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: disease.imageLink.isNotEmpty
+                  ? Image.network(
+                      disease.imageLink[0],
                       width: 56,
                       height: 56,
                       fit: BoxFit.cover,
-                    );
-                  },
-                )
-              : Image.asset(
-                  'assets/images/plants.jpg',
-                  width: 56,
-                  height: 56,
-                  fit: BoxFit.cover,
-                ),
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.network(
+                          'https://wallpapers.com/images/hd/banana-tree-pictures-fta1lapzcih69mdr.jpg',
+                          width: 56,
+                          height: 56,
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    )
+                  : Image.asset(
+                      'assets/images/plants.jpg',
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                    ),
+            ),
+            title: Text(
+              disease.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(disease.type),
+            trailing: InkWell(
+              onTap: () {
+                print(
+                  '🚀 DiagnosisCard: Tapped on disease card with label: ${disease.id}',
+                );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider<DiseaseBloc>(
+                      create: (context) => DiseaseBloc(
+                        getDisease: GetDisease(
+                          repository: DiseaseRepositoryImpl(
+                            remoteDataSource: DiseaseRemoteDataSourceImpl(
+                              client: http.Client(),
+                              baseUrl: ApiConstants.diseaseApiUrl,
+                            ),
+                          ),
+                        ),
+                      ),
+                      child: DiseaseDescriptionScreen(
+                        diseaseLabel: disease.className,
+                        isPreview: true,
+                      ),
+                    ),
+                  ),
+                );
+              },
+              child: const Icon(
+                Icons.chevron_right_rounded,
+                color: Color(0xFF757575),
+              ),
+            ),
+            onTap: () {},
+          ),
         ),
-        title: Text(
-          disease.name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(disease.type),
-        trailing: const Icon(
-          Icons.chevron_right_rounded,
-          color: Color(0xFF757575),
-        ),
-        onTap: () {},
       ),
     );
   }
@@ -342,55 +417,3 @@ class _ProductDropdownState extends State<_ProductDropdown> {
     );
   }
 }
-
-// class _ProductCard extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.only(top: 6.0, bottom: 6.0),
-//       child: Container(
-//         width: double.infinity,
-//         padding: const EdgeInsets.all(16),
-//         decoration: BoxDecoration(
-//           color: const Color(0xFFF8F9FA),
-//           borderRadius: BorderRadius.circular(16),
-//           border: Border.all(color: const Color(0xFFE0E0E0)),
-//         ),
-//         child: Row(
-//           children: [
-//             Container(
-//               padding: const EdgeInsets.all(8),
-//               decoration: BoxDecoration(
-//                 color: const Color(0xFFE3F2FD),
-//                 borderRadius: BorderRadius.circular(8),
-//               ),
-//               child: const Icon(
-//                 Icons.sanitizer_rounded,
-//                 color: Color(0xFF1976D2),
-//                 size: 32,
-//               ),
-//             ),
-//             const SizedBox(width: 16),
-//             Expanded(
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: const [
-//                   Text(
-//                     'Thuốc diệt nấm',
-//                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-//                   ),
-//                   SizedBox(height: 4),
-//                   Text(
-//                     'Edifenphos 50.0% EC',
-//                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             const Icon(Icons.chevron_right_rounded, color: Color(0xFF757575)),
-//           ],
-//         ],
-//       ),
-//     );
-//   }
-// }

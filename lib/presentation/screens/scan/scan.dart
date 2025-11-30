@@ -12,7 +12,6 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/disease_prediction_service.dart';
 import 'package:se501_plantheon/data/models/disease_prediction_model.dart';
 import 'package:se501_plantheon/presentation/screens/scan/diseaseDescription.dart';
-import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
 import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
