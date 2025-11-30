@@ -18,6 +18,17 @@ class climaMateWidget extends StatefulWidget {
   final ActivitiesBloc? bloc;
   final DateTime? initialDate;
   final VoidCallback? onSubmitSuccess;
+  final String? initialTitle;
+  final String? initialDescription;
+  final String? initialStartTime;
+  final String? initialEndTime;
+  final bool? initialIsAllDay;
+  final String? initialAlertTime;
+  final String? initialRepeat;
+  final DateTime? initialEndRepeatDay;
+  final String? initialNote;
+  final Map<String, dynamic>? initialFormData;
+  final Function(Map<String, dynamic>)? onClose;
 
   const climaMateWidget({
     super.key,
@@ -25,6 +36,17 @@ class climaMateWidget extends StatefulWidget {
     this.bloc,
     this.initialDate,
     this.onSubmitSuccess,
+    this.initialTitle,
+    this.initialDescription,
+    this.initialStartTime,
+    this.initialEndTime,
+    this.initialIsAllDay,
+    this.initialAlertTime,
+    this.initialRepeat,
+    this.initialEndRepeatDay,
+    this.initialNote,
+    this.initialFormData,
+    this.onClose,
   });
 
   @override
@@ -214,7 +236,35 @@ class _climaMateWidgetState extends State<climaMateWidget> {
     } else {
       // Nếu tạo mới, thiết lập ngày và thời gian mặc định
       _initializeDefaultDateTime();
+
+      // Pre-fill từ suggestion nếu có
+      if (widget.initialTitle != null) {
+        titleController.text = widget.initialTitle!;
+      }
+      if (widget.initialDescription != null) {
+        noteController.text = widget.initialDescription!;
+      }
+      if (widget.initialStartTime != null) {
+        startTime = widget.initialStartTime!;
+      }
+      if (widget.initialEndTime != null) {
+        endTime = widget.initialEndTime!;
+      }
+      if (widget.initialIsAllDay != null) {
+        allDay = widget.initialIsAllDay!;
+      }
+      if (widget.initialAlertTime != null) {
+        alertTime = widget.initialAlertTime!;
+      }
+      if (widget.initialRepeat != null) {
+        repeatType = widget.initialRepeat!;
+      }
+      if (widget.initialEndRepeatDay != null) {
+        repeatEndDate = widget.initialEndRepeatDay!;
+      }
     }
+
+    _applyInitialFormData();
   }
 
   void _initializeDefaultDateTime() {
@@ -245,6 +295,111 @@ class _climaMateWidgetState extends State<climaMateWidget> {
       startTime = "06:00";
       endTime = "07:00";
     }
+  }
+
+  void _applyInitialFormData() {
+    if (widget.activityToEdit != null) return;
+    final data = widget.initialFormData;
+    if (data == null || data.isEmpty) return;
+
+    void setTextController(TextEditingController controller, String key) {
+      final value = data[key];
+      if (value is String) {
+        controller.text = value;
+      }
+    }
+
+    setTextController(titleController, 'title');
+    setTextController(noteController, 'note');
+    setTextController(noteController, 'description');
+    setTextController(climateEnvironmentController, 'climateEnvironment');
+    setTextController(adaptationActionsController, 'adaptationActions');
+    setTextController(descriptionController, 'descriptionDetail');
+    setTextController(cropTypeController, 'cropType');
+    setTextController(sourcePersonController, 'sourcePerson');
+
+    final startTimeValue = data['startTime'];
+    if (startTimeValue is String && startTimeValue.isNotEmpty) {
+      startTime = startTimeValue;
+    }
+    final endTimeValue = data['endTime'];
+    if (endTimeValue is String && endTimeValue.isNotEmpty) {
+      endTime = endTimeValue;
+    }
+
+    final startDateValue = data['startDate'];
+    if (startDateValue is DateTime) {
+      startDate = startDateValue;
+    }
+    final endDateValue = data['endDate'];
+    if (endDateValue is DateTime) {
+      endDate = endDateValue;
+    }
+
+    final allDayValue = data['isAllDay'];
+    if (allDayValue is bool) {
+      allDay = allDayValue;
+    }
+
+    final repeatValue = data['repeat'];
+    if (repeatValue is String) {
+      repeatType = repeatValue;
+    }
+
+    final endRepeatTypeValue = data['endRepeatType'];
+    if (endRepeatTypeValue is String) {
+      endRepeatType = endRepeatTypeValue;
+    }
+
+    final endRepeatDayValue = data['endRepeatDay'];
+    if (endRepeatDayValue is DateTime) {
+      repeatEndDate = endRepeatDayValue;
+    }
+
+    final alertValue = data['alertTime'];
+    if (alertValue is String) {
+      alertTime = alertValue;
+    }
+
+    final unitValue = data['unit'];
+    if (unitValue is String && unitValue.isNotEmpty) {
+      unit = unitValue;
+    }
+
+    final currencyValue = data['currency'];
+    if (currencyValue is String && currencyValue.isNotEmpty) {
+      currency = currencyValue;
+    }
+
+    final categoryValue = data['category'];
+    if (categoryValue is String) {
+      category = categoryValue;
+    }
+  }
+
+  Map<String, dynamic> _buildFormData() {
+    return {
+      'title': titleController.text,
+      'description': noteController.text,
+      'note': noteController.text,
+      'climateEnvironment': climateEnvironmentController.text,
+      'adaptationActions': adaptationActionsController.text,
+      'descriptionDetail': descriptionController.text,
+      'cropType': cropTypeController.text,
+      'sourcePerson': sourcePersonController.text,
+      'isAllDay': allDay,
+      'startTime': startTime,
+      'endTime': endTime,
+      'startDate': startDate,
+      'endDate': endDate,
+      'repeat': repeatType,
+      'endRepeatType': endRepeatType,
+      'endRepeatDay': repeatEndDate,
+      'alertTime': alertTime,
+      'unit': unit,
+      'currency': currency,
+      'category': category,
+    };
   }
 
   @override
@@ -588,206 +743,185 @@ class _climaMateWidgetState extends State<climaMateWidget> {
   Widget build(BuildContext context) {
     final bloc = widget.bloc ?? context.read<ActivitiesBloc>();
 
-    return BlocListener<ActivitiesBloc, ActivitiesState>(
-      bloc: bloc,
-      listener: (context, state) {
-        if (state is CreateActivityLoading || state is UpdateActivityLoading) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                state is UpdateActivityLoading
-                    ? 'Đang cập nhật hoạt động...'
-                    : 'Đang tạo hoạt động...',
-              ),
-            ),
-          );
-        } else if (state is DeleteActivityLoading) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đang xóa hoạt động...')),
-          );
-        } else if (state is CreateActivitySuccess) {
-          widget.onSubmitSuccess?.call();
-
-          // Schedule notification
-          _scheduleNotification();
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Tạo hoạt động thành công!')),
-          );
-          // Clear form after successful creation
-          titleController.clear();
-          climateEnvironmentController.clear();
-          adaptationActionsController.clear();
-          descriptionController.clear();
-          cropTypeController.clear();
-          sourcePersonController.clear();
-          noteController.clear();
-          Navigator.of(context).pop(); // Đóng dialog sau khi tạo thành công
-        } else if (state is UpdateActivitySuccess) {
-          widget.onSubmitSuccess?.call();
-
-          // Schedule notification
-          _scheduleNotification();
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Cập nhật hoạt động thành công!')),
-          );
-          Navigator.of(context).pop(); // Đóng dialog sau khi update thành công
-        } else if (state is DeleteActivitySuccess) {
-          widget.onSubmitSuccess?.call();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Xóa hoạt động thành công!')),
-          );
-          Navigator.of(context).pop();
-        } else if (state is CreateActivityError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Lỗi: ${state.message}')));
-        } else if (state is UpdateActivityError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi cập nhật: ${state.message}')),
-          );
-        } else if (state is DeleteActivityError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi xóa hoạt động: ${state.message}')),
-          );
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop && widget.onClose != null) {
+          widget.onClose!({
+            'title': titleController.text,
+            'description': noteController.text,
+            'startTime': startTime,
+            'endTime': endTime,
+            'isAllDay': allDay,
+            'alertTime': alertTime,
+            'repeat': repeatType,
+            'endRepeatDay': repeatEndDate,
+            'note': noteController.text,
+            'formData': _buildFormData(),
+          });
         }
       },
-      child: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Row trên cùng: Loại nhật ký (trái) | Nút sát phải
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Loại nhật ký",
-                      style: TextStyle(fontSize: 16),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFE6F4EA),
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                          color: Colors.grey.shade200,
-                          width: 1,
-                        ),
-                      ),
-                      child: const Text(
-                        "Thích ứng với BĐKH và môi trường",
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
+      child: BlocListener<ActivitiesBloc, ActivitiesState>(
+        bloc: bloc,
+        listener: (context, state) {
+          if (state is CreateActivityLoading ||
+              state is UpdateActivityLoading) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state is UpdateActivityLoading
+                      ? 'Đang cập nhật hoạt động...'
+                      : 'Đang tạo hoạt động...',
                 ),
               ),
+            );
+          } else if (state is DeleteActivityLoading) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Đang xóa hoạt động...')),
+            );
+          } else if (state is CreateActivitySuccess) {
+            widget.onSubmitSuccess?.call();
 
-              TextFormField(
-                controller: titleController,
-                validator: _validateTitle,
-                decoration: InputDecoration(
-                  hintText: "Thêm tiêu đề",
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 12,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.green, width: 2),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.red, width: 1),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.red, width: 2),
-                  ),
-                ),
-              ),
-              // Cả ngày
-              AddNewRow(
-                label: "Cả ngày",
-                child: Switch(
-                  value: allDay,
-                  onChanged: (value) => setState(() => allDay = value),
-                  activeThumbColor: Colors.green,
-                ),
-              ),
+            // Schedule notification
+            _scheduleNotification();
 
-              // Ngày bắt đầu
-              AddNewRow(
-                label: "Ngày bắt đầu",
-                child: Row(
-                  children: [
-                    if (!allDay) ...[
-                      GestureDetector(
-                        onTap: () => _selectStartTime(context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Tạo hoạt động thành công!')),
+            );
+            // Clear form after successful creation
+            titleController.clear();
+            climateEnvironmentController.clear();
+            adaptationActionsController.clear();
+            descriptionController.clear();
+            cropTypeController.clear();
+            sourcePersonController.clear();
+            noteController.clear();
+            Navigator.of(context).pop(); // Đóng dialog sau khi tạo thành công
+          } else if (state is UpdateActivitySuccess) {
+            widget.onSubmitSuccess?.call();
+
+            // Schedule notification
+            _scheduleNotification();
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Cập nhật hoạt động thành công!')),
+            );
+            Navigator.of(
+              context,
+            ).pop(); // Đóng dialog sau khi update thành công
+          } else if (state is DeleteActivitySuccess) {
+            widget.onSubmitSuccess?.call();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Xóa hoạt động thành công!')),
+            );
+            Navigator.of(context).pop();
+          } else if (state is CreateActivityError) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Lỗi: ${state.message}')));
+          } else if (state is UpdateActivityError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Lỗi cập nhật: ${state.message}')),
+            );
+          } else if (state is DeleteActivityError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Lỗi xóa hoạt động: ${state.message}')),
+            );
+          }
+        },
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // Row trên cùng: Loại nhật ký (trái) | Nút sát phải
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Loại nhật ký",
+                        style: TextStyle(fontSize: 16),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Color(0xFFE6F4EA),
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(
+                            color: Colors.grey.shade200,
+                            width: 1,
                           ),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          "Thích ứng với BĐKH và môi trường",
+                          style: TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.w600,
                           ),
-                          child: Text(startTime),
                         ),
                       ),
-                      const SizedBox(width: 8),
                     ],
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => _selectStartDate(context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(_formatDateDisplay(startDate)),
-                        ),
+                  ),
+                ),
+
+                TextFormField(
+                  controller: titleController,
+                  validator: _validateTitle,
+                  decoration: InputDecoration(
+                    hintText: "Thêm tiêu đề",
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 12,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(
+                        color: Colors.green,
+                        width: 2,
                       ),
                     ),
-                  ],
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.red, width: 1),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.red, width: 2),
+                    ),
+                  ),
                 ),
-              ),
-
-              // Ngày kết thúc - ẩn khi cả ngày VÀ lặp lại
-              if (!(allDay && repeatType.isNotEmpty && repeatType != "Không"))
+                // Cả ngày
                 AddNewRow(
-                  label: repeatType.isNotEmpty && repeatType != "Không"
-                      ? "Giờ kết thúc"
-                      : "Ngày kết thúc",
+                  label: "Cả ngày",
+                  child: Switch(
+                    value: allDay,
+                    onChanged: (value) => setState(() => allDay = value),
+                    activeThumbColor: Colors.green,
+                  ),
+                ),
+
+                // Ngày bắt đầu
+                AddNewRow(
+                  label: "Ngày bắt đầu",
                   child: Row(
                     children: [
                       if (!allDay) ...[
                         GestureDetector(
-                          onTap: () => _selectEndTime(context),
+                          onTap: () => _selectStartTime(context),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 12,
@@ -797,16 +931,42 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                               border: Border.all(color: Colors.grey.shade300),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(endTime),
+                            child: Text(startTime),
                           ),
                         ),
                         const SizedBox(width: 8),
                       ],
-                      // Chỉ hiển thị chọn ngày kết thúc khi Lặp lại = "Không"
-                      if (repeatType.isEmpty || repeatType == "Không")
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => _selectEndDate(context),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => _selectStartDate(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(_formatDateDisplay(startDate)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Ngày kết thúc - ẩn khi cả ngày VÀ lặp lại
+                if (!(allDay && repeatType.isNotEmpty && repeatType != "Không"))
+                  AddNewRow(
+                    label: repeatType.isNotEmpty && repeatType != "Không"
+                        ? "Giờ kết thúc"
+                        : "Ngày kết thúc",
+                    child: Row(
+                      children: [
+                        if (!allDay) ...[
+                          GestureDetector(
+                            onTap: () => _selectEndTime(context),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 12,
@@ -816,46 +976,41 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                                 border: Border.all(color: Colors.grey.shade300),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Text(_formatDateDisplay(endDate)),
+                              child: Text(endTime),
                             ),
                           ),
-                        ),
-                    ],
-                  ),
-                ),
-              Divider(height: 1, color: AppColors.text_color_100),
-
-              // Lặp lại
-              AddNewRow(
-                label: "Lặp lại",
-                child: GestureDetector(
-                  onTap: () => _showRepeatDialog(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(repeatType),
-                        const Icon(Icons.arrow_drop_down, size: 20),
+                          const SizedBox(width: 8),
+                        ],
+                        // Chỉ hiển thị chọn ngày kết thúc khi Lặp lại = "Không"
+                        if (repeatType.isEmpty || repeatType == "Không")
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => _selectEndDate(context),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(_formatDateDisplay(endDate)),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
-                ),
-              ),
+                Divider(height: 1, color: AppColors.text_color_100),
 
-              // Kết thúc lặp lại - chỉ hiển thị khi repeatType khác "Không"
-              if (repeatType.isNotEmpty && repeatType != "Không")
+                // Lặp lại
                 AddNewRow(
-                  label: "Kết thúc lặp lại",
+                  label: "Lặp lại",
                   child: GestureDetector(
-                    onTap: () => _showEndRepeatDialog(context),
+                    onTap: () => _showRepeatDialog(context),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -868,7 +1023,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(endRepeatType),
+                          Text(repeatType),
                           const Icon(Icons.arrow_drop_down, size: 20),
                         ],
                       ),
@@ -876,12 +1031,59 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                   ),
                 ),
 
-              // Ngày kết thúc - chỉ hiển thị khi chọn "Ngày"
-              if (endRepeatType == "Ngày") ...[
+                // Kết thúc lặp lại - chỉ hiển thị khi repeatType khác "Không"
+                if (repeatType.isNotEmpty && repeatType != "Không")
+                  AddNewRow(
+                    label: "Kết thúc lặp lại",
+                    child: GestureDetector(
+                      onTap: () => _showEndRepeatDialog(context),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(endRepeatType),
+                            const Icon(Icons.arrow_drop_down, size: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                // Ngày kết thúc - chỉ hiển thị khi chọn "Ngày"
+                if (endRepeatType == "Ngày") ...[
+                  AddNewRow(
+                    label: "Ngày kết thúc lặp",
+                    child: GestureDetector(
+                      onTap: () => _selectRepeatEndDate(context),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(_formatDateDisplay(repeatEndDate)),
+                      ),
+                    ),
+                  ),
+                ],
+                Divider(height: 1, color: AppColors.text_color_100),
+
+                // Cảnh báo
                 AddNewRow(
-                  label: "Ngày kết thúc lặp",
+                  label: "Cảnh báo",
                   child: GestureDetector(
-                    onTap: () => _selectRepeatEndDate(context),
+                    onTap: () => _showAlertDialog(context),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -891,159 +1093,139 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                         border: Border.all(color: Colors.grey.shade300),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(_formatDateDisplay(repeatEndDate)),
-                    ),
-                  ),
-                ),
-              ],
-              Divider(height: 1, color: AppColors.text_color_100),
-
-              // Cảnh báo
-              AddNewRow(
-                label: "Cảnh báo",
-                child: GestureDetector(
-                  onTap: () => _showAlertDialog(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(alertTime),
-                        const Icon(Icons.arrow_drop_down, size: 20),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Divider(height: 1, color: AppColors.text_color_100),
-
-              // Biến đổi khí hậu và môi trường
-              AddNewRowVertical(
-                label: "Biến đổi khí hậu và môi trường",
-                child: AppTextField(
-                  controller: climateEnvironmentController,
-                  maxLines: 5,
-                ),
-              ),
-
-              // Các hành động thích ứng với BĐKH và môi trường
-              AddNewRowVertical(
-                label: "Các hành động thích ứng với BĐKH và môi trường",
-                child: AppTextField(
-                  controller: adaptationActionsController,
-                  maxLines: 5,
-                ),
-              ),
-
-              // Mô tả
-              AddNewRowVertical(
-                label: "Mô tả",
-                child: AppTextField(
-                  controller: descriptionController,
-                  maxLines: 5,
-                ),
-              ),
-
-              // Loại cây trồng
-              AddNewRow(
-                label: "Loại cây trồng",
-                child: AppTextField(controller: cropTypeController),
-              ),
-
-              // Người thực hiện
-              AddNewRow(
-                label: "Người thực hiện",
-                child: AppTextField(controller: sourcePersonController),
-              ),
-
-              Divider(height: 1, color: AppColors.text_color_100),
-
-              // Thêm tệp đính kèm
-              AddNewRow(
-                label: "Thêm tệp đính kèm...",
-                child: const SizedBox.shrink(),
-              ),
-              Divider(height: 1, color: AppColors.text_color_100),
-
-              // Ghi chú
-              AddNewRowVertical(
-                label: "Ghi chú",
-                child: AppTextField(controller: noteController, maxLines: 5),
-              ),
-
-              // Save / Delete actions
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: widget.activityToEdit != null
-                    ? Row(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: _deleteActivity,
-                              style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: Colors.red),
-                              ),
-                              child: const Text(
-                                'Xóa',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: _createActivity,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(32),
-                                ),
-                              ),
-                              child: const Text(
-                                'Lưu thay đổi',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
+                          Text(alertTime),
+                          const Icon(Icons.arrow_drop_down, size: 20),
                         ],
-                      )
-                    : SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _createActivity,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+                Divider(height: 1, color: AppColors.text_color_100),
+
+                // Biến đổi khí hậu và môi trường
+                AddNewRowVertical(
+                  label: "Biến đổi khí hậu và môi trường",
+                  child: AppTextField(
+                    controller: climateEnvironmentController,
+                    maxLines: 5,
+                  ),
+                ),
+
+                // Các hành động thích ứng với BĐKH và môi trường
+                AddNewRowVertical(
+                  label: "Các hành động thích ứng với BĐKH và môi trường",
+                  child: AppTextField(
+                    controller: adaptationActionsController,
+                    maxLines: 5,
+                  ),
+                ),
+
+                // Mô tả
+                AddNewRowVertical(
+                  label: "Mô tả",
+                  child: AppTextField(
+                    controller: descriptionController,
+                    maxLines: 5,
+                  ),
+                ),
+
+                // Loại cây trồng
+                AddNewRow(
+                  label: "Loại cây trồng",
+                  child: AppTextField(controller: cropTypeController),
+                ),
+
+                // Người thực hiện
+                AddNewRow(
+                  label: "Người thực hiện",
+                  child: AppTextField(controller: sourcePersonController),
+                ),
+
+                Divider(height: 1, color: AppColors.text_color_100),
+
+                // Thêm tệp đính kèm
+                AddNewRow(
+                  label: "Thêm tệp đính kèm...",
+                  child: const SizedBox.shrink(),
+                ),
+                Divider(height: 1, color: AppColors.text_color_100),
+
+                // Ghi chú
+                AddNewRowVertical(
+                  label: "Ghi chú",
+                  child: AppTextField(controller: noteController, maxLines: 5),
+                ),
+
+                // Save / Delete actions
+                Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: widget.activityToEdit != null
+                      ? Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: _deleteActivity,
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(color: Colors.red),
+                                ),
+                                child: const Text(
+                                  'Xóa',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
                             ),
-                          ),
-                          child: const Text(
-                            'Lưu Nhật ký',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: _createActivity,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(32),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Lưu thay đổi',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _createActivity,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text(
+                              'Lưu Nhật ký',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

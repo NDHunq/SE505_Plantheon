@@ -115,14 +115,7 @@ class _MyPostState extends State<MyPost> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => PostDetail(
-              username: username,
-              category: category,
-              timeAgo: timeAgo,
-              content: content,
-              imageUrl: imageUrl,
-              likes: likes,
-              comments: comments,
-              shares: shares,
+              postId: '1acb3899-f77e-4337-b821-662cefcc02ed', // Placeholder ID
             ),
           ),
         );

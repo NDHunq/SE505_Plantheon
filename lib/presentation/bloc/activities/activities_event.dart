@@ -18,8 +18,9 @@ class FetchActivitiesByDay extends ActivitiesEvent {
 
 class CreateActivityEvent extends ActivitiesEvent {
   final CreateActivityRequestModel request;
+  final String? correlationId;
 
-  CreateActivityEvent({required this.request});
+  CreateActivityEvent({required this.request, this.correlationId});
 }
 
 class UpdateActivityEvent extends ActivitiesEvent {
@@ -31,6 +32,7 @@ class UpdateActivityEvent extends ActivitiesEvent {
 
 class DeleteActivityEvent extends ActivitiesEvent {
   final String id;
+  final String? correlationId;
 
-  DeleteActivityEvent({required this.id});
+  DeleteActivityEvent({required this.id, this.correlationId});
 }

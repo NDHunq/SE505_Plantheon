@@ -11,6 +11,11 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/community/post_detail.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/acction_button.dart';
 import 'package:se501_plantheon/presentation/screens/community/notification.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:se501_plantheon/data/datasources/post_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/post_repository_impl.dart';
+import 'package:se501_plantheon/presentation/bloc/community/community_bloc.dart';
 
 class Community extends StatefulWidget {
   const Community({super.key});
@@ -20,10 +25,6 @@ class Community extends StatefulWidget {
 }
 
 class _CommunityState extends State<Community> {
-  // Trạng thái like cho từng post (theo index)
-  Map<int, bool> likedPosts = {};
-  Map<int, int> likeCounts = {};
-
   // Controllers cho dialog post
   final TextEditingController _postController = TextEditingController();
   List<Map<String, dynamic>> posts = [];
@@ -42,69 +43,19 @@ class _CommunityState extends State<Community> {
 
   // Image picker
   final ImagePicker _picker = ImagePicker();
-  List<XFile> _selectedImages = [];
+  final List<XFile> _selectedImages = [];
 
   @override
   void initState() {
     super.initState();
     // Khởi tạo số lượt thích ban đầu
-    likeCounts = {0: 28, 1: 15, 2: 42};
-
-    // Khởi tạo danh sách posts mặc định
-    posts = [
-      {
-        'username': 'Mot Nguyen',
-        'timeAgo': '15 phút',
-        'content':
-            'Chào mọi người đây là cây mới của mình.\nHãy theo dõi mình nhé!',
-        'category': 'Đời sống',
-        'imageUrl': 'https://via.placeholder.com/400x300',
-        'likes': 28,
-        'comments': 10,
-        'shares': 1,
-      },
-      {
-        'username': 'Plant Lover',
-        'timeAgo': '1 giờ',
-        'content': 'Cây xanh đẹp quá! Có ai biết cách chăm sóc không?',
-        'category': 'Hỏi đáp',
-        'imageUrl': 'https://via.placeholder.com/400x300',
-        'likes': 15,
-        'comments': 5,
-        'shares': 2,
-      },
-      {
-        'username': 'Green Garden',
-        'timeAgo': '3 giờ',
-        'content': 'Chia sẻ kinh nghiệm trồng cây trong nhà',
-        'category': 'Kinh nghiệm',
-        'imageUrl': 'https://via.placeholder.com/400x300',
-        'likes': 42,
-        'comments': 18,
-        'shares': 7,
-      },
-    ];
+    // likeCounts = {0: 28, 1: 15, 2: 42};
   }
 
   @override
   void dispose() {
     _postController.dispose();
     super.dispose();
-  }
-
-  void _toggleLike(int postIndex, int originalLikes) {
-    setState(() {
-      bool isLiked = likedPosts[postIndex] ?? false;
-      likedPosts[postIndex] = !isLiked;
-
-      if (!isLiked) {
-        // Thích bài viết
-        likeCounts[postIndex] = (likeCounts[postIndex] ?? originalLikes) + 1;
-      } else {
-        // Bỏ thích
-        likeCounts[postIndex] = (likeCounts[postIndex] ?? originalLikes) - 1;
-      }
-    });
   }
 
   Future<void> _pickImages() async {
@@ -249,7 +200,7 @@ class _CommunityState extends State<Community> {
                     SizedBox(height: 16.sp),
 
                     // Text input
-                    Container(
+                    SizedBox(
                       height: 120.sp,
                       child: TextField(
                         controller: _postController,
@@ -283,7 +234,7 @@ class _CommunityState extends State<Community> {
                       child: _selectedImages.isEmpty
                           ? InkWell(
                               onTap: _pickImages,
-                              child: Container(
+                              child: SizedBox(
                                 height: 120.sp,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -367,7 +318,7 @@ class _CommunityState extends State<Community> {
                                   ),
                                 ),
                                 // Images grid
-                                Container(
+                                SizedBox(
                                   height: 200.sp,
                                   child: Padding(
                                     padding: EdgeInsets.symmetric(
@@ -456,21 +407,6 @@ class _CommunityState extends State<Community> {
           'comments': 0,
           'shares': 0,
         });
-
-        Map<int, bool> newLikedPosts = {};
-        Map<int, int> newLikeCounts = {};
-
-        likedPosts.forEach((key, value) {
-          newLikedPosts[key + 1] = value;
-        });
-
-        likeCounts.forEach((key, value) {
-          newLikeCounts[key + 1] = value;
-        });
-
-        likedPosts = newLikedPosts;
-        likeCounts = newLikeCounts;
-        likeCounts[0] = 0;
       });
 
       _postController.clear();
@@ -491,96 +427,126 @@ class _CommunityState extends State<Community> {
 
     Share.share(shareText, subject: 'Bài viết từ Plantheon').then((_) {
       // Cập nhật số lượt chia sẻ
-      setState(() {
-        posts[postIndex]['shares'] += 1;
-      });
+      // Note: Optimistic update for share count is not fully implemented in BLoC yet,
+      // but we can keep this local state update if 'posts' list was used.
+      // However, since we use BLoC, this local 'posts' list might not be the source of truth.
+      // For now, we'll just share.
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: AppColors.white,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
-          elevation: 0,
-          title: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.sp),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(25.sp),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Tìm kiếm ...',
-                      border: InputBorder.none,
-                      hintStyle: AppTextStyles.s14Regular(
-                        color: AppColors.text_color_100,
+    return BlocProvider(
+      create: (context) => CommunityBloc(
+        postRepository: PostRepositoryImpl(
+          remoteDataSource: PostRemoteDataSource(client: http.Client()),
+        ),
+      )..add(FetchUserPosts('6937d944-c8d9-49b7-94c7-b281c23dbd31')),
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: AppColors.white,
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            title: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.sp),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(25.sp),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Tìm kiếm ...',
+                        border: InputBorder.none,
+                        hintStyle: AppTextStyles.s14Regular(
+                          color: AppColors.text_color_100,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(width: 8.sp),
-                const Icon(Icons.search_rounded, color: Colors.grey),
-              ],
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: SvgPicture.asset(
-                AppVectors.bell,
-                width: 24.sp,
-                height: 24.sp,
-                color: AppColors.primary_main,
+                  SizedBox(width: 8.sp),
+                  const Icon(Icons.search_rounded, color: Colors.grey),
+                ],
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Notification()),
-                );
-              },
             ),
-            SizedBox(width: 12.sp),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            _showPostDialog();
-          },
-          backgroundColor: AppColors.orange,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100.sp),
-            side: BorderSide(color: AppColors.orange_400, width: 5.sp),
+            actions: [
+              IconButton(
+                icon: SvgPicture.asset(
+                  AppVectors.bell,
+                  width: 24.sp,
+                  height: 24.sp,
+                  color: AppColors.primary_main,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Notification()),
+                  );
+                },
+              ),
+              SizedBox(width: 12.sp),
+            ],
           ),
-          child: Icon(
-            Icons.add_rounded,
-            size: 30.sp,
-            color: AppColors.text_color_main,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              _showPostDialog();
+            },
+            backgroundColor: AppColors.orange,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100.sp),
+              side: BorderSide(color: AppColors.orange_400, width: 5.sp),
+            ),
+            child: Icon(
+              Icons.add_rounded,
+              size: 30.sp,
+              color: AppColors.text_color_main,
+            ),
           ),
-        ),
-
-        body: Padding(
-          padding: EdgeInsets.only(left: 16.sp, right: 16.sp, bottom: 60.sp),
-          child: ListView.builder(
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              return _buildPost(
-                postIndex: index,
-                username: post['username'],
-                timeAgo: post['timeAgo'],
-                content: post['content'],
-                category: post['category'],
-                imageUrl: post['imageUrl'],
-                likes: post['likes'],
-                comments: post['comments'],
-                shares: post['shares'],
-              );
+          body: BlocBuilder<CommunityBloc, CommunityState>(
+            builder: (context, state) {
+              if (state is CommunityLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is CommunityError) {
+                return Center(child: Text(state.message));
+              } else if (state is CommunityLoaded) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                    left: 16.sp,
+                    right: 16.sp,
+                    bottom: 60.sp,
+                  ),
+                  child: ListView.builder(
+                    itemCount: state.posts.length,
+                    itemBuilder: (context, index) {
+                      final post = state.posts[index];
+                      return _buildPost(
+                        context: context,
+                        postIndex: index,
+                        postId: post.id,
+                        username: post.fullName,
+                        timeAgo: _formatTimeAgo(post.createdAt),
+                        content: post.content,
+                        category: post.tags.isNotEmpty
+                            ? post.tags.first
+                            : 'Khác',
+                        imageUrl: post.avatar.isNotEmpty
+                            ? post.avatar
+                            : 'https://via.placeholder.com/400x300',
+                        imageLink: post.imageLink,
+                        likes: post.likeNumber,
+                        isLiked: post.liked,
+                        comments: post.commentNumber,
+                        shares: post.shareNumber,
+                      );
+                    },
+                  ),
+                );
+              }
+              return const SizedBox();
             },
           ),
         ),
@@ -588,32 +554,39 @@ class _CommunityState extends State<Community> {
     );
   }
 
+  String _formatTimeAgo(DateTime dateTime) {
+    final difference = DateTime.now().difference(dateTime);
+    if (difference.inDays > 0) {
+      return '${difference.inDays} ngày trước';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} giờ trước';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} phút trước';
+    } else {
+      return 'Vừa xong';
+    }
+  }
+
   Widget _buildPost({
+    required BuildContext context,
     required int postIndex,
+    required String postId,
     required String username,
     required String timeAgo,
     required String content,
     required String category,
-    required String imageUrl,
+    required String imageUrl, // Avatar
+    required List<String>? imageLink, // Post images
     required int likes,
+    required bool isLiked,
     required int comments,
     required int shares,
   }) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PostDetail(
-              username: username,
-              category: category,
-              timeAgo: timeAgo,
-              content: content,
-              imageUrl: imageUrl,
-              likes: likes,
-              comments: comments,
-              shares: shares,
-            ),
-          ),
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => PostDetail(postId: postId)),
         );
       },
       child: Container(
@@ -621,7 +594,7 @@ class _CommunityState extends State<Community> {
         color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 8,
+          // spacing: 8, // This line causes an error, assuming it's meant to be a property of a different widget or removed.
           children: [
             Row(
               children: [
@@ -668,42 +641,39 @@ class _CommunityState extends State<Community> {
                 ReportButton(context: context),
               ],
             ),
-
+            SizedBox(height: 8.sp),
             Text(content, style: AppTextStyles.s14Regular()),
-
+            SizedBox(height: 8.sp),
             // Post image
-            SizedBox(
-              width: double.infinity,
-              height: 300.sp,
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.sp),
-                      color: Colors.grey[300],
-                    ),
-                    child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
-                  );
-                },
+            if (imageLink != null && imageLink.isNotEmpty)
+              SizedBox(
+                width: double.infinity,
+                height: 200.sp,
+                child: Image.network(
+                  imageLink.first,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.sp),
+                        color: Colors.grey[300],
+                      ),
+                      child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
+                    );
+                  },
+                ),
               ),
-            ),
+            SizedBox(height: 8.sp),
             Row(
               children: [
                 SvgPicture.asset(
-                  likedPosts[postIndex] == true
-                      ? AppVectors.heartSolid
-                      : AppVectors.heart,
+                  isLiked ? AppVectors.heartSolid : AppVectors.heart,
                   color: AppColors.red,
                   width: 16.sp,
                   height: 16.sp,
                 ),
                 SizedBox(width: 4.sp),
-                Text(
-                  '${likeCounts[postIndex] ?? likes} lượt thích',
-                  style: AppTextStyles.s12Regular(),
-                ),
+                Text('$likes lượt thích', style: AppTextStyles.s12Regular()),
                 const Spacer(),
                 Text('$comments bình luận', style: AppTextStyles.s12Regular()),
                 SizedBox(width: 16.sp),
@@ -715,17 +685,16 @@ class _CommunityState extends State<Community> {
             Row(
               children: [
                 ActionButton(
-                  iconVector: likedPosts[postIndex] == true
+                  iconVector: isLiked
                       ? AppVectors.heartSolid
                       : AppVectors.heart,
                   label: 'Thích',
-                  onPressed: () => _toggleLike(postIndex, likes),
-                  iconColor: likedPosts[postIndex] == true
-                      ? AppColors.red
-                      : AppColors.text_color_200,
-                  textColor: likedPosts[postIndex] == true
-                      ? AppColors.red
-                      : AppColors.text_color_400,
+                  onPressed: () {
+                    print('Debug: Like button pressed for post $postId');
+                    context.read<CommunityBloc>().add(ToggleLikeEvent(postId));
+                  },
+                  iconColor: isLiked ? AppColors.red : AppColors.text_color_200,
+                  textColor: isLiked ? AppColors.red : AppColors.text_color_400,
                 ),
                 Container(width: 1.sp, height: 40.sp, color: Colors.grey[200]),
                 ActionButton(

@@ -106,17 +106,27 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
     CreateActivityEvent event,
     Emitter<ActivitiesState> emit,
   ) async {
-    emit(CreateActivityLoading());
+    emit(CreateActivityLoading(correlationId: event.correlationId));
     try {
       print('[ActivitiesBloc] Creating activity: title=${event.request.title}');
       final response = await createActivity(request: event.request);
       print(
         '[ActivitiesBloc] Activity created successfully: id=${response.id}',
       );
-      emit(CreateActivitySuccess(response: response));
+      emit(
+        CreateActivitySuccess(
+          response: response,
+          correlationId: event.correlationId,
+        ),
+      );
     } catch (e) {
       print('[ActivitiesBloc] Error creating activity: $e');
-      emit(CreateActivityError(message: e.toString()));
+      emit(
+        CreateActivityError(
+          message: e.toString(),
+          correlationId: event.correlationId,
+        ),
+      );
     }
   }
 
@@ -147,13 +157,18 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
     DeleteActivityEvent event,
     Emitter<ActivitiesState> emit,
   ) async {
-    emit(DeleteActivityLoading());
+    emit(DeleteActivityLoading(correlationId: event.correlationId));
     try {
       await deleteActivity(id: event.id);
-      emit(DeleteActivitySuccess());
+      emit(DeleteActivitySuccess(correlationId: event.correlationId));
     } catch (e) {
       print('[ActivitiesBloc] Error deleting activity: $e');
-      emit(DeleteActivityError(message: e.toString()));
+      emit(
+        DeleteActivityError(
+          message: e.toString(),
+          correlationId: event.correlationId,
+        ),
+      );
     }
   }
 }

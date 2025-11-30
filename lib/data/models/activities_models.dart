@@ -290,8 +290,15 @@ class CreateActivityResponseModel {
   CreateActivityResponseModel({required this.id, required this.message});
 
   factory CreateActivityResponseModel.fromJson(Map<String, dynamic> json) {
+    String id = '';
+    if (json['data'] != null && json['data'] is Map<String, dynamic>) {
+      id = json['data']['id'] as String? ?? '';
+    } else {
+      id = json['id'] as String? ?? '';
+    }
+
     return CreateActivityResponseModel(
-      id: json['id'] as String? ?? '',
+      id: id,
       message: json['message'] as String? ?? 'Activity created successfully',
     );
   }

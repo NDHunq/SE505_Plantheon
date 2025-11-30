@@ -8,6 +8,9 @@ import 'package:se501_plantheon/presentation/screens/diary/kyThuat.dart';
 import 'package:se501_plantheon/presentation/screens/diary/dichBenh.dart';
 import 'package:se501_plantheon/presentation/screens/diary/climamate.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
+import 'package:se501_plantheon/presentation/bloc/activities/activities_state.dart';
+import 'package:se501_plantheon/data/models/activities_models.dart';
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_event.dart';
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_state.dart';
@@ -17,15 +20,19 @@ enum ActivityType { chiTieu, banSanPham, kyThuat, dichBenh, kinhKhi, khac }
 
 class Activity {
   final String title;
+  final String description;
   final ActivityType type;
   final DateTime suggestedTime;
   final DateTime endTime;
+  final KeywordActivityEntity originalEntity;
 
   Activity({
     required this.title,
+    required this.description,
     required this.type,
     required this.suggestedTime,
     required this.endTime,
+    required this.originalEntity,
   });
 }
 
@@ -218,9 +225,11 @@ class ActivitiesSuggestionList extends StatelessWidget {
           final activities = state.activities.map((keywordActivity) {
             return Activity(
               title: keywordActivity.name,
+              description: keywordActivity.description,
               type: _mapTypeToActivityType(keywordActivity.type),
               suggestedTime: _calculateStartTime(keywordActivity),
               endTime: _calculateEndTime(keywordActivity),
+              originalEntity: keywordActivity,
             );
           }).toList();
 
@@ -242,10 +251,46 @@ class ActivitiesSuggestionList extends StatelessWidget {
   }
 }
 
-class _ActivitySuggestionItem extends StatelessWidget {
+class _ActivitySuggestionItem extends StatefulWidget {
   final Activity activity;
 
   const _ActivitySuggestionItem({required this.activity});
+
+  @override
+  State<_ActivitySuggestionItem> createState() =>
+      _ActivitySuggestionItemState();
+}
+
+class _ActivitySuggestionItemState extends State<_ActivitySuggestionItem> {
+  // Store edited data
+  String? _editedTitle;
+  String? _editedDescription;
+  String? _editedStartTime;
+  String? _editedEndTime;
+  bool? _editedIsAllDay;
+  String? _editedAlertTime;
+  String? _editedRepeat;
+  DateTime? _editedEndRepeatDay;
+  String? _editedNote;
+  Map<String, dynamic>? _draftData;
+
+  // Get current data (edited or original)
+  String get currentTitle => _editedTitle ?? widget.activity.title;
+  String get currentDescription =>
+      _editedDescription ?? widget.activity.description;
+  String get currentStartTime =>
+      _editedStartTime ??
+      '${widget.activity.suggestedTime.hour.toString().padLeft(2, '0')}:${widget.activity.suggestedTime.minute.toString().padLeft(2, '0')}';
+  String get currentEndTime =>
+      _editedEndTime ??
+      '${widget.activity.endTime.hour.toString().padLeft(2, '0')}:${widget.activity.endTime.minute.toString().padLeft(2, '0')}';
+
+  // New getters
+  bool get currentIsAllDay => _editedIsAllDay ?? false;
+  String get currentAlertTime => _editedAlertTime ?? '';
+  String get currentRepeat => _editedRepeat ?? 'Không';
+  DateTime? get currentEndRepeatDay => _editedEndRepeatDay;
+  String get currentNote => _editedNote ?? '';
 
   String _getTypeString(ActivityType type) {
     switch (type) {
@@ -281,6 +326,29 @@ class _ActivitySuggestionItem extends StatelessWidget {
     }
   }
 
+  void _handleBottomSheetData(Map<String, dynamic> data) {
+    if (!mounted) return;
+
+    setState(() {
+      _editedTitle = data['title'] as String?;
+      _editedDescription = data['description'] as String?;
+      _editedStartTime = data['startTime'] as String?;
+      _editedEndTime = data['endTime'] as String?;
+      _editedIsAllDay = data['isAllDay'] as bool?;
+      _editedAlertTime = data['alertTime'] as String?;
+      _editedRepeat = data['repeat'] as String?;
+      _editedEndRepeatDay = data['endRepeatDay'] as DateTime?;
+      _editedNote = data['note'] as String?;
+
+      final formData = data['formData'];
+      if (formData is Map<String, dynamic>) {
+        _draftData = Map<String, dynamic>.from(formData);
+      } else {
+        _draftData = null;
+      }
+    });
+  }
+
   void _openBottomSheet(BuildContext context, ActivityType type) {
     final activitiesBloc = context.read<ActivitiesBloc>();
 
@@ -294,37 +362,107 @@ class _ActivitySuggestionItem extends StatelessWidget {
           case ActivityType.chiTieu:
             screen = chiTieuWidget(
               bloc: activitiesBloc,
-              initialDate: activity.suggestedTime,
+              initialDate: widget.activity.suggestedTime,
+              initialTitle: currentTitle,
+              initialDescription: currentDescription,
+              initialStartTime: currentStartTime,
+              initialEndTime: currentEndTime,
+              initialNote: currentNote,
+              initialFormData: _draftData == null
+                  ? null
+                  : Map<String, dynamic>.from(_draftData!),
+              onClose: (data) {
+                _handleBottomSheetData(data);
+              },
             );
             break;
           case ActivityType.banSanPham:
             screen = banSanPhamWidget(
               bloc: activitiesBloc,
-              initialDate: activity.suggestedTime,
+              initialDate: widget.activity.suggestedTime,
+              initialTitle: currentTitle,
+              initialDescription: currentDescription,
+              initialStartTime: currentStartTime,
+              initialEndTime: currentEndTime,
+              initialNote: currentNote,
+              initialFormData: _draftData == null
+                  ? null
+                  : Map<String, dynamic>.from(_draftData!),
+              onClose: (data) {
+                _handleBottomSheetData(data);
+              },
             );
             break;
           case ActivityType.kyThuat:
             screen = kyThuatWidget(
               bloc: activitiesBloc,
-              initialDate: activity.suggestedTime,
+              initialDate: widget.activity.suggestedTime,
+              initialTitle: currentTitle,
+              initialDescription: currentDescription,
+              initialStartTime: currentStartTime,
+              initialEndTime: currentEndTime,
+              initialNote: currentNote,
+              initialFormData: _draftData == null
+                  ? null
+                  : Map<String, dynamic>.from(_draftData!),
+              onClose: (data) {
+                _handleBottomSheetData(data);
+              },
             );
             break;
           case ActivityType.dichBenh:
             screen = dichBenhWidget(
               bloc: activitiesBloc,
-              initialDate: activity.suggestedTime,
+              initialDate: widget.activity.suggestedTime,
+              initialTitle: currentTitle,
+              initialDescription: currentDescription,
+              initialStartTime: currentStartTime,
+              initialEndTime: currentEndTime,
+              initialNote: currentNote,
+              initialFormData: _draftData == null
+                  ? null
+                  : Map<String, dynamic>.from(_draftData!),
+              onClose: (data) {
+                _handleBottomSheetData(data);
+              },
             );
             break;
           case ActivityType.kinhKhi:
             screen = climaMateWidget(
               bloc: activitiesBloc,
-              initialDate: activity.suggestedTime,
+              initialDate: widget.activity.suggestedTime,
+              initialTitle: currentTitle,
+              initialDescription: currentDescription,
+              initialStartTime: currentStartTime,
+              initialEndTime: currentEndTime,
+              initialIsAllDay: currentIsAllDay,
+              initialAlertTime: currentAlertTime,
+              initialRepeat: currentRepeat,
+              initialEndRepeatDay: currentEndRepeatDay,
+              initialNote: currentNote,
+              initialFormData: _draftData == null
+                  ? null
+                  : Map<String, dynamic>.from(_draftData!),
+              onClose: (data) {
+                _handleBottomSheetData(data);
+              },
             );
             break;
           case ActivityType.khac:
             screen = otherWidget(
               bloc: activitiesBloc,
-              initialDate: activity.suggestedTime,
+              initialDate: widget.activity.suggestedTime,
+              initialTitle: currentTitle,
+              initialDescription: currentDescription,
+              initialStartTime: currentStartTime,
+              initialEndTime: currentEndTime,
+              initialNote: currentNote,
+              initialFormData: _draftData == null
+                  ? null
+                  : Map<String, dynamic>.from(_draftData!),
+              onClose: (data) {
+                _handleBottomSheetData(data);
+              },
             );
             break;
         }
@@ -384,7 +522,12 @@ class _ActivitySuggestionItem extends StatelessWidget {
                             ),
                             IconButton(
                               icon: const Icon(Icons.close_rounded),
-                              onPressed: () => Navigator.of(sheetContext).pop(),
+                              onPressed: () {
+                                // Save edited data when closing
+                                // We'll get this data from the form controllers
+                                // For now, we need to add a way to get data back from the form
+                                Navigator.of(sheetContext).pop();
+                              },
                             ),
                           ],
                         ),
@@ -407,12 +550,16 @@ class _ActivitySuggestionItem extends StatelessWidget {
           ),
         );
       },
-    );
+    ).then((result) {
+      if (result is Map<String, dynamic>) {
+        _handleBottomSheetData(result);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final config = ActivityTypeConfig.getConfig(activity.type);
+    final config = ActivityTypeConfig.getConfig(widget.activity.type);
 
     return Container(
       decoration: BoxDecoration(
@@ -451,7 +598,7 @@ class _ActivitySuggestionItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    activity.title,
+                    currentTitle,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -472,7 +619,7 @@ class _ActivitySuggestionItem extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          _getTypeString(activity.type),
+                          _getTypeString(widget.activity.type),
                           style: TextStyle(
                             color: config.accentColor,
                             fontSize: 12,
@@ -489,7 +636,7 @@ class _ActivitySuggestionItem extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          '${DateFormat.Hm().format(activity.suggestedTime)} - ${DateFormat.Hm().format(activity.endTime)}, ${DateFormat('dd/MM/yyyy').format(activity.suggestedTime)}',
+                          '$currentStartTime - $currentEndTime, ${DateFormat('dd/MM/yyyy').format(widget.activity.suggestedTime)}',
                           style: TextStyle(
                             color: Colors.grey[700],
                             fontSize: 13,
@@ -519,11 +666,25 @@ class _ActivitySuggestionItem extends StatelessWidget {
                       color: config.accentColor,
                       size: 20,
                     ),
-                    onPressed: () => _openBottomSheet(context, activity.type),
+                    onPressed: () =>
+                        _openBottomSheet(context, widget.activity.type),
                   ),
                 ),
                 const SizedBox(width: 8),
-                _AddButton(accentColor: config.accentColor),
+                _AddButton(
+                  accentColor: config.accentColor,
+                  activity: widget.activity,
+                  bloc: context.read<ActivitiesBloc>(),
+                  editedTitle: _editedTitle,
+                  editedDescription: _editedDescription,
+                  editedStartTime: _editedStartTime,
+                  editedEndTime: _editedEndTime,
+                  editedIsAllDay: _editedIsAllDay,
+                  editedAlertTime: _editedAlertTime,
+                  editedRepeat: _editedRepeat,
+                  editedEndRepeatDay: _editedEndRepeatDay,
+                  editedNote: _editedNote,
+                ),
               ],
             ),
           ],
@@ -535,8 +696,32 @@ class _ActivitySuggestionItem extends StatelessWidget {
 
 class _AddButton extends StatefulWidget {
   final Color accentColor;
+  final Activity activity;
+  final ActivitiesBloc bloc;
+  final String? editedTitle;
+  final String? editedDescription;
+  final String? editedStartTime;
+  final String? editedEndTime;
+  final bool? editedIsAllDay;
+  final String? editedAlertTime;
+  final String? editedRepeat;
+  final DateTime? editedEndRepeatDay;
+  final String? editedNote;
 
-  const _AddButton({required this.accentColor});
+  const _AddButton({
+    required this.accentColor,
+    required this.activity,
+    required this.bloc,
+    this.editedTitle,
+    this.editedDescription,
+    this.editedStartTime,
+    this.editedEndTime,
+    this.editedIsAllDay,
+    this.editedAlertTime,
+    this.editedRepeat,
+    this.editedEndRepeatDay,
+    this.editedNote,
+  });
 
   @override
   __AddButtonState createState() => __AddButtonState();
@@ -544,30 +729,250 @@ class _AddButton extends StatefulWidget {
 
 class __AddButtonState extends State<_AddButton> {
   bool _isAdded = false;
+  bool _isLoading = false;
+  String? _createdActivityId;
+  late String _correlationId;
+
+  @override
+  void initState() {
+    super.initState();
+    // Use the original entity ID as the correlation ID for this button
+    _correlationId = widget.activity.originalEntity.id;
+  }
+
+  String _getActivityTypeString(ActivityType type) {
+    switch (type) {
+      case ActivityType.chiTieu:
+        return 'EXPENSE';
+      case ActivityType.banSanPham:
+        return 'INCOME';
+      case ActivityType.kyThuat:
+        return 'TECHNIQUE';
+      case ActivityType.dichBenh:
+        return 'DISEASE';
+      case ActivityType.kinhKhi:
+        return 'CLIMATE';
+      case ActivityType.khac:
+        return 'OTHER';
+    }
+  }
+
+  String _formatToISO8601(DateTime dateTime) {
+    final year = dateTime.year.toString().padLeft(4, '0');
+    final month = dateTime.month.toString().padLeft(2, '0');
+    final day = dateTime.day.toString().padLeft(2, '0');
+    final hour = dateTime.hour.toString().padLeft(2, '0');
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+    final second = dateTime.second.toString().padLeft(2, '0');
+
+    return '$year-$month-${day}T$hour:$minute:${second}Z';
+  }
+
+  void _createActivity() {
+    if (_isAdded || _isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Use edited data if available, otherwise use original suggestion data
+      final title = widget.editedTitle ?? widget.activity.title;
+      final description =
+          widget.editedDescription ?? widget.activity.description;
+      final isAllDay = widget.editedIsAllDay ?? false;
+      final alertTime = widget.editedAlertTime;
+      final repeat = widget.editedRepeat ?? 'Không';
+      final endRepeatDay = widget.editedEndRepeatDay;
+      final note = widget.editedNote;
+
+      // Parse times to create DateTime objects
+      final startTime =
+          widget.editedStartTime ??
+          '${widget.activity.suggestedTime.hour.toString().padLeft(2, '0')}:${widget.activity.suggestedTime.minute.toString().padLeft(2, '0')}';
+      final endTime =
+          widget.editedEndTime ??
+          '${widget.activity.endTime.hour.toString().padLeft(2, '0')}:${widget.activity.endTime.minute.toString().padLeft(2, '0')}';
+
+      // Parse time strings
+      final startTimeParts = startTime.split(':');
+      final startHour = int.parse(startTimeParts[0]);
+      final startMinute = int.parse(startTimeParts[1]);
+
+      final endTimeParts = endTime.split(':');
+      final endHour = int.parse(endTimeParts[0]);
+      final endMinute = int.parse(endTimeParts[1]);
+
+      // Create DateTime with edited times
+      final startDateTime = DateTime(
+        widget.activity.suggestedTime.year,
+        widget.activity.suggestedTime.month,
+        widget.activity.suggestedTime.day,
+        startHour,
+        startMinute,
+      );
+
+      final endDateTime = DateTime(
+        widget.activity.endTime.year,
+        widget.activity.endTime.month,
+        widget.activity.endTime.day,
+        endHour,
+        endMinute,
+      );
+
+      final request = CreateActivityRequestModel(
+        title: title,
+        type: _getActivityTypeString(widget.activity.type),
+        day: isAllDay,
+        timeStart: _formatToISO8601(startDateTime),
+        timeEnd: _formatToISO8601(endDateTime),
+        repeat: repeat,
+        isRepeat: repeat != 'Không' ? 'True' : 'False',
+        endRepeatDay: endRepeatDay != null
+            ? _formatToISO8601(endRepeatDay)
+            : null,
+        description: description.isNotEmpty ? description : null,
+        note: note,
+        alertTime: alertTime,
+        attachedLink: '',
+      );
+
+      widget.bloc.add(
+        CreateActivityEvent(request: request, correlationId: _correlationId),
+      );
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi tạo hoạt động: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _deleteActivity() {
+    if (!_isAdded || _isLoading || _createdActivityId == null) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    widget.bloc.add(
+      DeleteActivityEvent(
+        id: _createdActivityId!,
+        correlationId: _correlationId,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        color: widget.accentColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: IconButton(
-        padding: EdgeInsets.zero,
-        icon: _isAdded
-            ? Icon(Icons.check_circle, color: widget.accentColor, size: 20)
-            : Icon(
-                Icons.add_circle_outline,
-                color: widget.accentColor,
-                size: 20,
-              ),
-        onPressed: () {
-          setState(() {
-            _isAdded = !_isAdded;
-          });
-        },
+    return BlocListener<ActivitiesBloc, ActivitiesState>(
+      bloc: widget.bloc,
+      listener: (context, state) {
+        if (state is CreateActivitySuccess) {
+          if (state.correlationId == _correlationId) {
+            if (mounted) {
+              setState(() {
+                _isAdded = true;
+                _isLoading = false;
+                _createdActivityId = state.response.id;
+              });
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Đã tạo hoạt động thành công!'),
+                  backgroundColor: Colors.green,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            }
+          }
+        } else if (state is CreateActivityError) {
+          if (state.correlationId == _correlationId) {
+            if (mounted) {
+              setState(() {
+                _isLoading = false;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Lỗi tạo hoạt động: ${state.message}'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        } else if (state is DeleteActivitySuccess) {
+          if (state.correlationId == _correlationId) {
+            if (mounted) {
+              setState(() {
+                _isAdded = false;
+                _isLoading = false;
+                _createdActivityId = null;
+              });
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Đã xóa hoạt động thành công!'),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
+          }
+        } else if (state is DeleteActivityError) {
+          if (state.correlationId == _correlationId) {
+            if (mounted) {
+              setState(() {
+                _isLoading = false;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Lỗi xóa hoạt động: ${state.message}'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        }
+      },
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: widget.accentColor.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: IconButton(
+          padding: EdgeInsets.zero,
+          icon: _isLoading
+              ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      widget.accentColor,
+                    ),
+                  ),
+                )
+              : _isAdded
+              ? Icon(Icons.check_circle, color: widget.accentColor, size: 20)
+              : Icon(
+                  Icons.add_circle_outline,
+                  color: widget.accentColor,
+                  size: 20,
+                ),
+          onPressed: _isLoading
+              ? null
+              : (_isAdded ? _deleteActivity : _createActivity),
+        ),
       ),
     );
   }

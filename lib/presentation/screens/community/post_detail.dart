@@ -1,73 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/data/datasources/post_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/post_repository_impl.dart';
+import 'package:se501_plantheon/domain/entities/comment_entity.dart';
+import 'package:se501_plantheon/presentation/bloc/post_detail/post_detail_bloc.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/acction_button.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/report_button.dart';
+import 'package:http/http.dart' as http;
 
-class PostDetail extends StatefulWidget {
-  final String username;
-  final String category;
-  final String timeAgo;
-  final String content;
-  final String imageUrl;
-  final int likes;
-  final int comments;
-  final int shares;
+class PostDetail extends StatelessWidget {
+  final String postId;
 
-  const PostDetail({
-    super.key,
-    required this.username,
-    required this.category,
-    required this.timeAgo,
-    required this.content,
-    required this.imageUrl,
-    required this.likes,
-    required this.comments,
-    required this.shares,
-  });
+  const PostDetail({super.key, required this.postId});
 
   @override
-  State<PostDetail> createState() => _PostDetailState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => PostDetailBloc(
+        postRepository: PostRepositoryImpl(
+          remoteDataSource: PostRemoteDataSource(client: http.Client()),
+        ),
+      )..add(FetchPostDetail(postId)),
+      child: PostDetailView(postId: postId),
+    );
+  }
 }
 
-class _PostDetailState extends State<PostDetail> {
+class PostDetailView extends StatefulWidget {
+  final String postId;
+  const PostDetailView({super.key, required this.postId});
+
+  @override
+  State<PostDetailView> createState() => _PostDetailViewState();
+}
+
+class _PostDetailViewState extends State<PostDetailView> {
   final TextEditingController _commentController = TextEditingController();
-  List<Map<String, dynamic>> commentsList = [];
-  late int currentLikes;
-  late int currentComments;
-  bool isLiked = false;
 
   // Reply functionality
   bool isReplying = false;
   String replyingToUsername = '';
-
-  @override
-  void initState() {
-    super.initState();
-    currentLikes = widget.likes;
-    currentComments = widget.comments;
-
-    // Initialize with some sample comments
-    commentsList = [
-      {
-        'username': 'Alice Green',
-        'timeAgo': '1 giờ',
-        'content': 'Cây của bạn đẹp quá! Có thể chia sẻ cách chăm sóc không?',
-        'likes': 5,
-        'isLiked': false,
-      },
-      {
-        'username': 'Garden Master',
-        'timeAgo': '30 phút',
-        'content': 'Tôi cũng trồng loại này, rất dễ chăm sóc đấy!',
-        'likes': 3,
-        'isLiked': false,
-      },
-    ];
-  }
 
   @override
   void dispose() {
@@ -80,263 +57,306 @@ class _PostDetailState extends State<PostDetail> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Row(
-          children: [
-            CircleAvatar(
-              radius: 20.sp,
-              backgroundColor: Colors.green[200],
-              child: Text(
-                widget.username[0],
-                style: AppTextStyles.s16Bold(color: Colors.white),
-              ),
-            ),
-            SizedBox(width: 12.sp),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(widget.username, style: AppTextStyles.s16Bold()),
-                      SizedBox(width: 4.sp),
-                      Container(
-                        padding: EdgeInsets.all(2.sp),
-                        decoration: const BoxDecoration(
-                          color: Colors.orange,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.check,
-                          size: 12.sp,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    '${widget.category} • ${widget.timeAgo}',
-                    style: AppTextStyles.s12Regular(color: Colors.grey[600]),
-                  ),
-                ],
-              ),
-            ),
-            ReportButton(context: context),
-          ],
-        ),
-        centerTitle: true,
         leading: IconButton(
           icon: SvgPicture.asset(AppVectors.arrowBack, width: 28, height: 28),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
+        title: BlocBuilder<PostDetailBloc, PostDetailState>(
+          builder: (context, state) {
+            if (state is PostDetailLoaded) {
+              return Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20.sp,
+                    backgroundColor: Colors.green[200],
+                    backgroundImage: state.post.avatar.isNotEmpty
+                        ? NetworkImage(state.post.avatar)
+                        : null,
+                    child: state.post.avatar.isEmpty
+                        ? Text(
+                            state.post.fullName.isNotEmpty
+                                ? state.post.fullName[0]
+                                : '?',
+                            style: AppTextStyles.s16Bold(color: Colors.white),
+                          )
+                        : null,
+                  ),
+                  SizedBox(width: 12.sp),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              state.post.fullName,
+                              style: AppTextStyles.s16Bold(),
+                            ),
+                            SizedBox(width: 4.sp),
+                            Container(
+                              padding: EdgeInsets.all(2.sp),
+                              decoration: const BoxDecoration(
+                                color: Colors.orange,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.check,
+                                size: 12.sp,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          '${state.post.tags.isNotEmpty ? state.post.tags.first : 'General'} • ${_formatTimeAgo(state.post.createdAt)}',
+                          style: AppTextStyles.s12Regular(
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
+        actions: [ReportButton(context: context)],
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.sp),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 8.sp,
-            children: [
-              Text(widget.content, style: AppTextStyles.s14Regular()),
-              SizedBox(
-                width: double.infinity,
-                height: 300.sp,
-                child: Image.network(
-                  widget.imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16.sp),
-                        color: Colors.grey[300],
+      body: BlocBuilder<PostDetailBloc, PostDetailState>(
+        builder: (context, state) {
+          if (state is PostDetailLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is PostDetailError) {
+            return Center(child: Text(state.message));
+          } else if (state is PostDetailLoaded) {
+            final post = state.post;
+            return Padding(
+              padding: EdgeInsets.all(16.sp),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(post.content, style: AppTextStyles.s14Regular()),
+                    if (post.imageLink != null && post.imageLink!.isNotEmpty)
+                      SizedBox(
+                        width: double.infinity,
+                        height: 300.sp,
+                        child: Image.network(
+                          post.imageLink!.first,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16.sp),
+                                color: Colors.grey[300],
+                              ),
+                              child: Icon(
+                                Icons.eco,
+                                size: 100.sp,
+                                color: Colors.green,
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                      child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
-                    );
-                  },
+                    Row(
+                      children: [
+                        SvgPicture.asset(
+                          post.liked ? AppVectors.heartSolid : AppVectors.heart,
+                          color: AppColors.red,
+                          width: 16.sp,
+                          height: 16.sp,
+                        ),
+                        SizedBox(width: 4.sp),
+                        Text(
+                          '${post.likeNumber} lượt thích',
+                          style: AppTextStyles.s12Regular(),
+                        ),
+                        const Spacer(),
+                        Text(
+                          '${post.commentNumber} bình luận',
+                          style: AppTextStyles.s12Regular(),
+                        ),
+                        SizedBox(width: 16.sp),
+                        Text(
+                          '${post.shareNumber} lượt chia sẻ',
+                          style: AppTextStyles.s12Regular(),
+                        ),
+                      ],
+                    ),
+                    Container(height: 1.sp, color: Colors.grey[200]),
+                    Row(
+                      children: [
+                        ActionButton(
+                          iconVector: post.liked
+                              ? AppVectors.heartSolid
+                              : AppVectors.heart,
+                          label: 'Thích',
+                          onPressed: () {
+                            context.read<PostDetailBloc>().add(
+                              ToggleLikePostDetail(post.id),
+                            );
+                          },
+                          iconColor: post.liked
+                              ? AppColors.red
+                              : AppColors.text_color_200,
+                          textColor: post.liked
+                              ? AppColors.red
+                              : AppColors.text_color_400,
+                        ),
+                        Container(
+                          width: 1.sp,
+                          height: 40.sp,
+                          color: Colors.grey[200],
+                        ),
+                        ActionButton(
+                          iconVector: AppVectors.comment,
+                          label: 'Bình luận',
+                          onPressed: () {},
+                        ),
+                        Container(
+                          width: 1.sp,
+                          height: 40.sp,
+                          color: Colors.grey[200],
+                        ),
+                        ActionButton(
+                          iconVector: AppVectors.share,
+                          label: 'Chia sẻ',
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.sp),
+                    Container(height: 1.sp, color: Colors.grey[200]),
+                    SizedBox(height: 16.sp),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (isReplying) ...[
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12.sp,
+                              vertical: 8.sp,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary_main.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8.sp),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.reply,
+                                  size: 16.sp,
+                                  color: AppColors.primary_main,
+                                ),
+                                SizedBox(width: 8.sp),
+                                Text(
+                                  'Đang trả lời $replyingToUsername',
+                                  style: AppTextStyles.s12Regular(
+                                    color: AppColors.primary_main,
+                                  ),
+                                ),
+                                Spacer(),
+                                InkWell(
+                                  onTap: _cancelReply,
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 16.sp,
+                                    color: AppColors.primary_main,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 8.sp),
+                        ],
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius: 16.sp,
+                              backgroundColor: Colors.green[200],
+                              child: Text(
+                                'M',
+                                style: AppTextStyles.s12Bold(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8.sp),
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[100],
+                                  borderRadius: BorderRadius.circular(20.sp),
+                                ),
+                                child: TextField(
+                                  controller: _commentController,
+                                  decoration: InputDecoration(
+                                    hintText: isReplying
+                                        ? 'Trả lời $replyingToUsername...'
+                                        : 'Viết bình luận...',
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 16.sp,
+                                      vertical: 8.sp,
+                                    ),
+                                    hintStyle: AppTextStyles.s14Regular(
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                  style: AppTextStyles.s14Regular(),
+                                  onSubmitted: (value) => _addComment(value),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8.sp),
+                            IconButton(
+                              onPressed: () =>
+                                  _addComment(_commentController.text),
+                              icon: Icon(
+                                Icons.send,
+                                color: AppColors.primary_main,
+                                size: 20.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.sp),
+                    if (post.commentList != null &&
+                        post.commentList!.isNotEmpty)
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: post.commentList!.length,
+                        itemBuilder: (context, index) {
+                          final comment = post.commentList![index];
+                          return _buildComment(comment, index);
+                        },
+                      )
+                    else
+                      Center(
+                        child: Text(
+                          'Chưa có bình luận nào',
+                          style: AppTextStyles.s14Regular(color: Colors.grey),
+                        ),
+                      ),
+                    SizedBox(height: 16.sp),
+                  ],
                 ),
               ),
-              Row(
-                children: [
-                  SvgPicture.asset(
-                    AppVectors.heart,
-                    color: AppColors.red,
-                    width: 16.sp,
-                    height: 16.sp,
-                  ),
-                  SizedBox(width: 4.sp),
-                  Text(
-                    '${currentLikes} lượt thích',
-                    style: AppTextStyles.s12Regular(),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${currentComments} bình luận',
-                    style: AppTextStyles.s12Regular(),
-                  ),
-                  SizedBox(width: 16.sp),
-                  Text(
-                    '${widget.shares} lượt chia sẻ',
-                    style: AppTextStyles.s12Regular(),
-                  ),
-                ],
-              ),
-              Container(height: 1.sp, color: Colors.grey[200]),
-              Row(
-                children: [
-                  ActionButton(
-                    iconVector: isLiked
-                        ? AppVectors.heartSolid
-                        : AppVectors.heart,
-                    label: 'Thích',
-                    onPressed: _toggleLike,
-                    iconColor: isLiked
-                        ? AppColors.red
-                        : AppColors.text_color_200,
-                    textColor: isLiked
-                        ? AppColors.red
-                        : AppColors.text_color_400,
-                  ),
-                  Container(
-                    width: 1.sp,
-                    height: 40.sp,
-                    color: Colors.grey[200],
-                  ),
-                  ActionButton(
-                    iconVector: AppVectors.comment,
-                    label: 'Bình luận',
-                    onPressed: () {},
-                  ),
-                  Container(
-                    width: 1.sp,
-                    height: 40.sp,
-                    color: Colors.grey[200],
-                  ),
-                  ActionButton(
-                    iconVector: AppVectors.share,
-                    label: 'Chia sẻ',
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.sp),
-              Container(height: 1.sp, color: Colors.grey[200]),
-              SizedBox(height: 16.sp),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (isReplying) ...[
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12.sp,
-                        vertical: 8.sp,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary_main.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8.sp),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.reply,
-                            size: 16.sp,
-                            color: AppColors.primary_main,
-                          ),
-                          SizedBox(width: 8.sp),
-                          Text(
-                            'Đang trả lời $replyingToUsername',
-                            style: AppTextStyles.s12Regular(
-                              color: AppColors.primary_main,
-                            ),
-                          ),
-                          Spacer(),
-                          InkWell(
-                            onTap: _cancelReply,
-                            child: Icon(
-                              Icons.close,
-                              size: 16.sp,
-                              color: AppColors.primary_main,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 8.sp),
-                  ],
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 16.sp,
-                        backgroundColor: Colors.green[200],
-                        child: Text(
-                          'M',
-                          style: AppTextStyles.s12Bold(color: Colors.white),
-                        ),
-                      ),
-                      SizedBox(width: 8.sp),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(20.sp),
-                          ),
-                          child: TextField(
-                            controller: _commentController,
-                            decoration: InputDecoration(
-                              hintText: isReplying
-                                  ? 'Trả lời $replyingToUsername...'
-                                  : 'Viết bình luận...',
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16.sp,
-                                vertical: 8.sp,
-                              ),
-                              hintStyle: AppTextStyles.s14Regular(
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            style: AppTextStyles.s14Regular(),
-                            onSubmitted: (value) => _addComment(),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 8.sp),
-                      IconButton(
-                        onPressed: _addComment,
-                        icon: Icon(
-                          Icons.send,
-                          color: AppColors.primary_main,
-                          size: 20.sp,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.sp),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: commentsList.length,
-                itemBuilder: (context, index) {
-                  final comment = commentsList[index];
-                  return _buildComment(comment, index);
-                },
-              ),
-              SizedBox(height: 16.sp),
-            ],
-          ),
-        ),
+            );
+          }
+          return const SizedBox.shrink();
+        },
       ),
     );
-  }
-
-  void _toggleLike() {
-    setState(() {
-      isLiked = !isLiked;
-      currentLikes += isLiked ? 1 : -1;
-    });
   }
 
   void _handleReply(String username) {
@@ -346,8 +366,7 @@ class _PostDetailState extends State<PostDetail> {
       _commentController.text = '@$username ';
     });
 
-    // Focus vào text field và đặt cursor ở cuối
-    Future.delayed(Duration(milliseconds: 100), () {
+    Future.delayed(const Duration(milliseconds: 100), () {
       _commentController.selection = TextSelection.fromPosition(
         TextPosition(offset: _commentController.text.length),
       );
@@ -362,34 +381,17 @@ class _PostDetailState extends State<PostDetail> {
     });
   }
 
-  void _addComment() {
-    if (_commentController.text.trim().isNotEmpty) {
-      setState(() {
-        commentsList.insert(0, {
-          'username': 'Mot Nguyen',
-          'timeAgo': 'Vừa xong',
-          'content': _commentController.text.trim(),
-          'likes': 0,
-          'isLiked': false,
-        });
-        currentComments++;
-
-        // Reset reply state
-        isReplying = false;
-        replyingToUsername = '';
-      });
+  void _addComment(String content) {
+    if (content.trim().isNotEmpty) {
+      context.read<PostDetailBloc>().add(
+        CreateCommentEvent(widget.postId, content),
+      );
       _commentController.clear();
+      FocusScope.of(context).unfocus();
     }
   }
 
-  void _toggleCommentLike(int index) {
-    setState(() {
-      commentsList[index]['isLiked'] = !commentsList[index]['isLiked'];
-      commentsList[index]['likes'] += commentsList[index]['isLiked'] ? 1 : -1;
-    });
-  }
-
-  Widget _buildComment(Map<String, dynamic> comment, int index) {
+  Widget _buildComment(CommentEntity comment, int index) {
     return Container(
       margin: EdgeInsets.only(bottom: 12.sp),
       child: Row(
@@ -400,10 +402,15 @@ class _PostDetailState extends State<PostDetail> {
             child: CircleAvatar(
               radius: 16.sp,
               backgroundColor: Colors.green[200],
-              child: Text(
-                comment['username'][0],
-                style: AppTextStyles.s12Bold(color: Colors.white),
-              ),
+              backgroundImage: comment.avatar.isNotEmpty
+                  ? NetworkImage(comment.avatar)
+                  : null,
+              child: comment.avatar.isEmpty
+                  ? Text(
+                      comment.fullName.isNotEmpty ? comment.fullName[0] : '?',
+                      style: AppTextStyles.s12Bold(color: Colors.white),
+                    )
+                  : null,
             ),
           ),
           SizedBox(width: 8.sp),
@@ -420,12 +427,14 @@ class _PostDetailState extends State<PostDetail> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(comment['username'], style: AppTextStyles.s14Bold()),
-                      SizedBox(height: 2.sp),
                       Text(
-                        comment['content'],
-                        style: AppTextStyles.s14Regular(),
+                        comment.isMe ? 'Bạn' : comment.fullName,
+                        style: AppTextStyles.s14Bold().copyWith(
+                          color: comment.isMe ? Colors.green : Colors.black,
+                        ),
                       ),
+                      SizedBox(height: 2.sp),
+                      Text(comment.content, style: AppTextStyles.s14Regular()),
                     ],
                   ),
                 ),
@@ -435,28 +444,24 @@ class _PostDetailState extends State<PostDetail> {
                   child: Row(
                     children: [
                       Text(
-                        comment['timeAgo'],
+                        _formatTimeAgo(comment.createdAt),
                         style: AppTextStyles.s12Regular(
                           color: Colors.grey[600],
                         ),
                       ),
                       SizedBox(width: 12.sp),
                       InkWell(
-                        onTap: () => _toggleCommentLike(index),
+                        onTap: () {}, // Implement comment like later
                         child: Row(
                           children: [
                             Icon(
-                              comment['isLiked']
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
+                              Icons.favorite_border,
                               size: 16.sp,
-                              color: comment['isLiked']
-                                  ? AppColors.red
-                                  : Colors.grey[600],
+                              color: Colors.grey[600],
                             ),
                             SizedBox(width: 4.sp),
                             Text(
-                              '${comment['likes']}',
+                              '${comment.likeNumber}',
                               style: AppTextStyles.s12Regular(
                                 color: Colors.grey[600],
                               ),
@@ -467,7 +472,7 @@ class _PostDetailState extends State<PostDetail> {
                       SizedBox(width: 12.sp),
                       GestureDetector(
                         onTap: () {
-                          _handleReply(comment['username']);
+                          _handleReply(comment.fullName);
                         },
                         child: Text(
                           'Trả lời',
@@ -485,5 +490,18 @@ class _PostDetailState extends State<PostDetail> {
         ],
       ),
     );
+  }
+
+  String _formatTimeAgo(DateTime dateTime) {
+    final duration = DateTime.now().difference(dateTime);
+    if (duration.inDays > 0) {
+      return '${duration.inDays} ngày trước';
+    } else if (duration.inHours > 0) {
+      return '${duration.inHours} giờ trước';
+    } else if (duration.inMinutes > 0) {
+      return '${duration.inMinutes} phút trước';
+    } else {
+      return 'Vừa xong';
+    }
   }
 }

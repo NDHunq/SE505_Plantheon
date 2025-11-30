@@ -36,21 +36,21 @@ class MainApp extends StatelessWidget {
             primaryColor: AppColors.primary_main,
 
             checkboxTheme: CheckboxThemeData(
-              fillColor: MaterialStateProperty.all(AppColors.primary_main),
+              fillColor: WidgetStateProperty.all(AppColors.primary_main),
             ),
             radioTheme: RadioThemeData(
-              fillColor: MaterialStateProperty.all(AppColors.primary_main),
+              fillColor: WidgetStateProperty.all(AppColors.primary_main),
             ),
             switchTheme: SwitchThemeData(
-              thumbColor: MaterialStateProperty.all(AppColors.primary_main),
-              trackColor: MaterialStateProperty.all(
+              thumbColor: WidgetStateProperty.all(AppColors.primary_main),
+              trackColor: WidgetStateProperty.all(
                 AppColors.primary_main.withOpacity(0.5),
               ),
             ),
           ),
           // Thay đổi home thành PushNotificationDemoScreen để test
           // home: SignInPage(),
-          home: const ScanSolution(),
+          home: const SignInPage(),
           debugShowCheckedModeBanner: false,
         );
       },

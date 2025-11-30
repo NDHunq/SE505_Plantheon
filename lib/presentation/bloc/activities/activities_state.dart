@@ -24,16 +24,21 @@ class DayActivitiesLoaded extends ActivitiesState {
   DayActivitiesLoaded({required this.data});
 }
 
-class CreateActivityLoading extends ActivitiesState {}
+class CreateActivityLoading extends ActivitiesState {
+  final String? correlationId;
+  CreateActivityLoading({this.correlationId});
+}
 
 class CreateActivitySuccess extends ActivitiesState {
   final CreateActivityResponseModel response;
-  CreateActivitySuccess({required this.response});
+  final String? correlationId;
+  CreateActivitySuccess({required this.response, this.correlationId});
 }
 
 class CreateActivityError extends ActivitiesState {
   final String message;
-  CreateActivityError({required this.message});
+  final String? correlationId;
+  CreateActivityError({required this.message, this.correlationId});
 }
 
 class UpdateActivityLoading extends ActivitiesState {}
@@ -48,11 +53,18 @@ class UpdateActivityError extends ActivitiesState {
   UpdateActivityError({required this.message});
 }
 
-class DeleteActivityLoading extends ActivitiesState {}
+class DeleteActivityLoading extends ActivitiesState {
+  final String? correlationId;
+  DeleteActivityLoading({this.correlationId});
+}
 
-class DeleteActivitySuccess extends ActivitiesState {}
+class DeleteActivitySuccess extends ActivitiesState {
+  final String? correlationId;
+  DeleteActivitySuccess({this.correlationId});
+}
 
 class DeleteActivityError extends ActivitiesState {
   final String message;
-  DeleteActivityError({required this.message});
+  final String? correlationId;
+  DeleteActivityError({required this.message, this.correlationId});
 }
