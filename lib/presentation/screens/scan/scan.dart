@@ -7,6 +7,10 @@ import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/core/services/disease_prediction_service.dart';
+import 'package:se501_plantheon/data/models/disease_prediction_model.dart';
+import 'package:se501_plantheon/core/services/disease_prediction_service.dart';
+import 'package:se501_plantheon/data/models/disease_prediction_model.dart';
 
 class Scan extends StatefulWidget {
   const Scan({super.key});
@@ -18,7 +22,7 @@ class Scan extends StatefulWidget {
 class _ScanState extends State<Scan> {
   File? _image;
   bool _loading = false;
-  String? _result;
+  DiseasePredictionResponse? _predictionResult;
   CameraController? _cameraController;
   List<CameraDescription>? _cameras;
   bool _isCameraReady = false;
@@ -58,9 +62,11 @@ class _ScanState extends State<Scan> {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);
     if (pickedFile != null) {
+      // Pause camera to save resources
+      await _cameraController?.pausePreview();
       setState(() {
         _image = File(pickedFile.path);
-        _result = null;
+        _predictionResult = null;
       });
     }
   }
@@ -69,9 +75,11 @@ class _ScanState extends State<Scan> {
     if (!_isCameraReady || _cameraController == null) return;
     try {
       final image = await _cameraController!.takePicture();
+      // Pause camera to save resources
+      await _cameraController?.pausePreview();
       setState(() {
         _image = File(image.path);
-        _result = null;
+        _predictionResult = null;
       });
     } catch (e) {
       setState(() => _cameraError = 'Chụp ảnh thất bại: $e');
@@ -80,16 +88,46 @@ class _ScanState extends State<Scan> {
 
   Future<void> _analyzeImage() async {
     if (_image == null) return;
+
     setState(() {
       _loading = true;
-      _result = null;
+      _predictionResult = null;
+      _cameraError = null;
     });
-    // TODO: Gọi API hoặc xử lý ML tại đây
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() {
-      _loading = false;
-      _result = "Kết quả phân tích: Không phát hiện bệnh.";
-    });
+
+    try {
+      // Gọi API prediction
+      final result = await DiseasePredictionService.instance.predictDisease(
+        _image!,
+      );
+
+      setState(() {
+        _loading = false;
+        _predictionResult = result;
+      });
+
+      print('✅ Phân tích thành công: ${result.topPrediction?.label}');
+    } catch (e) {
+      setState(() {
+        _loading = false;
+        _cameraError = 'Lỗi phân tích: $e';
+      });
+
+      // Show error dialog
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Không thể phân tích ảnh. Vui lòng kiểm tra kết nối server.',
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+
+      print('❌ Lỗi phân tích: $e');
+    }
   }
 
   @override
@@ -168,10 +206,12 @@ class _ScanState extends State<Scan> {
                 heroTag: 'backToCamera',
                 mini: true,
                 backgroundColor: AppColors.white,
-                onPressed: () {
+                onPressed: () async {
+                  await _cameraController?.resumePreview();
                   setState(() {
                     _image = null;
-                    _result = null;
+                    _predictionResult = null;
+                    _cameraError = null;
                   });
                 },
                 child: const Icon(Icons.refresh, color: AppColors.primary_600),
@@ -212,24 +252,125 @@ class _ScanState extends State<Scan> {
                             style: AppTextStyles.s16SemiBold(),
                           ),
                   ),
-                  if (_result != null) ...[
+                  if (_predictionResult != null) ...[
                     const SizedBox(height: 10),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
                         color: Colors.black87,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(
-                        _result!,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Top prediction
+                          Row(
+                            children: [
+                              Icon(
+                                _predictionResult!.topPrediction!.isHealthy
+                                    ? Icons.check_circle
+                                    : Icons.warning,
+                                color:
+                                    _predictionResult!.topPrediction!.isHealthy
+                                    ? Colors.green
+                                    : Colors.orange,
+                                size: 24,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _predictionResult!
+                                          .topPrediction!
+                                          .plantType,
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    Text(
+                                      _predictionResult!
+                                          .topPrediction!
+                                          .diseaseName,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Độ tin cậy: ${_predictionResult!.topPrediction!.confidencePercent}',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Thời gian xử lý: ${_predictionResult!.inferenceTimeMs.toStringAsFixed(0)}ms',
+                            style: const TextStyle(
+                              color: Colors.white60,
+                              fontSize: 12,
+                            ),
+                          ),
+                          // Show top 3 predictions
+                          if (_predictionResult!.topPredictions.length > 1) ...[
+                            const SizedBox(height: 12),
+                            const Divider(color: Colors.white24),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Các khả năng khác:',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            ...(_predictionResult!.topPredictions
+                                .skip(1)
+                                .take(2)
+                                .map(
+                                  (pred) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 2,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            pred.diseaseName,
+                                            style: const TextStyle(
+                                              color: Colors.white60,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          pred.confidencePercent,
+                                          style: const TextStyle(
+                                            color: Colors.white60,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                                .toList()),
+                          ],
+                        ],
                       ),
                     ),
                   ],
