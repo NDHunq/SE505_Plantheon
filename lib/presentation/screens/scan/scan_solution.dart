@@ -14,7 +14,7 @@ import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_day.d
 import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_month.dart';
 import 'package:se501_plantheon/domain/usecases/activity/update_activity.dart';
 import 'package:se501_plantheon/domain/usecases/keyword_activity/get_keyword_activities.dart';
-import 'package:se501_plantheon/presentation/screens/scan/activities_suggestion_screen.dart';
+import 'package:se501_plantheon/presentation/screens/scan/activities_suggestion_section.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_event.dart';
