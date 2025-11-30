@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
@@ -13,15 +14,20 @@ import 'package:se501_plantheon/data/models/diseases.model.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_event.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_state.dart';
+import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
+import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
+import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
+import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 
 class DiseaseDescriptionScreen extends StatefulWidget {
-  final String diseaseId;
-  final List<String>? otherDiseaseIds;
+  final String diseaseLabel;
+  final List<String>? otherdiseaseLabels;
 
   const DiseaseDescriptionScreen({
     super.key,
-    required this.diseaseId,
-    this.otherDiseaseIds,
+    required this.diseaseLabel,
+    this.otherdiseaseLabels,
   });
 
   @override
@@ -36,9 +42,11 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
   @override
   void initState() {
     super.initState();
-    print('🚀 Screen: initState called with diseaseId: ${widget.diseaseId}');
+    print(
+      '🚀 Screen: initState called with diseaseLabel: ${widget.diseaseLabel}',
+    );
     context.read<DiseaseBloc>().add(
-      GetDiseaseEvent(diseaseId: widget.diseaseId),
+      GetDiseaseEvent(diseaseId: widget.diseaseLabel),
     );
     print('📤 Screen: GetDiseaseEvent sent to BLoC');
   }
@@ -103,7 +111,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                   ElevatedButton(
                     onPressed: () {
                       context.read<DiseaseBloc>().add(
-                        GetDiseaseEvent(diseaseId: widget.diseaseId),
+                        GetDiseaseEvent(diseaseId: widget.diseaseLabel),
                       );
                     },
                     child: Text('Thử lại', style: AppTextStyles.s16Medium()),
@@ -199,7 +207,30 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                       ),
                       child: ElevatedButton(
                         onPressed: () {
-                          // TODO: Handle button press
+                          print(
+                            '➡️ Navigating to ScanSolution with diseaseLabel: ${widget.diseaseLabel}',
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BlocProvider<DiseaseBloc>(
+                                create: (context) => DiseaseBloc(
+                                  getDisease: GetDisease(
+                                    repository: DiseaseRepositoryImpl(
+                                      remoteDataSource:
+                                          DiseaseRemoteDataSourceImpl(
+                                            client: http.Client(),
+                                            baseUrl: ApiConstants.diseaseApiUrl,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                                child: ScanSolution(
+                                  diseaseLabel: widget.diseaseLabel,
+                                ),
+                              ),
+                            ),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary_main,

@@ -157,8 +157,9 @@ class _ScanHistoryContent extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                DiseaseDescriptionScreen(diseaseId: disease.id),
+                            builder: (context) => DiseaseDescriptionScreen(
+                              diseaseLabel: disease.id,
+                            ),
                           ),
                         );
                       },

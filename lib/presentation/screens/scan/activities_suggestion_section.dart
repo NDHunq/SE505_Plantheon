@@ -92,10 +92,7 @@ class ActivityTypeConfig {
 class ActivitiesSuggestionList extends StatelessWidget {
   final String diseaseId;
 
-  const ActivitiesSuggestionList({
-    super.key,
-    this.diseaseId = '006c9e8c-2f71-4608-9134-6b9f3ff9c1e1',
-  });
+  const ActivitiesSuggestionList({super.key, required this.diseaseId});
 
   ActivityType _mapTypeToActivityType(String type) {
     switch (type.toUpperCase()) {

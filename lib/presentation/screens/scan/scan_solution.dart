@@ -18,6 +18,10 @@ import 'package:se501_plantheon/presentation/screens/scan/activities_suggestion_
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_event.dart';
+import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/disease/disease_event.dart';
+import 'package:se501_plantheon/presentation/bloc/disease/disease_state.dart';
+import 'package:se501_plantheon/data/models/diseases.model.dart';
 
 // Đoạn HTML giải pháp khuyến nghị
 const String _solutionHtml = '''
@@ -33,9 +37,26 @@ const String _solutionHtml = '''
 </div>
 ''';
 
-class ScanSolution extends StatelessWidget {
+class ScanSolution extends StatefulWidget {
   final String diseaseLabel;
   const ScanSolution({super.key, required this.diseaseLabel});
+
+  @override
+  State<ScanSolution> createState() => _ScanSolutionState();
+}
+
+class _ScanSolutionState extends State<ScanSolution> {
+  @override
+  void initState() {
+    super.initState();
+    print(
+      '🚀 ScanSolution: initState called with diseaseLabel: ${widget.diseaseLabel}',
+    );
+    context.read<DiseaseBloc>().add(
+      GetDiseaseEvent(diseaseId: widget.diseaseLabel),
+    );
+    print('📤 ScanSolution: GetDiseaseEvent sent to BLoC');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,112 +68,143 @@ class ScanSolution extends StatelessWidget {
           SizedBox(width: 16),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 1. Diagnosis Result
-            _SectionTitle(
-              index: 1,
-              title: 'Kết quả chẩn đoán',
-              action: TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Thay đổi',
-                  style: TextStyle(
-                    color: Color(0xFF1976D2),
-                    fontWeight: FontWeight.w600,
+      body: BlocBuilder<DiseaseBloc, DiseaseState>(
+        builder: (context, state) {
+          if (state is DiseaseLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is DiseaseError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text('Lỗi: ${state.message}'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<DiseaseBloc>().add(
+                        GetDiseaseEvent(diseaseId: widget.diseaseLabel),
+                      );
+                    },
+                    child: const Text('Thử lại'),
                   ),
-                ),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            _DiagnosisCard(),
-            const SizedBox(height: 20),
-            Divider(height: 32, thickness: 1, color: Color(0xFFE0E0E0)),
-            // 2. Recommended Product
-            _SectionTitle(index: 2, title: 'Giải pháp khuyến nghị'),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(8),
-              child: Html(
-                data: _solutionHtml,
-                style: {
-                  "body": Style(
-                    margin: Margins.zero,
-                    padding: HtmlPaddings.zero,
+            );
+          } else if (state is DiseaseSuccess) {
+            final disease = state.disease;
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1. Diagnosis Result
+                  _SectionTitle(
+                    index: 1,
+                    title: 'Kết quả chẩn đoán',
+                    action: TextButton(
+                      onPressed: () {},
+                      child: const Text(
+                        'Thay đổi',
+                        style: TextStyle(
+                          color: Color(0xFF1976D2),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
-                  "h3": Style(
-                    color: Color(0xFF388E3C),
-                    fontSize: FontSize(16),
-                    fontWeight: FontWeight.w600,
-                    margin: Margins.only(top: 16, bottom: 8),
+                  const SizedBox(height: 8),
+                  _DiagnosisCard(disease: disease),
+                  const SizedBox(height: 20),
+                  Divider(height: 32, thickness: 1, color: Color(0xFFE0E0E0)),
+                  // 2. Recommended Product
+                  _SectionTitle(index: 2, title: 'Giải pháp khuyến nghị'),
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(8),
+                    child: Html(
+                      data: disease.solution,
+                      style: {
+                        "body": Style(
+                          margin: Margins.zero,
+                          padding: HtmlPaddings.zero,
+                        ),
+                        "h3": Style(
+                          color: Color(0xFF388E3C),
+                          fontSize: FontSize(16),
+                          fontWeight: FontWeight.w600,
+                          margin: Margins.only(top: 16, bottom: 8),
+                        ),
+                        "p": Style(
+                          fontSize: FontSize(14),
+                          lineHeight: const LineHeight(1.6),
+                          margin: Margins.only(bottom: 12),
+                          color: Colors.black87,
+                        ),
+                        "ul": Style(margin: Margins.only(bottom: 12)),
+                        "li": Style(
+                          fontSize: FontSize(14),
+                          lineHeight: const LineHeight(1.5),
+                          margin: Margins.only(bottom: 4),
+                          color: Colors.black87,
+                        ),
+                        "strong": Style(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1976D2),
+                        ),
+                      },
+                    ),
                   ),
-                  "p": Style(
-                    fontSize: FontSize(14),
-                    lineHeight: const LineHeight(1.6),
-                    margin: Margins.only(bottom: 12),
-                    color: Colors.black87,
+                  const SizedBox(height: 20),
+                  Divider(height: 32, thickness: 1, color: Color(0xFFE0E0E0)),
+                  _SectionTitle(index: 3, title: 'Hoạt động gợi ý'),
+                  const SizedBox(height: 12),
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (_) {
+                          final repository = ActivitiesRepositoryImpl(
+                            remoteDataSource: ActivitiesRemoteDataSourceImpl(
+                              client: http.Client(),
+                            ),
+                          );
+                          return ActivitiesBloc(
+                            getActivitiesByMonth: GetActivitiesByMonth(
+                              repository,
+                            ),
+                            getActivitiesByDay: GetActivitiesByDay(repository),
+                            createActivity: CreateActivity(repository),
+                            updateActivity: UpdateActivity(repository),
+                            deleteActivity: DeleteActivity(repository),
+                          );
+                        },
+                      ),
+                      BlocProvider(
+                        create: (_) {
+                          final repository = KeywordActivityRepositoryImpl(
+                            remoteDataSource:
+                                KeywordActivitiesRemoteDataSourceImpl(
+                                  client: http.Client(),
+                                ),
+                          );
+                          return KeywordActivitiesBloc(
+                            getKeywordActivities: GetKeywordActivities(
+                              repository,
+                            ),
+                          )..add(FetchKeywordActivities(diseaseId: disease.id));
+                        },
+                      ),
+                    ],
+                    child: ActivitiesSuggestionList(diseaseId: disease.id),
                   ),
-                  "ul": Style(margin: Margins.only(bottom: 12)),
-                  "li": Style(
-                    fontSize: FontSize(14),
-                    lineHeight: const LineHeight(1.5),
-                    margin: Margins.only(bottom: 4),
-                    color: Colors.black87,
-                  ),
-                  "strong": Style(
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1976D2),
-                  ),
-                },
+                ],
               ),
-            ),
-            const SizedBox(height: 20),
-            Divider(height: 32, thickness: 1, color: Color(0xFFE0E0E0)),
-            _SectionTitle(index: 3, title: 'Hoạt động gợi ý'),
-            const SizedBox(height: 12),
-            MultiBlocProvider(
-              providers: [
-                BlocProvider(
-                  create: (_) {
-                    final repository = ActivitiesRepositoryImpl(
-                      remoteDataSource: ActivitiesRemoteDataSourceImpl(
-                        client: http.Client(),
-                      ),
-                    );
-                    return ActivitiesBloc(
-                      getActivitiesByMonth: GetActivitiesByMonth(repository),
-                      getActivitiesByDay: GetActivitiesByDay(repository),
-                      createActivity: CreateActivity(repository),
-                      updateActivity: UpdateActivity(repository),
-                      deleteActivity: DeleteActivity(repository),
-                    );
-                  },
-                ),
-                BlocProvider(
-                  create: (_) {
-                    final repository = KeywordActivityRepositoryImpl(
-                      remoteDataSource: KeywordActivitiesRemoteDataSourceImpl(
-                        client: http.Client(),
-                      ),
-                    );
-                    return KeywordActivitiesBloc(
-                      getKeywordActivities: GetKeywordActivities(repository),
-                    )..add(
-                      FetchKeywordActivities(
-                        diseaseId: '006c9e8c-2f71-4608-9134-6b9f3ff9c1e1',
-                      ),
-                    );
-                  },
-                ),
-              ],
-              child: const ActivitiesSuggestionList(),
-            ),
-          ],
-        ),
+            );
+          }
+          return const SizedBox.shrink();
+        },
       ),
     );
   }
@@ -199,7 +251,8 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _DiagnosisCard extends StatelessWidget {
-  const _DiagnosisCard();
+  final DiseaseModel disease;
+  const _DiagnosisCard({required this.disease});
 
   @override
   Widget build(BuildContext context) {
@@ -220,18 +273,33 @@ class _DiagnosisCard extends StatelessWidget {
         contentPadding: const EdgeInsets.all(12),
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Image.asset(
-            'assets/images/plants.jpg',
-            width: 56,
-            height: 56,
-            fit: BoxFit.cover,
-          ),
+          child: disease.imageLink.isNotEmpty
+              ? Image.network(
+                  disease.imageLink[0],
+                  width: 56,
+                  height: 56,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.network(
+                      'https://wallpapers.com/images/hd/banana-tree-pictures-fta1lapzcih69mdr.jpg',
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                    );
+                  },
+                )
+              : Image.asset(
+                  'assets/images/plants.jpg',
+                  width: 56,
+                  height: 56,
+                  fit: BoxFit.cover,
+                ),
         ),
-        title: const Text(
-          'Bệnh đốm nâu hại lúa',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          disease.name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: const Text('Nấm'),
+        subtitle: Text(disease.type),
         trailing: const Icon(
           Icons.chevron_right_rounded,
           color: Color(0xFF757575),

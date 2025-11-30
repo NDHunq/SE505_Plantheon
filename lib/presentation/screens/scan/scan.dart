@@ -132,7 +132,7 @@ class _ScanState extends State<Scan> {
                 ),
               ),
               child: DiseaseDescriptionScreen(
-                diseaseId: result.topPrediction!.label,
+                diseaseLabel: result.topPrediction!.label,
               ),
             ),
           ),
