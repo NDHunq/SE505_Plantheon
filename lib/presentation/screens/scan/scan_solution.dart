@@ -18,6 +18,7 @@ import 'package:se501_plantheon/presentation/screens/scan/activities_suggestion_
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_event.dart';
+import 'package:se501_plantheon/presentation/screens/scan/community_suggestion_widget.dart';
 
 // Đoạn HTML giải pháp khuyến nghị
 const String _solutionHtml = '''
@@ -34,7 +35,12 @@ const String _solutionHtml = '''
 ''';
 
 class ScanSolution extends StatelessWidget {
-  const ScanSolution({super.key});
+  final String diseaseId;
+
+  const ScanSolution({
+    super.key,
+    this.diseaseId = '021dc7d6-9b03-42d6-b792-a2168b4085f3',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -109,8 +115,9 @@ class ScanSolution extends StatelessWidget {
                 },
               ),
             ),
+
+            CommunitySuggestionWidget(diseaseId: diseaseId),
             const SizedBox(height: 20),
-            Divider(height: 32, thickness: 1, color: Color(0xFFE0E0E0)),
             _SectionTitle(index: 3, title: 'Hoạt động gợi ý'),
             const SizedBox(height: 12),
             MultiBlocProvider(
@@ -140,16 +147,16 @@ class ScanSolution extends StatelessWidget {
                     );
                     return KeywordActivitiesBloc(
                       getKeywordActivities: GetKeywordActivities(repository),
-                    )..add(
-                      FetchKeywordActivities(
-                        diseaseId: '006c9e8c-2f71-4608-9134-6b9f3ff9c1e1',
-                      ),
-                    );
+                    )..add(FetchKeywordActivities(diseaseId: diseaseId));
                   },
                 ),
               ],
               child: const ActivitiesSuggestionList(),
             ),
+
+            const SizedBox(height: 12),
+
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -273,55 +280,3 @@ class _ProductDropdownState extends State<_ProductDropdown> {
     );
   }
 }
-
-// class _ProductCard extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.only(top: 6.0, bottom: 6.0),
-//       child: Container(
-//         width: double.infinity,
-//         padding: const EdgeInsets.all(16),
-//         decoration: BoxDecoration(
-//           color: const Color(0xFFF8F9FA),
-//           borderRadius: BorderRadius.circular(16),
-//           border: Border.all(color: const Color(0xFFE0E0E0)),
-//         ),
-//         child: Row(
-//           children: [
-//             Container(
-//               padding: const EdgeInsets.all(8),
-//               decoration: BoxDecoration(
-//                 color: const Color(0xFFE3F2FD),
-//                 borderRadius: BorderRadius.circular(8),
-//               ),
-//               child: const Icon(
-//                 Icons.sanitizer_rounded,
-//                 color: Color(0xFF1976D2),
-//                 size: 32,
-//               ),
-//             ),
-//             const SizedBox(width: 16),
-//             Expanded(
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: const [
-//                   Text(
-//                     'Thuốc diệt nấm',
-//                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-//                   ),
-//                   SizedBox(height: 4),
-//                   Text(
-//                     'Edifenphos 50.0% EC',
-//                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             const Icon(Icons.chevron_right_rounded, color: Color(0xFF757575)),
-//           ],
-//         ],
-//       ),
-//     );
-//   }
-// }

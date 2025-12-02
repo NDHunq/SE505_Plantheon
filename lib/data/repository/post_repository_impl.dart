@@ -33,4 +33,19 @@ class PostRepositoryImpl implements PostRepository {
   Future<void> createComment(String postId, String content) async {
     await remoteDataSource.createComment(postId, content);
   }
+
+  @override
+  Future<void> createPost({
+    required String content,
+    required List<String> imageLink,
+    required List<String> tags,
+    String? diseaseLink,
+  }) async {
+    await remoteDataSource.createPost(
+      content: content,
+      imageLink: imageLink,
+      tags: tags,
+      diseaseLink: diseaseLink,
+    );
+  }
 }

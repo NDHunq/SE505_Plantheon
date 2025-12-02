@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:se501_plantheon/data/models/diseases.model.dart';
+import 'package:se501_plantheon/domain/entities/disease_entity.dart';
 import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_event.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_state.dart';
@@ -40,7 +41,7 @@ class DiseaseBloc extends Bloc<DiseaseEvent, DiseaseState> {
   }
 
   // Helper method to convert entity to model
-  DiseaseModel _mapEntityToModel(diseaseEntity) {
+  DiseaseModel _mapEntityToModel(DiseaseEntity diseaseEntity) {
     return DiseaseModel(
       id: diseaseEntity.id,
       name: diseaseEntity.name,

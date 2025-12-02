@@ -14,7 +14,7 @@ class PostRemoteDataSource {
 
     // Hardcoded token as requested by user
     final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDU1NjU3Mn0.cBVuJYVychyEwoP5w_TJwNo7R4jWMK52iDwU7vcqddQ';
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDY4MDY1Mn0.1JY9fN0s514BiC1OEuRlVJCIbJh9hlBvG9P5SbjQGMk';
 
     final response = await client.get(
       Uri.parse(url),
@@ -37,7 +37,7 @@ class PostRemoteDataSource {
     final url =
         '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts/$postId/like';
     final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDU1NjU3Mn0.cBVuJYVychyEwoP5w_TJwNo7R4jWMK52iDwU7vcqddQ';
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDY4MDY1Mn0.1JY9fN0s514BiC1OEuRlVJCIbJh9hlBvG9P5SbjQGMk';
 
     final response = await client.put(
       Uri.parse(url),
@@ -56,7 +56,7 @@ class PostRemoteDataSource {
     final url =
         '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts/$postId/unlike';
     final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDU1NjU3Mn0.cBVuJYVychyEwoP5w_TJwNo7R4jWMK52iDwU7vcqddQ';
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDY4MDY1Mn0.1JY9fN0s514BiC1OEuRlVJCIbJh9hlBvG9P5SbjQGMk';
 
     final response = await client.put(
       Uri.parse(url),
@@ -75,7 +75,7 @@ class PostRemoteDataSource {
     final url =
         '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts/$postId';
     final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDU1NjU3Mn0.cBVuJYVychyEwoP5w_TJwNo7R4jWMK52iDwU7vcqddQ';
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDY4MDY1Mn0.1JY9fN0s514BiC1OEuRlVJCIbJh9hlBvG9P5SbjQGMk';
 
     final response = await client.get(
       Uri.parse(url),
@@ -97,7 +97,7 @@ class PostRemoteDataSource {
     final url =
         '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts/$postId/comments';
     final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDU1NjU3Mn0.cBVuJYVychyEwoP5w_TJwNo7R4jWMK52iDwU7vcqddQ';
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDY4MDY1Mn0.1JY9fN0s514BiC1OEuRlVJCIbJh9hlBvG9P5SbjQGMk';
 
     final response = await client.post(
       Uri.parse(url),
@@ -110,6 +110,46 @@ class PostRemoteDataSource {
 
     if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Failed to create comment');
+    }
+  }
+
+  Future<void> createPost({
+    required String content,
+    required List<String> imageLink,
+    required List<String> tags,
+    String? diseaseLink,
+  }) async {
+    final url = '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts';
+    final token =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDY4MDY1Mn0.1JY9fN0s514BiC1OEuRlVJCIbJh9hlBvG9P5SbjQGMk';
+
+    final Map<String, dynamic> body = {
+      'content': content,
+      'image_link': imageLink,
+      'tags': tags,
+    };
+
+    if (diseaseLink != null) {
+      body['disease_link'] = diseaseLink;
+    }
+
+    final response = await client.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(body),
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      print(
+        'PostRemoteDataSource: Failed to create post. Status code: ${response.statusCode}',
+      );
+      print('PostRemoteDataSource: Response body: ${response.body}');
+      throw Exception(
+        'Failed to create post: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 }

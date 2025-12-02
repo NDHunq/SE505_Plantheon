@@ -35,7 +35,12 @@ class DiseaseModel {
       name: data['name'] as String? ?? '',
       type: data['type'] as String? ?? '',
       description: data['description'] as String? ?? '',
-      imageLink: (data['image_link'] as List?)?.cast<String>() ?? [],
+      imageLink:
+          (data['image_link'] as List?)
+              ?.map((e) => e?.toString() ?? '')
+              .where((e) => e.isNotEmpty)
+              .toList() ??
+          [],
       createdAt: data['created_at'] != null
           ? DateTime.parse(data['created_at'] as String)
           : DateTime.now(),

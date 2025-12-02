@@ -15,6 +15,20 @@ class ToggleLikeEvent extends CommunityEvent {
   ToggleLikeEvent(this.postId);
 }
 
+class CreatePostEvent extends CommunityEvent {
+  final String content;
+  final List<String> imageLink;
+  final List<String> tags;
+  final String? diseaseLink;
+
+  CreatePostEvent({
+    required this.content,
+    required this.imageLink,
+    required this.tags,
+    this.diseaseLink,
+  });
+}
+
 // States
 abstract class CommunityState {}
 
@@ -32,6 +46,8 @@ class CommunityError extends CommunityState {
   CommunityError(this.message);
 }
 
+class CommunityPostCreated extends CommunityState {}
+
 // BLoC
 class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
   final PostRepository postRepository;
@@ -39,6 +55,7 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
   CommunityBloc({required this.postRepository}) : super(CommunityInitial()) {
     on<FetchUserPosts>(_onFetchUserPosts);
     on<ToggleLikeEvent>(_onToggleLike);
+    on<CreatePostEvent>(_onCreatePost);
   }
 
   Future<void> _onFetchUserPosts(
@@ -101,6 +118,28 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
           emit(CommunityLoaded(posts));
         }
       }
+    }
+  }
+
+  Future<void> _onCreatePost(
+    CreatePostEvent event,
+    Emitter<CommunityState> emit,
+  ) async {
+    print('CommunityBloc: Received CreatePostEvent');
+    emit(CommunityLoading());
+    try {
+      print('CommunityBloc: Calling createPost API');
+      await postRepository.createPost(
+        content: event.content,
+        imageLink: event.imageLink,
+        tags: event.tags,
+        diseaseLink: event.diseaseLink,
+      );
+      print('CommunityBloc: Post created successfully');
+      emit(CommunityPostCreated());
+    } catch (e) {
+      print('CommunityBloc: Error creating post: $e');
+      emit(CommunityError(e.toString()));
     }
   }
 }
