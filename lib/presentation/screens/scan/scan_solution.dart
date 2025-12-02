@@ -14,33 +14,42 @@ import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_day.d
 import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_month.dart';
 import 'package:se501_plantheon/domain/usecases/activity/update_activity.dart';
 import 'package:se501_plantheon/domain/usecases/keyword_activity/get_keyword_activities.dart';
-import 'package:se501_plantheon/presentation/screens/scan/activities_suggestion_screen.dart';
+import 'package:se501_plantheon/presentation/screens/scan/activities_suggestion_section.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_event.dart';
 import 'package:se501_plantheon/presentation/screens/scan/community_suggestion_widget.dart';
 
-// Đoạn HTML giải pháp khuyến nghị
-const String _solutionHtml = '''
-<div style="font-family: Arial, sans-serif; line-height: 1.6;">
-  <h3>Giải pháp phòng trừ</h3>
-  <ul>
-    <li><strong>Biện pháp canh tác:</strong> Trồng với mật độ phù hợp, tưới nước vào gốc, vệ sinh đồng ruộng, loại bỏ lá bệnh.</li>
-    <li><strong>Biện pháp hóa học:</strong> Sử dụng thuốc diệt nấm như <b>Edifenphos 50.0% EC</b>, phun định kỳ 7-10 ngày/lần, luân phiên các loại thuốc để tránh kháng thuốc.</li>
-  </ul>
-  <p style="background-color: #FFF3CD; padding: 8px; border-radius: 8px; color: #856404;">
-    <b>⚠️ Lưu ý:</b> Chọn và áp dụng <b>CHỈ MỘT</b> sản phẩm cho cây trồng của bạn.
-  </p>
-</div>
-''';
+import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/disease/disease_event.dart';
+import 'package:se501_plantheon/presentation/bloc/disease/disease_state.dart';
+import 'package:se501_plantheon/data/models/diseases.model.dart';
+import 'package:se501_plantheon/presentation/screens/scan/diseaseDescription.dart';
+import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
+import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
+import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 
-class ScanSolution extends StatelessWidget {
-  final String diseaseId;
+class ScanSolution extends StatefulWidget {
+  final String diseaseLabel;
+  const ScanSolution({super.key, required this.diseaseLabel});
 
-  const ScanSolution({
-    super.key,
-    this.diseaseId = '021dc7d6-9b03-42d6-b792-a2168b4085f3',
-  });
+  @override
+  State<ScanSolution> createState() => _ScanSolutionState();
+}
+
+class _ScanSolutionState extends State<ScanSolution> {
+  @override
+  void initState() {
+    super.initState();
+    print(
+      '🚀 ScanSolution: initState called with diseaseLabel: ${widget.diseaseLabel}',
+    );
+    context.read<DiseaseBloc>().add(
+      GetDiseaseEvent(diseaseId: widget.diseaseLabel),
+    );
+    print('📤 ScanSolution: GetDiseaseEvent sent to BLoC');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,113 +61,146 @@ class ScanSolution extends StatelessWidget {
           SizedBox(width: 16),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 1. Diagnosis Result
-            _SectionTitle(
-              index: 1,
-              title: 'Kết quả chẩn đoán',
-              action: TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Thay đổi',
-                  style: TextStyle(
-                    color: Color(0xFF1976D2),
-                    fontWeight: FontWeight.w600,
+      body: BlocBuilder<DiseaseBloc, DiseaseState>(
+        builder: (context, state) {
+          if (state is DiseaseLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is DiseaseError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text('Lỗi: ${state.message}'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<DiseaseBloc>().add(
+                        GetDiseaseEvent(diseaseId: widget.diseaseLabel),
+                      );
+                    },
+                    child: const Text('Thử lại'),
                   ),
-                ),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            _DiagnosisCard(),
-            const SizedBox(height: 20),
-            Divider(height: 32, thickness: 1, color: Color(0xFFE0E0E0)),
-            // 2. Recommended Product
-            _SectionTitle(index: 2, title: 'Giải pháp khuyến nghị'),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(8),
-              child: Html(
-                data: _solutionHtml,
-                style: {
-                  "body": Style(
-                    margin: Margins.zero,
-                    padding: HtmlPaddings.zero,
+            );
+          } else if (state is DiseaseSuccess) {
+            final disease = state.disease;
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1. Diagnosis Result
+                  _SectionTitle(
+                    index: 1,
+                    title: 'Kết quả chẩn đoán',
+                    action: TextButton(
+                      onPressed: () {},
+                      child: const Text(
+                        'Thay đổi',
+                        style: TextStyle(
+                          color: Color(0xFF1976D2),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
-                  "h3": Style(
-                    color: Color(0xFF388E3C),
-                    fontSize: FontSize(16),
-                    fontWeight: FontWeight.w600,
-                    margin: Margins.only(top: 16, bottom: 8),
+                  const SizedBox(height: 8),
+                  _DiagnosisCard(disease: disease),
+                  const SizedBox(height: 20),
+                  Divider(height: 32, thickness: 1, color: Color(0xFFE0E0E0)),
+                  // 2. Recommended Product
+                  _SectionTitle(index: 2, title: 'Giải pháp khuyến nghị'),
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(8),
+                    child: Html(
+                      data: disease.solution,
+                      style: {
+                        "body": Style(
+                          margin: Margins.zero,
+                          padding: HtmlPaddings.zero,
+                        ),
+                        "h3": Style(
+                          color: Color(0xFF388E3C),
+                          fontSize: FontSize(16),
+                          fontWeight: FontWeight.w600,
+                          margin: Margins.only(top: 16, bottom: 8),
+                        ),
+                        "p": Style(
+                          fontSize: FontSize(14),
+                          lineHeight: const LineHeight(1.6),
+                          margin: Margins.only(bottom: 12),
+                          color: Colors.black87,
+                        ),
+                        "ul": Style(margin: Margins.only(bottom: 12)),
+                        "li": Style(
+                          fontSize: FontSize(14),
+                          lineHeight: const LineHeight(1.5),
+                          margin: Margins.only(bottom: 4),
+                          color: Colors.black87,
+                        ),
+                        "strong": Style(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1976D2),
+                        ),
+                      },
+                    ),
                   ),
-                  "p": Style(
-                    fontSize: FontSize(14),
-                    lineHeight: const LineHeight(1.6),
-                    margin: Margins.only(bottom: 12),
-                    color: Colors.black87,
+                  const SizedBox(height: 20),
+                  Divider(height: 32, thickness: 1, color: Color(0xFFE0E0E0)),
+                  CommunitySuggestionWidget(diseaseId: disease.className),
+                  const SizedBox(height: 20),
+                  _SectionTitle(index: 3, title: 'Hoạt động gợi ý'),
+                  const SizedBox(height: 12),
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (_) {
+                          final repository = ActivitiesRepositoryImpl(
+                            remoteDataSource: ActivitiesRemoteDataSourceImpl(
+                              client: http.Client(),
+                            ),
+                          );
+                          return ActivitiesBloc(
+                            getActivitiesByMonth: GetActivitiesByMonth(
+                              repository,
+                            ),
+                            getActivitiesByDay: GetActivitiesByDay(repository),
+                            createActivity: CreateActivity(repository),
+                            updateActivity: UpdateActivity(repository),
+                            deleteActivity: DeleteActivity(repository),
+                          );
+                        },
+                      ),
+                      BlocProvider(
+                        create: (_) {
+                          final repository = KeywordActivityRepositoryImpl(
+                            remoteDataSource:
+                                KeywordActivitiesRemoteDataSourceImpl(
+                                  client: http.Client(),
+                                ),
+                          );
+                          return KeywordActivitiesBloc(
+                            getKeywordActivities: GetKeywordActivities(
+                              repository,
+                            ),
+                          )..add(FetchKeywordActivities(diseaseId: disease.id));
+                        },
+                      ),
+                    ],
+                    child: ActivitiesSuggestionList(diseaseId: disease.id),
                   ),
-                  "ul": Style(margin: Margins.only(bottom: 12)),
-                  "li": Style(
-                    fontSize: FontSize(14),
-                    lineHeight: const LineHeight(1.5),
-                    margin: Margins.only(bottom: 4),
-                    color: Colors.black87,
-                  ),
-                  "strong": Style(
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1976D2),
-                  ),
-                },
+                  const SizedBox(height: 20),
+                ],
               ),
-            ),
-
-            CommunitySuggestionWidget(diseaseId: diseaseId),
-            const SizedBox(height: 20),
-            _SectionTitle(index: 3, title: 'Hoạt động gợi ý'),
-            const SizedBox(height: 12),
-            MultiBlocProvider(
-              providers: [
-                BlocProvider(
-                  create: (_) {
-                    final repository = ActivitiesRepositoryImpl(
-                      remoteDataSource: ActivitiesRemoteDataSourceImpl(
-                        client: http.Client(),
-                      ),
-                    );
-                    return ActivitiesBloc(
-                      getActivitiesByMonth: GetActivitiesByMonth(repository),
-                      getActivitiesByDay: GetActivitiesByDay(repository),
-                      createActivity: CreateActivity(repository),
-                      updateActivity: UpdateActivity(repository),
-                      deleteActivity: DeleteActivity(repository),
-                    );
-                  },
-                ),
-                BlocProvider(
-                  create: (_) {
-                    final repository = KeywordActivityRepositoryImpl(
-                      remoteDataSource: KeywordActivitiesRemoteDataSourceImpl(
-                        client: http.Client(),
-                      ),
-                    );
-                    return KeywordActivitiesBloc(
-                      getKeywordActivities: GetKeywordActivities(repository),
-                    )..add(FetchKeywordActivities(diseaseId: diseaseId));
-                  },
-                ),
-              ],
-              child: const ActivitiesSuggestionList(),
-            ),
-
-            const SizedBox(height: 12),
-
-            const SizedBox(height: 20),
-          ],
-        ),
+            );
+          }
+          return const SizedBox.shrink();
+        },
       ),
     );
   }
@@ -205,44 +247,144 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _DiagnosisCard extends StatelessWidget {
-  const _DiagnosisCard();
+  final DiseaseModel disease;
+  const _DiagnosisCard({required this.disease});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+    return InkWell(
+      onTap: () {
+        print(
+          '🚀 DiagnosisCard: Tapped on disease card with label: ${disease.id}',
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BlocProvider<DiseaseBloc>(
+              create: (context) => DiseaseBloc(
+                getDisease: GetDisease(
+                  repository: DiseaseRepositoryImpl(
+                    remoteDataSource: DiseaseRemoteDataSourceImpl(
+                      client: http.Client(),
+                      baseUrl: ApiConstants.diseaseApiUrl,
+                    ),
+                  ),
+                ),
+              ),
+              child: DiseaseDescriptionScreen(
+                diseaseLabel: disease.className,
+                isPreview: true,
+              ),
+            ),
           ),
-        ],
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.asset(
-            'assets/images/plants.jpg',
-            width: 56,
-            height: 56,
-            fit: BoxFit.cover,
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE0E0E0)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: InkWell(
+          onTap: () {
+            print(
+              '🚀 DiagnosisCard: Tapped on disease card with label: ${disease.id}',
+            );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BlocProvider<DiseaseBloc>(
+                  create: (context) => DiseaseBloc(
+                    getDisease: GetDisease(
+                      repository: DiseaseRepositoryImpl(
+                        remoteDataSource: DiseaseRemoteDataSourceImpl(
+                          client: http.Client(),
+                          baseUrl: ApiConstants.diseaseApiUrl,
+                        ),
+                      ),
+                    ),
+                  ),
+                  child: DiseaseDescriptionScreen(
+                    diseaseLabel: disease.className,
+                    isPreview: true,
+                  ),
+                ),
+              ),
+            );
+          },
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(12),
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: disease.imageLink.isNotEmpty
+                  ? Image.network(
+                      disease.imageLink[0],
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.network(
+                          'https://wallpapers.com/images/hd/banana-tree-pictures-fta1lapzcih69mdr.jpg',
+                          width: 56,
+                          height: 56,
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    )
+                  : Image.asset(
+                      'assets/images/plants.jpg',
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                    ),
+            ),
+            title: Text(
+              disease.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(disease.type),
+            trailing: InkWell(
+              onTap: () {
+                print(
+                  '🚀 DiagnosisCard: Tapped on disease card with label: ${disease.id}',
+                );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider<DiseaseBloc>(
+                      create: (context) => DiseaseBloc(
+                        getDisease: GetDisease(
+                          repository: DiseaseRepositoryImpl(
+                            remoteDataSource: DiseaseRemoteDataSourceImpl(
+                              client: http.Client(),
+                              baseUrl: ApiConstants.diseaseApiUrl,
+                            ),
+                          ),
+                        ),
+                      ),
+                      child: DiseaseDescriptionScreen(
+                        diseaseLabel: disease.className,
+                        isPreview: true,
+                      ),
+                    ),
+                  ),
+                );
+              },
+              child: const Icon(
+                Icons.chevron_right_rounded,
+                color: Color(0xFF757575),
+              ),
+            ),
+            onTap: () {},
           ),
         ),
-        title: const Text(
-          'Bệnh đốm nâu hại lúa',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: const Text('Nấm'),
-        trailing: const Icon(
-          Icons.chevron_right_rounded,
-          color: Color(0xFF757575),
-        ),
-        onTap: () {},
       ),
     );
   }
