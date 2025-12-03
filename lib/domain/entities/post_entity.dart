@@ -7,6 +7,12 @@ class PostEntity {
   final String avatar;
   final String content;
   final List<String>? imageLink;
+  final String? diseaseLink;
+  final String? diseaseName;
+  final String? diseaseDescription;
+  final String? diseaseSolution;
+  final String? diseaseImageLink;
+  final String? scanHistoryId;
   final List<String> tags;
   final int likeNumber;
   final bool liked;
@@ -23,6 +29,12 @@ class PostEntity {
     required this.avatar,
     required this.content,
     this.imageLink,
+    this.diseaseLink,
+    this.diseaseName,
+    this.diseaseDescription,
+    this.diseaseSolution,
+    this.diseaseImageLink,
+    this.scanHistoryId,
     required this.tags,
     required this.likeNumber,
     required this.liked,

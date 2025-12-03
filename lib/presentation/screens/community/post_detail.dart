@@ -10,6 +10,7 @@ import 'package:se501_plantheon/data/repository/post_repository_impl.dart';
 import 'package:se501_plantheon/domain/entities/comment_entity.dart';
 import 'package:se501_plantheon/presentation/bloc/post_detail/post_detail_bloc.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/acction_button.dart';
+import 'package:se501_plantheon/presentation/screens/community/widgets/disease_block_widget.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/report_button.dart';
 import 'package:http/http.dart' as http;
 
@@ -163,6 +164,16 @@ class _PostDetailViewState extends State<PostDetailView> {
                           },
                         ),
                       ),
+                    // Disease block
+                    DiseaseBlockWidget(
+                      diseaseLink: post.diseaseLink,
+                      diseaseName: post.diseaseName,
+                      diseaseDescription: post.diseaseDescription,
+                      diseaseSolution: post.diseaseSolution,
+                      diseaseImageLink: post.diseaseImageLink,
+                      scanHistoryId: post.scanHistoryId,
+                      postImageLinks: post.imageLink,
+                    ),
                     Row(
                       children: [
                         SvgPicture.asset(

@@ -8,6 +8,12 @@ class PostModel {
   final String avatar;
   final String content;
   final List<String>? imageLink;
+  final String? diseaseLink;
+  final String? diseaseName;
+  final String? diseaseDescription;
+  final String? diseaseSolution;
+  final String? diseaseImageLink;
+  final String? scanHistoryId;
   final List<String> tags;
   final int likeNumber;
   final bool liked;
@@ -24,6 +30,12 @@ class PostModel {
     required this.avatar,
     required this.content,
     this.imageLink,
+    this.diseaseLink,
+    this.diseaseName,
+    this.diseaseDescription,
+    this.diseaseSolution,
+    this.diseaseImageLink,
+    this.scanHistoryId,
     required this.tags,
     required this.likeNumber,
     required this.liked,
@@ -44,6 +56,12 @@ class PostModel {
       imageLink: (json['image_link'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      diseaseLink: json['disease_link'] as String?,
+      diseaseName: json['disease_name'] as String?,
+      diseaseDescription: json['disease_description'] as String?,
+      diseaseSolution: json['disease_solution'] as String?,
+      diseaseImageLink: json['disease_image_link'] as String?,
+      scanHistoryId: json['scan_history_id'] as String?,
       tags:
           (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
           [],
@@ -67,6 +85,12 @@ class PostModel {
       avatar: avatar,
       content: content,
       imageLink: imageLink,
+      diseaseLink: diseaseLink,
+      diseaseName: diseaseName,
+      diseaseDescription: diseaseDescription,
+      diseaseSolution: diseaseSolution,
+      diseaseImageLink: diseaseImageLink,
+      scanHistoryId: scanHistoryId,
       tags: tags,
       likeNumber: likeNumber,
       liked: liked,

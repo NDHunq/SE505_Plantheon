@@ -65,7 +65,8 @@ class MainApp extends StatelessWidget {
                 ),
               ),
             ),
-            child: const ScanSolution(diseaseLabel: 'Sugarcane_Healthy_Leaves'),
+            // child: const ScanSolution(diseaseLabel: 'Sugarcane_Healthy_Leaves'),
+            child: const SignInPage(),
           ),
           debugShowCheckedModeBanner: false,
         );

@@ -15,6 +15,7 @@ import 'package:se501_plantheon/data/datasources/post_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/post_repository_impl.dart';
 import 'package:se501_plantheon/presentation/bloc/community/community_bloc.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/create_post_modal.dart';
+import 'package:se501_plantheon/presentation/screens/community/widgets/disease_block_widget.dart';
 
 class Community extends StatefulWidget {
   const Community({super.key});
@@ -160,6 +161,12 @@ class _CommunityState extends State<Community> {
                             ? post.avatar
                             : 'https://via.placeholder.com/400x300',
                         imageLink: post.imageLink,
+                        diseaseLink: post.diseaseLink,
+                        diseaseName: post.diseaseName,
+                        diseaseDescription: post.diseaseDescription,
+                        diseaseSolution: post.diseaseSolution,
+                        diseaseImageLink: post.diseaseImageLink,
+                        scanHistoryId: post.scanHistoryId,
                         likes: post.likeNumber,
                         isLiked: post.liked,
                         comments: post.commentNumber,
@@ -200,6 +207,12 @@ class _CommunityState extends State<Community> {
     required String category,
     required String imageUrl, // Avatar
     required List<String>? imageLink, // Post images
+    String? diseaseLink,
+    String? diseaseName,
+    String? diseaseDescription,
+    String? diseaseSolution,
+    String? diseaseImageLink,
+    String? scanHistoryId,
     required int likes,
     required bool isLiked,
     required int comments,
@@ -286,6 +299,17 @@ class _CommunityState extends State<Community> {
                   },
                 ),
               ),
+            SizedBox(height: 8.sp),
+            // Disease block
+            DiseaseBlockWidget(
+              diseaseLink: diseaseLink,
+              diseaseName: diseaseName,
+              diseaseDescription: diseaseDescription,
+              diseaseSolution: diseaseSolution,
+              diseaseImageLink: diseaseImageLink,
+              scanHistoryId: scanHistoryId,
+              postImageLinks: imageLink,
+            ),
             SizedBox(height: 8.sp),
             Row(
               children: [
