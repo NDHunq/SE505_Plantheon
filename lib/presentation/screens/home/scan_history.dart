@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
@@ -85,7 +86,7 @@ class _ScanHistoryContent extends StatelessWidget {
       body: BlocBuilder<ScanHistoryBloc, ScanHistoryState>(
         builder: (context, state) {
           if (state is ScanHistoryLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: LoadingIndicator());
           } else if (state is ScanHistoryError) {
             return Center(
               child: Column(

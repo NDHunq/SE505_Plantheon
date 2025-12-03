@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
@@ -15,6 +19,7 @@ import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_event.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_state.dart';
 import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
+import 'package:se501_plantheon/presentation/screens/scan/image_comparison_screen.dart';
 import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
@@ -24,12 +29,14 @@ class DiseaseDescriptionScreen extends StatefulWidget {
   final String diseaseLabel;
   final bool isPreview;
   final List<String>? otherdiseaseLabels;
+  final File? myImage;
 
   const DiseaseDescriptionScreen({
     super.key,
     required this.diseaseLabel,
     this.isPreview = false,
     this.otherdiseaseLabels,
+    this.myImage,
   });
 
   @override
@@ -38,7 +45,8 @@ class DiseaseDescriptionScreen extends StatefulWidget {
 }
 
 class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
-  final PageController _pageController = PageController();
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
   int _currentImageIndex = 0;
 
   @override
@@ -55,7 +63,6 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
 
   @override
   void dispose() {
-    _pageController.dispose();
     super.dispose();
   }
 
@@ -95,7 +102,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
           print('🔄 UI: BlocBuilder rebuild with state: ${state.runtimeType}');
           if (state is DiseaseLoading) {
             print('⏳ UI: Showing loading state');
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: LoadingIndicator());
           } else if (state is DiseaseError) {
             print('❌ UI: Showing error state: ${state.message}');
             return Center(
@@ -328,47 +335,84 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 8.sp),
-        SizedBox(
-          height: 200.sp,
-          child: PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) {
+        CarouselSlider.builder(
+          carouselController: _carouselController,
+          itemCount: disease.imageLink.length,
+          itemBuilder: (context, index, realIndex) {
+            return Stack(
+              children: [
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 2.sp),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      disease.imageLink[index],
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.network(
+                          'https://wallpapers.com/images/hd/banana-tree-pictures-fta1lapzcih69mdr.jpg',
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 12.sp,
+                  right: 20.sp,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ImageComparisonScreen(
+                            myImage: widget.myImage,
+                            diseaseImageUrls: disease.imageLink,
+                            initialIndex: index,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.3),
+                        shape: BoxShape.circle,
+                      ),
+                      padding: EdgeInsets.all(8.sp),
+                      child: Icon(
+                        Icons.ads_click_rounded,
+                        color: AppColors.white,
+                        size: 26.sp,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+          options: CarouselOptions(
+            height: 200.sp,
+            viewportFraction: 0.8,
+            enlargeCenterPage: true,
+            enlargeFactor: 0.2,
+            autoPlay: true,
+            autoPlayCurve: Curves.fastOutSlowIn,
+            onPageChanged: (index, reason) {
               setState(() {
                 _currentImageIndex = index;
               });
-            },
-            itemCount: disease.imageLink.length,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: EdgeInsets.symmetric(
-                  horizontal: AppConstraints.mainPadding.sp,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    disease.imageLink[index],
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.network(
-                        'https://wallpapers.com/images/hd/banana-tree-pictures-fta1lapzcih69mdr.jpg',
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                      );
-                    },
-                  ),
-                ),
-              );
             },
           ),
         ),

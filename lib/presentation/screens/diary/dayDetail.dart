@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_day.dart';
@@ -944,9 +945,7 @@ extension DayDetailExtension on _DayDetailScreenState {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary_600),
-        );
+        return const Center(child: LoadingIndicator());
       },
     );
 
@@ -980,9 +979,7 @@ extension DayDetailExtension on _DayDetailScreenState {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return const Center(
-          child: CircularProgressIndicator(color: AppColors.primary_600),
-        );
+        return const Center(child: LoadingIndicator());
       },
     );
 

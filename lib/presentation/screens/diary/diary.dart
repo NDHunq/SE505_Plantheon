@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/common/widgets/topnavigation/navigation.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/presentation/screens/diary/month.dart';
@@ -343,13 +344,7 @@ class _DiaryState extends State<Diary> {
               child: const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                      strokeWidth: 3,
-                    ),
-                    SizedBox(height: 16),
-                  ],
+                  children: [LoadingIndicator(), SizedBox(height: 16)],
                 ),
               ),
             ),

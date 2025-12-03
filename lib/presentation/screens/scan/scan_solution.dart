@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
 import 'package:se501_plantheon/data/datasources/keyword_activities_remote_datasource.dart';
@@ -64,7 +65,7 @@ class _ScanSolutionState extends State<ScanSolution> {
       body: BlocBuilder<DiseaseBloc, DiseaseState>(
         builder: (context, state) {
           if (state is DiseaseLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: LoadingIndicator());
           } else if (state is DiseaseError) {
             return Center(
               child: Column(

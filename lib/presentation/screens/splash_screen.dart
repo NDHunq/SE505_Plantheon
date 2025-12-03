@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/presentation/screens/diary/diary.dart';
 
 /// Splash Screen với loading indicator
@@ -185,12 +186,7 @@ class _SplashScreenState extends State<SplashScreen>
                             width: 3,
                           ),
                         ),
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white.withOpacity(0.8),
-                          ),
-                        ),
+                        child: LoadingIndicator(),
                       ),
                     );
                   },
@@ -335,11 +331,7 @@ class _SimpleSplashScreenState extends State<SimpleSplashScreen>
                     const SizedBox(height: 40),
 
                     // Loading indicator
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.white.withOpacity(0.8),
-                      ),
-                    ),
+                    LoadingIndicator(),
                   ],
                 );
               },

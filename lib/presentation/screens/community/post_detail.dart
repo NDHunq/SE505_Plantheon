@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
@@ -130,7 +131,7 @@ class _PostDetailViewState extends State<PostDetailView> {
       body: BlocBuilder<PostDetailBloc, PostDetailState>(
         builder: (context, state) {
           if (state is PostDetailLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: LoadingIndicator());
           } else if (state is PostDetailError) {
             return Center(child: Text(state.message));
           } else if (state is PostDetailLoaded) {

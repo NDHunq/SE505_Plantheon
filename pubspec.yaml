@@ -31,7 +31,7 @@ dependencies:
   firebase_analytics: ^11.3.3
   flutter_local_notifications: ^18.0.1
   flutter_dotenv: ^5.1.0
-
+  carousel_slider: ^5.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -42,4 +42,6 @@ flutter:
   assets:
     - assets/images/
     - assets/vectors/
+    - assets/gif/
     - .env
+

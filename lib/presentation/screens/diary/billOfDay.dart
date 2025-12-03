@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/task.dart';
@@ -95,13 +96,13 @@ class _BillOfDayState extends State<BillOfDay> {
       bloc: _financialBloc,
       builder: (context, state) {
         if (state is MonthlyFinancialLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: LoadingIndicator());
         } else if (state is FinancialError) {
           return Center(child: Text('Lỗi: ${state.message}'));
         } else if (state is MonthlyFinancialLoaded) {
           return _buildContent(state.data);
         }
-        return const Center(child: CircularProgressIndicator());
+        return const Center(child: LoadingIndicator());
       },
     );
   }
