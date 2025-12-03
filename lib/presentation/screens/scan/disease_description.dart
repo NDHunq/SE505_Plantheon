@@ -145,8 +145,8 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                             color: Colors.white,
 
                             borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(16.sp),
-                              topRight: Radius.circular(16.sp),
+                              topLeft: Radius.circular(24.sp),
+                              topRight: Radius.circular(24.sp),
                             ),
                           ),
                           child: Column(
