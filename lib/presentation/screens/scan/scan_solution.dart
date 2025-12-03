@@ -22,7 +22,7 @@ import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_event.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_state.dart';
 import 'package:se501_plantheon/data/models/diseases.model.dart';
-import 'package:se501_plantheon/presentation/screens/scan/diseaseDescription.dart';
+import 'package:se501_plantheon/presentation/screens/scan/disease_description.dart';
 import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
@@ -53,7 +53,7 @@ class _ScanSolutionState extends State<ScanSolution> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const BasicAppbar(
-        title: 'Scan Solution',
+        title: 'Kết quả quét bệnh',
         actions: [
           Icon(Icons.share_rounded, color: AppColors.primary_main),
           SizedBox(width: 16),

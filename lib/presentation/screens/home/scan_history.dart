@@ -15,7 +15,7 @@ import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_event.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_state.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/history_card.dart';
-import 'package:se501_plantheon/presentation/screens/scan/diseaseDescription.dart';
+import 'package:se501_plantheon/presentation/screens/scan/disease_description.dart';
 
 class ScanHistory extends StatelessWidget {
   const ScanHistory({super.key});
