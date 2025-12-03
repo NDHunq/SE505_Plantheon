@@ -115,7 +115,6 @@ class _ScanState extends State<Scan> {
 
       print('✅ Phân tích thành công: ${result.topPrediction?.label}');
 
-      // Hiển thị gif magnify.gif trong 2 giây trước khi chuyển trang
       if (mounted && result.topPrediction != null) {
         showDialog(
           context: context,

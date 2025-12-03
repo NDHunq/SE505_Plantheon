@@ -18,6 +18,10 @@ import 'package:se501_plantheon/data/models/diseases.model.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_event.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_state.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_event.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_state.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_provider.dart';
 import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
 import 'package:se501_plantheon/presentation/screens/scan/image_comparison_screen.dart';
 import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart';
@@ -132,6 +136,8 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
             print(
               '✅ UI: Showing success state with disease: ${state.disease.name}',
             );
+            final disease =
+                state.disease; // Capture disease for use in nested builders
             return Column(
               children: [
                 Expanded(
@@ -197,35 +203,36 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                 ),
                 widget.isPreview
                     ? const SizedBox.shrink()
-                    : Column(
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.only(
-                              left: 16.sp,
-                              right: 16.sp,
-                              top: 16.sp,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, -2),
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                print(
-                                  '➡️ Navigating to ScanSolution with diseaseLabel: ${widget.diseaseLabel}',
-                                );
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        BlocProvider<DiseaseBloc>(
+                    : ScanHistoryProvider(
+                        child: Column(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.only(
+                                left: 16.sp,
+                                right: 16.sp,
+                                top: 16.sp,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, -2),
+                                  ),
+                                ],
+                              ),
+                              child: BlocConsumer<ScanHistoryBloc, ScanHistoryState>(
+                                listener: (context, state) {
+                                  if (state is CreateScanHistorySuccess) {
+                                    print(
+                                      '✅ UI: Scan history created successfully, navigating to ScanSolution',
+                                    );
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => BlocProvider<DiseaseBloc>(
                                           create: (context) => DiseaseBloc(
                                             getDisease: GetDisease(
                                               repository: DiseaseRepositoryImpl(
@@ -242,56 +249,103 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                             diseaseLabel: widget.diseaseLabel,
                                           ),
                                         ),
+                                      ),
+                                    );
+                                  } else if (state is ScanHistoryError) {
+                                    print(
+                                      '❌ UI: Error creating scan history: ${state.message}',
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Lỗi: ${state.message}'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                },
+                                builder: (context, state) {
+                                  final isLoading = state is ScanHistoryLoading;
+                                  return ElevatedButton(
+                                    onPressed: isLoading
+                                        ? null
+                                        : () {
+                                            print(
+                                              '🔘 UI: Confirm button pressed, creating scan history for disease: ${disease.id}',
+                                            );
+                                            context.read<ScanHistoryBloc>().add(
+                                              CreateScanHistoryEvent(
+                                                diseaseId: disease.id,
+                                              ),
+                                            );
+                                          },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primary_main,
+                                      foregroundColor: Colors.white,
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 16.sp,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          12.sp,
+                                        ),
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                    child: isLoading
+                                        ? SizedBox(
+                                            height: 20.sp,
+                                            width: 20.sp,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                    Colors.white,
+                                                  ),
+                                            ),
+                                          )
+                                        : Text(
+                                            'Xác nhận & Xem điều trị',
+                                            style: AppTextStyles.s16SemiBold(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                  );
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(16.sp),
+                              decoration: BoxDecoration(color: Colors.white),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // TODO: Handle button press
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.white,
+                                  foregroundColor: AppColors.primary_main,
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 16.sp,
                                   ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary_main,
-                                foregroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(vertical: 16.sp),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.sp),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.sp),
+                                  ),
+                                  side: BorderSide(
+                                    color: AppColors.primary_main,
+                                    width: 1,
+                                  ),
+                                  elevation: 0,
                                 ),
-                                elevation: 0,
-                              ),
-                              child: Text(
-                                'Xác nhận & Xem điều trị',
-                                style: AppTextStyles.s16SemiBold(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.all(16.sp),
-                            decoration: BoxDecoration(color: Colors.white),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // TODO: Handle button press
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.white,
-                                foregroundColor: AppColors.primary_main,
-                                padding: EdgeInsets.symmetric(vertical: 16.sp),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.sp),
-                                ),
-                                side: BorderSide(
-                                  color: AppColors.primary_main,
-                                  width: 1,
-                                ),
-                                elevation: 0,
-                              ),
-                              child: Text(
-                                'Xem các chẩn đoán tương tự',
-                                style: AppTextStyles.s16SemiBold(
-                                  color: AppColors.primary_main,
+                                child: Text(
+                                  'Xem các chẩn đoán tương tự',
+                                  style: AppTextStyles.s16SemiBold(
+                                    color: AppColors.primary_main,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
               ],
             );

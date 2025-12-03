@@ -76,3 +76,28 @@ class GetAllScanHistoryResponseModel {
     };
   }
 }
+
+class CreateScanHistoryRequestModel {
+  final String diseaseId;
+
+  CreateScanHistoryRequestModel({required this.diseaseId});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'disease_id': diseaseId,
+    };
+  }
+}
+
+class CreateScanHistoryResponseModel {
+  final ScanHistoryModel scanHistory;
+
+  CreateScanHistoryResponseModel({required this.scanHistory});
+
+  factory CreateScanHistoryResponseModel.fromJson(Map<String, dynamic> json) {
+    final data = json['data'] as Map<String, dynamic>;
+    return CreateScanHistoryResponseModel(
+      scanHistory: ScanHistoryModel.fromJson(data),
+    );
+  }
+}

@@ -21,6 +21,18 @@ class ScanHistoryRepositoryImpl implements ScanHistoryRepository {
     return entities;
   }
 
+  @override
+  Future<ScanHistoryEntity> createScanHistory(String diseaseId) async {
+    print('🏛️ Repository: Creating scan history for disease: $diseaseId');
+    final ScanHistoryModel model =
+        await remoteDataSource.createScanHistory(diseaseId);
+    print('📦 Repository: Received scan history model with id: ${model.id}');
+
+    final entity = _mapModelToEntity(model);
+    print('🔄 Repository: Mapped to entity');
+    return entity;
+  }
+
   ScanHistoryEntity _mapModelToEntity(ScanHistoryModel model) {
     return ScanHistoryEntity(
       id: model.id,

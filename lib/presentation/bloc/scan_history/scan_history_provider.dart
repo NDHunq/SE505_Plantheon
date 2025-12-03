@@ -5,6 +5,7 @@ import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 import 'package:se501_plantheon/data/datasources/scan_history_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/scan_history_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/scan_history/get_all_scan_history.dart';
+import 'package:se501_plantheon/domain/usecases/scan_history/create_scan_history.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc.dart';
 
 class ScanHistoryProvider extends StatelessWidget {
@@ -36,6 +37,9 @@ class ScanHistoryProvider extends StatelessWidget {
       child: BlocProvider<ScanHistoryBloc>(
         create: (context) => ScanHistoryBloc(
           getAllScanHistory: GetAllScanHistory(
+            repository: context.read<ScanHistoryRepositoryImpl>(),
+          ),
+          createScanHistory: CreateScanHistory(
             repository: context.read<ScanHistoryRepositoryImpl>(),
           ),
         ),

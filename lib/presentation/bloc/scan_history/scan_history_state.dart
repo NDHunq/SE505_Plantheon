@@ -17,3 +17,9 @@ class ScanHistoryError extends ScanHistoryState {
 
   ScanHistoryError({required this.message});
 }
+
+class CreateScanHistorySuccess extends ScanHistoryState {
+  final ScanHistoryEntity scanHistory;
+
+  CreateScanHistorySuccess({required this.scanHistory});
+}

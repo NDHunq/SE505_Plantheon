@@ -12,6 +12,7 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/data/datasources/scan_history_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/scan_history_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/scan_history/get_all_scan_history.dart';
+import 'package:se501_plantheon/domain/usecases/scan_history/create_scan_history.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_event.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_state.dart';
@@ -33,6 +34,7 @@ class ScanHistory extends StatelessWidget {
         );
         return ScanHistoryBloc(
           getAllScanHistory: GetAllScanHistory(repository: repository),
+          createScanHistory: CreateScanHistory(repository: repository),
         )..add(GetAllScanHistoryEvent());
       },
       child: const _ScanHistoryContent(),

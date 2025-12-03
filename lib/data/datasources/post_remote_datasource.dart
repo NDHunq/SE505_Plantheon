@@ -14,7 +14,7 @@ class PostRemoteDataSource {
 
     // Hardcoded token as requested by user
     final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDgxMDI2OX0.uKWgpplZKzEKgi6cRbC8ugAOYW6PERczbeldooto3aM';
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc1ODQzNjg4MH0.AXf8UyN6ODcYV68n3XBP3EnD-8WzSDqzklsUnYqBfwE';
 
     final response = await client.get(
       Uri.parse(url),
