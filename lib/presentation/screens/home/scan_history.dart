@@ -22,6 +22,7 @@ import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_stat
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_provider.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/history_card.dart';
 import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
+import 'package:toastification/toastification.dart';
 
 class ScanHistory extends StatelessWidget {
   const ScanHistory({super.key});
@@ -68,10 +69,14 @@ class _ScanHistoryContent extends StatelessWidget {
                       context: context,
                       builder: (context) => BasicDialog(
                         title: "Xóa lịch sử quét bệnh",
+                        confirmText: 'Xóa',
+                        cancelText: 'Hủy',
                         content:
                             "Bạn có chắc chắn muốn xóa tất cả lịch sử quét bệnh?",
                         onConfirm: () {
-                          // TODO: Implement delete all scan history
+                          context.read<ScanHistoryBloc>().add(
+                            DeleteAllScanHistoryEvent(),
+                          );
                           Navigator.of(context).pop();
                         },
                         onCancel: () {
@@ -92,105 +97,165 @@ class _ScanHistoryContent extends StatelessWidget {
           ),
         ],
       ),
-      body: BlocBuilder<ScanHistoryBloc, ScanHistoryState>(
-        builder: (context, state) {
-          if (state is ScanHistoryLoading) {
-            return const Center(child: LoadingIndicator());
-          } else if (state is ScanHistoryError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Lỗi: ${state.message}',
-                    style: TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<ScanHistoryBloc>().add(
-                        GetAllScanHistoryEvent(),
-                      );
-                    },
-                    child: const Text('Thử lại'),
-                  ),
-                ],
-              ),
+      body: BlocListener<ScanHistoryBloc, ScanHistoryState>(
+        listener: (context, state) {
+          if (state is DeleteScanHistoryByIdSuccess) {
+            print('✅ UI: Scan history deleted successfully, refreshing list');
+            context.read<ScanHistoryBloc>().add(GetAllScanHistoryEvent());
+          } else if (state is DeleteAllScanHistorySuccess) {
+            print(
+              '✅ UI: All scan history deleted successfully, refreshing list',
             );
-          } else if (state is ScanHistorySuccess) {
-            if (state.scanHistories.isEmpty) {
+            context.read<ScanHistoryBloc>().add(GetAllScanHistoryEvent());
+          }
+        },
+        child: BlocBuilder<ScanHistoryBloc, ScanHistoryState>(
+          builder: (context, state) {
+            if (state is ScanHistoryLoading) {
+              return const Center(child: LoadingIndicator());
+            } else if (state is ScanHistoryError) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.history, size: 64, color: Colors.grey),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.red,
+                    ),
                     const SizedBox(height: 16),
                     Text(
-                      'Chưa có lịch sử quét bệnh',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      'Lỗi: ${state.message}',
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<ScanHistoryBloc>().add(
+                          GetAllScanHistoryEvent(),
+                        );
+                      },
+                      child: const Text('Thử lại'),
                     ),
                   ],
                 ),
               );
-            }
+            } else if (state is ScanHistorySuccess) {
+              if (state.scanHistories.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.history, size: 64, color: Colors.grey),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Chưa có lịch sử quét bệnh',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                );
+              }
 
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.sp),
-              child: ListView.separated(
-                itemCount: state.scanHistories.length,
-                separatorBuilder: (context, index) => Divider(
-                  height: 16.sp,
-                  color: AppColors.text_color_100,
-                  thickness: 1.sp,
-                ),
-                itemBuilder: (context, index) {
-                  final scanHistory = state.scanHistories[index];
-                  final disease = scanHistory.disease;
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                child: ListView.separated(
+                  itemCount: state.scanHistories.length,
+                  separatorBuilder: (context, index) => Divider(
+                    height: 16.sp,
+                    color: AppColors.text_color_100,
+                    thickness: 1.sp,
+                  ),
+                  itemBuilder: (context, index) {
+                    final scanHistory = state.scanHistories[index];
+                    final disease = scanHistory.disease;
 
-                  return Dismissible(
-                    key: ValueKey(scanHistory.id),
-                    direction: DismissDirection.endToStart,
-                    background: Container(
-                      alignment: Alignment.centerRight,
-                      color: Colors.red,
-                      padding: EdgeInsets.symmetric(horizontal: 20.sp),
-                      child: const Icon(Icons.delete, color: Colors.white),
-                    ),
-                    onDismissed: (direction) {
-                      // TODO: Implement delete single scan history
-                    },
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ScanHistoryProvider(
-                              child: ScanSolution(
-                                scanHistoryId: scanHistory.id,
-                              ),
-                            ),
-                          ),
+                    return Dismissible(
+                      key: Key(scanHistory.id),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: EdgeInsets.only(right: 20.sp),
+                        color: Colors.red,
+                        child: Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                          size: 32.sp,
+                        ),
+                      ),
+                      confirmDismiss: (direction) async {
+                        bool? shouldDelete = false;
+                        await showDialog(
+                          context: context,
+                          builder: (BuildContext dialogContext) {
+                            return BasicDialog(
+                              title: 'Xác nhận xóa',
+                              content:
+                                  'Bạn có chắc chắn muốn xóa "${disease.name}"?',
+                              confirmText: 'Xóa',
+                              cancelText: 'Hủy',
+                              onConfirm: () {
+                                shouldDelete = true;
+                                Navigator.of(dialogContext).pop();
+                              },
+                              onCancel: () {
+                                shouldDelete = false;
+                                Navigator.of(dialogContext).pop();
+                              },
+                            );
+                          },
+                        );
+                        return shouldDelete;
+                      },
+                      onDismissed: (direction) {
+                        print(
+                          '🗑️ UI: Deleting scan history with id: ${scanHistory.id}',
+                        );
+                        context.read<ScanHistoryBloc>().add(
+                          DeleteScanHistoryByIdEvent(id: scanHistory.id),
+                        );
+
+                        toastification.show(
+                          context: context,
+                          type: ToastificationType.success,
+                          style: ToastificationStyle.flat,
+                          title: Text('Đã xóa "${disease.name}"'),
+                          autoCloseDuration: const Duration(seconds: 3),
+                          alignment: Alignment.bottomCenter,
+                          showProgressBar: true,
                         );
                       },
-                      child: HistoryCard(
-                        title: disease.name,
-                        dateTime: _formatDateTime(scanHistory.createdAt),
-                        isSuccess: true,
-                        scanImageUrl:
-                            scanHistory.scanImage ??
-                            'https://via.placeholder.com/150',
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ScanHistoryProvider(
+                                child: ScanSolution(
+                                  scanHistoryId: scanHistory.id,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        child: HistoryCard(
+                          title: disease.name,
+                          dateTime: _formatDateTime(scanHistory.createdAt),
+                          isSuccess: true,
+                          scanImageUrl:
+                              scanHistory.scanImage ??
+                              'https://via.placeholder.com/150',
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            );
-          }
-          return const SizedBox.shrink();
-        },
+                    );
+                  },
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

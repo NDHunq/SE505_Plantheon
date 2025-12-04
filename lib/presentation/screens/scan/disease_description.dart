@@ -282,13 +282,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                         ? SizedBox(
                                             height: 20.sp,
                                             width: 20.sp,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                    Colors.white,
-                                                  ),
-                                            ),
+                                            child: LoadingIndicator(),
                                           )
                                         : Text(
                                             'Xác nhận & Xem điều trị',

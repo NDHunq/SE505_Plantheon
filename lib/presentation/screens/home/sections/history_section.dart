@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc.dart';
@@ -65,7 +66,7 @@ class _HistorySectionState extends State<HistorySection> {
               return Center(
                 child: Padding(
                   padding: EdgeInsets.all(16.sp),
-                  child: CircularProgressIndicator(),
+                  child: LoadingIndicator(),
                 ),
               );
             } else if (state is ScanHistorySuccess) {
