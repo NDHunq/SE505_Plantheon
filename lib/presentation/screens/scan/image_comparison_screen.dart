@@ -6,12 +6,14 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
 class ImageComparisonScreen extends StatefulWidget {
   final File? myImage;
+  final String? myImageLink;
   final List<String> diseaseImageUrls;
   final int initialIndex;
 
   const ImageComparisonScreen({
     super.key,
     required this.myImage,
+    this.myImageLink,
     required this.diseaseImageUrls,
     this.initialIndex = 0,
   });
@@ -29,6 +31,7 @@ class _ImageComparisonScreenState extends State<ImageComparisonScreen> {
     super.initState();
     _currentImageIndex = widget.initialIndex;
     _carouselController = CarouselSliderController();
+    print("my image link: ${widget.myImageLink}");
   }
 
   @override
@@ -54,7 +57,23 @@ class _ImageComparisonScreenState extends State<ImageComparisonScreen> {
                       child: Container(
                         width: double.infinity,
                         color: Colors.black,
-                        child: widget.myImage != null
+                        child:
+                            widget.myImageLink != null &&
+                                widget.myImageLink!.isNotEmpty
+                            ? Image.network(
+                                widget.myImageLink!,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Center(
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      size: 64.sp,
+                                      color: Colors.grey,
+                                    ),
+                                  );
+                                },
+                              )
+                            : widget.myImage != null
                             ? Image.file(widget.myImage!, fit: BoxFit.contain)
                             : Center(
                                 child: Icon(

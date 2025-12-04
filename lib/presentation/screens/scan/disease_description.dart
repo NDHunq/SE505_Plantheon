@@ -6,7 +6,6 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
@@ -24,16 +23,13 @@ import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_stat
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_provider.dart';
 import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
 import 'package:se501_plantheon/presentation/screens/scan/image_comparison_screen.dart';
-import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart';
-import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
-import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
-import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 
 class DiseaseDescriptionScreen extends StatefulWidget {
   final String diseaseLabel;
   final bool isPreview;
   final List<String>? otherdiseaseLabels;
   final File? myImage;
+  final String? myImageLink;
 
   const DiseaseDescriptionScreen({
     super.key,
@@ -41,6 +37,7 @@ class DiseaseDescriptionScreen extends StatefulWidget {
     this.isPreview = false,
     this.otherdiseaseLabels,
     this.myImage,
+    this.myImageLink,
   });
 
   @override
@@ -63,6 +60,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
       GetDiseaseEvent(diseaseId: widget.diseaseLabel),
     );
     print('📤 Screen: GetDiseaseEvent sent to BLoC');
+    print("my image link in initState: ${widget.myImageLink}");
   }
 
   @override
@@ -227,28 +225,18 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                 listener: (context, state) {
                                   if (state is CreateScanHistorySuccess) {
                                     print(
-                                      '✅ UI: Scan history created successfully, navigating to ScanSolution',
+                                      '✅ UI: Scan history created successfully with id: ${state.scanHistory.id}',
                                     );
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => BlocProvider<DiseaseBloc>(
-                                          create: (context) => DiseaseBloc(
-                                            getDisease: GetDisease(
-                                              repository: DiseaseRepositoryImpl(
-                                                remoteDataSource:
-                                                    DiseaseRemoteDataSourceImpl(
-                                                      client: http.Client(),
-                                                      baseUrl: ApiConstants
-                                                          .diseaseApiUrl,
-                                                    ),
+                                        builder: (context) =>
+                                            ScanHistoryProvider(
+                                              child: ScanSolution(
+                                                scanHistoryId:
+                                                    state.scanHistory.id,
                                               ),
                                             ),
-                                          ),
-                                          child: ScanSolution(
-                                            diseaseLabel: widget.diseaseLabel,
-                                          ),
-                                        ),
                                       ),
                                     );
                                   } else if (state is ScanHistoryError) {
@@ -272,7 +260,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                             print(
                                               '🔘 UI: Confirm button pressed, creating scan history for disease: ${disease.id}',
                                             );
-                                            
+
                                             context.read<ScanHistoryBloc>().add(
                                               CreateScanHistoryEvent(
                                                 diseaseId: disease.id,
@@ -434,9 +422,12 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ImageComparisonScreen(
-                            myImage: widget.myImage,
+                            myImage: widget.myImage != null
+                                ? widget.myImage!
+                                : File(''),
                             diseaseImageUrls: disease.imageLink,
                             initialIndex: index,
+                            myImageLink: widget.myImageLink ?? '',
                           ),
                         ),
                       );

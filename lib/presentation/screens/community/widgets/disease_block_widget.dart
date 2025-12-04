@@ -217,7 +217,7 @@ class _DiseaseBlockWidgetState extends State<DiseaseBlockWidget> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => ScanSolution(
-                                diseaseLabel: widget.diseaseLink!,
+                                scanHistoryId: widget.scanHistoryId!,
                               ),
                             ),
                           );

@@ -19,6 +19,7 @@ import 'package:se501_plantheon/domain/usecases/scan_history/delete_scan_history
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_event.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_state.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_provider.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/history_card.dart';
 import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
 
@@ -166,8 +167,11 @@ class _ScanHistoryContent extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                ScanSolution(diseaseLabel: disease.className),
+                            builder: (context) => ScanHistoryProvider(
+                              child: ScanSolution(
+                                scanHistoryId: scanHistory.id,
+                              ),
+                            ),
                           ),
                         );
                       },
