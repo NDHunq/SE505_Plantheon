@@ -272,9 +272,11 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                             print(
                                               '🔘 UI: Confirm button pressed, creating scan history for disease: ${disease.id}',
                                             );
+                                            
                                             context.read<ScanHistoryBloc>().add(
                                               CreateScanHistoryEvent(
                                                 diseaseId: disease.id,
+                                                scanImage: widget.myImage,
                                               ),
                                             );
                                           },

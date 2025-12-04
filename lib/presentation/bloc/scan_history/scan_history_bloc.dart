@@ -3,6 +3,7 @@ import 'package:se501_plantheon/domain/usecases/scan_history/get_all_scan_histor
 import 'package:se501_plantheon/domain/usecases/scan_history/create_scan_history.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_event.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_state.dart';
+import 'package:se501_plantheon/core/services/supabase_service.dart';
 
 class ScanHistoryBloc extends Bloc<ScanHistoryEvent, ScanHistoryState> {
   final GetAllScanHistory getAllScanHistory;
@@ -42,13 +43,34 @@ class ScanHistoryBloc extends Bloc<ScanHistoryEvent, ScanHistoryState> {
     CreateScanHistoryEvent event,
     Emitter<ScanHistoryState> emit,
   ) async {
-    print('🔍 BLoC: Received CreateScanHistoryEvent with diseaseId: ${event.diseaseId}');
+    print(
+      '🔍 BLoC: Received CreateScanHistoryEvent with diseaseId: ${event.diseaseId}',
+    );
     emit(ScanHistoryLoading());
     print('📡 BLoC: Emitted ScanHistoryLoading state');
 
     try {
+      String? imageUrl;
+
+      // Upload image if available
+      if (event.scanImage != null) {
+        print('📸 BLoC: Uploading image to Supabase...');
+        final bytes = await event.scanImage!.readAsBytes();
+        final fileName = 'scan_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+        imageUrl = await SupabaseService.uploadFileFromBytes(
+          bucketName: 'uploads',
+          fileBytes: bytes,
+          fileName: fileName,
+        );
+        print('✅ BLoC: Image uploaded successfully: $imageUrl');
+      }
+
       print('🌐 BLoC: Calling createScanHistory use case...');
-      final scanHistory = await createScanHistory(event.diseaseId);
+      final scanHistory = await createScanHistory(
+        event.diseaseId,
+        scanImage: imageUrl,
+      );
       print('✅ BLoC: Created scan history with id: ${scanHistory.id}');
 
       emit(CreateScanHistorySuccess(scanHistory: scanHistory));

@@ -4,7 +4,10 @@ import 'package:se501_plantheon/data/models/scan_history.model.dart';
 
 abstract class ScanHistoryRemoteDataSource {
   Future<List<ScanHistoryModel>> getAllScanHistory();
-  Future<ScanHistoryModel> createScanHistory(String diseaseId);
+  Future<ScanHistoryModel> createScanHistory(
+    String diseaseId, {
+    String? scanImage,
+  });
 }
 
 class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
@@ -28,7 +31,7 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
       headers: {
         'Content-Type': 'application/json',
         'Authorization':
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc1ODQzNjg4MH0.AXf8UyN6ODcYV68n3XBP3EnD-8WzSDqzklsUnYqBfwE',
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzViMmVkOTEtNzY5Ni00NzI4LTk4NTQtZGU4NmRkOGNjZTUzIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3NjQ5Mzk4NzB9.n-ndIUXMXX9_qzT3WWs5u0e84pp4UCBeST9aiDqelRY',
       },
     );
 
@@ -51,21 +54,29 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
   }
 
   @override
-  Future<ScanHistoryModel> createScanHistory(String diseaseId) async {
+  Future<ScanHistoryModel> createScanHistory(
+    String diseaseId, {
+    String? scanImage,
+  }) async {
     print(
       '🌐 DataSource: Making POST API call to $baseUrl/$apiVersion/scan-history',
     );
-    print('📝 DataSource: Request body: {"disease_id": "$diseaseId"}');
+    print(
+      '📝 DataSource: Request body: {"disease_id": "$diseaseId", "scan_image": "$scanImage"}',
+    );
 
     final response = await client.post(
       Uri.parse('$baseUrl/$apiVersion/scan-history'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization':
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzViMmVkOTEtNzY5Ni00NzI4LTk4NTQtZGU4NmRkOGNjZTUzIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3NjQ4NjUwMjZ9.6DuFHmrO3XXXQeVTgGP0PTy7A3IvYjWa9Zk7-fBKYHc',
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzViMmVkOTEtNzY5Ni00NzI4LTk4NTQtZGU4NmRkOGNjZTUzIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3NjQ5Mzk4NzB9.n-ndIUXMXX9_qzT3WWs5u0e84pp4UCBeST9aiDqelRY',
       },
       body: json.encode(
-        CreateScanHistoryRequestModel(diseaseId: diseaseId).toJson(),
+        CreateScanHistoryRequestModel(
+          diseaseId: diseaseId,
+          scanImage: scanImage,
+        ).toJson(),
       ),
     );
 

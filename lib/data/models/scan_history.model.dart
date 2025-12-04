@@ -79,12 +79,17 @@ class GetAllScanHistoryResponseModel {
 
 class CreateScanHistoryRequestModel {
   final String diseaseId;
+  final String? scanImage;
 
-  CreateScanHistoryRequestModel({required this.diseaseId});
+  CreateScanHistoryRequestModel({
+    required this.diseaseId,
+    this.scanImage,
+  });
 
   Map<String, dynamic> toJson() {
     return {
       'disease_id': diseaseId,
+      if (scanImage != null) 'scan_image': scanImage,
     };
   }
 }

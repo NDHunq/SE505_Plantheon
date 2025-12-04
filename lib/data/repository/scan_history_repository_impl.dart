@@ -22,10 +22,10 @@ class ScanHistoryRepositoryImpl implements ScanHistoryRepository {
   }
 
   @override
-  Future<ScanHistoryEntity> createScanHistory(String diseaseId) async {
+  Future<ScanHistoryEntity> createScanHistory(String diseaseId, {String? scanImage}) async {
     print('🏛️ Repository: Creating scan history for disease: $diseaseId');
     final ScanHistoryModel model =
-        await remoteDataSource.createScanHistory(diseaseId);
+        await remoteDataSource.createScanHistory(diseaseId, scanImage: scanImage);
     print('📦 Repository: Received scan history model with id: ${model.id}');
 
     final entity = _mapModelToEntity(model);

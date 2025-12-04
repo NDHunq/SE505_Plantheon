@@ -6,8 +6,8 @@ class CreateScanHistory {
 
   CreateScanHistory({required this.repository});
 
-  Future<ScanHistoryEntity> call(String diseaseId) async {
-    final entity = await repository.createScanHistory(diseaseId);
+  Future<ScanHistoryEntity> call(String diseaseId, {String? scanImage}) async {
+    final entity = await repository.createScanHistory(diseaseId, scanImage: scanImage);
     return entity;
   }
 }
