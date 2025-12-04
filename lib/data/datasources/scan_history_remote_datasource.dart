@@ -4,10 +4,13 @@ import 'package:se501_plantheon/data/models/scan_history.model.dart';
 
 abstract class ScanHistoryRemoteDataSource {
   Future<List<ScanHistoryModel>> getAllScanHistory({int? size});
+  Future<ScanHistoryModel> getScanHistoryById(String id);
   Future<ScanHistoryModel> createScanHistory(
     String diseaseId, {
     String? scanImage,
   });
+  Future<void> deleteAllScanHistory();
+  Future<void> deleteScanHistoryById(String id);
 }
 
 class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
@@ -57,6 +60,38 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
   }
 
   @override
+  Future<ScanHistoryModel> getScanHistoryById(String id) async {
+    print(
+      '🌐 DataSource: Making GET API call to $baseUrl/$apiVersion/scan-history/$id',
+    );
+
+    final response = await client.get(
+      Uri.parse('$baseUrl/$apiVersion/scan-history/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzViMmVkOTEtNzY5Ni00NzI4LTk4NTQtZGU4NmRkOGNjZTUzIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3NjQ5Mzk4NzB9.n-ndIUXMXX9_qzT3WWs5u0e84pp4UCBeST9aiDqelRY',
+      },
+    );
+
+    print('📡 DataSource: Response status: ${response.statusCode}');
+    print('📄 DataSource: Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonData = json.decode(response.body);
+      print('🔍 DataSource: Parsed JSON');
+
+      final responseModel = GetScanHistoryByIdResponseModel.fromJson(jsonData);
+      print(
+        '✅ DataSource: Got scan history with id: ${responseModel.scanHistory.id}',
+      );
+      return responseModel.scanHistory;
+    } else {
+      print('❌ DataSource: API error: ${response.statusCode}');
+      throw Exception('Failed to get scan history: ${response.statusCode}');
+    }
+  }
+  @override
   Future<ScanHistoryModel> createScanHistory(
     String diseaseId, {
     String? scanImage,
@@ -98,6 +133,56 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
     } else {
       print('❌ DataSource: API error: ${response.statusCode}');
       throw Exception('Failed to create scan history: ${response.statusCode}');
+    }
+  }
+
+  @override
+  Future<void> deleteAllScanHistory() async {
+    print(
+      '🌐 DataSource: Making DELETE API call to $baseUrl/$apiVersion/scan-history',
+    );
+
+    final response = await client.delete(
+      Uri.parse('$baseUrl/$apiVersion/scan-history'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzViMmVkOTEtNzY5Ni00NzI4LTk4NTQtZGU4NmRkOGNjZTUzIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3NjQ5Mzk4NzB9.n-ndIUXMXX9_qzT3WWs5u0e84pp4UCBeST9aiDqelRY',
+      },
+    );
+
+    print('📡 DataSource: Response status: ${response.statusCode}');
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      print('✅ DataSource: Deleted all scan history');
+    } else {
+      print('❌ DataSource: API error: ${response.statusCode}');
+      throw Exception('Failed to delete all scan history: ${response.statusCode}');
+    }
+  }
+
+  @override
+  Future<void> deleteScanHistoryById(String id) async {
+    print(
+      '🌐 DataSource: Making DELETE API call to $baseUrl/$apiVersion/scan-history/$id',
+    );
+
+    final response = await client.delete(
+      Uri.parse('$baseUrl/$apiVersion/scan-history/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzViMmVkOTEtNzY5Ni00NzI4LTk4NTQtZGU4NmRkOGNjZTUzIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3NjQ5Mzk4NzB9.n-ndIUXMXX9_qzT3WWs5u0e84pp4UCBeST9aiDqelRY',
+      },
+    );
+
+    print('📡 DataSource: Response status: ${response.statusCode}');
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      print('✅ DataSource: Deleted scan history with id: $id');
+    } else {
+      print('❌ DataSource: API error: ${response.statusCode}');
+      throw Exception('Failed to delete scan history: ${response.statusCode}');
     }
   }
 }

@@ -6,7 +6,6 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_event.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_state.dart';
-import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_provider.dart';
 import 'package:se501_plantheon/presentation/screens/home/scan_history.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/history_card.dart';
 import 'package:intl/intl.dart';

@@ -12,12 +12,15 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/data/datasources/scan_history_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/scan_history_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/scan_history/get_all_scan_history.dart';
+import 'package:se501_plantheon/domain/usecases/scan_history/get_scan_history_by_id.dart';
 import 'package:se501_plantheon/domain/usecases/scan_history/create_scan_history.dart';
+import 'package:se501_plantheon/domain/usecases/scan_history/delete_all_scan_history.dart';
+import 'package:se501_plantheon/domain/usecases/scan_history/delete_scan_history_by_id.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_event.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_state.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/history_card.dart';
-import 'package:se501_plantheon/presentation/screens/scan/disease_description.dart';
+import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
 
 class ScanHistory extends StatelessWidget {
   const ScanHistory({super.key});
@@ -34,7 +37,10 @@ class ScanHistory extends StatelessWidget {
         );
         return ScanHistoryBloc(
           getAllScanHistory: GetAllScanHistory(repository: repository),
+          getScanHistoryById: GetScanHistoryById(repository: repository),
           createScanHistory: CreateScanHistory(repository: repository),
+          deleteAllScanHistory: DeleteAllScanHistory(repository: repository),
+          deleteScanHistoryById: DeleteScanHistoryById(repository: repository),
         )..add(GetAllScanHistoryEvent());
       },
       child: const _ScanHistoryContent(),
@@ -160,9 +166,8 @@ class _ScanHistoryContent extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => DiseaseDescriptionScreen(
-                              diseaseLabel: disease.id,
-                            ),
+                            builder: (context) =>
+                                ScanSolution(diseaseLabel: disease.className),
                           ),
                         );
                       },
@@ -170,7 +175,9 @@ class _ScanHistoryContent extends StatelessWidget {
                         title: disease.name,
                         dateTime: _formatDateTime(scanHistory.createdAt),
                         isSuccess: true,
-                        scanImageUrl: scanHistory.scanImage ?? 'https://via.placeholder.com/150',
+                        scanImageUrl:
+                            scanHistory.scanImage ??
+                            'https://via.placeholder.com/150',
                       ),
                     ),
                   );

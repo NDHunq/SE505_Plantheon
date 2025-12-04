@@ -110,3 +110,16 @@ class CreateScanHistoryResponseModel {
     );
   }
 }
+
+class GetScanHistoryByIdResponseModel {
+  final ScanHistoryModel scanHistory;
+
+  GetScanHistoryByIdResponseModel({required this.scanHistory});
+
+  factory GetScanHistoryByIdResponseModel.fromJson(Map<String, dynamic> json) {
+    final data = json['data'] as Map<String, dynamic>;
+    return GetScanHistoryByIdResponseModel(
+      scanHistory: ScanHistoryModel.fromJson(data),
+    );
+  }
+}
