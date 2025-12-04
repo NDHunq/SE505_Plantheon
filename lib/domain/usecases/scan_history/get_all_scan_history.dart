@@ -6,8 +6,8 @@ class GetAllScanHistory {
 
   GetAllScanHistory({required this.repository});
 
-  Future<List<ScanHistoryEntity>> call() async {
-    final entities = await repository.getAllScanHistory();
+  Future<List<ScanHistoryEntity>> call({int? size}) async {
+    final entities = await repository.getAllScanHistory(size: size);
     return entities;
   }
 }

@@ -8,6 +8,7 @@ import 'package:se501_plantheon/presentation/screens/home/chat_bot.dart';
 import 'package:se501_plantheon/presentation/screens/home/sections/disease_warning_section.dart';
 import 'package:se501_plantheon/presentation/screens/home/sections/history_section.dart';
 import 'package:se501_plantheon/presentation/screens/home/sections/service_section.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_provider.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -29,7 +30,7 @@ class Home extends StatelessWidget {
             side: BorderSide(color: AppColors.orange_400, width: 5.sp),
           ),
           child: SvgPicture.asset(
-            AppVectors.chatBot, // Đường dẫn SVG của bạn
+            AppVectors.chatBot,
             width: 30.sp,
             height: 23.sp,
             color: AppColors.text_color_main,
@@ -43,7 +44,9 @@ class Home extends StatelessWidget {
               children: [
                 WeatherCard(),
                 ServiceSection(),
-                HistorySection(),
+                ScanHistoryProvider(
+                  child: const HistorySection(),
+                ),
                 DiseaseWarningSection(),
                 SizedBox(height: 16.sp),
               ],

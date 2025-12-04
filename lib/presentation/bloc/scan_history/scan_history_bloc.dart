@@ -26,8 +26,8 @@ class ScanHistoryBloc extends Bloc<ScanHistoryEvent, ScanHistoryState> {
     print('📡 BLoC: Emitted ScanHistoryLoading state');
 
     try {
-      print('🌐 BLoC: Calling getAllScanHistory use case...');
-      final scanHistories = await getAllScanHistory();
+      print('🌐 BLoC: Calling getAllScanHistory use case${event.size != null ? ' with size=${event.size}' : ''}...');
+      final scanHistories = await getAllScanHistory(size: event.size);
       print('✅ BLoC: Received ${scanHistories.length} scan history items');
 
       emit(ScanHistorySuccess(scanHistories: scanHistories));

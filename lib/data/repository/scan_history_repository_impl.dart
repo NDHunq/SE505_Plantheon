@@ -10,14 +10,14 @@ class ScanHistoryRepositoryImpl implements ScanHistoryRepository {
   ScanHistoryRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<ScanHistoryEntity>> getAllScanHistory() async {
-    print('🏛️ Repository: Getting all scan history');
-    final List<ScanHistoryModel> models = await remoteDataSource
-        .getAllScanHistory();
+  Future<List<ScanHistoryEntity>> getAllScanHistory({int? size}) async {
+    print('🏛️ Repository: Getting all scan history${size != null ? ' with size=$size' : ''}');
+    final List<ScanHistoryModel> models =
+        await remoteDataSource.getAllScanHistory(size: size);
     print('📦 Repository: Received ${models.length} scan history items');
 
-    final entities = models.map((model) => _mapModelToEntity(model)).toList();
-    print('🔄 Repository: Mapped to entities');
+    final entities = models.map(_mapModelToEntity).toList();
+    print('🔄 Repository: Mapped to ${entities.length} entities');
     return entities;
   }
 
@@ -50,6 +50,7 @@ class ScanHistoryRepositoryImpl implements ScanHistoryRepository {
         plantName: model.disease.plantName,
         solution: model.disease.solution,
       ),
+      scanImage: model.scanImage,
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
     );

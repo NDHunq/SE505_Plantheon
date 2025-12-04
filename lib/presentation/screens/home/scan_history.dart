@@ -170,6 +170,7 @@ class _ScanHistoryContent extends StatelessWidget {
                         title: disease.name,
                         dateTime: _formatDateTime(scanHistory.createdAt),
                         isSuccess: true,
+                        scanImageUrl: scanHistory.scanImage ?? 'https://via.placeholder.com/150',
                       ),
                     ),
                   );

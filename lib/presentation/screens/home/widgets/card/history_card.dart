@@ -7,12 +7,14 @@ class HistoryCard extends StatelessWidget {
   final String title;
   final String dateTime;
   final bool isSuccess;
+  final String scanImageUrl;
 
   const HistoryCard({
     super.key,
     required this.title,
     required this.dateTime,
     required this.isSuccess,
+    required this.scanImageUrl,
   });
 
   @override
@@ -26,7 +28,7 @@ class HistoryCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             image: DecorationImage(
               fit: BoxFit.cover,
-              image: AssetImage('assets/images/plants.jpg'),
+              image: NetworkImage(scanImageUrl),
             ),
           ),
         ),

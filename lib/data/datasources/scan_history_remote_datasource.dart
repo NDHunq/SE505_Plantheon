@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/data/models/scan_history.model.dart';
 
 abstract class ScanHistoryRemoteDataSource {
-  Future<List<ScanHistoryModel>> getAllScanHistory();
+  Future<List<ScanHistoryModel>> getAllScanHistory({int? size});
   Future<ScanHistoryModel> createScanHistory(
     String diseaseId, {
     String? scanImage,
@@ -22,12 +22,15 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
   });
 
   @override
-  Future<List<ScanHistoryModel>> getAllScanHistory() async {
-    print(
-      '🌐 DataSource: Making API call to $baseUrl/$apiVersion/scan-history',
+  Future<List<ScanHistoryModel>> getAllScanHistory({int? size}) async {
+    // Build URL with optional size parameter
+    final uri = Uri.parse('$baseUrl/$apiVersion/scan-history').replace(
+      queryParameters: size != null ? {'size': size.toString()} : null,
     );
+    
+    print('🌐 DataSource: Making API call to $uri');
     final response = await client.get(
-      Uri.parse('$baseUrl/$apiVersion/scan-history'),
+      uri,
       headers: {
         'Content-Type': 'application/json',
         'Authorization':
