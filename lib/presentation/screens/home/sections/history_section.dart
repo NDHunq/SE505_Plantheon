@@ -5,10 +5,12 @@ import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_event.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_provider.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_state.dart';
 import 'package:se501_plantheon/presentation/screens/home/scan_history.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/history_card.dart';
 import 'package:intl/intl.dart';
+import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
 
 class HistorySection extends StatefulWidget {
   const HistorySection({super.key});
@@ -94,13 +96,27 @@ class _HistorySectionState extends State<HistorySection> {
                           color: AppColors.text_color_100,
                           thickness: 1.sp,
                         ),
-                      HistoryCard(
-                        title: disease.name,
-                        dateTime: _formatDateTime(scanHistory.createdAt),
-                        isSuccess: true,
-                        scanImageUrl:
-                            scanHistory.scanImage ??
-                            'https://via.placeholder.com/150',
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ScanHistoryProvider(
+                                child: ScanSolution(
+                                  scanHistoryId: scanHistory.id,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        child: HistoryCard(
+                          title: disease.name,
+                          dateTime: _formatDateTime(scanHistory.createdAt),
+                          isSuccess: true,
+                          scanImageUrl:
+                              scanHistory.scanImage ??
+                              'https://via.placeholder.com/150',
+                        ),
                       ),
                     ],
                   );

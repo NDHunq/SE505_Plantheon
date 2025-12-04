@@ -4,13 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
-import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
-import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/data/models/diseases.model.dart';
@@ -74,30 +71,30 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
       backgroundColor: AppColors.primary_100,
       appBar: BasicAppbar(
         title: "Chẩn đoán",
-        actions: [
-          GestureDetector(
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => BasicDialog(
-                  title: 'Xóa chẩn đoán',
-                  content: 'Bạn có chắc chắn muốn xóa chẩn đoán này?',
-                  confirmText: 'Xóa',
-                  cancelText: 'Huỷ',
-                  onConfirm: () {},
-                  onCancel: () {},
-                ),
-              );
-            },
-            child: SvgPicture.asset(
-              AppVectors.trash,
-              width: 24.sp,
-              height: 24.sp,
-              color: AppColors.red,
-            ),
-          ),
-          SizedBox(width: 16.sp),
-        ],
+        // actions: [
+        //   GestureDetector(
+        //     onTap: () {
+        //       showDialog(
+        //         context: context,
+        //         builder: (context) => BasicDialog(
+        //           title: 'Xóa chẩn đoán',
+        //           content: 'Bạn có chắc chắn muốn xóa chẩn đoán này?',
+        //           confirmText: 'Xóa',
+        //           cancelText: 'Huỷ',
+        //           onConfirm: () {},
+        //           onCancel: () {},
+        //         ),
+        //       );
+        //     },
+        //     child: SvgPicture.asset(
+        //       AppVectors.trash,
+        //       width: 24.sp,
+        //       height: 24.sp,
+        //       color: AppColors.red,
+        //     ),
+        //   ),
+        //   SizedBox(width: 16.sp),
+        // ],
       ),
       body: BlocBuilder<DiseaseBloc, DiseaseState>(
         builder: (context, state) {

@@ -84,7 +84,7 @@ class _ImageComparisonScreenState extends State<ImageComparisonScreen> {
                               ),
                       ),
                     ),
-                    Container(height: 2, color: AppColors.primary_400),
+                    Container(height: 2, color: AppColors.white),
                     // Bottom half - Disease reference images carousel
                     Expanded(
                       child: Container(
