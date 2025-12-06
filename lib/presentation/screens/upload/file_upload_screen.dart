@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/services/supabase_service.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:toastification/toastification.dart';
 
 class FileUploadScreen extends StatefulWidget {
   const FileUploadScreen({super.key});
@@ -160,12 +161,14 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
 
       // Hiển thị thông báo thành công và dialog với URL
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Upload thành công!'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          style: ToastificationStyle.flat,
+          title: Text('Upload thành công!'),
+          autoCloseDuration: const Duration(seconds: 2),
+          alignment: Alignment.bottomCenter,
+          showProgressBar: true,
         );
 
         // Hiển thị dialog với URL để copy
@@ -178,11 +181,14 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Upload thất bại: $e'),
-            backgroundColor: Colors.red,
-          ),
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          style: ToastificationStyle.flat,
+          title: Text('Upload thất bại: $e'),
+          autoCloseDuration: const Duration(seconds: 3),
+          alignment: Alignment.bottomCenter,
+          showProgressBar: true,
         );
       }
     }
@@ -234,12 +240,14 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
               await Clipboard.setData(ClipboardData(text: url));
               if (context.mounted) {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('✓ URL đã được copy vào clipboard!'),
-                    backgroundColor: Colors.green,
-                    duration: Duration(seconds: 2),
-                  ),
+                toastification.show(
+                  context: context,
+                  type: ToastificationType.success,
+                  style: ToastificationStyle.flat,
+                  title: Text('✓ URL đã được copy vào clipboard!'),
+                  autoCloseDuration: const Duration(seconds: 2),
+                  alignment: Alignment.bottomCenter,
+                  showProgressBar: true,
                 );
               }
             },
@@ -453,14 +461,18 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
                                     ClipboardData(text: file.url),
                                   );
                                   if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          '✓ URL đã copy vào clipboard!',
-                                        ),
-                                        backgroundColor: Colors.green,
-                                        duration: Duration(seconds: 2),
+                                    toastification.show(
+                                      context: context,
+                                      type: ToastificationType.success,
+                                      style: ToastificationStyle.flat,
+                                      title: Text(
+                                        '✓ URL đã copy vào clipboard!',
                                       ),
+                                      autoCloseDuration: const Duration(
+                                        seconds: 2,
+                                      ),
+                                      alignment: Alignment.bottomCenter,
+                                      showProgressBar: true,
                                     );
                                   }
                                 },
@@ -511,15 +523,17 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
                                             );
                                             if (context.mounted) {
                                               Navigator.pop(context);
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    '✓ URL đã copy!',
-                                                  ),
-                                                  backgroundColor: Colors.green,
-                                                ),
+                                              toastification.show(
+                                                context: context,
+                                                type:
+                                                    ToastificationType.success,
+                                                style: ToastificationStyle.flat,
+                                                title: Text('✓ URL đã copy!'),
+                                                autoCloseDuration:
+                                                    const Duration(seconds: 2),
+                                                alignment:
+                                                    Alignment.bottomCenter,
+                                                showProgressBar: true,
                                               );
                                             }
                                           },

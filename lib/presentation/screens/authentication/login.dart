@@ -10,6 +10,7 @@ import '../../../core/configs/constants/app_info.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/assets/app_text_styles.dart';
 import 'signup.dart';
+import 'package:toastification/toastification.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -52,8 +53,14 @@ class _SignInPageState extends State<SignInPage> {
           );
         } else if (state is AuthError) {
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+          toastification.show(
+            context: context,
+            type: ToastificationType.error,
+            style: ToastificationStyle.flat,
+            title: Text(state.message),
+            autoCloseDuration: const Duration(seconds: 3),
+            alignment: Alignment.bottomCenter,
+            showProgressBar: true,
           );
         }
       },

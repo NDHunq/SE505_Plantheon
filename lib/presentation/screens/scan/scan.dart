@@ -18,6 +18,7 @@ import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart'
 import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
+import 'package:toastification/toastification.dart';
 
 class Scan extends StatefulWidget {
   const Scan({super.key});
@@ -161,14 +162,16 @@ class _ScanState extends State<Scan> {
 
       // Show error dialog
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Không thể phân tích ảnh. Vui lòng kiểm tra kết nối server.',
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          style: ToastificationStyle.flat,
+          title: Text(
+            'Không thể phân tích ảnh. Vui lòng kiểm tra kết nối server.',
           ),
+          autoCloseDuration: const Duration(seconds: 3),
+          alignment: Alignment.bottomCenter,
+          showProgressBar: true,
         );
       }
 

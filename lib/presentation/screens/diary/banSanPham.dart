@@ -15,6 +15,7 @@ import 'package:se501_plantheon/presentation/bloc/activities/activities_event.da
 import 'package:se501_plantheon/presentation/bloc/activities/activities_state.dart';
 import 'package:se501_plantheon/data/models/activities_models.dart';
 import 'package:se501_plantheon/domain/entities/activities_entities.dart';
+import 'package:toastification/toastification.dart';
 
 class banSanPhamWidget extends StatefulWidget {
   final DayActivityDetailEntity? activityToEdit;
@@ -618,12 +619,14 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
         });
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✓ Upload ảnh thành công!'),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
-            ),
+          toastification.show(
+            context: context,
+            type: ToastificationType.success,
+            style: ToastificationStyle.flat,
+            title: Text('✓ Upload ảnh thành công!'),
+            autoCloseDuration: const Duration(seconds: 2),
+            alignment: Alignment.bottomCenter,
+            showProgressBar: true,
           );
         }
       } else {
@@ -637,11 +640,14 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Lỗi upload ảnh: $e'),
-            backgroundColor: Colors.red,
-          ),
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          style: ToastificationStyle.flat,
+          title: Text('Lỗi upload ảnh: $e'),
+          autoCloseDuration: const Duration(seconds: 3),
+          alignment: Alignment.bottomCenter,
+          showProgressBar: true,
         );
       }
     }
@@ -943,18 +949,28 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
         listener: (context, state) {
           if (state is CreateActivityLoading ||
               state is UpdateActivityLoading) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  state is UpdateActivityLoading
-                      ? 'Đang cập nhật hoạt động...'
-                      : 'Đang tạo hoạt động...',
-                ),
+            toastification.show(
+              context: context,
+              type: ToastificationType.info,
+              style: ToastificationStyle.flat,
+              title: Text(
+                state is UpdateActivityLoading
+                    ? 'Đang cập nhật hoạt động...'
+                    : 'Đang tạo hoạt động...',
               ),
+              autoCloseDuration: const Duration(seconds: 2),
+              alignment: Alignment.bottomCenter,
+              showProgressBar: true,
             );
           } else if (state is DeleteActivityLoading) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Đang xóa hoạt động...')),
+            toastification.show(
+              context: context,
+              type: ToastificationType.info,
+              style: ToastificationStyle.flat,
+              title: Text('Đang xóa hoạt động...'),
+              autoCloseDuration: const Duration(seconds: 2),
+              alignment: Alignment.bottomCenter,
+              showProgressBar: true,
             );
           } else if (state is CreateActivitySuccess) {
             widget.onSubmitSuccess?.call();
@@ -962,8 +978,14 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
             // Schedule notification
             _scheduleNotification();
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Tạo hoạt động thành công!')),
+            toastification.show(
+              context: context,
+              type: ToastificationType.success,
+              style: ToastificationStyle.flat,
+              title: Text('Tạo hoạt động thành công!'),
+              autoCloseDuration: const Duration(seconds: 3),
+              alignment: Alignment.bottomCenter,
+              showProgressBar: true,
             );
             titleController.clear();
             Navigator.of(context).pop();
@@ -973,27 +995,57 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
             // Schedule notification
             _scheduleNotification();
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Cập nhật hoạt động thành công!')),
+            toastification.show(
+              context: context,
+              type: ToastificationType.success,
+              style: ToastificationStyle.flat,
+              title: Text('Cập nhật hoạt động thành công!'),
+              autoCloseDuration: const Duration(seconds: 3),
+              alignment: Alignment.bottomCenter,
+              showProgressBar: true,
             );
             Navigator.of(context).pop();
           } else if (state is DeleteActivitySuccess) {
             widget.onSubmitSuccess?.call();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Xóa hoạt động thành công!')),
+            toastification.show(
+              context: context,
+              type: ToastificationType.success,
+              style: ToastificationStyle.flat,
+              title: Text('Xóa hoạt động thành công!'),
+              autoCloseDuration: const Duration(seconds: 3),
+              alignment: Alignment.bottomCenter,
+              showProgressBar: true,
             );
             Navigator.of(context).pop();
           } else if (state is CreateActivityError) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('Lỗi: ${state.message}')));
+            toastification.show(
+              context: context,
+              type: ToastificationType.error,
+              style: ToastificationStyle.flat,
+              title: Text('Lỗi: ${state.message}'),
+              autoCloseDuration: const Duration(seconds: 3),
+              alignment: Alignment.bottomCenter,
+              showProgressBar: true,
+            );
           } else if (state is UpdateActivityError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Lỗi cập nhật: ${state.message}')),
+            toastification.show(
+              context: context,
+              type: ToastificationType.error,
+              style: ToastificationStyle.flat,
+              title: Text('Lỗi cập nhật: ${state.message}'),
+              autoCloseDuration: const Duration(seconds: 3),
+              alignment: Alignment.bottomCenter,
+              showProgressBar: true,
             );
           } else if (state is DeleteActivityError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Lỗi xóa hoạt động: ${state.message}')),
+            toastification.show(
+              context: context,
+              type: ToastificationType.error,
+              style: ToastificationStyle.flat,
+              title: Text('Lỗi xóa hoạt động: ${state.message}'),
+              autoCloseDuration: const Duration(seconds: 3),
+              alignment: Alignment.bottomCenter,
+              showProgressBar: true,
             );
           }
         },

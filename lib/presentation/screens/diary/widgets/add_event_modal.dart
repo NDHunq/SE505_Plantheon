@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
+import 'package:toastification/toastification.dart';
 
 /// Modal để thêm sự kiện mới
 class AddEventModal extends StatefulWidget {
@@ -455,13 +456,14 @@ class _AddEventModalState extends State<AddEventModal> {
     });
 
     // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Sự kiện đã được thêm thành công!'),
-        backgroundColor: Colors.green.shade600,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
+    toastification.show(
+      context: context,
+      type: ToastificationType.success,
+      style: ToastificationStyle.flat,
+      title: Text('Sự kiện đã được thêm thành công!'),
+      autoCloseDuration: const Duration(seconds: 3),
+      alignment: Alignment.bottomCenter,
+      showProgressBar: true,
     );
 
     // Callback to parent

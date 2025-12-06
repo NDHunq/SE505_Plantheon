@@ -20,6 +20,7 @@ import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_stat
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_provider.dart';
 import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
 import 'package:se501_plantheon/presentation/screens/scan/image_comparison_screen.dart';
+import 'package:toastification/toastification.dart';
 
 class DiseaseDescriptionScreen extends StatefulWidget {
   final String diseaseLabel;
@@ -240,11 +241,16 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                     print(
                                       '❌ UI: Error creating scan history: ${state.message}',
                                     );
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Lỗi: ${state.message}'),
-                                        backgroundColor: Colors.red,
+                                    toastification.show(
+                                      context: context,
+                                      type: ToastificationType.error,
+                                      style: ToastificationStyle.flat,
+                                      title: Text('Lỗi: ${state.message}'),
+                                      autoCloseDuration: const Duration(
+                                        seconds: 3,
                                       ),
+                                      alignment: Alignment.bottomCenter,
+                                      showProgressBar: true,
                                     );
                                   }
                                 },

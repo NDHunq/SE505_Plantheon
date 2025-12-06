@@ -22,6 +22,7 @@ import 'package:se501_plantheon/data/repository/post_repository_impl.dart';
 import 'package:se501_plantheon/data/datasources/post_remote_datasource.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
+import 'package:toastification/toastification.dart';
 
 class CreatePostModal extends StatefulWidget {
   final String? diseaseId;
@@ -176,13 +177,25 @@ class _CreatePostModalState extends State<CreatePostModal> {
         listener: (context, state) {
           if (state is community.CommunityPostCreated) {
             Navigator.of(context).pop();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Đăng bài thành công')),
+            toastification.show(
+              context: context,
+              type: ToastificationType.success,
+              style: ToastificationStyle.flat,
+              title: Text('Đăng bài thành công'),
+              autoCloseDuration: const Duration(seconds: 3),
+              alignment: Alignment.bottomCenter,
+              showProgressBar: true,
             );
           } else if (state is community.CommunityError) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('Lỗi: ${state.message}')));
+            toastification.show(
+              context: context,
+              type: ToastificationType.error,
+              style: ToastificationStyle.flat,
+              title: Text('Lỗi: ${state.message}'),
+              autoCloseDuration: const Duration(seconds: 3),
+              alignment: Alignment.bottomCenter,
+              showProgressBar: true,
+            );
           }
         },
         child: SingleChildScrollView(
