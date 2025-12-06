@@ -7,7 +7,7 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/bloc/plant/plant_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/plant/plant_state.dart';
 import 'package:se501_plantheon/presentation/screens/home/farming_tips.dart';
-import 'package:se501_plantheon/presentation/screens/home/widgets/card/service_card.dart';
+import 'package:se501_plantheon/presentation/screens/home/widgets/card/plants_card.dart';
 
 class PlantSection extends StatelessWidget {
   const PlantSection({super.key});
@@ -15,7 +15,7 @@ class PlantSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: 8.sp,
+      spacing: 4.sp,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -40,7 +40,7 @@ class PlantSection extends StatelessWidget {
           ],
         ),
         SizedBox(
-          height: 100.sp,
+          height: 114.sp,
           child: BlocBuilder<PlantBloc, PlantState>(
             builder: (context, state) {
               if (state is PlantLoading || state is PlantInitial) {
@@ -78,7 +78,7 @@ class PlantSection extends StatelessWidget {
                           ),
                         );
                       },
-                      child: ServiceCard(
+                      child: PlantsCard(
                         name: plant.name,
                         imageUrl: plant.imageUrl,
                       ),

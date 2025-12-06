@@ -7,7 +7,7 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/home/chat_bot.dart';
 import 'package:se501_plantheon/presentation/screens/home/sections/disease_warning_section.dart';
 import 'package:se501_plantheon/presentation/screens/home/sections/history_section.dart';
-import 'package:se501_plantheon/presentation/screens/home/sections/service_section.dart';
+import 'package:se501_plantheon/presentation/screens/home/sections/plants_section.dart';
 import 'package:se501_plantheon/presentation/bloc/plant/plant_provider.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_provider.dart';
 
@@ -41,13 +41,14 @@ class Home extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 16.sp),
           child: SingleChildScrollView(
             child: Column(
-              spacing: 16.sp,
               children: [
                 WeatherCard(),
+                SizedBox(height: 12.sp),
                 PlantProvider(child: const PlantSection()),
                 ScanHistoryProvider(child: const HistorySection()),
-                DiseaseWarningSection(),
                 SizedBox(height: 16.sp),
+                DiseaseWarningSection(),
+                SizedBox(height: 30.sp),
               ],
             ),
           ),

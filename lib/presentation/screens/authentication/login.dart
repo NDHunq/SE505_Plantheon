@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/common/widgets/button/sized_button.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_event.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_state.dart';
@@ -67,9 +68,7 @@ class _SignInPageState extends State<SignInPage> {
       builder: (context, state) {
         // If already authenticated, show loading while redirecting
         if (state is AuthAuthenticated) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
+          return const Scaffold(body: Center(child: LoadingIndicator()));
         }
 
         return Scaffold(

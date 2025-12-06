@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:se501_plantheon/domain/entities/plant_entity.dart';
 import 'package:se501_plantheon/presentation/bloc/plant/plant_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/plant/plant_state.dart';
 
-/// Field that opens a bottom sheet to pick a plant (with search + grid).
 class PlantsPicker extends StatefulWidget {
   final ValueChanged<PlantEntity>? onPlantSelected;
   final PlantEntity? initialPlant;
@@ -31,11 +33,11 @@ class _PlantsPickerState extends State<PlantsPicker> {
           }
           // Loaded nhưng rỗng
           return _container(
-            child: const Text(
+            child: Text(
               'Chưa có cây trồng',
               style: TextStyle(
                 color: AppColors.text_color_200,
-                fontSize: 14,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -54,13 +56,9 @@ class _PlantsPickerState extends State<PlantsPicker> {
         // PlantInitial / PlantLoading
         return _container(
           child: Row(
-            spacing: 8,
-            children: const [
-              SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
+            spacing: 8.sp,
+            children: [
+              SizedBox(width: 16.sp, height: 16.sp, child: LoadingIndicator()),
               Text(
                 'Đang tải...',
                 style: TextStyle(color: AppColors.text_color_200, fontSize: 14),
@@ -90,8 +88,8 @@ class _PlantsPickerState extends State<PlantsPicker> {
         final PlantEntity? picked = await showModalBottomSheet<PlantEntity>(
           context: context,
           isScrollControlled: true,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24.sp)),
           ),
           builder: (context) => _PlantPickerSheet(
             plants: plants,
@@ -107,8 +105,8 @@ class _PlantsPickerState extends State<PlantsPicker> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 8.sp),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.primary_700, width: 1),
+          borderRadius: BorderRadius.circular(12.sp),
+          border: Border.all(color: AppColors.primary_700, width: 1.sp),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -135,26 +133,39 @@ class _PlantsPickerState extends State<PlantsPicker> {
 
   Widget _avatar(String? imageUrl) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(24.sp),
       child: SizedBox(
-        width: 40,
-        height: 40,
+        width: 40.sp,
+        height: 40.sp,
         child: imageUrl != null && imageUrl.isNotEmpty
-            ? Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _avatarFallback(),
-                loadingBuilder: (context, child, progress) {
-                  if (progress == null) return child;
-                  return const Center(
-                    child: SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  );
-                },
-              )
+            ? (kIsWeb
+                  ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _avatarFallback(),
+                      loadingBuilder: (context, child, progress) {
+                        if (progress == null) return child;
+                        return Center(
+                          child: SizedBox(
+                            width: 16.sp,
+                            height: 16.sp,
+                            child: LoadingIndicator(),
+                          ),
+                        );
+                      },
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Center(
+                        child: SizedBox(
+                          width: 16.sp,
+                          height: 16.sp,
+                          child: LoadingIndicator(),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => _avatarFallback(),
+                    ))
             : _avatarFallback(),
       ),
     );
@@ -169,11 +180,11 @@ class _PlantsPickerState extends State<PlantsPicker> {
 
   Widget _container({required Widget child}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      constraints: const BoxConstraints(minHeight: 44, minWidth: 140),
+      padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 10.sp),
+      constraints: BoxConstraints(minHeight: 44.sp, minWidth: 140.sp),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary_700, width: 1),
+        borderRadius: BorderRadius.circular(12.sp),
+        border: Border.all(color: AppColors.primary_700, width: 1.sp),
       ),
       child: child,
     );
@@ -211,61 +222,61 @@ class _PlantPickerSheetState extends State<_PlantPickerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height * 0.8;
+    final height = MediaQuery.of(context).size.height * 0.8.sp;
     return SizedBox(
       height: height,
       child: Padding(
         padding: EdgeInsets.only(
-          left: 16,
-          right: 16,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-          top: 16,
+          left: 16.sp,
+          right: 16.sp,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 16.sp,
+          top: 16.sp,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
               child: Container(
-                width: 40,
-                height: 4,
+                width: 40.sp,
+                height: 4.sp,
                 decoration: BoxDecoration(
                   color: AppColors.text_color_100,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(4.sp),
                 ),
               ),
             ),
-            const SizedBox(height: 12),
-            const Text(
+            SizedBox(height: 12.sp),
+            Text(
               'Chọn cây trồng của bạn',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 18.sp,
                 fontWeight: FontWeight.w700,
                 color: AppColors.text_color_main,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.sp),
             TextField(
               onChanged: _filter,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 hintText: 'Tìm kiếm',
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12.sp,
+                  vertical: 10.sp,
                 ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.sp),
                   borderSide: const BorderSide(color: AppColors.text_color_100),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.sp),
             Expanded(
               child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16.sp,
+                  crossAxisSpacing: 16.sp,
                   childAspectRatio: 0.8,
                 ),
                 itemCount: _filtered.length,
@@ -287,7 +298,14 @@ class _PlantPickerSheetState extends State<_PlantPickerSheet> {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Hủy'),
+                child: Text(
+                  'Hủy',
+                  style: TextStyle(
+                    color: AppColors.primary_700,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ],
@@ -316,45 +334,62 @@ class _PlantItem extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 96,
-            height: 96,
+            width: 96.sp,
+            height: 96.sp,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
                 color: selected
                     ? AppColors.primary_700
                     : AppColors.text_color_100,
-                width: selected ? 2 : 1,
+                width: selected ? 2.sp : 1.sp,
               ),
             ),
             child: ClipOval(
-              child: Image.network(
-                plant.imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(
-                  Icons.local_florist,
-                  color: AppColors.primary_400,
-                  size: 36,
-                ),
-                loadingBuilder: (context, child, progress) {
-                  if (progress == null) return child;
-                  return const Center(
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  );
-                },
-              ),
+              child: (kIsWeb
+                  ? Image.network(
+                      plant.imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Icon(
+                        Icons.local_florist,
+                        color: AppColors.primary_400,
+                        size: 36.sp,
+                      ),
+                      loadingBuilder: (context, child, progress) {
+                        if (progress == null) return child;
+                        return Center(
+                          child: SizedBox(
+                            width: 20.sp,
+                            height: 20.sp,
+                            child: LoadingIndicator(),
+                          ),
+                        );
+                      },
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: plant.imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Center(
+                        child: SizedBox(
+                          width: 20.sp,
+                          height: 20.sp,
+                          child: LoadingIndicator(),
+                        ),
+                      ),
+                      errorWidget: (_, __, ___) => Icon(
+                        Icons.local_florist,
+                        color: AppColors.primary_400,
+                        size: 36.sp,
+                      ),
+                    )),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             plant.name,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 14,
+            style: TextStyle(
+              fontSize: 14.sp,
               fontWeight: FontWeight.w600,
               color: AppColors.text_color_main,
             ),
