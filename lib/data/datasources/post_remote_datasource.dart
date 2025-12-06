@@ -1,20 +1,23 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
+import 'package:se501_plantheon/core/services/token_storage_service.dart';
 import 'package:se501_plantheon/data/models/post_model.dart';
 
 class PostRemoteDataSource {
   final http.Client client;
+  final TokenStorageService tokenStorage;
 
-  PostRemoteDataSource({required this.client});
+  PostRemoteDataSource({required this.client, required this.tokenStorage});
 
   Future<List<PostModel>> getUserPosts(String userId) async {
     final url =
         '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts/user/$userId';
 
-    // Hardcoded token as requested by user
-    final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDgxMDI2OX0.uKWgpplZKzEKgi6cRbC8ugAOYW6PERczbeldooto3aM';
+    final token = await tokenStorage.getToken();
+    if (token == null) {
+      throw Exception('User not authenticated');
+    }
 
     final response = await client.get(
       Uri.parse(url),
@@ -28,6 +31,8 @@ class PostRemoteDataSource {
       final jsonResponse = json.decode(response.body);
       final postResponse = PostResponseModel.fromJson(jsonResponse);
       return postResponse.posts;
+    } else if (response.statusCode == 401) {
+      throw Exception('Token expired. Please login again.');
     } else {
       throw Exception('Failed to load posts');
     }
@@ -36,8 +41,10 @@ class PostRemoteDataSource {
   Future<void> likePost(String postId) async {
     final url =
         '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts/$postId/like';
-    final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDgxMDI2OX0.uKWgpplZKzEKgi6cRbC8ugAOYW6PERczbeldooto3aM';
+
+    final token = await tokenStorage.getToken();
+    if (token == null) throw Exception('User not authenticated');
+
     final response = await client.put(
       Uri.parse(url),
       headers: {
@@ -46,7 +53,9 @@ class PostRemoteDataSource {
       },
     );
 
-    if (response.statusCode != 200) {
+    if (response.statusCode == 401) {
+      throw Exception('Token expired. Please login again.');
+    } else if (response.statusCode != 200) {
       throw Exception('Failed to like post');
     }
   }
@@ -54,8 +63,9 @@ class PostRemoteDataSource {
   Future<void> unlikePost(String postId) async {
     final url =
         '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts/$postId/unlike';
-    final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDgxMDI2OX0.uKWgpplZKzEKgi6cRbC8ugAOYW6PERczbeldooto3aM';
+
+    final token = await tokenStorage.getToken();
+    if (token == null) throw Exception('User not authenticated');
 
     final response = await client.put(
       Uri.parse(url),
@@ -65,7 +75,9 @@ class PostRemoteDataSource {
       },
     );
 
-    if (response.statusCode != 200) {
+    if (response.statusCode == 401) {
+      throw Exception('Token expired. Please login again.');
+    } else if (response.statusCode != 200) {
       throw Exception('Failed to unlike post');
     }
   }
@@ -73,8 +85,9 @@ class PostRemoteDataSource {
   Future<PostModel> getPostDetail(String postId) async {
     final url =
         '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts/$postId';
-    final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDgxMDI2OX0.uKWgpplZKzEKgi6cRbC8ugAOYW6PERczbeldooto3aM';
+
+    final token = await tokenStorage.getToken();
+    if (token == null) throw Exception('User not authenticated');
 
     final response = await client.get(
       Uri.parse(url),
@@ -87,6 +100,8 @@ class PostRemoteDataSource {
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
       return PostModel.fromJson(jsonResponse['data']);
+    } else if (response.statusCode == 401) {
+      throw Exception('Token expired. Please login again.');
     } else {
       throw Exception('Failed to load post detail');
     }
@@ -95,8 +110,10 @@ class PostRemoteDataSource {
   Future<void> createComment(String postId, String content) async {
     final url =
         '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts/$postId/comments';
-    final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDgxMDI2OX0.uKWgpplZKzEKgi6cRbC8ugAOYW6PERczbeldooto3aM';
+
+    final token = await tokenStorage.getToken();
+    if (token == null) throw Exception('User not authenticated');
+
     final response = await client.post(
       Uri.parse(url),
       headers: {
@@ -106,7 +123,9 @@ class PostRemoteDataSource {
       body: json.encode({'content': content}),
     );
 
-    if (response.statusCode != 200 && response.statusCode != 201) {
+    if (response.statusCode == 401) {
+      throw Exception('Token expired. Please login again.');
+    } else if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Failed to create comment');
     }
   }
@@ -118,8 +137,9 @@ class PostRemoteDataSource {
     String? diseaseLink,
   }) async {
     final url = '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts';
-    final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NDgxMDI2OX0.uKWgpplZKzEKgi6cRbC8ugAOYW6PERczbeldooto3aM';
+
+    final token = await tokenStorage.getToken();
+    if (token == null) throw Exception('User not authenticated');
 
     final Map<String, dynamic> body = {
       'content': content,
@@ -140,7 +160,9 @@ class PostRemoteDataSource {
       body: json.encode(body),
     );
 
-    if (response.statusCode != 200 && response.statusCode != 201) {
+    if (response.statusCode == 401) {
+      throw Exception('Token expired. Please login again.');
+    } else if (response.statusCode != 200 && response.statusCode != 201) {
       print(
         'PostRemoteDataSource: Failed to create post. Status code: ${response.statusCode}',
       );

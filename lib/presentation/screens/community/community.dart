@@ -16,6 +16,8 @@ import 'package:se501_plantheon/data/repository/post_repository_impl.dart';
 import 'package:se501_plantheon/presentation/bloc/community/community_bloc.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/create_post_modal.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/disease_block_widget.dart';
+import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
+import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
 
 class Community extends StatefulWidget {
   const Community({super.key});
@@ -63,7 +65,12 @@ class _CommunityState extends State<Community> {
     return BlocProvider(
       create: (context) => CommunityBloc(
         postRepository: PostRepositoryImpl(
-          remoteDataSource: PostRemoteDataSource(client: http.Client()),
+          remoteDataSource: PostRemoteDataSource(
+            client: http.Client(),
+            tokenStorage:
+                (context.read<AuthBloc>().authRepository as AuthRepositoryImpl)
+                    .tokenStorage,
+          ),
         ),
       )..add(FetchUserPosts('6937d944-c8d9-49b7-94c7-b281c23dbd31')),
       child: SafeArea(

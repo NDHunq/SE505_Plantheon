@@ -13,6 +13,8 @@ import 'package:se501_plantheon/presentation/screens/community/widgets/acction_b
 import 'package:se501_plantheon/presentation/screens/community/widgets/disease_block_widget.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/report_button.dart';
 import 'package:http/http.dart' as http;
+import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
+import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
 
 class PostDetail extends StatelessWidget {
   final String postId;
@@ -24,7 +26,12 @@ class PostDetail extends StatelessWidget {
     return BlocProvider(
       create: (context) => PostDetailBloc(
         postRepository: PostRepositoryImpl(
-          remoteDataSource: PostRemoteDataSource(client: http.Client()),
+          remoteDataSource: PostRemoteDataSource(
+            client: http.Client(),
+            tokenStorage:
+                (context.read<AuthBloc>().authRepository as AuthRepositoryImpl)
+                    .tokenStorage,
+          ),
         ),
       )..add(FetchPostDetail(postId)),
       child: PostDetailView(postId: postId),

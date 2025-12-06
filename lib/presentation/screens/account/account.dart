@@ -14,6 +14,9 @@ import 'package:se501_plantheon/presentation/screens/account/widgets/setting_lis
 import 'package:se501_plantheon/presentation/screens/account/widgets/setting_title_item.dart';
 import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
 import 'package:se501_plantheon/presentation/screens/home/scan_history.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/auth/auth_event.dart';
 
 class Account extends StatelessWidget {
   const Account({super.key});
@@ -126,22 +129,27 @@ class Account extends StatelessWidget {
                 onTap: () {
                   showDialog(
                     context: context,
-                    builder: (context) => BasicDialog(
+                    builder: (dialogContext) => BasicDialog(
                       title: 'Xác nhận đăng xuất',
                       content: 'Bạn có chắc chắn muốn đăng xuất?',
                       confirmText: 'Đăng xuất',
                       cancelText: 'Huỷ',
                       onConfirm: () {
-                        Navigator.of(context).pop();
-                        Navigator.push(
-                          context,
+                        Navigator.of(dialogContext).pop();
+                        // Dispatch logout event to clear token
+                        context.read<AuthBloc>().add(const LogoutRequested());
+
+                        // Navigate to login and remove all previous routes
+                        Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
-                            builder: (BuildContext context) => SignInPage(),
+                            builder: (BuildContext context) =>
+                                const SignInPage(),
                           ),
+                          (route) => false,
                         );
                       },
                       onCancel: () {
-                        Navigator.of(context).pop();
+                        Navigator.of(dialogContext).pop();
                       },
                     ),
                   );
@@ -187,13 +195,13 @@ class _PersonalSettingState extends State<PersonalSetting> {
 
   @override
   Widget build(BuildContext context) {
-    String _selectedLanguage = 'vi';
+    String selectedLanguage = 'vi';
 
-    void _showLanguageDialog() {
+    void showLanguageDialog() {
       showDialog(
         context: context,
         builder: (context) {
-          String tempLanguage = _selectedLanguage;
+          String tempLanguage = selectedLanguage;
           return StatefulBuilder(
             builder: (context, setState) {
               return BasicDialog(
@@ -204,7 +212,7 @@ class _PersonalSettingState extends State<PersonalSetting> {
                 cancelText: 'Huỷ',
                 onConfirm: () {
                   setState(() {
-                    _selectedLanguage = tempLanguage;
+                    selectedLanguage = tempLanguage;
                   });
                 },
                 onCancel: () {},
@@ -323,11 +331,9 @@ class _PersonalSettingState extends State<PersonalSetting> {
                       isNotificationsEnabled = value;
                     });
                   },
-                  thumbColor: MaterialStateProperty.all(AppColors.white),
-                  trackColor: MaterialStateProperty.resolveWith<Color>((
-                    states,
-                  ) {
-                    if (states.contains(MaterialState.selected)) {
+                  thumbColor: WidgetStateProperty.all(AppColors.white),
+                  trackColor: WidgetStateProperty.resolveWith<Color>((states) {
+                    if (states.contains(WidgetState.selected)) {
                       return AppColors.primary_main;
                     }
                     return AppColors.text_color_100;
@@ -337,7 +343,7 @@ class _PersonalSettingState extends State<PersonalSetting> {
             ),
             Divider(height: 1, color: AppColors.white),
             GestureDetector(
-              onTap: _showLanguageDialog,
+              onTap: showLanguageDialog,
               child: SettingListItem(
                 leading: SvgPicture.asset(
                   AppVectors.global,

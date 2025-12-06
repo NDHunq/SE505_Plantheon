@@ -19,6 +19,8 @@ import 'package:se501_plantheon/presentation/bloc/community/community_bloc.dart'
     as community;
 import 'package:se501_plantheon/data/repository/post_repository_impl.dart';
 import 'package:se501_plantheon/data/datasources/post_remote_datasource.dart';
+import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
+import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
 
 class CreatePostModal extends StatefulWidget {
   final String? diseaseId;
@@ -56,6 +58,10 @@ class CreatePostModal extends StatefulWidget {
                 create: (context) {
                   final dataSource = PostRemoteDataSource(
                     client: http.Client(),
+                    tokenStorage:
+                        (context.read<AuthBloc>().authRepository
+                                as AuthRepositoryImpl)
+                            .tokenStorage,
                   );
                   final repository = PostRepositoryImpl(
                     remoteDataSource: dataSource,

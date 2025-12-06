@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/common/widgets/button/sized_button.dart';
+import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/auth/auth_event.dart';
+import 'package:se501_plantheon/presentation/bloc/auth/auth_state.dart';
 import 'package:se501_plantheon/presentation/screens/navigator/navigator.dart';
 import '../../../core/configs/constants/app_info.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/assets/app_text_styles.dart';
+import 'signup.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -17,7 +22,6 @@ class _SignInPageState extends State<SignInPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  String _otp = '';
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _phoneDialogController = TextEditingController();
 
@@ -26,41 +30,78 @@ class _SignInPageState extends State<SignInPage> {
 
   bool _obscureText = true;
   bool isShowErrText = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Check if user is already authenticated when page loads
+    context.read<AuthBloc>().add(const CheckAuthRequested());
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: _bottomText(context),
-      body: Padding(
-        padding: const EdgeInsets.all(AppInfo.main_padding),
-        child: SingleChildScrollView(
-          reverse: true,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: 50.sp),
-              _registerText(),
-              SizedBox(height: 20.sp),
-              _supportText(),
-              SizedBox(height: 25.sp),
-              _buildFormLogin(),
-              SizedBox(height: 40.sp),
-              _dividerWithText('hoặc'),
-              SizedBox(height: 40.sp),
-              _iconGroup(context),
-            ],
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthAuthenticated) {
+          // Navigate to main screen on successful authentication
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => const CustomNavigator(),
+            ),
+          );
+        } else if (state is AuthError) {
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+          );
+        }
+      },
+      builder: (context, state) {
+        // If already authenticated, show loading while redirecting
+        if (state is AuthAuthenticated) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        return Scaffold(
+          bottomNavigationBar: _bottomText(context),
+          body: Padding(
+            padding: const EdgeInsets.all(AppInfo.main_padding),
+            child: SingleChildScrollView(
+              reverse: true,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 50.sp),
+                  _registerText(),
+                  SizedBox(height: 20.sp),
+                  _supportText(),
+                  SizedBox(height: 25.sp),
+                  _buildFormLogin(state),
+                  SizedBox(height: 40.sp),
+                  _dividerWithText('hoặc'),
+                  SizedBox(height: 40.sp),
+                  _iconGroup(context),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildFormLogin() {
+  Widget _buildFormLogin(AuthState state) {
+    final isLoading = state is AuthLoading;
+
     return Form(
       key: _formKey,
       child: Column(
         children: [
-          _userNameField(context),
+          _emailField(context),
           SizedBox(height: 15.sp),
           _passField(context),
           SizedBox(height: 15.sp),
@@ -83,15 +124,20 @@ class _SignInPageState extends State<SignInPage> {
           SizedBox(
             width: double.infinity, // Chiều rộng bằng chiều rộng màn hình
             child: Sizedbutton(
-              text: 'Đăng nhập',
-              onPressFun: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => CustomNavigator(),
-                  ),
-                );
-              },
+              text: isLoading ? 'Đang đăng nhập...' : 'Đăng nhập',
+              onPressFun: isLoading
+                  ? null
+                  : () {
+                      if (_formKey.currentState!.validate()) {
+                        // Dispatch login event to BLoC
+                        context.read<AuthBloc>().add(
+                          LoginRequested(
+                            email: _email.text.trim(),
+                            password: _password.text,
+                          ),
+                        );
+                      }
+                    },
             ),
           ),
         ],
@@ -178,10 +224,12 @@ class _SignInPageState extends State<SignInPage> {
           Text('Bạn chưa có tài khoản?', style: AppTextStyles.s14Regular()),
           TextButton(
             onPressed: () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (BuildContext context) => SignUpPage()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => const SignUpPage(),
+                ),
+              );
             },
             child: Text(
               'Đăng kí ngay',
@@ -193,22 +241,25 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget _userNameField(BuildContext context) {
+  Widget _emailField(BuildContext context) {
     return TextFormField(
       controller: _email,
       decoration: InputDecoration(
-        labelText: 'Số điện thoại',
+        labelText: 'Email',
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12.sp)),
         ),
       ),
+      keyboardType: TextInputType.emailAddress,
       validator: (String? value) {
         if (value == null || value.isEmpty) {
-          return 'Vui lòng nhập số điện thoại';
+          return 'Vui lòng nhập email';
         }
-        bool emailValid = RegExp(r'^\+?[0-9]{10,15}$').hasMatch(value);
+        bool emailValid = RegExp(
+          r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+        ).hasMatch(value);
         if (!emailValid) {
-          return 'Vui lòng nhập đúng định dạng';
+          return 'Vui lòng nhập đúng định dạng email';
         }
         return null;
       },
