@@ -47,7 +47,6 @@ class BasicDialog extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () {
-                    if (onCancel != null) onCancel!();
                     Navigator.of(context).pop();
                   },
                   icon: Icon(Icons.close, color: AppColors.primary_700),

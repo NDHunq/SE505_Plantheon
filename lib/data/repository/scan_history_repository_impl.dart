@@ -10,15 +10,53 @@ class ScanHistoryRepositoryImpl implements ScanHistoryRepository {
   ScanHistoryRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<ScanHistoryEntity>> getAllScanHistory() async {
-    print('🏛️ Repository: Getting all scan history');
-    final List<ScanHistoryModel> models = await remoteDataSource
-        .getAllScanHistory();
+  Future<List<ScanHistoryEntity>> getAllScanHistory({int? size}) async {
+    print('🏛️ Repository: Getting all scan history${size != null ? ' with size=$size' : ''}');
+    final List<ScanHistoryModel> models =
+        await remoteDataSource.getAllScanHistory(size: size);
     print('📦 Repository: Received ${models.length} scan history items');
 
-    final entities = models.map((model) => _mapModelToEntity(model)).toList();
-    print('🔄 Repository: Mapped to entities');
+    final entities = models.map(_mapModelToEntity).toList();
+    print('🔄 Repository: Mapped to ${entities.length} entities');
     return entities;
+  }
+
+  @override
+  Future<ScanHistoryEntity> getScanHistoryById(String id) async {
+    print('🏛️ Repository: Getting scan history by id: $id');
+    final ScanHistoryModel model =
+        await remoteDataSource.getScanHistoryById(id);
+    print('📦 Repository: Received scan history model with id: ${model.id}');
+
+    final entity = _mapModelToEntity(model);
+    print('🔄 Repository: Mapped to entity');
+    return entity;
+  }
+
+  @override
+  Future<ScanHistoryEntity> createScanHistory(String diseaseId, {String? scanImage}) async {
+    print('🏛️ Repository: Creating scan history for disease: $diseaseId');
+    final ScanHistoryModel model =
+        await remoteDataSource.createScanHistory(diseaseId, scanImage: scanImage);
+    print('📦 Repository: Received scan history model with id: ${model.id}');
+
+    final entity = _mapModelToEntity(model);
+    print('🔄 Repository: Mapped to entity');
+    return entity;
+  }
+
+  @override
+  Future<void> deleteAllScanHistory() async {
+    print('🏛️ Repository: Deleting all scan history');
+    await remoteDataSource.deleteAllScanHistory();
+    print('✅ Repository: Deleted all scan history');
+  }
+
+  @override
+  Future<void> deleteScanHistoryById(String id) async {
+    print('🏛️ Repository: Deleting scan history by id: $id');
+    await remoteDataSource.deleteScanHistoryById(id);
+    print('✅ Repository: Deleted scan history with id: $id');
   }
 
   ScanHistoryEntity _mapModelToEntity(ScanHistoryModel model) {
@@ -38,6 +76,7 @@ class ScanHistoryRepositoryImpl implements ScanHistoryRepository {
         plantName: model.disease.plantName,
         solution: model.disease.solution,
       ),
+      scanImage: model.scanImage,
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
     );

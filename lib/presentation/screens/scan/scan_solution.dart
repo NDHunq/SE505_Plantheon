@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
 import 'package:se501_plantheon/data/datasources/keyword_activities_remote_datasource.dart';
@@ -19,20 +20,20 @@ import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dar
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_event.dart';
 import 'package:se501_plantheon/presentation/screens/scan/community_suggestion_widget.dart';
-
-import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
-import 'package:se501_plantheon/presentation/bloc/disease/disease_event.dart';
-import 'package:se501_plantheon/presentation/bloc/disease/disease_state.dart';
-import 'package:se501_plantheon/data/models/diseases.model.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_event.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_state.dart';
+import 'package:se501_plantheon/domain/entities/disease_entity.dart';
 import 'package:se501_plantheon/presentation/screens/scan/disease_description.dart';
+import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
 import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 
 class ScanSolution extends StatefulWidget {
-  final String diseaseLabel;
-  const ScanSolution({super.key, required this.diseaseLabel});
+  final String scanHistoryId;
+  const ScanSolution({super.key, required this.scanHistoryId});
 
   @override
   State<ScanSolution> createState() => _ScanSolutionState();
@@ -43,12 +44,12 @@ class _ScanSolutionState extends State<ScanSolution> {
   void initState() {
     super.initState();
     print(
-      '🚀 ScanSolution: initState called with diseaseLabel: ${widget.diseaseLabel}',
+      '🚀 ScanSolution: initState called with scanHistoryId: ${widget.scanHistoryId}',
     );
-    context.read<DiseaseBloc>().add(
-      GetDiseaseEvent(diseaseId: widget.diseaseLabel),
+    context.read<ScanHistoryBloc>().add(
+      GetScanHistoryByIdEvent(id: widget.scanHistoryId),
     );
-    print('📤 ScanSolution: GetDiseaseEvent sent to BLoC');
+    print('📤 ScanSolution: GetScanHistoryByIdEvent sent to BLoC');
   }
 
   @override
@@ -61,11 +62,11 @@ class _ScanSolutionState extends State<ScanSolution> {
           SizedBox(width: 16),
         ],
       ),
-      body: BlocBuilder<DiseaseBloc, DiseaseState>(
+      body: BlocBuilder<ScanHistoryBloc, ScanHistoryState>(
         builder: (context, state) {
-          if (state is DiseaseLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is DiseaseError) {
+          if (state is ScanHistoryLoading) {
+            return const Center(child: LoadingIndicator());
+          } else if (state is ScanHistoryError) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -76,8 +77,8 @@ class _ScanSolutionState extends State<ScanSolution> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<DiseaseBloc>().add(
-                        GetDiseaseEvent(diseaseId: widget.diseaseLabel),
+                      context.read<ScanHistoryBloc>().add(
+                        GetScanHistoryByIdEvent(id: widget.scanHistoryId),
                       );
                     },
                     child: const Text('Thử lại'),
@@ -85,8 +86,10 @@ class _ScanSolutionState extends State<ScanSolution> {
                 ],
               ),
             );
-          } else if (state is DiseaseSuccess) {
-            final disease = state.disease;
+          } else if (state is GetScanHistoryByIdSuccess) {
+            final scanHistory = state.scanHistory;
+            final disease = scanHistory.disease;
+
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
@@ -108,10 +111,13 @@ class _ScanSolutionState extends State<ScanSolution> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _DiagnosisCard(disease: disease),
+                  _DiagnosisCard(
+                    disease: disease,
+                    scanImageUrl: scanHistory.scanImage,
+                  ),
                   const SizedBox(height: 20),
                   Divider(height: 32, thickness: 1, color: Color(0xFFE0E0E0)),
-                  // 2. Recommended Product
+                  // 2. Recommended Solution
                   _SectionTitle(index: 2, title: 'Giải pháp khuyến nghị'),
                   const SizedBox(height: 8),
                   Container(
@@ -246,176 +252,102 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _DiagnosisCard extends StatelessWidget {
-  final DiseaseModel disease;
-  const _DiagnosisCard({required this.disease});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        print(
-          '🚀 DiagnosisCard: Tapped on disease card with label: ${disease.id}',
-        );
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BlocProvider<DiseaseBloc>(
-              create: (context) => DiseaseBloc(
-                getDisease: GetDisease(
-                  repository: DiseaseRepositoryImpl(
-                    remoteDataSource: DiseaseRemoteDataSourceImpl(
-                      client: http.Client(),
-                      baseUrl: ApiConstants.diseaseApiUrl,
-                    ),
-                  ),
-                ),
-              ),
-              child: DiseaseDescriptionScreen(
-                diseaseLabel: disease.className,
-                isPreview: true,
-              ),
-            ),
-          ),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFE0E0E0)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: InkWell(
-          onTap: () {
-            print(
-              '🚀 DiagnosisCard: Tapped on disease card with label: ${disease.id}',
-            );
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BlocProvider<DiseaseBloc>(
-                  create: (context) => DiseaseBloc(
-                    getDisease: GetDisease(
-                      repository: DiseaseRepositoryImpl(
-                        remoteDataSource: DiseaseRemoteDataSourceImpl(
-                          client: http.Client(),
-                          baseUrl: ApiConstants.diseaseApiUrl,
-                        ),
-                      ),
-                    ),
-                  ),
-                  child: DiseaseDescriptionScreen(
-                    diseaseLabel: disease.className,
-                    isPreview: true,
-                  ),
-                ),
-              ),
-            );
-          },
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(12),
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: disease.imageLink.isNotEmpty
-                  ? Image.network(
-                      disease.imageLink[0],
-                      width: 56,
-                      height: 56,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.network(
-                          'https://wallpapers.com/images/hd/banana-tree-pictures-fta1lapzcih69mdr.jpg',
-                          width: 56,
-                          height: 56,
-                          fit: BoxFit.cover,
-                        );
-                      },
-                    )
-                  : Image.asset(
-                      'assets/images/plants.jpg',
-                      width: 56,
-                      height: 56,
-                      fit: BoxFit.cover,
-                    ),
-            ),
-            title: Text(
-              disease.name,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(disease.type),
-            trailing: InkWell(
-              onTap: () {
-                print(
-                  '🚀 DiagnosisCard: Tapped on disease card with label: ${disease.id}',
-                );
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BlocProvider<DiseaseBloc>(
-                      create: (context) => DiseaseBloc(
-                        getDisease: GetDisease(
-                          repository: DiseaseRepositoryImpl(
-                            remoteDataSource: DiseaseRemoteDataSourceImpl(
-                              client: http.Client(),
-                              baseUrl: ApiConstants.diseaseApiUrl,
-                            ),
-                          ),
-                        ),
-                      ),
-                      child: DiseaseDescriptionScreen(
-                        diseaseLabel: disease.className,
-                        isPreview: true,
-                      ),
-                    ),
-                  ),
-                );
-              },
-              child: const Icon(
-                Icons.chevron_right_rounded,
-                color: Color(0xFF757575),
-              ),
-            ),
-            onTap: () {},
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ProductDropdown extends StatefulWidget {
-  @override
-  State<_ProductDropdown> createState() => _ProductDropdownState();
-}
-
-class _ProductDropdownState extends State<_ProductDropdown> {
-  String value = 'Lúa nước';
-  final items = ['Lúa nước', 'Ngô', 'Khoai', 'Cà chua'];
+  final DiseaseEntity disease;
+  final String? scanImageUrl;
+  const _DiagnosisCard({required this.disease, this.scanImageUrl});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F8E9),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFB2DFDB)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-          icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 20),
-          items: items
-              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-              .toList(),
-          onChanged: (v) => setState(() => value = v!),
+      child: InkWell(
+        onTap: () {
+          print(
+            '🚀 DiagnosisCard: Tapped on disease card with label: ${disease.id}',
+          );
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BlocProvider<DiseaseBloc>(
+                create: (context) => DiseaseBloc(
+                  getDisease: GetDisease(
+                    repository: DiseaseRepositoryImpl(
+                      remoteDataSource: DiseaseRemoteDataSourceImpl(
+                        client: http.Client(),
+                        baseUrl: ApiConstants.diseaseApiUrl,
+                      ),
+                    ),
+                  ),
+                ),
+                child: DiseaseDescriptionScreen(
+                  diseaseLabel: disease.className,
+                  isPreview: true,
+                  myImageLink: scanImageUrl,
+                ),
+              ),
+            ),
+          );
+        },
+        child: ListTile(
+          contentPadding: const EdgeInsets.all(12),
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: scanImageUrl != null
+                ? Image.network(
+                    scanImageUrl!,
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return disease.imageLink.isNotEmpty
+                          ? Image.network(
+                              disease.imageLink[0],
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              'assets/images/plants.jpg',
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                            );
+                    },
+                  )
+                : disease.imageLink.isNotEmpty
+                ? Image.network(
+                    disease.imageLink[0],
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                  )
+                : Image.asset(
+                    'assets/images/plants.jpg',
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                  ),
+          ),
+          title: Text(
+            disease.name,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(disease.type),
+          trailing: const Icon(
+            Icons.chevron_right_rounded,
+            color: Color(0xFF757575),
+          ),
         ),
       ),
     );

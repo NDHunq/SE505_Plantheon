@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/report_button.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
@@ -140,7 +141,7 @@ class _CommunityState extends State<Community> {
           body: BlocBuilder<CommunityBloc, CommunityState>(
             builder: (context, state) {
               if (state is CommunityLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: LoadingIndicator());
               } else if (state is CommunityError) {
                 return Center(child: Text(state.message));
               } else if (state is CommunityLoaded) {

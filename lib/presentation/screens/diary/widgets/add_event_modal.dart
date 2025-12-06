@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 
 /// Modal để thêm sự kiện mới
 class AddEventModal extends StatefulWidget {
@@ -394,10 +395,7 @@ class _AddEventModalState extends State<AddEventModal> {
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
+                      child: LoadingIndicator(),
                     )
                   : const Text(
                       'Lưu sự kiện',

@@ -17,3 +17,19 @@ class ScanHistoryError extends ScanHistoryState {
 
   ScanHistoryError({required this.message});
 }
+
+class CreateScanHistorySuccess extends ScanHistoryState {
+  final ScanHistoryEntity scanHistory;
+
+  CreateScanHistorySuccess({required this.scanHistory});
+}
+
+class GetScanHistoryByIdSuccess extends ScanHistoryState {
+  final ScanHistoryEntity scanHistory;
+
+  GetScanHistoryByIdSuccess({required this.scanHistory});
+}
+
+class DeleteAllScanHistorySuccess extends ScanHistoryState {}
+
+class DeleteScanHistoryByIdSuccess extends ScanHistoryState {}

@@ -15,6 +15,7 @@ import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_act
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_event.dart';
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_state.dart';
 import 'package:se501_plantheon/domain/entities/keyword_activity_entity.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 
 enum ActivityType { chiTieu, banSanPham, kyThuat, dichBenh, kinhKhi, khac }
 
@@ -145,12 +146,7 @@ class ActivitiesSuggestionList extends StatelessWidget {
     return BlocBuilder<KeywordActivitiesBloc, KeywordActivitiesState>(
       builder: (context, state) {
         if (state is KeywordActivitiesLoading) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(20),
-              child: CircularProgressIndicator(),
-            ),
-          );
+          return const LoadingIndicator();
         }
 
         if (state is KeywordActivitiesError) {
@@ -949,16 +945,7 @@ class __AddButtonState extends State<_AddButton> {
         child: IconButton(
           padding: EdgeInsets.zero,
           icon: _isLoading
-              ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      widget.accentColor,
-                    ),
-                  ),
-                )
+              ? SizedBox(width: 20, height: 20, child: LoadingIndicator())
               : _isAdded
               ? Icon(Icons.check_circle, color: widget.accentColor, size: 20)
               : Icon(

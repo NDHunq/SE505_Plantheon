@@ -6,6 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
@@ -114,28 +115,43 @@ class _ScanState extends State<Scan> {
 
       print('✅ Phân tích thành công: ${result.topPrediction?.label}');
 
-      // Chuyển sang trang scan_solution và truyền label
       if (mounted && result.topPrediction != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BlocProvider<DiseaseBloc>(
-              create: (context) => DiseaseBloc(
-                getDisease: GetDisease(
-                  repository: DiseaseRepositoryImpl(
-                    remoteDataSource: DiseaseRemoteDataSourceImpl(
-                      client: http.Client(),
-                      baseUrl: ApiConstants.diseaseApiUrl,
-                    ),
-                  ),
-                ),
-              ),
-              child: DiseaseDescriptionScreen(
-                diseaseLabel: result.topPrediction!.label,
-              ),
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => Center(
+            child: SizedBox(
+              width: 100,
+              height: 100,
+              child: Image.asset('assets/gif/magnify.gif', fit: BoxFit.contain),
             ),
           ),
         );
+        await Future.delayed(const Duration(seconds: 2));
+        if (mounted) {
+          Navigator.of(context).pop();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BlocProvider<DiseaseBloc>(
+                create: (context) => DiseaseBloc(
+                  getDisease: GetDisease(
+                    repository: DiseaseRepositoryImpl(
+                      remoteDataSource: DiseaseRemoteDataSourceImpl(
+                        client: http.Client(),
+                        baseUrl: ApiConstants.diseaseApiUrl,
+                      ),
+                    ),
+                  ),
+                ),
+                child: DiseaseDescriptionScreen(
+                  diseaseLabel: result.topPrediction!.label,
+                  myImage: _image,
+                ),
+              ),
+            ),
+          );
+        }
       }
     } catch (e) {
       setState(() {
@@ -184,7 +200,7 @@ class _ScanState extends State<Scan> {
                     ),
                   )
                 : (!_isCameraReady || _cameraController == null)
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: LoadingIndicator())
                 : CameraPreview(_cameraController!),
           ),
           // Overlay nút chức năng
@@ -272,10 +288,7 @@ class _ScanState extends State<Scan> {
                         ? const SizedBox(
                             height: 20,
                             width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
+                            child: LoadingIndicator(),
                           )
                         : Text(
                             'Phân tích ảnh',

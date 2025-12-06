@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/services/supabase_service.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
@@ -367,7 +368,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
           if (_isLoading)
             const Padding(
               padding: EdgeInsets.all(16.0),
-              child: CircularProgressIndicator(),
+              child: LoadingIndicator(),
             ),
 
           // Error message

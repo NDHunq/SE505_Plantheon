@@ -5,6 +5,7 @@ class ScanHistoryEntity {
   final String userId;
   final String diseaseId;
   final DiseaseEntity disease;
+  final String? scanImage;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -13,6 +14,7 @@ class ScanHistoryEntity {
     required this.userId,
     required this.diseaseId,
     required this.disease,
+    this.scanImage,
     required this.createdAt,
     required this.updatedAt,
   });

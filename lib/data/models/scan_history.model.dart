@@ -5,6 +5,7 @@ class ScanHistoryModel {
   final String userId;
   final String diseaseId;
   final DiseaseModel disease;
+  final String? scanImage;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -13,6 +14,7 @@ class ScanHistoryModel {
     required this.userId,
     required this.diseaseId,
     required this.disease,
+    this.scanImage,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -23,6 +25,7 @@ class ScanHistoryModel {
       userId: json['user_id'] as String? ?? '',
       diseaseId: json['disease_id'] as String? ?? '',
       disease: DiseaseModel.fromJson(json['disease'] as Map<String, dynamic>),
+      scanImage: json['scan_image'] as String?,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),
@@ -38,6 +41,7 @@ class ScanHistoryModel {
       'user_id': userId,
       'disease_id': diseaseId,
       'disease': disease.toJson(),
+      if (scanImage != null) 'scan_image': scanImage,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -74,5 +78,48 @@ class GetAllScanHistoryResponseModel {
         'total': total,
       },
     };
+  }
+}
+
+class CreateScanHistoryRequestModel {
+  final String diseaseId;
+  final String? scanImage;
+
+  CreateScanHistoryRequestModel({
+    required this.diseaseId,
+    this.scanImage,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'disease_id': diseaseId,
+      if (scanImage != null) 'scan_image': scanImage,
+    };
+  }
+}
+
+class CreateScanHistoryResponseModel {
+  final ScanHistoryModel scanHistory;
+
+  CreateScanHistoryResponseModel({required this.scanHistory});
+
+  factory CreateScanHistoryResponseModel.fromJson(Map<String, dynamic> json) {
+    final data = json['data'] as Map<String, dynamic>;
+    return CreateScanHistoryResponseModel(
+      scanHistory: ScanHistoryModel.fromJson(data),
+    );
+  }
+}
+
+class GetScanHistoryByIdResponseModel {
+  final ScanHistoryModel scanHistory;
+
+  GetScanHistoryByIdResponseModel({required this.scanHistory});
+
+  factory GetScanHistoryByIdResponseModel.fromJson(Map<String, dynamic> json) {
+    final data = json['data'] as Map<String, dynamic>;
+    return GetScanHistoryByIdResponseModel(
+      scanHistory: ScanHistoryModel.fromJson(data),
+    );
   }
 }

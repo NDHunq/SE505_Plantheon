@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/presentation/screens/diary/diary.dart';
 
 /// Full-screen loading screen với hiệu ứng đẹp và xử lý system UI overlays
@@ -234,12 +235,7 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                                   width: 4,
                                 ),
                               ),
-                              child: CircularProgressIndicator(
-                                strokeWidth: 4,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white.withOpacity(0.9),
-                                ),
-                              ),
+                              child: LoadingIndicator(),
                             ),
                           ),
 

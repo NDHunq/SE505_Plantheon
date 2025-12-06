@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
@@ -82,7 +83,7 @@ class _BillOfYearState extends State<BillOfYear> {
       bloc: _financialBloc,
       builder: (context, state) {
         if (state is MultiYearFinancialLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: LoadingIndicator());
         }
 
         if (state is FinancialError) {

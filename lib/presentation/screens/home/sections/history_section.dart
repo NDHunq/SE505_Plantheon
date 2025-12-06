@@ -1,12 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_event.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_provider.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_state.dart';
 import 'package:se501_plantheon/presentation/screens/home/scan_history.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/history_card.dart';
+import 'package:intl/intl.dart';
+import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
 
-class HistorySection extends StatelessWidget {
+class HistorySection extends StatefulWidget {
   const HistorySection({super.key});
+
+  @override
+  State<HistorySection> createState() => _HistorySectionState();
+}
+
+class _HistorySectionState extends State<HistorySection> {
+  @override
+  void initState() {
+    super.initState();
+    // Dispatch event to fetch 3 scan history items
+    context.read<ScanHistoryBloc>().add(GetAllScanHistoryEvent(size: 3));
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    return DateFormat('dd/MM/yyyy HH:mm').format(dateTime);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,34 +60,83 @@ class HistorySection extends StatelessWidget {
             ),
           ],
         ),
-        Column(
-          children: [
-            HistoryCard(
-              title: 'Cây trồng 1',
-              dateTime: '20/10/2023 14:30',
-              isSuccess: true,
-            ),
-            Divider(
-              height: 16.sp,
-              color: AppColors.text_color_100,
-              thickness: 1.sp,
-            ),
-            HistoryCard(
-              title: 'Cây trồng 2',
-              dateTime: '21/10/2023 10:00',
-              isSuccess: false,
-            ),
-            Divider(
-              height: 16.sp,
-              color: AppColors.text_color_100,
-              thickness: 1.sp,
-            ),
-            HistoryCard(
-              title: 'Cây trồng 3',
-              dateTime: '22/10/2023 09:00',
-              isSuccess: true,
-            ),
-          ],
+        BlocBuilder<ScanHistoryBloc, ScanHistoryState>(
+          builder: (context, state) {
+            if (state is ScanHistoryLoading) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.sp),
+                  child: LoadingIndicator(),
+                ),
+              );
+            } else if (state is ScanHistorySuccess) {
+              if (state.scanHistories.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.sp),
+                    child: Text(
+                      'Chưa có lịch sử quét bệnh',
+                      style: AppTextStyles.s14Regular(
+                        color: AppColors.text_color_300,
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              return Column(
+                children: List.generate(state.scanHistories.length, (index) {
+                  final scanHistory = state.scanHistories[index];
+                  final disease = scanHistory.disease;
+
+                  return Column(
+                    children: [
+                      if (index > 0)
+                        Divider(
+                          height: 16.sp,
+                          color: AppColors.text_color_100,
+                          thickness: 1.sp,
+                        ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ScanHistoryProvider(
+                                child: ScanSolution(
+                                  scanHistoryId: scanHistory.id,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        child: HistoryCard(
+                          title: disease.name,
+                          dateTime: _formatDateTime(scanHistory.createdAt),
+                          isSuccess: true,
+                          scanImageUrl:
+                              scanHistory.scanImage ??
+                              'https://via.placeholder.com/150',
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+              );
+            } else if (state is ScanHistoryError) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.sp),
+                  child: Text(
+                    'Lỗi: ${state.message}',
+                    style: AppTextStyles.s14Regular(color: Colors.red),
+                  ),
+                ),
+              );
+            }
+
+            return const SizedBox.shrink();
+          },
         ),
       ],
     );

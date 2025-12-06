@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/data/models/activities_models.dart';
 import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
@@ -125,9 +126,7 @@ class _MonthScreenState extends State<MonthScreen> {
                     child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
                       builder: (context, state) {
                         if (state is ActivitiesLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
+                          return const Center(child: LoadingIndicator());
                         }
                         if (state is ActivitiesLoaded) {
                           return _buildCalendar(state);
@@ -149,12 +148,7 @@ class _MonthScreenState extends State<MonthScreen> {
                 child: const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                        strokeWidth: 3,
-                      ),
-                    ],
+                    children: [LoadingIndicator()],
                   ),
                 ),
               ),

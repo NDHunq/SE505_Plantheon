@@ -1,35 +1,40 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:http/http.dart' as http;
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
-import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
-import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/data/models/diseases.model.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_event.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_state.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_event.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_state.dart';
+import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_provider.dart';
 import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
-import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart';
-import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
-import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
-import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
+import 'package:se501_plantheon/presentation/screens/scan/image_comparison_screen.dart';
 
 class DiseaseDescriptionScreen extends StatefulWidget {
   final String diseaseLabel;
   final bool isPreview;
   final List<String>? otherdiseaseLabels;
+  final File? myImage;
+  final String? myImageLink;
 
   const DiseaseDescriptionScreen({
     super.key,
     required this.diseaseLabel,
     this.isPreview = false,
     this.otherdiseaseLabels,
+    this.myImage,
+    this.myImageLink,
   });
 
   @override
@@ -38,7 +43,8 @@ class DiseaseDescriptionScreen extends StatefulWidget {
 }
 
 class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
-  final PageController _pageController = PageController();
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
   int _currentImageIndex = 0;
 
   @override
@@ -51,11 +57,11 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
       GetDiseaseEvent(diseaseId: widget.diseaseLabel),
     );
     print('📤 Screen: GetDiseaseEvent sent to BLoC');
+    print("my image link in initState: ${widget.myImageLink}");
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
     super.dispose();
   }
 
@@ -65,37 +71,37 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
       backgroundColor: AppColors.primary_100,
       appBar: BasicAppbar(
         title: "Chẩn đoán",
-        actions: [
-          GestureDetector(
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => BasicDialog(
-                  title: 'Xóa chẩn đoán',
-                  content: 'Bạn có chắc chắn muốn xóa chẩn đoán này?',
-                  confirmText: 'Xóa',
-                  cancelText: 'Huỷ',
-                  onConfirm: () {},
-                  onCancel: () {},
-                ),
-              );
-            },
-            child: SvgPicture.asset(
-              AppVectors.trash,
-              width: 24.sp,
-              height: 24.sp,
-              color: AppColors.red,
-            ),
-          ),
-          SizedBox(width: 16.sp),
-        ],
+        // actions: [
+        //   GestureDetector(
+        //     onTap: () {
+        //       showDialog(
+        //         context: context,
+        //         builder: (context) => BasicDialog(
+        //           title: 'Xóa chẩn đoán',
+        //           content: 'Bạn có chắc chắn muốn xóa chẩn đoán này?',
+        //           confirmText: 'Xóa',
+        //           cancelText: 'Huỷ',
+        //           onConfirm: () {},
+        //           onCancel: () {},
+        //         ),
+        //       );
+        //     },
+        //     child: SvgPicture.asset(
+        //       AppVectors.trash,
+        //       width: 24.sp,
+        //       height: 24.sp,
+        //       color: AppColors.red,
+        //     ),
+        //   ),
+        //   SizedBox(width: 16.sp),
+        // ],
       ),
       body: BlocBuilder<DiseaseBloc, DiseaseState>(
         builder: (context, state) {
           print('🔄 UI: BlocBuilder rebuild with state: ${state.runtimeType}');
           if (state is DiseaseLoading) {
             print('⏳ UI: Showing loading state');
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: LoadingIndicator());
           } else if (state is DiseaseError) {
             print('❌ UI: Showing error state: ${state.message}');
             return Center(
@@ -125,6 +131,8 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
             print(
               '✅ UI: Showing success state with disease: ${state.disease.name}',
             );
+            final disease =
+                state.disease; // Capture disease for use in nested builders
             return Column(
               children: [
                 Expanded(
@@ -190,101 +198,135 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                 ),
                 widget.isPreview
                     ? const SizedBox.shrink()
-                    : Column(
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.only(
-                              left: 16.sp,
-                              right: 16.sp,
-                              top: 16.sp,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, -2),
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                print(
-                                  '➡️ Navigating to ScanSolution with diseaseLabel: ${widget.diseaseLabel}',
-                                );
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        BlocProvider<DiseaseBloc>(
-                                          create: (context) => DiseaseBloc(
-                                            getDisease: GetDisease(
-                                              repository: DiseaseRepositoryImpl(
-                                                remoteDataSource:
-                                                    DiseaseRemoteDataSourceImpl(
-                                                      client: http.Client(),
-                                                      baseUrl: ApiConstants
-                                                          .diseaseApiUrl,
-                                                    ),
+                    : ScanHistoryProvider(
+                        child: Column(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.only(
+                                left: 16.sp,
+                                right: 16.sp,
+                                top: 16.sp,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, -2),
+                                  ),
+                                ],
+                              ),
+                              child: BlocConsumer<ScanHistoryBloc, ScanHistoryState>(
+                                listener: (context, state) {
+                                  if (state is CreateScanHistorySuccess) {
+                                    print(
+                                      '✅ UI: Scan history created successfully with id: ${state.scanHistory.id}',
+                                    );
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ScanHistoryProvider(
+                                              child: ScanSolution(
+                                                scanHistoryId:
+                                                    state.scanHistory.id,
                                               ),
                                             ),
-                                          ),
-                                          child: ScanSolution(
-                                            diseaseLabel: widget.diseaseLabel,
-                                          ),
+                                      ),
+                                    );
+                                  } else if (state is ScanHistoryError) {
+                                    print(
+                                      '❌ UI: Error creating scan history: ${state.message}',
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Lỗi: ${state.message}'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                },
+                                builder: (context, state) {
+                                  final isLoading = state is ScanHistoryLoading;
+                                  return ElevatedButton(
+                                    onPressed: isLoading
+                                        ? null
+                                        : () {
+                                            print(
+                                              '🔘 UI: Confirm button pressed, creating scan history for disease: ${disease.id}',
+                                            );
+
+                                            context.read<ScanHistoryBloc>().add(
+                                              CreateScanHistoryEvent(
+                                                diseaseId: disease.id,
+                                                scanImage: widget.myImage,
+                                              ),
+                                            );
+                                          },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primary_main,
+                                      foregroundColor: Colors.white,
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 16.sp,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          12.sp,
                                         ),
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                    child: isLoading
+                                        ? SizedBox(
+                                            height: 20.sp,
+                                            width: 20.sp,
+                                            child: LoadingIndicator(),
+                                          )
+                                        : Text(
+                                            'Xác nhận & Xem điều trị',
+                                            style: AppTextStyles.s16SemiBold(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                  );
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(16.sp),
+                              decoration: BoxDecoration(color: Colors.white),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // TODO: Handle button press
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.white,
+                                  foregroundColor: AppColors.primary_main,
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 16.sp,
                                   ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary_main,
-                                foregroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(vertical: 16.sp),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.sp),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.sp),
+                                  ),
+                                  side: BorderSide(
+                                    color: AppColors.primary_main,
+                                    width: 1,
+                                  ),
+                                  elevation: 0,
                                 ),
-                                elevation: 0,
-                              ),
-                              child: Text(
-                                'Xác nhận & Xem điều trị',
-                                style: AppTextStyles.s16SemiBold(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.all(16.sp),
-                            decoration: BoxDecoration(color: Colors.white),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // TODO: Handle button press
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.white,
-                                foregroundColor: AppColors.primary_main,
-                                padding: EdgeInsets.symmetric(vertical: 16.sp),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.sp),
-                                ),
-                                side: BorderSide(
-                                  color: AppColors.primary_main,
-                                  width: 1,
-                                ),
-                                elevation: 0,
-                              ),
-                              child: Text(
-                                'Xem các chẩn đoán tương tự',
-                                style: AppTextStyles.s16SemiBold(
-                                  color: AppColors.primary_main,
+                                child: Text(
+                                  'Xem các chẩn đoán tương tự',
+                                  style: AppTextStyles.s16SemiBold(
+                                    color: AppColors.primary_main,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
               ],
             );
@@ -328,47 +370,87 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 8.sp),
-        SizedBox(
-          height: 200.sp,
-          child: PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) {
+        CarouselSlider.builder(
+          carouselController: _carouselController,
+          itemCount: disease.imageLink.length,
+          itemBuilder: (context, index, realIndex) {
+            return Stack(
+              children: [
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 2.sp),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      disease.imageLink[index],
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.network(
+                          'https://wallpapers.com/images/hd/banana-tree-pictures-fta1lapzcih69mdr.jpg',
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 12.sp,
+                  right: 20.sp,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ImageComparisonScreen(
+                            myImage: widget.myImage != null
+                                ? widget.myImage!
+                                : File(''),
+                            diseaseImageUrls: disease.imageLink,
+                            initialIndex: index,
+                            myImageLink: widget.myImageLink ?? '',
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.3),
+                        shape: BoxShape.circle,
+                      ),
+                      padding: EdgeInsets.all(8.sp),
+                      child: Icon(
+                        Icons.ads_click_rounded,
+                        color: AppColors.white,
+                        size: 26.sp,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+          options: CarouselOptions(
+            height: 200.sp,
+            viewportFraction: 0.8,
+            enlargeCenterPage: true,
+            enlargeFactor: 0.2,
+            autoPlay: true,
+            autoPlayCurve: Curves.fastOutSlowIn,
+            onPageChanged: (index, reason) {
               setState(() {
                 _currentImageIndex = index;
               });
-            },
-            itemCount: disease.imageLink.length,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: EdgeInsets.symmetric(
-                  horizontal: AppConstraints.mainPadding.sp,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    disease.imageLink[index],
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.network(
-                        'https://wallpapers.com/images/hd/banana-tree-pictures-fta1lapzcih69mdr.jpg',
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                      );
-                    },
-                  ),
-                ),
-              );
             },
           ),
         ),

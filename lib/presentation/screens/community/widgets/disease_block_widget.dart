@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
 
 class DiseaseBlockWidget extends StatefulWidget {
   final String? diseaseLink;
@@ -205,6 +206,37 @@ class _DiseaseBlockWidgetState extends State<DiseaseBlockWidget> {
                     ),
                     SizedBox(height: 12.sp),
                   ],
+                  // Scan solution button
+                  if (widget.scanHistoryId != null &&
+                      widget.scanHistoryId!.isNotEmpty)
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ScanSolution(
+                                scanHistoryId: widget.scanHistoryId!,
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.orange,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(vertical: 12.sp),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.sp),
+                          ),
+                        ),
+                        icon: Icon(Icons.medical_services, size: 16.sp),
+                        label: Text(
+                          'Xem giải pháp chi tiết',
+                          style: AppTextStyles.s12Bold(color: Colors.white),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

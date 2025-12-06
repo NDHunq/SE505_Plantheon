@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:se501_plantheon/common/helpers/dayCompare.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/common/widgets/textfield/text_field.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/supabase_service.dart';
@@ -1216,7 +1217,7 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                       if (_isUploadingImage)
                         const Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Center(child: CircularProgressIndicator()),
+                          child: Center(child: LoadingIndicator()),
                         )
                       else if (attachedLink != null && attachedLink!.isNotEmpty)
                         Column(
