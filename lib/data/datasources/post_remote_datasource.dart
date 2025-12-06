@@ -14,16 +14,10 @@ class PostRemoteDataSource {
     final url =
         '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts/user/$userId';
 
-<<<<<<< HEAD
     final token = await tokenStorage.getToken();
     if (token == null) {
       throw Exception('User not authenticated');
     }
-=======
-    // Hardcoded token as requested by user
-    final token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDg0OWZlZmMtZmRmMi00NDFmLWJiNWUtODMxOGQzOTA0Yjk0IiwiZW1haWwiOiJhZG1pcWV3ZTFuQHdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc1ODQzNjg4MH0.AXf8UyN6ODcYV68n3XBP3EnD-8WzSDqzklsUnYqBfwE';
->>>>>>> 30a0bf47bd164aa9cbb643a27ad89e4f56cd9071
 
     final response = await client.get(
       Uri.parse(url),
