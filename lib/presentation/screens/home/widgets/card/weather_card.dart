@@ -21,8 +21,8 @@ class _WeatherCardState extends State<WeatherCard> {
   bool _isLoading = true;
   String _error = '';
   // Vị trí mặc định giống màn hình chi tiết thời tiết
-  static const double _defaultLat = 10.75;
-  static const double _defaultLon = 106.75;
+  static const double _defaultLat = 10.8704192;
+  static const double _defaultLon = 106.79953;
 
   @override
   void initState() {

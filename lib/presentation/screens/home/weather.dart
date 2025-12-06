@@ -28,9 +28,9 @@ class _WeatherState extends State<Weather> {
   WeatherData? _weatherData;
   String _error = '';
   bool _isLoading = false;
-  String _locationName = 'Bình Thạnh';
-  double _latitude = 10.75;
-  double _longitude = 106.75;
+  String _locationName = 'Thủ Đức';
+  double _latitude = 10.8704192;
+  double _longitude = 106.79953;
   int? _selectedHourIndex; // Lưu index của giờ được chọn
 
   @override

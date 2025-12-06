@@ -8,6 +8,7 @@ import 'package:se501_plantheon/presentation/screens/home/chat_bot.dart';
 import 'package:se501_plantheon/presentation/screens/home/sections/disease_warning_section.dart';
 import 'package:se501_plantheon/presentation/screens/home/sections/history_section.dart';
 import 'package:se501_plantheon/presentation/screens/home/sections/service_section.dart';
+import 'package:se501_plantheon/presentation/bloc/plant/plant_provider.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_provider.dart';
 
 class Home extends StatelessWidget {
@@ -43,10 +44,8 @@ class Home extends StatelessWidget {
               spacing: 16.sp,
               children: [
                 WeatherCard(),
-                ServiceSection(),
-                ScanHistoryProvider(
-                  child: const HistorySection(),
-                ),
+                PlantProvider(child: const PlantSection()),
+                ScanHistoryProvider(child: const HistorySection()),
                 DiseaseWarningSection(),
                 SizedBox(height: 16.sp),
               ],
