@@ -33,7 +33,7 @@ class WeatherCard extends StatelessWidget {
                   color: AppColors.primary_main,
                   borderRadius: BorderRadius.circular(100),
                 ),
-                child: Icon(Icons.menu, size: 24, color: Colors.white),
+                child: Icon(Icons.wb_cloudy, size: 24, color: Colors.white),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

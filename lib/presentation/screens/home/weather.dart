@@ -31,6 +31,7 @@ class _WeatherState extends State<Weather> {
   String _locationName = 'Bình Thạnh';
   double _latitude = 10.75;
   double _longitude = 106.75;
+  int? _selectedHourIndex; // Lưu index của giờ được chọn
 
   @override
   void initState() {
@@ -212,126 +213,160 @@ class _WeatherState extends State<Weather> {
                 style: AppTextStyles.s14Regular(color: AppColors.white),
               ),
             )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+          : Builder(
+              builder: (context) {
+                // Lấy danh sách các giờ tiếp theo
+                final futureHourlyWeather = _weatherData!.hourlyWeather
+                    .where(
+                      (hourly) =>
+                          hourly.time.isAfter(DateTime.now()) ||
+                          hourly.time.hour == DateTime.now().hour,
+                    )
+                    .take(7)
+                    .toList();
+
+                // Nếu chưa chọn giờ nào, mặc định chọn giờ hiện tại (index 0)
+                if (_selectedHourIndex == null ||
+                    _selectedHourIndex! >= futureHourlyWeather.length) {
+                  _selectedHourIndex = 0;
+                }
+
+                final selectedHourlyWeather =
+                    futureHourlyWeather[_selectedHourIndex!];
+
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    SvgPicture.asset(
-                      _getWeatherIcon(_weatherData!.currentWeatherType),
-                      width: 110.sp,
-                      height: 110.sp,
-                    ),
-                    SizedBox(width: 60.sp),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          _formatCurrentDate(),
-                          style: AppTextStyles.s14Bold(
-                            color: AppColors.primary_700,
-                          ),
+                        SvgPicture.asset(
+                          _getWeatherIcon(selectedHourlyWeather.weatherType),
+                          width: 110.sp,
+                          height: 110.sp,
                         ),
-                        Text(
-                          '${_weatherData!.currentTemperature.toDouble().round()}°C',
-                          style: AppTextStyles.s36Bold(color: AppColors.white),
-                        ),
-                        Text(
-                          _getWeatherDescription(
-                            _weatherData!.currentWeatherType,
-                          ),
-                          style: AppTextStyles.s14Medium(
-                            color: AppColors.primary_700,
-                          ),
-                        ),
-                        Text(
-                          'Độ ẩm: ${_weatherData!.currentHumidity.toDouble().round()}% - Gió: ${_weatherData!.currentWindSpeed.toDouble().round()} km/h',
-                          style: AppTextStyles.s12Medium(
-                            color: AppColors.primary_700,
-                          ),
+                        SizedBox(width: 60.sp),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              selectedHourlyWeather.time.hour ==
+                                      DateTime.now().hour
+                                  ? _formatCurrentDate()
+                                  : 'Hôm nay, ${selectedHourlyWeather.time.hour.toString().padLeft(2, '0')}:00',
+                              style: AppTextStyles.s14Bold(
+                                color: AppColors.primary_700,
+                              ),
+                            ),
+                            Text(
+                              '${selectedHourlyWeather.temperature.toDouble().round()}°C',
+                              style: AppTextStyles.s36Bold(
+                                color: AppColors.white,
+                              ),
+                            ),
+                            Text(
+                              _getWeatherDescription(
+                                selectedHourlyWeather.weatherType,
+                              ),
+                              style: AppTextStyles.s14Medium(
+                                color: AppColors.primary_700,
+                              ),
+                            ),
+                            Text(
+                              'Độ ẩm: ${_weatherData!.currentHumidity.toDouble().round()}% - Gió: ${_weatherData!.currentWindSpeed.toDouble().round()} km/h',
+                              style: AppTextStyles.s12Medium(
+                                color: AppColors.primary_700,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-                SizedBox(height: 24.sp),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 22.sp),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      spacing: 20.sp,
-                      children: _weatherData!.hourlyWeather
-                          .where(
-                            (hourly) =>
-                                hourly.time.isAfter(DateTime.now()) ||
-                                hourly.time.hour == DateTime.now().hour,
-                          )
-                          .take(7) // Lấy 7 giờ tiếp theo (bao gồm giờ hiện tại)
-                          .map((hourly) {
+                    SizedBox(height: 24.sp),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 22.sp),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          spacing: 20.sp,
+                          children: futureHourlyWeather.asMap().entries.map((
+                            entry,
+                          ) {
+                            final index = entry.key;
+                            final hourly = entry.value;
                             return WeatherVerticalCard(
                               temperature: hourly.temperature
                                   .toDouble()
                                   .round(),
                               hour: hourly.time.hour,
                               weatherType: hourly.weatherType,
-                              isNow: hourly.time.hour == DateTime.now().hour,
+                              isSelected: index == _selectedHourIndex,
+                              onTap: () {
+                                setState(() {
+                                  _selectedHourIndex = index;
+                                });
+                              },
                             );
-                          })
-                          .toList(),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 24.sp),
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary_200,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20.sp),
-                        topRight: Radius.circular(20.sp),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(16.sp),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: 12.sp,
-                          children: [
-                            Text(
-                              'Dự báo kế tiếp',
-                              style: AppTextStyles.s16SemiBold(
-                                color: AppColors.primary_700,
-                              ),
-                            ),
-                            ..._weatherData!.dailyWeather.asMap().entries.map((
-                              entry,
-                            ) {
-                              final daily = entry.value;
-                              final date = daily.date;
-                              String dateText = entry.key == 0
-                                  ? 'Hôm nay'
-                                  : entry.key == 1
-                                  ? 'Ngày mai'
-                                  : DateFormat('EEEE', 'vi').format(date);
-                              return WeatherHorizontalCard(
-                                date: dateText,
-                                temperature: daily.temperature
-                                    .toDouble()
-                                    .round(),
-                                weatherType: daily.weatherType,
-                              );
-                            }).toList(),
-                          ],
+                          }).toList(),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ],
+                    SizedBox(height: 24.sp),
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary_200,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20.sp),
+                            topRight: Radius.circular(20.sp),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(16.sp),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: 12.sp,
+                              children: [
+                                Text(
+                                  'Dự báo kế tiếp',
+                                  style: AppTextStyles.s16SemiBold(
+                                    color: AppColors.primary_700,
+                                  ),
+                                ),
+                                ..._weatherData!.dailyWeather
+                                    .asMap()
+                                    .entries
+                                    .map((entry) {
+                                      final daily = entry.value;
+                                      final date = daily.date;
+                                      String dateText = entry.key == 0
+                                          ? 'Hôm nay'
+                                          : entry.key == 1
+                                          ? 'Ngày mai'
+                                          : DateFormat(
+                                              'EEEE',
+                                              'vi',
+                                            ).format(date);
+                                      return WeatherHorizontalCard(
+                                        date: dateText,
+                                        temperature: daily.temperature
+                                            .toDouble()
+                                            .round(),
+                                        weatherType: daily.weatherType,
+                                      );
+                                    })
+                                    .toList(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
     );
   }

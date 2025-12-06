@@ -6,16 +6,18 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 
 class WeatherVerticalCard extends StatelessWidget {
-  final bool isNow;
+  final bool isSelected;
   final int temperature;
   final int hour;
   final WeatherType weatherType;
+  final VoidCallback? onTap;
   const WeatherVerticalCard({
     super.key,
-    this.isNow = false,
+    this.isSelected = false,
     required this.temperature,
     required this.hour,
     required this.weatherType,
+    this.onTap,
   });
 
   @override
@@ -38,29 +40,32 @@ class WeatherVerticalCard extends StatelessWidget {
         weatherAsset = AppVectors.weatherPartlyCloudy;
         break;
     }
-    return Container(
-      decoration: isNow
-          ? BoxDecoration(
-              color: AppColors.primary_300,
-              borderRadius: BorderRadius.circular(25),
-              border: Border.all(color: AppColors.text_color_50, width: 1),
-            )
-          : null,
-      child: Padding(
-        padding: EdgeInsets.all(isNow ? 8.0 : 0),
-        child: Column(
-          spacing: 12,
-          children: [
-            Text(
-              "$temperature°C",
-              style: AppTextStyles.s16Medium(color: AppColors.white),
-            ),
-            SvgPicture.asset(weatherAsset, width: 40, height: 40),
-            Text(
-              "${hour.toString().padLeft(2, '0')}:00",
-              style: AppTextStyles.s16Medium(color: AppColors.white),
-            ),
-          ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: isSelected
+            ? BoxDecoration(
+                color: AppColors.primary_300,
+                borderRadius: BorderRadius.circular(25),
+                border: Border.all(color: AppColors.text_color_50, width: 1),
+              )
+            : null,
+        child: Padding(
+          padding: EdgeInsets.all(isSelected ? 8.0 : 0),
+          child: Column(
+            spacing: 12,
+            children: [
+              Text(
+                "$temperature°C",
+                style: AppTextStyles.s16Medium(color: AppColors.white),
+              ),
+              SvgPicture.asset(weatherAsset, width: 40, height: 40),
+              Text(
+                "${hour.toString().padLeft(2, '0')}:00",
+                style: AppTextStyles.s16Medium(color: AppColors.white),
+              ),
+            ],
+          ),
         ),
       ),
     );
