@@ -135,6 +135,7 @@ class PostRemoteDataSource {
     required List<String> imageLink,
     required List<String> tags,
     String? diseaseLink,
+    String? scanHistoryId,
   }) async {
     final url = '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts';
 
@@ -150,6 +151,12 @@ class PostRemoteDataSource {
     if (diseaseLink != null) {
       body['disease_link'] = diseaseLink;
     }
+
+    if (scanHistoryId != null) {
+      body['scan_history_id'] = scanHistoryId;
+    }
+
+    print('PostRemoteDataSource: Creating post with body: $body');
 
     final response = await client.post(
       Uri.parse(url),

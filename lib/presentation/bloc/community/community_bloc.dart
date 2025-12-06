@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:se501_plantheon/core/services/supabase_service.dart';
 import 'package:se501_plantheon/domain/entities/post_entity.dart';
 import 'package:se501_plantheon/domain/repository/post_repository.dart';
 
@@ -20,12 +22,18 @@ class CreatePostEvent extends CommunityEvent {
   final List<String> imageLink;
   final List<String> tags;
   final String? diseaseLink;
+  final String? scanHistoryId;
+  final String? prefilledImageUrl;
+  final List<XFile> imagesToUpload;
 
   CreatePostEvent({
     required this.content,
     required this.imageLink,
     required this.tags,
     this.diseaseLink,
+    this.scanHistoryId,
+    this.prefilledImageUrl,
+    this.imagesToUpload = const [],
   });
 }
 
@@ -136,12 +144,45 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
     print('CommunityBloc: Received CreatePostEvent');
     emit(CommunityLoading());
     try {
-      print('CommunityBloc: Calling createPost API');
+      // Collect all image URLs
+      List<String> allImageUrls = [];
+
+      // Add prefilled image URL first (scan image)
+      if (event.prefilledImageUrl != null &&
+          event.prefilledImageUrl!.isNotEmpty) {
+        print('CommunityBloc: Adding prefilled scan image URL');
+        allImageUrls.add(event.prefilledImageUrl!);
+      }
+
+      // Upload user-selected images to Supabase
+      if (event.imagesToUpload.isNotEmpty) {
+        print(
+          'CommunityBloc: Uploading ${event.imagesToUpload.length} images to Supabase',
+        );
+        for (final image in event.imagesToUpload) {
+          final bytes = await image.readAsBytes();
+          final timestamp = DateTime.now().millisecondsSinceEpoch;
+          final fileName = 'post_${timestamp}_${image.name}';
+
+          final url = await SupabaseService.uploadFileFromBytes(
+            bucketName: 'uploads',
+            fileBytes: bytes,
+            fileName: fileName,
+          );
+          print('CommunityBloc: Uploaded image: $url');
+          allImageUrls.add(url);
+        }
+      }
+
+      print(
+        'CommunityBloc: Calling createPost API with ${allImageUrls.length} images',
+      );
       await postRepository.createPost(
         content: event.content,
-        imageLink: event.imageLink,
+        imageLink: allImageUrls,
         tags: event.tags,
         diseaseLink: event.diseaseLink,
+        scanHistoryId: event.scanHistoryId,
       );
       print('CommunityBloc: Post created successfully');
       emit(CommunityPostCreated());

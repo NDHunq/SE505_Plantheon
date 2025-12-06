@@ -11,5 +11,6 @@ abstract class PostRepository {
     required List<String> imageLink,
     required List<String> tags,
     String? diseaseLink,
+    String? scanHistoryId,
   });
 }

@@ -25,10 +25,22 @@ import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
 
 class CreatePostModal extends StatefulWidget {
   final String? diseaseId;
+  final String? scanImageUrl;
+  final String? scanHistoryId;
 
-  const CreatePostModal({super.key, this.diseaseId});
+  const CreatePostModal({
+    super.key,
+    this.diseaseId,
+    this.scanImageUrl,
+    this.scanHistoryId,
+  });
 
-  static void show(BuildContext context, {String? diseaseId}) {
+  static void show(
+    BuildContext context, {
+    String? diseaseId,
+    String? scanImageUrl,
+    String? scanHistoryId,
+  }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -71,7 +83,11 @@ class CreatePostModal extends StatefulWidget {
                 },
               ),
             ],
-            child: CreatePostModal(diseaseId: diseaseId),
+            child: CreatePostModal(
+              diseaseId: diseaseId,
+              scanImageUrl: scanImageUrl,
+              scanHistoryId: scanHistoryId,
+            ),
           ),
         );
       },
@@ -100,6 +116,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
   // Image picker
   final ImagePicker _picker = ImagePicker();
   final List<XFile> _selectedImages = [];
+  String? _prefilledImageUrl; // For scan image from ScanSolution
   bool _isDiseaseLinked = true;
 
   @override
@@ -112,6 +129,10 @@ class _CreatePostModalState extends State<CreatePostModal> {
       );
     } else {
       _isDiseaseLinked = false;
+    }
+    // Pre-fill scan image if provided
+    if (widget.scanImageUrl != null) {
+      _prefilledImageUrl = widget.scanImageUrl;
     }
   }
 
@@ -147,13 +168,18 @@ class _CreatePostModalState extends State<CreatePostModal> {
   void _createPost() {
     print('CreatePostModal: _createPost called');
     if (_postController.text.trim().isNotEmpty) {
-      print('CreatePostModal: Adding CreatePostEvent');
+      print(
+        'CreatePostModal: Adding CreatePostEvent with ${_selectedImages.length} images',
+      );
       context.read<CommunityBloc>().add(
         community.CreatePostEvent(
           content: _postController.text,
-          imageLink: [], // TODO: Handle image upload if needed
+          imageLink: [],
           tags: [_selectedCategory],
           diseaseLink: _isDiseaseLinked ? widget.diseaseId : null,
+          scanHistoryId: widget.scanHistoryId,
+          prefilledImageUrl: _prefilledImageUrl,
+          imagesToUpload: _selectedImages,
         ),
       );
     } else {
@@ -482,14 +508,17 @@ class _CreatePostModalState extends State<CreatePostModal> {
                   width: double.infinity,
                   constraints: BoxConstraints(
                     minHeight: 120.sp,
-                    maxHeight: _selectedImages.isEmpty ? 120.sp : 300.sp,
+                    maxHeight:
+                        (_selectedImages.isEmpty && _prefilledImageUrl == null)
+                        ? 120.sp
+                        : 300.sp,
                   ),
                   decoration: BoxDecoration(
                     color: Colors.grey[50],
                     borderRadius: BorderRadius.circular(12.sp),
                     border: Border.all(color: Colors.grey[300]!, width: 1),
                   ),
-                  child: _selectedImages.isEmpty
+                  child: (_selectedImages.isEmpty && _prefilledImageUrl == null)
                       ? InkWell(
                           onTap: _pickImages,
                           child: SizedBox(
@@ -532,7 +561,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    '${_selectedImages.length} ảnh đã chọn',
+                                    '${_selectedImages.length + (_prefilledImageUrl != null ? 1 : 0)} ảnh đã chọn',
                                     style: AppTextStyles.s14Regular(
                                       color: Colors.grey[700],
                                     ),
@@ -590,8 +619,103 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                         mainAxisSpacing: 8.sp,
                                         childAspectRatio: 1,
                                       ),
-                                  itemCount: _selectedImages.length,
+                                  itemCount:
+                                      _selectedImages.length +
+                                      (_prefilledImageUrl != null ? 1 : 0),
                                   itemBuilder: (context, index) {
+                                    // First item is prefilled image if available
+                                    if (_prefilledImageUrl != null &&
+                                        index == 0) {
+                                      return Stack(
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.sp),
+                                              border: Border.all(
+                                                color: AppColors.primary_main,
+                                                width: 2,
+                                              ),
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(6.sp),
+                                              child: Image.network(
+                                                _prefilledImageUrl!,
+                                                fit: BoxFit.cover,
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                errorBuilder:
+                                                    (
+                                                      context,
+                                                      error,
+                                                      stackTrace,
+                                                    ) => Container(
+                                                      color: Colors.grey[300],
+                                                      child: Icon(
+                                                        Icons.error,
+                                                        size: 24.sp,
+                                                      ),
+                                                    ),
+                                              ),
+                                            ),
+                                          ),
+                                          Positioned(
+                                            top: 4.sp,
+                                            right: 4.sp,
+                                            child: InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  _prefilledImageUrl = null;
+                                                });
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.all(2.sp),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black54,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Icon(
+                                                  Icons.close,
+                                                  size: 16.sp,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          // Label for scan image
+                                          Positioned(
+                                            bottom: 4.sp,
+                                            left: 4.sp,
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 6.sp,
+                                                vertical: 2.sp,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.primary_main
+                                                    .withOpacity(0.8),
+                                                borderRadius:
+                                                    BorderRadius.circular(4.sp),
+                                              ),
+                                              child: Text(
+                                                'Scan',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 10.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                    // Adjust index for selected images
+                                    final imageIndex =
+                                        _prefilledImageUrl != null
+                                        ? index - 1
+                                        : index;
                                     return Stack(
                                       children: [
                                         Container(
@@ -602,7 +726,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                             image: DecorationImage(
                                               image: FileImage(
                                                 File(
-                                                  _selectedImages[index].path,
+                                                  _selectedImages[imageIndex]
+                                                      .path,
                                                 ),
                                               ),
                                               fit: BoxFit.cover,
@@ -613,7 +738,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                           top: 4.sp,
                                           right: 4.sp,
                                           child: InkWell(
-                                            onTap: () => _removeImage(index),
+                                            onTap: () =>
+                                                _removeImage(imageIndex),
                                             child: Container(
                                               padding: EdgeInsets.all(2.sp),
                                               decoration: BoxDecoration(

@@ -40,12 +40,14 @@ class PostRepositoryImpl implements PostRepository {
     required List<String> imageLink,
     required List<String> tags,
     String? diseaseLink,
+    String? scanHistoryId,
   }) async {
     await remoteDataSource.createPost(
       content: content,
       imageLink: imageLink,
       tags: tags,
       diseaseLink: diseaseLink,
+      scanHistoryId: scanHistoryId,
     );
   }
 }

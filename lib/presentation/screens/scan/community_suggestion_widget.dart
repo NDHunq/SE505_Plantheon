@@ -6,14 +6,26 @@ import 'package:se501_plantheon/presentation/screens/community/widgets/create_po
 
 class CommunitySuggestionWidget extends StatelessWidget {
   final String? diseaseId;
+  final String? scanImageUrl;
+  final String? scanHistoryId;
 
-  const CommunitySuggestionWidget({super.key, this.diseaseId});
+  const CommunitySuggestionWidget({
+    super.key,
+    this.diseaseId,
+    this.scanImageUrl,
+    this.scanHistoryId,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        CreatePostModal.show(context, diseaseId: diseaseId);
+        CreatePostModal.show(
+          context,
+          diseaseId: diseaseId,
+          scanImageUrl: scanImageUrl,
+          scanHistoryId: scanHistoryId,
+        );
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 12.sp),

@@ -157,7 +157,11 @@ class _ScanSolutionState extends State<ScanSolution> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  CommunitySuggestionWidget(diseaseId: disease.className),
+                  CommunitySuggestionWidget(
+                    diseaseId: disease.className,
+                    scanImageUrl: scanHistory.scanImage,
+                    scanHistoryId: scanHistory.id,
+                  ),
                   const SizedBox(height: 20),
                   _SectionTitle(index: 3, title: 'Hoạt động gợi ý'),
                   const SizedBox(height: 12),
