@@ -85,29 +85,42 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                 children: [
                   CachedNetworkImage(
                     imageUrl: widget.imageUrl,
-                    width: 60.sp,
-                    height: 60.sp,
-                    fit: BoxFit.contain,
-                    placeholder: (context, url) => SizedBox(
-                      width: 60.sp,
-                      height: 60.sp,
-                      child: Center(
-                        child: SizedBox(
-                          width: 16.sp,
-                          height: 16.sp,
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 2,
+                    imageBuilder: (context, imageProvider) => ClipRRect(
+                      borderRadius: BorderRadius.circular(8.sp),
+                      child: Image(
+                        image: imageProvider,
+                        width: 60.sp,
+                        height: 60.sp,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    placeholder: (context, url) => ClipRRect(
+                      borderRadius: BorderRadius.circular(8.sp),
+                      child: Container(
+                        width: 60.sp,
+                        height: 60.sp,
+                        color: AppColors.primary_50,
+                        child: Center(
+                          child: SizedBox(
+                            width: 16.sp,
+                            height: 16.sp,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    errorWidget: (context, url, error) => Container(
-                      width: 60.sp,
-                      height: 60.sp,
-                      color: AppColors.primary_50,
-                      child: const Icon(
-                        Icons.image_not_supported,
-                        color: AppColors.primary_400,
+                    errorWidget: (context, url, error) => ClipRRect(
+                      borderRadius: BorderRadius.circular(8.sp),
+                      child: Container(
+                        width: 60.sp,
+                        height: 60.sp,
+                        color: AppColors.primary_50,
+                        child: const Icon(
+                          Icons.image_not_supported,
+                          color: AppColors.primary_400,
+                        ),
                       ),
                     ),
                   ),
@@ -153,7 +166,7 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                           SizedBox(height: 4.sp),
                           Text(
                             widget.stageTime,
-                            style: AppTextStyles.s20Bold(
+                            style: AppTextStyles.s16Bold(
                               color: widget.isNow
                                   ? AppColors.white
                                   : AppColors.text_color_400,
