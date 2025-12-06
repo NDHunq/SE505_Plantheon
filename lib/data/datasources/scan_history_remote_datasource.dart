@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:se501_plantheon/core/services/token_storage_service.dart';
 import 'package:se501_plantheon/data/models/scan_history.model.dart';
 
 abstract class ScanHistoryRemoteDataSource {
@@ -17,27 +18,32 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
   final http.Client client;
   final String baseUrl;
   final String apiVersion;
+  final TokenStorageService tokenStorage;
 
   ScanHistoryRemoteDataSourceImpl({
     required this.client,
     required this.baseUrl,
+    required this.tokenStorage,
     this.apiVersion = 'api/v1',
   });
 
   @override
   Future<List<ScanHistoryModel>> getAllScanHistory({int? size}) async {
     // Build URL with optional size parameter
-    final uri = Uri.parse('$baseUrl/$apiVersion/scan-history').replace(
-      queryParameters: size != null ? {'size': size.toString()} : null,
-    );
-    
+    final uri = Uri.parse(
+      '$baseUrl/$apiVersion/scan-history',
+    ).replace(queryParameters: size != null ? {'size': size.toString()} : null);
+
     print('🌐 DataSource: Making API call to $uri');
+    final token = await tokenStorage.getToken();
+    if (token == null) {
+      throw Exception('User not authenticated');
+    }
     final response = await client.get(
       uri,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization':
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzViMmVkOTEtNzY5Ni00NzI4LTk4NTQtZGU4NmRkOGNjZTUzIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3NjQ5Mzk4NzB9.n-ndIUXMXX9_qzT3WWs5u0e84pp4UCBeST9aiDqelRY',
+        'Authorization': 'Bearer $token',
       },
     );
 
@@ -65,12 +71,15 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
       '🌐 DataSource: Making GET API call to $baseUrl/$apiVersion/scan-history/$id',
     );
 
+    final token = await tokenStorage.getToken();
+    if (token == null) {
+      throw Exception('User not authenticated');
+    }
     final response = await client.get(
       Uri.parse('$baseUrl/$apiVersion/scan-history/$id'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization':
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzViMmVkOTEtNzY5Ni00NzI4LTk4NTQtZGU4NmRkOGNjZTUzIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3NjQ5Mzk4NzB9.n-ndIUXMXX9_qzT3WWs5u0e84pp4UCBeST9aiDqelRY',
+        'Authorization': 'Bearer $token',
       },
     );
 
@@ -91,6 +100,7 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
       throw Exception('Failed to get scan history: ${response.statusCode}');
     }
   }
+
   @override
   Future<ScanHistoryModel> createScanHistory(
     String diseaseId, {
@@ -103,12 +113,15 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
       '📝 DataSource: Request body: {"disease_id": "$diseaseId", "scan_image": "$scanImage"}',
     );
 
+    final token = await tokenStorage.getToken();
+    if (token == null) {
+      throw Exception('User not authenticated');
+    }
     final response = await client.post(
       Uri.parse('$baseUrl/$apiVersion/scan-history'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization':
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzViMmVkOTEtNzY5Ni00NzI4LTk4NTQtZGU4NmRkOGNjZTUzIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3NjQ5Mzk4NzB9.n-ndIUXMXX9_qzT3WWs5u0e84pp4UCBeST9aiDqelRY',
+        'Authorization': 'Bearer $token',
       },
       body: json.encode(
         CreateScanHistoryRequestModel(
@@ -142,12 +155,15 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
       '🌐 DataSource: Making DELETE API call to $baseUrl/$apiVersion/scan-history',
     );
 
+    final token = await tokenStorage.getToken();
+    if (token == null) {
+      throw Exception('User not authenticated');
+    }
     final response = await client.delete(
       Uri.parse('$baseUrl/$apiVersion/scan-history'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization':
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzViMmVkOTEtNzY5Ni00NzI4LTk4NTQtZGU4NmRkOGNjZTUzIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3NjQ5Mzk4NzB9.n-ndIUXMXX9_qzT3WWs5u0e84pp4UCBeST9aiDqelRY',
+        'Authorization': 'Bearer $token',
       },
     );
 
@@ -157,7 +173,9 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
       print('✅ DataSource: Deleted all scan history');
     } else {
       print('❌ DataSource: API error: ${response.statusCode}');
-      throw Exception('Failed to delete all scan history: ${response.statusCode}');
+      throw Exception(
+        'Failed to delete all scan history: ${response.statusCode}',
+      );
     }
   }
 
@@ -167,12 +185,15 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
       '🌐 DataSource: Making DELETE API call to $baseUrl/$apiVersion/scan-history/$id',
     );
 
+    final token = await tokenStorage.getToken();
+    if (token == null) {
+      throw Exception('User not authenticated');
+    }
     final response = await client.delete(
       Uri.parse('$baseUrl/$apiVersion/scan-history/$id'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization':
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzViMmVkOTEtNzY5Ni00NzI4LTk4NTQtZGU4NmRkOGNjZTUzIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3NjQ5Mzk4NzB9.n-ndIUXMXX9_qzT3WWs5u0e84pp4UCBeST9aiDqelRY',
+        'Authorization': 'Bearer $token',
       },
     );
 
