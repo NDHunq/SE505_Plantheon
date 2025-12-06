@@ -33,7 +33,36 @@ class MainApp extends StatelessWidget {
           return MaterialApp(
             theme: ThemeData(
               primaryColor: AppColors.primary_main,
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: AppColors.primary_main,
+                primary: AppColors.primary_main,
+                secondary: AppColors.primary_main,
+                onPrimary: Colors.white,
+                background: Colors.white,
+                surface: Colors.white,
+              ),
+              inputDecorationTheme: InputDecorationTheme(
+                filled: true,
+                fillColor: AppColors.white,
 
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.primary_main),
+                ),
+              ),
+              appBarTheme: AppBarTheme(
+                backgroundColor: AppColors.primary_main,
+                foregroundColor: Colors.white,
+              ),
+              floatingActionButtonTheme: FloatingActionButtonThemeData(
+                backgroundColor: AppColors.primary_main,
+                foregroundColor: Colors.white,
+              ),
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary_main,
+                  foregroundColor: Colors.white,
+                ),
+              ),
               checkboxTheme: CheckboxThemeData(
                 fillColor: WidgetStateProperty.all(AppColors.primary_main),
               ),
