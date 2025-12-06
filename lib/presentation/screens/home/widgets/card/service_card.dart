@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 
@@ -19,10 +20,10 @@ class ServiceCard extends StatelessWidget {
             height: 87,
             decoration: BoxDecoration(
               border: Border.all(color: AppColors.text_color_main, width: 1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(40.sp),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(7),
+              borderRadius: BorderRadius.circular(40.sp),
               child: imageUrl.isNotEmpty
                   ? Image.network(
                       imageUrl,

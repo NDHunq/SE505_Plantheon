@@ -5,111 +5,127 @@ import 'package:se501_plantheon/common/widgets/divider/dash_divider.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
+import 'package:se501_plantheon/domain/entities/plant_entity.dart';
+import 'package:se501_plantheon/presentation/bloc/plant/plant_provider.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/farming_tip_stage_card.dart';
-import 'package:se501_plantheon/presentation/screens/home/widgets/plants_dropdown.dart';
+import 'package:se501_plantheon/presentation/screens/home/widgets/plants_picker.dart';
 
 class FarmingTips extends StatelessWidget {
-  const FarmingTips({super.key});
+  final PlantEntity? initialPlant;
+
+  const FarmingTips({super.key, this.initialPlant});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: BasicAppbar(
-        title: 'Mẹo canh tác',
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.menu_rounded, color: AppColors.primary_700),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Ngày gieo:",
-                      style: AppTextStyles.s14Medium(
-                        color: AppColors.text_color_200,
+    return PlantProvider(
+      child: Scaffold(
+        appBar: BasicAppbar(
+          title: 'Mẹo canh tác',
+          actions: [
+            IconButton(
+              icon: const Icon(
+                Icons.menu_rounded,
+                color: AppColors.primary_700,
+              ),
+              onPressed: () {},
+            ),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Ngày gieo:",
+                        style: AppTextStyles.s14Medium(
+                          color: AppColors.text_color_200,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      spacing: 16,
-                      children: [BasicDatepicker(), PlantsDropdown()],
-                    ),
-                    SizedBox(height: 24),
-                  ],
+                      Row(
+                        spacing: 16,
+                        children: [
+                          BasicDatepicker(
+                            onDateSelected: (date) {
+                              // Reserved for future use; UI updates internally.
+                            },
+                          ),
+                          PlantsPicker(initialPlant: initialPlant),
+                        ],
+                      ),
+
+                      SizedBox(height: 24),
+                    ],
+                  ),
                 ),
-              ),
-              FarmingTipStageCard(
-                vectorAsset: AppVectors.weatherSunny,
-                stageLabel: 'Gieo trồng',
-                stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
-                stageTime: 'Ngày 1-7',
-                isNow: false,
-              ),
-              FarmingTipStageCard(
-                vectorAsset: AppVectors.weatherRainThunder,
-                stageLabel: 'Gieo trồng',
-                stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
-                stageTime: 'Ngày 1-7',
-                isNow: true,
-                child: Column(
-                  children: [
-                    StageSection(),
-                    DashDivider(),
-                    StageSection(),
-                    DashDivider(),
-                    StageSection(),
-                  ],
+                FarmingTipStageCard(
+                  vectorAsset: AppVectors.weatherSunny,
+                  stageLabel: 'Gieo trồng',
+                  stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
+                  stageTime: 'Ngày 1-7',
+                  isNow: false,
                 ),
-              ),
-              FarmingTipStageCard(
-                vectorAsset: AppVectors.weatherSunny,
-                stageLabel: 'Gieo trồng',
-                stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
-                stageTime: 'Ngày 1-7',
-                isNow: false,
-                child: Column(
-                  children: [
-                    StageSection(),
-                    DashDivider(),
-                    StageSection(),
-                    DashDivider(),
-                    StageSection(),
-                  ],
+                FarmingTipStageCard(
+                  vectorAsset: AppVectors.weatherRainThunder,
+                  stageLabel: 'Gieo trồng',
+                  stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
+                  stageTime: 'Ngày 1-7',
+                  isNow: true,
+                  child: Column(
+                    children: [
+                      StageSection(),
+                      DashDivider(),
+                      StageSection(),
+                      DashDivider(),
+                      StageSection(),
+                    ],
+                  ),
                 ),
-              ),
-              FarmingTipStageCard(
-                vectorAsset: AppVectors.weatherSunny,
-                stageLabel: 'Gieo trồng',
-                stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
-                stageTime: 'Ngày 1-7',
-                isNow: false,
-              ),
-              FarmingTipStageCard(
-                vectorAsset: AppVectors.weatherSunny,
-                stageLabel: 'Gieo trồng',
-                stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
-                stageTime: 'Ngày 1-7',
-                isNow: false,
-              ),
-              FarmingTipStageCard(
-                vectorAsset: AppVectors.weatherSunny,
-                stageLabel: 'Gieo trồng',
-                stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
-                stageTime: 'Ngày 1-7',
-                isNow: false,
-              ),
-            ],
+                FarmingTipStageCard(
+                  vectorAsset: AppVectors.weatherSunny,
+                  stageLabel: 'Gieo trồng',
+                  stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
+                  stageTime: 'Ngày 1-7',
+                  isNow: false,
+                  child: Column(
+                    children: [
+                      StageSection(),
+                      DashDivider(),
+                      StageSection(),
+                      DashDivider(),
+                      StageSection(),
+                    ],
+                  ),
+                ),
+                FarmingTipStageCard(
+                  vectorAsset: AppVectors.weatherSunny,
+                  stageLabel: 'Gieo trồng',
+                  stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
+                  stageTime: 'Ngày 1-7',
+                  isNow: false,
+                ),
+                FarmingTipStageCard(
+                  vectorAsset: AppVectors.weatherSunny,
+                  stageLabel: 'Gieo trồng',
+                  stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
+                  stageTime: 'Ngày 1-7',
+                  isNow: false,
+                ),
+                FarmingTipStageCard(
+                  vectorAsset: AppVectors.weatherSunny,
+                  stageLabel: 'Gieo trồng',
+                  stageDescription: 'Thời điểm thích hợp để gieo hạt giống.',
+                  stageTime: 'Ngày 1-7',
+                  isNow: false,
+                ),
+              ],
+            ),
           ),
         ),
       ),
