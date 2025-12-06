@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 import 'package:se501_plantheon/data/datasources/scan_history_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
 import 'package:se501_plantheon/data/repository/scan_history_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/scan_history/get_all_scan_history.dart';
 import 'package:se501_plantheon/domain/usecases/scan_history/get_scan_history_by_id.dart';
 import 'package:se501_plantheon/domain/usecases/scan_history/create_scan_history.dart';
 import 'package:se501_plantheon/domain/usecases/scan_history/delete_all_scan_history.dart';
 import 'package:se501_plantheon/domain/usecases/scan_history/delete_scan_history_by_id.dart';
+import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc.dart';
 
 class ScanHistoryProvider extends StatelessWidget {
@@ -29,6 +31,9 @@ class ScanHistoryProvider extends StatelessWidget {
           create: (context) => ScanHistoryRemoteDataSourceImpl(
             client: http.Client(),
             baseUrl: baseUrl,
+            tokenStorage:
+                (context.read<AuthBloc>().authRepository as AuthRepositoryImpl)
+                    .tokenStorage,
           ),
         ),
         RepositoryProvider<ScanHistoryRepositoryImpl>(
