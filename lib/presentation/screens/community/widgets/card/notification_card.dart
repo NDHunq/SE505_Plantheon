@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 
 class NotificationCard extends StatelessWidget {
   final String title;
   final String dateTime;
+  final String content;
   final bool isRead;
 
   const NotificationCard({
@@ -12,6 +14,7 @@ class NotificationCard extends StatelessWidget {
     required this.title,
     required this.dateTime,
     required this.isRead,
+    required this.content,
   });
 
   @override
@@ -25,7 +28,7 @@ class NotificationCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             image: DecorationImage(
               fit: BoxFit.cover,
-              image: AssetImage('assets/images/plants.jpg'),
+              image: AssetImage('assets/images/noti.png'),
             ),
           ),
         ),
@@ -43,39 +46,24 @@ class NotificationCard extends StatelessWidget {
               style: AppTextStyles.s12Regular(color: AppColors.text_color_200),
             ),
             const SizedBox(height: 4),
-            _NotificationStatus(isRead: isRead),
+            Text(
+              content,
+              style: AppTextStyles.s12Regular(color: AppColors.text_color_200),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ],
         ),
-      ],
-    );
-  }
-}
-
-class _NotificationStatus extends StatelessWidget {
-  final bool isRead;
-
-  const _NotificationStatus({required this.isRead});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isRead
-            ? AppColors.text_color_100.withOpacity(0.1)
-            : AppColors.primary_100,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 4.0),
-        child: Text(
-          isRead ? 'Đã đọc' : 'Chưa đọc',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: isRead ? AppColors.text_color_200 : AppColors.primary_800,
+        Spacer(),
+        Container(
+          width: 8.sp,
+          height: 8.sp,
+          decoration: BoxDecoration(
+            color: isRead ? Colors.transparent : AppColors.primary_700,
+            shape: BoxShape.circle,
           ),
         ),
-      ),
+      ],
     );
   }
 }
