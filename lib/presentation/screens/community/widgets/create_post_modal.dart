@@ -24,13 +24,15 @@ import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
 
 class CreatePostModal extends StatefulWidget {
-  final String? diseaseId;
+  final String? diseaseId; // className for fetching disease info
+  final String? diseaseIdForPost; // UUID for creating post
   final String? scanImageUrl;
   final String? scanHistoryId;
 
   const CreatePostModal({
     super.key,
     this.diseaseId,
+    this.diseaseIdForPost,
     this.scanImageUrl,
     this.scanHistoryId,
   });
@@ -38,6 +40,7 @@ class CreatePostModal extends StatefulWidget {
   static void show(
     BuildContext context, {
     String? diseaseId,
+    String? diseaseIdForPost,
     String? scanImageUrl,
     String? scanHistoryId,
   }) {
@@ -85,6 +88,7 @@ class CreatePostModal extends StatefulWidget {
             ],
             child: CreatePostModal(
               diseaseId: diseaseId,
+              diseaseIdForPost: diseaseIdForPost,
               scanImageUrl: scanImageUrl,
               scanHistoryId: scanHistoryId,
             ),
@@ -176,7 +180,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
           content: _postController.text,
           imageLink: [],
           tags: [_selectedCategory],
-          diseaseLink: _isDiseaseLinked ? widget.diseaseId : null,
+          diseaseLink: _isDiseaseLinked ? widget.diseaseIdForPost : null,
           scanHistoryId: widget.scanHistoryId,
           prefilledImageUrl: _prefilledImageUrl,
           imagesToUpload: _selectedImages,

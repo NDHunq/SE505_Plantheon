@@ -20,8 +20,15 @@ class ToggleLikePostDetail extends PostDetailEvent {
 class CreateCommentEvent extends PostDetailEvent {
   final String postId;
   final String content;
+  final String? parentId;
 
-  CreateCommentEvent(this.postId, this.content);
+  CreateCommentEvent(this.postId, this.content, {this.parentId});
+}
+
+class ToggleLikeComment extends PostDetailEvent {
+  final String postId;
+  final String commentId;
+  ToggleLikeComment(this.postId, this.commentId);
 }
 
 // States
@@ -49,6 +56,7 @@ class PostDetailBloc extends Bloc<PostDetailEvent, PostDetailState> {
     on<FetchPostDetail>(_onFetchPostDetail);
     on<ToggleLikePostDetail>(_onToggleLikePostDetail);
     on<CreateCommentEvent>(_onCreateComment);
+    on<ToggleLikeComment>(_onToggleLikeComment);
   }
 
   Future<void> _onFetchPostDetail(
@@ -93,6 +101,7 @@ class PostDetailBloc extends Bloc<PostDetailEvent, PostDetailState> {
         tags: post.tags,
         likeNumber: newLikeCount,
         liked: !isLiked,
+        isMyPost: post.isMyPost,
         commentNumber: post.commentNumber,
         commentList: post.commentList,
         shareNumber: post.shareNumber,
@@ -129,10 +138,12 @@ class PostDetailBloc extends Bloc<PostDetailEvent, PostDetailState> {
         id: DateTime.now().toString(), // Temp ID
         postId: event.postId,
         userId: '4849fefc-fdf2-441f-bb5e-8318d3904b94', // Hardcoded from token
+        parentId: event.parentId,
         fullName: 'Me', // Placeholder
         avatar: '', // Placeholder
         content: event.content,
         likeNumber: 0,
+        isLike: false,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         isMe: true,
@@ -159,6 +170,7 @@ class PostDetailBloc extends Bloc<PostDetailEvent, PostDetailState> {
         tags: post.tags,
         likeNumber: post.likeNumber,
         liked: post.liked,
+        isMyPost: post.isMyPost,
         commentNumber: post.commentNumber + 1,
         commentList: updatedCommentList,
         shareNumber: post.shareNumber,
@@ -170,13 +182,97 @@ class PostDetailBloc extends Bloc<PostDetailEvent, PostDetailState> {
       emit(PostDetailLoaded(updatedPost));
 
       try {
-        await postRepository.createComment(event.postId, event.content);
+        await postRepository.createComment(
+          event.postId,
+          event.content,
+          parentId: event.parentId,
+        );
         // Fetch to sync with server (get real ID, etc.)
         add(FetchPostDetail(event.postId, isRefresh: true));
       } catch (e) {
         // Revert to original state on failure
         emit(PostDetailLoaded(post));
         emit(PostDetailError(e.toString()));
+      }
+    }
+  }
+
+  Future<void> _onToggleLikeComment(
+    ToggleLikeComment event,
+    Emitter<PostDetailState> emit,
+  ) async {
+    if (state is PostDetailLoaded) {
+      final currentState = state as PostDetailLoaded;
+      final post = currentState.post;
+
+      if (post.commentList == null) return;
+
+      // Find the comment and toggle like
+      final updatedCommentList = post.commentList!.map((comment) {
+        if (comment.id == event.commentId) {
+          final newIsLike = !comment.isLike;
+          final newLikeNumber = newIsLike
+              ? comment.likeNumber + 1
+              : comment.likeNumber - 1;
+          return CommentEntity(
+            id: comment.id,
+            postId: comment.postId,
+            userId: comment.userId,
+            parentId: comment.parentId,
+            fullName: comment.fullName,
+            avatar: comment.avatar,
+            content: comment.content,
+            likeNumber: newLikeNumber,
+            isLike: newIsLike,
+            createdAt: comment.createdAt,
+            updatedAt: comment.updatedAt,
+            isMe: comment.isMe,
+          );
+        }
+        return comment;
+      }).toList();
+
+      // Find original comment to determine API call
+      final originalComment = post.commentList!.firstWhere(
+        (c) => c.id == event.commentId,
+      );
+
+      // Optimistic update
+      final updatedPost = PostEntity(
+        id: post.id,
+        userId: post.userId,
+        fullName: post.fullName,
+        avatar: post.avatar,
+        content: post.content,
+        imageLink: post.imageLink,
+        diseaseLink: post.diseaseLink,
+        diseaseName: post.diseaseName,
+        diseaseDescription: post.diseaseDescription,
+        diseaseSolution: post.diseaseSolution,
+        diseaseImageLink: post.diseaseImageLink,
+        scanHistoryId: post.scanHistoryId,
+        tags: post.tags,
+        likeNumber: post.likeNumber,
+        liked: post.liked,
+        isMyPost: post.isMyPost,
+        commentNumber: post.commentNumber,
+        commentList: updatedCommentList,
+        shareNumber: post.shareNumber,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
+      );
+
+      emit(PostDetailLoaded(updatedPost));
+
+      try {
+        if (originalComment.isLike) {
+          await postRepository.unlikeComment(event.commentId);
+        } else {
+          await postRepository.likeComment(event.commentId);
+        }
+      } catch (e) {
+        // Revert on failure
+        emit(PostDetailLoaded(post));
       }
     }
   }

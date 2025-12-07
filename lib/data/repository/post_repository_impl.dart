@@ -8,8 +8,14 @@ class PostRepositoryImpl implements PostRepository {
   PostRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<PostEntity>> getUserPosts(String userId) async {
-    final postModels = await remoteDataSource.getUserPosts(userId);
+  Future<List<PostEntity>> getAllPosts() async {
+    final postModels = await remoteDataSource.getAllPosts();
+    return postModels.map((e) => e.toEntity()).toList();
+  }
+
+  @override
+  Future<List<PostEntity>> getMyPosts() async {
+    final postModels = await remoteDataSource.getMyPosts();
     return postModels.map((e) => e.toEntity()).toList();
   }
 
@@ -24,14 +30,33 @@ class PostRepositoryImpl implements PostRepository {
   }
 
   @override
+  Future<void> deletePost(String postId) async {
+    await remoteDataSource.deletePost(postId);
+  }
+
+  @override
   Future<PostEntity> getPostDetail(String postId) async {
     final postModel = await remoteDataSource.getPostDetail(postId);
     return postModel.toEntity();
   }
 
   @override
-  Future<void> createComment(String postId, String content) async {
-    await remoteDataSource.createComment(postId, content);
+  Future<void> createComment(
+    String postId,
+    String content, {
+    String? parentId,
+  }) async {
+    await remoteDataSource.createComment(postId, content, parentId: parentId);
+  }
+
+  @override
+  Future<void> likeComment(String commentId) async {
+    await remoteDataSource.likeComment(commentId);
+  }
+
+  @override
+  Future<void> unlikeComment(String commentId) async {
+    await remoteDataSource.unlikeComment(commentId);
   }
 
   @override

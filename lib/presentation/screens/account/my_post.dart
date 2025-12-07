@@ -1,123 +1,204 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:se501_plantheon/data/datasources/post_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/post_repository_impl.dart';
+import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
+import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
+import 'package:se501_plantheon/presentation/bloc/community/community_bloc.dart';
 import 'package:se501_plantheon/presentation/screens/community/post_detail.dart';
+import 'package:se501_plantheon/presentation/screens/community/widgets/acction_button.dart';
+import 'package:se501_plantheon/presentation/screens/community/widgets/disease_block_widget.dart';
 
-class MyPost extends StatefulWidget {
+class MyPost extends StatelessWidget {
   const MyPost({super.key});
 
   @override
-  State<MyPost> createState() => _MyPostState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => CommunityBloc(
+        postRepository: PostRepositoryImpl(
+          remoteDataSource: PostRemoteDataSource(
+            client: http.Client(),
+            tokenStorage:
+                (context.read<AuthBloc>().authRepository as AuthRepositoryImpl)
+                    .tokenStorage,
+          ),
+        ),
+      )..add(FetchMyPosts()),
+      child: const _MyPostView(),
+    );
+  }
 }
 
-class _MyPostState extends State<MyPost> {
-  // Trạng thái like cho từng post (theo index)
-  Map<int, bool> likedPosts = {};
-  Map<int, int> likeCounts = {};
-
-  // Danh sách bài viết của tôi (giả lập)
-  List<Map<String, dynamic>> myPosts = [];
-
-  @override
-  void initState() {
-    super.initState();
-    // Khởi tạo số lượt thích ban đầu
-    likeCounts = {0: 12, 1: 7};
-    // Danh sách bài viết của tôi (giả lập)
-    myPosts = [
-      {
-        'username': 'Mot Nguyen',
-        'timeAgo': '1 phút',
-        'content': 'Đây là bài viết đầu tiên của tôi về cây trồng.',
-        'category': 'Cây trồng',
-        'imageUrl': 'https://via.placeholder.com/400x300',
-        'likes': 12,
-        'comments': 2,
-        'shares': 0,
-      },
-      {
-        'username': 'Mot Nguyen',
-        'timeAgo': '2 ngày',
-        'content': 'Chia sẻ kinh nghiệm chăm sóc cây trong nhà.',
-        'category': 'Kinh nghiệm',
-        'imageUrl': 'https://via.placeholder.com/400x300',
-        'likes': 7,
-        'comments': 1,
-        'shares': 1,
-      },
-    ];
-  }
-
-  void _toggleLike(int postIndex, int originalLikes) {
-    setState(() {
-      bool isLiked = likedPosts[postIndex] ?? false;
-      likedPosts[postIndex] = !isLiked;
-      if (!isLiked) {
-        likeCounts[postIndex] = (likeCounts[postIndex] ?? originalLikes) + 1;
-      } else {
-        likeCounts[postIndex] = (likeCounts[postIndex] ?? originalLikes) - 1;
-      }
-    });
-  }
+class _MyPostView extends StatelessWidget {
+  const _MyPostView();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const BasicAppbar(title: 'Bài viết của tôi'),
       backgroundColor: AppColors.white,
-      body: myPosts.isEmpty
-          ? Center(
-              child: Text(
-                'Bạn chưa có bài viết nào.',
-                style: AppTextStyles.s16Regular(),
-              ),
-            )
-          : Padding(
+      body: BlocBuilder<CommunityBloc, CommunityState>(
+        builder: (context, state) {
+          if (state is CommunityLoading) {
+            return const Center(child: LoadingIndicator());
+          } else if (state is CommunityError) {
+            return Center(child: Text(state.message));
+          } else if (state is CommunityLoaded) {
+            if (state.posts.isEmpty) {
+              return Center(
+                child: Text(
+                  'Bạn chưa có bài viết nào.',
+                  style: AppTextStyles.s16Regular(),
+                ),
+              );
+            }
+            return Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 8.sp),
               child: ListView.builder(
-                itemCount: myPosts.length,
+                itemCount: state.posts.length,
                 itemBuilder: (context, index) {
-                  final post = myPosts[index];
+                  final post = state.posts[index];
                   return _buildPost(
-                    postIndex: index,
-                    username: post['username'],
-                    timeAgo: post['timeAgo'],
-                    content: post['content'],
-                    category: post['category'],
-                    imageUrl: post['imageUrl'],
-                    likes: post['likes'],
-                    comments: post['comments'],
-                    shares: post['shares'],
+                    context: context,
+                    postId: post.id,
+                    username: post.fullName,
+                    timeAgo: _formatTimeAgo(post.createdAt),
+                    content: post.content,
+                    category: post.tags.isNotEmpty ? post.tags.first : 'Khác',
+                    imageLink: post.imageLink,
+                    diseaseLink: post.diseaseLink,
+                    diseaseName: post.diseaseName,
+                    diseaseDescription: post.diseaseDescription,
+                    diseaseSolution: post.diseaseSolution,
+                    diseaseImageLink: post.diseaseImageLink,
+                    scanHistoryId: post.scanHistoryId,
+                    likes: post.likeNumber,
+                    isLiked: post.liked,
+                    comments: post.commentNumber,
+                    shares: post.shareNumber,
                   );
                 },
               ),
+            );
+          }
+          return const SizedBox();
+        },
+      ),
+    );
+  }
+
+  String _formatTimeAgo(DateTime dateTime) {
+    final difference = DateTime.now().difference(dateTime);
+    if (difference.inDays > 0) {
+      return '${difference.inDays} ngày trước';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} giờ trước';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} phút trước';
+    } else {
+      return 'Vừa xong';
+    }
+  }
+
+  Widget _buildImageCarousel(List<String> imageLinks) {
+    final ValueNotifier<int> currentPage = ValueNotifier<int>(0);
+    final PageController pageController = PageController();
+
+    return Column(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          height: 200.sp,
+          child: PageView.builder(
+            controller: pageController,
+            itemCount: imageLinks.length,
+            onPageChanged: (index) {
+              currentPage.value = index;
+            },
+            itemBuilder: (context, index) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(12.sp),
+                child: Image.network(
+                  imageLinks[index],
+                  fit: BoxFit.contain,
+                  width: double.infinity,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.sp),
+                        color: Colors.grey[300],
+                      ),
+                      child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+        if (imageLinks.length > 1)
+          Padding(
+            padding: EdgeInsets.only(top: 8.sp),
+            child: ValueListenableBuilder<int>(
+              valueListenable: currentPage,
+              builder: (context, page, child) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    imageLinks.length,
+                    (index) => AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      margin: EdgeInsets.symmetric(horizontal: 3.sp),
+                      width: page == index ? 20.sp : 8.sp,
+                      height: 8.sp,
+                      decoration: BoxDecoration(
+                        color: page == index
+                            ? AppColors.primary_main
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(4.sp),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
+          ),
+      ],
     );
   }
 
   Widget _buildPost({
-    required int postIndex,
+    required BuildContext context,
+    required String postId,
     required String username,
     required String timeAgo,
     required String content,
     required String category,
-    required String imageUrl,
+    required List<String>? imageLink,
+    String? diseaseLink,
+    String? diseaseName,
+    String? diseaseDescription,
+    String? diseaseSolution,
+    String? diseaseImageLink,
+    String? scanHistoryId,
     required int likes,
+    required bool isLiked,
     required int comments,
     required int shares,
   }) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PostDetail(
-              postId: '1acb3899-f77e-4337-b821-662cefcc02ed', // Placeholder ID
-            ),
-          ),
+          MaterialPageRoute(builder: (context) => PostDetail(postId: postId)),
         );
       },
       child: Container(
@@ -132,7 +213,7 @@ class _MyPostState extends State<MyPost> {
                   radius: 20.sp,
                   backgroundColor: Colors.green[200],
                   child: Text(
-                    username[0],
+                    username.isNotEmpty ? username[0] : '?',
                     style: AppTextStyles.s16Bold(color: Colors.white),
                   ),
                 ),
@@ -143,7 +224,10 @@ class _MyPostState extends State<MyPost> {
                     children: [
                       Row(
                         children: [
-                          Text(username, style: AppTextStyles.s16Bold()),
+                          Text(
+                            'Bạn',
+                            style: AppTextStyles.s16Bold(color: Colors.green),
+                          ),
                           SizedBox(width: 4.sp),
                           Container(
                             padding: EdgeInsets.all(2.sp),
@@ -168,45 +252,85 @@ class _MyPostState extends State<MyPost> {
                     ],
                   ),
                 ),
+                PopupMenuButton<String>(
+                  icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+                  onSelected: (value) {
+                    if (value == 'delete') {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Xóa bài viết'),
+                          content: const Text(
+                            'Bạn có chắc muốn xóa bài viết này?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('Hủy'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(ctx);
+                                context.read<CommunityBloc>().add(
+                                  DeletePostEvent(postId),
+                                );
+                              },
+                              child: const Text(
+                                'Xóa',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete, color: Colors.red),
+                          SizedBox(width: 8),
+                          Text(
+                            'Xóa bài viết',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
             SizedBox(height: 8.sp),
             Text(content, style: AppTextStyles.s14Regular()),
             SizedBox(height: 8.sp),
-            // Post image
-            SizedBox(
-              width: double.infinity,
-              height: 200.sp,
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.sp),
-                      color: Colors.grey[300],
-                    ),
-                    child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
-                  );
-                },
-              ),
+            // Post images carousel
+            if (imageLink != null && imageLink.isNotEmpty)
+              _buildImageCarousel(imageLink),
+            SizedBox(height: 8.sp),
+            // Disease block
+            DiseaseBlockWidget(
+              diseaseLink: diseaseLink,
+              diseaseName: diseaseName,
+              diseaseDescription: diseaseDescription,
+              diseaseSolution: diseaseSolution,
+              diseaseImageLink: diseaseImageLink,
+              scanHistoryId: scanHistoryId,
+              postImageLinks: imageLink,
             ),
             SizedBox(height: 8.sp),
             Row(
               children: [
                 SvgPicture.asset(
-                  likedPosts[postIndex] == true
-                      ? AppVectors.heartSolid
-                      : AppVectors.heart,
+                  isLiked ? AppVectors.heartSolid : AppVectors.heart,
                   color: AppColors.red,
                   width: 16.sp,
                   height: 16.sp,
                 ),
                 SizedBox(width: 4.sp),
-                Text(
-                  '${likeCounts[postIndex] ?? likes} lượt thích',
-                  style: AppTextStyles.s12Regular(),
-                ),
+                Text('$likes lượt thích', style: AppTextStyles.s12Regular()),
                 const Spacer(),
                 Text('$comments bình luận', style: AppTextStyles.s12Regular()),
                 SizedBox(width: 16.sp),
@@ -216,27 +340,25 @@ class _MyPostState extends State<MyPost> {
             Container(height: 1.sp, color: Colors.grey[200]),
             Row(
               children: [
-                _ActionButton(
-                  iconVector: likedPosts[postIndex] == true
+                ActionButton(
+                  iconVector: isLiked
                       ? AppVectors.heartSolid
                       : AppVectors.heart,
                   label: 'Thích',
-                  onPressed: () => _toggleLike(postIndex, likes),
-                  iconColor: likedPosts[postIndex] == true
-                      ? AppColors.red
-                      : AppColors.text_color_200,
-                  textColor: likedPosts[postIndex] == true
-                      ? AppColors.red
-                      : AppColors.text_color_400,
+                  onPressed: () {
+                    context.read<CommunityBloc>().add(ToggleLikeEvent(postId));
+                  },
+                  iconColor: isLiked ? AppColors.red : AppColors.text_color_200,
+                  textColor: isLiked ? AppColors.red : AppColors.text_color_400,
                 ),
                 Container(width: 1.sp, height: 40.sp, color: Colors.grey[200]),
-                _ActionButton(
+                ActionButton(
                   iconVector: AppVectors.comment,
                   label: 'Bình luận',
                   onPressed: () {},
                 ),
                 Container(width: 1.sp, height: 40.sp, color: Colors.grey[200]),
-                _ActionButton(
+                ActionButton(
                   iconVector: AppVectors.share,
                   label: 'Chia sẻ',
                   onPressed: () {},
@@ -244,49 +366,6 @@ class _MyPostState extends State<MyPost> {
               ],
             ),
             SizedBox(height: 8.sp),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  final String iconVector;
-  final String label;
-  final VoidCallback onPressed;
-  final Color? iconColor;
-  final Color? textColor;
-
-  const _ActionButton({
-    required this.iconVector,
-    required this.label,
-    required this.onPressed,
-    this.iconColor,
-    this.textColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: InkWell(
-        onTap: onPressed,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              iconVector,
-              color: iconColor ?? AppColors.text_color_200,
-              width: 18.sp,
-              height: 18.sp,
-            ),
-            SizedBox(width: 6.sp),
-            Text(
-              label,
-              style: AppTextStyles.s14Regular(
-                color: textColor ?? AppColors.text_color_400,
-              ),
-            ),
           ],
         ),
       ),

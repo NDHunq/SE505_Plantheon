@@ -17,6 +17,7 @@ class PostModel {
   final List<String> tags;
   final int likeNumber;
   final bool liked;
+  final bool isMyPost;
   final int commentNumber;
   final List<CommentModel>? commentList;
   final int shareNumber;
@@ -39,6 +40,7 @@ class PostModel {
     required this.tags,
     required this.likeNumber,
     required this.liked,
+    required this.isMyPost,
     required this.commentNumber,
     this.commentList,
     required this.shareNumber,
@@ -67,13 +69,18 @@ class PostModel {
           [],
       likeNumber: json['like_number'] as int? ?? 0,
       liked: json['liked'] as bool? ?? false,
+      isMyPost: json['is_my_post'] as bool? ?? false,
       commentNumber: json['comment_number'] as int? ?? 0,
       commentList: (json['comment_list'] as List<dynamic>?)
           ?.map((e) => CommentModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       shareNumber: json['share_number'] as int? ?? 0,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : DateTime.now(),
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : DateTime.now(),
     );
   }
 
@@ -94,6 +101,7 @@ class PostModel {
       tags: tags,
       likeNumber: likeNumber,
       liked: liked,
+      isMyPost: isMyPost,
       commentNumber: commentNumber,
       commentList: commentList?.map((e) => e.toEntity()).toList(),
       shareNumber: shareNumber,

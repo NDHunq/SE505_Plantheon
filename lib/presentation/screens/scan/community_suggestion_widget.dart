@@ -5,13 +5,15 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/create_post_modal.dart';
 
 class CommunitySuggestionWidget extends StatelessWidget {
-  final String? diseaseId;
+  final String? diseaseId; // className for fetching disease info
+  final String? diseaseIdForPost; // UUID for creating post
   final String? scanImageUrl;
   final String? scanHistoryId;
 
   const CommunitySuggestionWidget({
     super.key,
     this.diseaseId,
+    this.diseaseIdForPost,
     this.scanImageUrl,
     this.scanHistoryId,
   });
@@ -23,6 +25,7 @@ class CommunitySuggestionWidget extends StatelessWidget {
         CreatePostModal.show(
           context,
           diseaseId: diseaseId,
+          diseaseIdForPost: diseaseIdForPost,
           scanImageUrl: scanImageUrl,
           scanHistoryId: scanHistoryId,
         );

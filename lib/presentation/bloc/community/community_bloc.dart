@@ -7,14 +7,18 @@ import 'package:se501_plantheon/domain/repository/post_repository.dart';
 // Events
 abstract class CommunityEvent {}
 
-class FetchUserPosts extends CommunityEvent {
-  final String userId;
-  FetchUserPosts(this.userId);
-}
+class FetchAllPosts extends CommunityEvent {}
+
+class FetchMyPosts extends CommunityEvent {}
 
 class ToggleLikeEvent extends CommunityEvent {
   final String postId;
   ToggleLikeEvent(this.postId);
+}
+
+class DeletePostEvent extends CommunityEvent {
+  final String postId;
+  DeletePostEvent(this.postId);
 }
 
 class CreatePostEvent extends CommunityEvent {
@@ -61,21 +65,62 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
   final PostRepository postRepository;
 
   CommunityBloc({required this.postRepository}) : super(CommunityInitial()) {
-    on<FetchUserPosts>(_onFetchUserPosts);
+    on<FetchAllPosts>(_onFetchAllPosts);
+    on<FetchMyPosts>(_onFetchMyPosts);
     on<ToggleLikeEvent>(_onToggleLike);
+    on<DeletePostEvent>(_onDeletePost);
     on<CreatePostEvent>(_onCreatePost);
   }
 
-  Future<void> _onFetchUserPosts(
-    FetchUserPosts event,
+  Future<void> _onFetchAllPosts(
+    FetchAllPosts event,
     Emitter<CommunityState> emit,
   ) async {
     emit(CommunityLoading());
     try {
-      final posts = await postRepository.getUserPosts(event.userId);
+      final posts = await postRepository.getAllPosts();
       emit(CommunityLoaded(posts));
     } catch (e) {
       emit(CommunityError(e.toString()));
+    }
+  }
+
+  Future<void> _onFetchMyPosts(
+    FetchMyPosts event,
+    Emitter<CommunityState> emit,
+  ) async {
+    emit(CommunityLoading());
+    try {
+      final posts = await postRepository.getMyPosts();
+      emit(CommunityLoaded(posts));
+    } catch (e) {
+      emit(CommunityError(e.toString()));
+    }
+  }
+
+  Future<void> _onDeletePost(
+    DeletePostEvent event,
+    Emitter<CommunityState> emit,
+  ) async {
+    if (state is CommunityLoaded) {
+      final currentState = state as CommunityLoaded;
+      final posts = List<PostEntity>.from(currentState.posts);
+      final index = posts.indexWhere((element) => element.id == event.postId);
+
+      if (index != -1) {
+        // Remove post from UI
+        posts.removeAt(index);
+        emit(CommunityLoaded(posts));
+
+        try {
+          await postRepository.deletePost(event.postId);
+          print('Debug: Post deleted successfully');
+        } catch (e) {
+          print('Debug: Failed to delete post: $e');
+          // Refresh posts if failed
+          add(FetchAllPosts());
+        }
+      }
     }
   }
 
@@ -113,6 +158,7 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
           tags: post.tags,
           likeNumber: newLikeCount,
           liked: !isLiked,
+          isMyPost: post.isMyPost,
           commentNumber: post.commentNumber,
           commentList: post.commentList,
           shareNumber: post.shareNumber,

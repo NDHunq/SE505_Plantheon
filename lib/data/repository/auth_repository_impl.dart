@@ -44,10 +44,7 @@ class AuthRepositoryImpl implements AuthRepository {
         password: password,
       );
 
-      // Store token and user data
-      await tokenStorage.saveToken(authModel.token);
-      await tokenStorage.saveUser(authModel.user as UserModel);
-
+      // Don't store token on registration - user should login after registering
       return authModel;
     } catch (e) {
       throw Exception('Registration failed: ${e.toString()}');

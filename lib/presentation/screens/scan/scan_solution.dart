@@ -159,6 +159,7 @@ class _ScanSolutionState extends State<ScanSolution> {
                   const SizedBox(height: 12),
                   CommunitySuggestionWidget(
                     diseaseId: disease.className,
+                    diseaseIdForPost: disease.id,
                     scanImageUrl: scanHistory.scanImage,
                     scanHistoryId: scanHistory.id,
                   ),

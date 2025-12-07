@@ -5,7 +5,6 @@ import 'package:se501_plantheon/common/widgets/button/sized_button.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_event.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_state.dart';
-import 'package:se501_plantheon/presentation/screens/navigator/navigator.dart';
 import '../../../core/configs/constants/app_info.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/assets/app_text_styles.dart';
@@ -42,14 +41,15 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is AuthAuthenticated) {
-          // Navigate to main screen on successful registration
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (BuildContext context) => const CustomNavigator(),
+        if (state is AuthRegistered) {
+          // Navigate back to login page on successful registration
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Đăng ký thành công! Vui lòng đăng nhập.'),
+              backgroundColor: Colors.green,
             ),
           );
+          Navigator.pop(context);
         } else if (state is AuthError) {
           // Show error message
           ScaffoldMessenger.of(context).showSnackBar(

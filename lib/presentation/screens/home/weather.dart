@@ -15,6 +15,17 @@ import 'package:se501_plantheon/core/services/weather_service.dart';
 import 'package:se501_plantheon/data/models/weather.model.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/weather_horizontal_card.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/weather_vertical_card.dart';
+import 'package:se501_plantheon/presentation/screens/home/widgets/weather_suggestion_widget.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
+import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
+import 'package:se501_plantheon/domain/usecases/activity/create_activity.dart';
+import 'package:se501_plantheon/domain/usecases/activity/delete_activity.dart';
+import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_day.dart';
+import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_month.dart';
+import 'package:se501_plantheon/domain/usecases/activity/update_activity.dart';
 
 class Weather extends StatefulWidget {
   const Weather({super.key});
@@ -149,154 +160,179 @@ class _WeatherState extends State<Weather> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.primary_400,
-      appBar: BasicAppbar(
-        title: _locationName,
-        titleColor: AppColors.white,
-        leading: IconButton(
-          icon: SvgPicture.asset(
-            AppVectors.arrowBack,
-            width: 28.sp,
-            height: 28.sp,
-            color: AppColors.white,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        actions: [
-          IconButton(
+    // Initialize Repository
+    final activitiesRepository = ActivitiesRepositoryImpl(
+      remoteDataSource: ActivitiesRemoteDataSourceImpl(client: http.Client()),
+    );
+
+    return BlocProvider(
+      create: (context) => ActivitiesBloc(
+        getActivitiesByMonth: GetActivitiesByMonth(activitiesRepository),
+        getActivitiesByDay: GetActivitiesByDay(activitiesRepository),
+        createActivity: CreateActivity(activitiesRepository),
+        updateActivity: UpdateActivity(activitiesRepository),
+        deleteActivity: DeleteActivity(activitiesRepository),
+      ),
+      child: Scaffold(
+        backgroundColor: AppColors.primary_400,
+        appBar: BasicAppbar(
+          title: _locationName,
+          titleColor: AppColors.white,
+          leading: IconButton(
             icon: SvgPicture.asset(
-              AppVectors.location,
-              width: 24.sp,
-              height: 24.sp,
+              AppVectors.arrowBack,
+              width: 28.sp,
+              height: 28.sp,
               color: AppColors.white,
             ),
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => BasicDialog(
-                  title:
-                      "Cho phép truy cập vị trí của bạn khi bạn dùng ứng dụng?",
-                  content:
-                      "Vị trí của bạn sẽ được sử dụng để tra cứu thời tiết.",
-                  onConfirm: () async {
-                    Navigator.of(context).pop();
-                    await _getCurrentLocation();
-                  },
-                  onCancel: () {
-                    Navigator.of(context).pop();
-                  },
-                  confirmText: "Cho phép",
-                  cancelText: "Không cho phép",
-                ),
-              );
+              Navigator.of(context).pop();
             },
           ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: LoadingIndicator())
-          : _error.isNotEmpty
-          ? Center(
-              child: Text(
-                'Error: $_error',
-                style: AppTextStyles.s14Regular(color: AppColors.white),
+          actions: [
+            IconButton(
+              icon: SvgPicture.asset(
+                AppVectors.location,
+                width: 24.sp,
+                height: 24.sp,
+                color: AppColors.white,
               ),
-            )
-          : _weatherData == null
-          ? Center(
-              child: Text(
-                'No data',
-                style: AppTextStyles.s14Regular(color: AppColors.white),
-              ),
-            )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => BasicDialog(
+                    title:
+                        "Cho phép truy cập vị trí của bạn khi bạn dùng ứng dụng?",
+                    content:
+                        "Vị trí của bạn sẽ được sử dụng để tra cứu thời tiết.",
+                    onConfirm: () async {
+                      Navigator.of(context).pop();
+                      await _getCurrentLocation();
+                    },
+                    onCancel: () {
+                      Navigator.of(context).pop();
+                    },
+                    confirmText: "Cho phép",
+                    cancelText: "Không cho phép",
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        body: _isLoading
+            ? const Center(child: LoadingIndicator())
+            : _error.isNotEmpty
+            ? Center(
+                child: Text(
+                  'Error: $_error',
+                  style: AppTextStyles.s14Regular(color: AppColors.white),
+                ),
+              )
+            : _weatherData == null
+            ? Center(
+                child: Text(
+                  'No data',
+                  style: AppTextStyles.s14Regular(color: AppColors.white),
+                ),
+              )
+            : SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    SvgPicture.asset(
-                      _getWeatherIcon(_weatherData!.currentWeatherType),
-                      width: 110.sp,
-                      height: 110.sp,
-                    ),
-                    SizedBox(width: 60.sp),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          _formatCurrentDate(),
-                          style: AppTextStyles.s14Bold(
-                            color: AppColors.primary_700,
-                          ),
+                        SvgPicture.asset(
+                          _getWeatherIcon(_weatherData!.currentWeatherType),
+                          width: 110.sp,
+                          height: 110.sp,
                         ),
-                        Text(
-                          '${_weatherData!.currentTemperature.toDouble().round()}°C',
-                          style: AppTextStyles.s36Bold(color: AppColors.white),
-                        ),
-                        Text(
-                          _getWeatherDescription(
-                            _weatherData!.currentWeatherType,
-                          ),
-                          style: AppTextStyles.s14Medium(
-                            color: AppColors.primary_700,
-                          ),
-                        ),
-                        Text(
-                          'Độ ẩm: ${_weatherData!.currentHumidity.toDouble().round()}% - Gió: ${_weatherData!.currentWindSpeed.toDouble().round()} km/h',
-                          style: AppTextStyles.s12Medium(
-                            color: AppColors.primary_700,
-                          ),
+                        SizedBox(width: 60.sp),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _formatCurrentDate(),
+                              style: AppTextStyles.s14Bold(
+                                color: AppColors.primary_700,
+                              ),
+                            ),
+                            Text(
+                              '${_weatherData!.currentTemperature.toDouble().round()}°C',
+                              style: AppTextStyles.s36Bold(
+                                color: AppColors.white,
+                              ),
+                            ),
+                            Text(
+                              _getWeatherDescription(
+                                _weatherData!.currentWeatherType,
+                              ),
+                              style: AppTextStyles.s14Medium(
+                                color: AppColors.primary_700,
+                              ),
+                            ),
+                            Text(
+                              'Độ ẩm: ${_weatherData!.currentHumidity.toDouble().round()}% - Gió: ${_weatherData!.currentWindSpeed.toDouble().round()} km/h',
+                              style: AppTextStyles.s12Medium(
+                                color: AppColors.primary_700,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-                SizedBox(height: 24.sp),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 22.sp),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      spacing: 20.sp,
-                      children: _weatherData!.hourlyWeather
-                          .where(
-                            (hourly) =>
-                                hourly.time.isAfter(DateTime.now()) ||
-                                hourly.time.hour == DateTime.now().hour,
-                          )
-                          .take(7) // Lấy 7 giờ tiếp theo (bao gồm giờ hiện tại)
-                          .map((hourly) {
-                            return WeatherVerticalCard(
-                              temperature: hourly.temperature
-                                  .toDouble()
-                                  .round(),
-                              hour: hourly.time.hour,
-                              weatherType: hourly.weatherType,
-                              isNow: hourly.time.hour == DateTime.now().hour,
-                            );
-                          })
-                          .toList(),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 24.sp),
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary_200,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20.sp),
-                        topRight: Radius.circular(20.sp),
+                    SizedBox(height: 24.sp),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 22.sp),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          spacing: 20.sp,
+                          children: _weatherData!.hourlyWeather
+                              .where(
+                                (hourly) =>
+                                    hourly.time.isAfter(DateTime.now()) ||
+                                    hourly.time.hour == DateTime.now().hour,
+                              )
+                              .take(
+                                7,
+                              ) // Lấy 7 giờ tiếp theo (bao gồm giờ hiện tại)
+                              .map((hourly) {
+                                return WeatherVerticalCard(
+                                  temperature: hourly.temperature
+                                      .toDouble()
+                                      .round(),
+                                  hour: hourly.time.hour,
+                                  weatherType: hourly.weatherType,
+                                  isNow:
+                                      hourly.time.hour == DateTime.now().hour,
+                                );
+                              })
+                              .toList(),
+                        ),
                       ),
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.all(16.sp),
-                      child: SingleChildScrollView(
+
+                    SizedBox(height: 24.sp),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 6.sp),
+                      child: WeatherSuggestionWidget(
+                        weatherData: _weatherData!,
+                      ),
+                    ),
+                    SizedBox(height: 24.sp),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary_200,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20.sp),
+                          topRight: Radius.circular(20.sp),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(16.sp),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 12.sp,
@@ -324,15 +360,15 @@ class _WeatherState extends State<Weather> {
                                     .round(),
                                 weatherType: daily.weatherType,
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+      ),
     );
   }
 }

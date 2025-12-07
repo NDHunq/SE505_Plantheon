@@ -12,7 +12,6 @@ import 'package:se501_plantheon/domain/entities/comment_entity.dart';
 import 'package:se501_plantheon/presentation/bloc/post_detail/post_detail_bloc.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/acction_button.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/disease_block_widget.dart';
-import 'package:se501_plantheon/presentation/screens/community/widgets/report_button.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
@@ -54,6 +53,10 @@ class _PostDetailViewState extends State<PostDetailView> {
   // Reply functionality
   bool isReplying = false;
   String replyingToUsername = '';
+  String? replyingToCommentId;
+
+  // Expanded replies state
+  final Set<String> _expandedComments = {};
 
   @override
   void dispose() {
@@ -100,8 +103,12 @@ class _PostDetailViewState extends State<PostDetailView> {
                         Row(
                           children: [
                             Text(
-                              state.post.fullName,
-                              style: AppTextStyles.s16Bold(),
+                              state.post.isMyPost ? 'Bạn' : state.post.fullName,
+                              style: AppTextStyles.s16Bold(
+                                color: state.post.isMyPost
+                                    ? Colors.green
+                                    : null,
+                              ),
                             ),
                             SizedBox(width: 4.sp),
                             Container(
@@ -133,7 +140,88 @@ class _PostDetailViewState extends State<PostDetailView> {
             return const SizedBox.shrink();
           },
         ),
-        actions: [ReportButton(context: context)],
+        actions: [
+          BlocBuilder<PostDetailBloc, PostDetailState>(
+            builder: (context, state) {
+              if (state is PostDetailLoaded) {
+                return PopupMenuButton<String>(
+                  icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+                  onSelected: (value) {
+                    if (value == 'delete') {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Xóa bài viết'),
+                          content: const Text(
+                            'Bạn có chắc muốn xóa bài viết này?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('Hủy'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                Navigator.pop(ctx);
+                                // Call delete API directly here since we need to navigate back
+                                try {
+                                  final repo = context
+                                      .read<PostDetailBloc>()
+                                      .postRepository;
+                                  await repo.deletePost(state.post.id);
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Lỗi: $e')),
+                                    );
+                                  }
+                                }
+                              },
+                              child: const Text(
+                                'Xóa',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                  itemBuilder: (ctx) => [
+                    if (state.post.isMyPost)
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text(
+                              'Xóa bài viết',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                      ),
+                    const PopupMenuItem(
+                      value: 'report',
+                      child: Row(
+                        children: [
+                          Icon(Icons.flag_outlined),
+                          SizedBox(width: 8),
+                          Text('Báo cáo'),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ],
       ),
       body: BlocBuilder<PostDetailBloc, PostDetailState>(
         builder: (context, state) {
@@ -151,27 +239,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                   children: [
                     Text(post.content, style: AppTextStyles.s14Regular()),
                     if (post.imageLink != null && post.imageLink!.isNotEmpty)
-                      SizedBox(
-                        width: double.infinity,
-                        height: 300.sp,
-                        child: Image.network(
-                          post.imageLink!.first,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16.sp),
-                                color: Colors.grey[300],
-                              ),
-                              child: Icon(
-                                Icons.eco,
-                                size: 100.sp,
-                                color: Colors.green,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                      _buildImageCarousel(post.imageLink!),
                     // Disease block
                     DiseaseBlockWidget(
                       diseaseLink: post.diseaseLink,
@@ -350,15 +418,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                     SizedBox(height: 16.sp),
                     if (post.commentList != null &&
                         post.commentList!.isNotEmpty)
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: post.commentList!.length,
-                        itemBuilder: (context, index) {
-                          final comment = post.commentList![index];
-                          return _buildComment(comment, index);
-                        },
-                      )
+                      _buildCommentTree(post.commentList!)
                     else
                       Center(
                         child: Text(
@@ -378,17 +438,11 @@ class _PostDetailViewState extends State<PostDetailView> {
     );
   }
 
-  void _handleReply(String username) {
+  void _handleReply(String username, String commentId) {
     setState(() {
       isReplying = true;
       replyingToUsername = username;
-      _commentController.text = '@$username ';
-    });
-
-    Future.delayed(const Duration(milliseconds: 100), () {
-      _commentController.selection = TextSelection.fromPosition(
-        TextPosition(offset: _commentController.text.length),
-      );
+      replyingToCommentId = commentId;
     });
   }
 
@@ -396,21 +450,211 @@ class _PostDetailViewState extends State<PostDetailView> {
     setState(() {
       isReplying = false;
       replyingToUsername = '';
+      replyingToCommentId = null;
       _commentController.clear();
     });
+  }
+
+  void _toggleExpanded(String commentId) {
+    setState(() {
+      if (_expandedComments.contains(commentId)) {
+        _expandedComments.remove(commentId);
+      } else {
+        _expandedComments.add(commentId);
+      }
+    });
+  }
+
+  Widget _buildCommentTree(List<CommentEntity> comments) {
+    // Separate top-level comments and replies
+    final topLevelComments = comments
+        .where(
+          (c) =>
+              c.parentId == null || c.parentId!.isEmpty || c.parentId == c.id,
+        )
+        .toList();
+
+    // Group ALL replies by parent (for recursive lookup)
+    final Map<String, List<CommentEntity>> repliesMap = {};
+    for (final comment in comments) {
+      if (comment.parentId != null &&
+          comment.parentId!.isNotEmpty &&
+          comment.parentId != comment.id) {
+        repliesMap.putIfAbsent(comment.parentId!, () => []);
+        repliesMap[comment.parentId!]!.add(comment);
+      }
+    }
+
+    return Column(
+      children: topLevelComments.map((comment) {
+        return _buildCommentWithReplies(comment, repliesMap, 0);
+      }).toList(),
+    );
+  }
+
+  /// Count all nested replies recursively
+  int _countAllReplies(
+    String commentId,
+    Map<String, List<CommentEntity>> repliesMap,
+  ) {
+    final directReplies = repliesMap[commentId] ?? [];
+    int count = directReplies.length;
+    for (final reply in directReplies) {
+      count += _countAllReplies(reply.id, repliesMap);
+    }
+    return count;
+  }
+
+  Widget _buildCommentWithReplies(
+    CommentEntity comment,
+    Map<String, List<CommentEntity>> repliesMap,
+    int depth,
+  ) {
+    final isExpanded = _expandedComments.contains(comment.id);
+    final directReplies = repliesMap[comment.id] ?? [];
+    final hasReplies = directReplies.isNotEmpty;
+    final totalReplies = _countAllReplies(comment.id, repliesMap);
+
+    // Calculate indent based on depth (max 3 levels of indentation)
+    final double indent = (depth > 0) ? 32.sp : 0;
+    final bool isTopLevel = depth == 0;
+
+    return Padding(
+      padding: EdgeInsets.only(left: indent),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildComment(comment, isTopLevel: isTopLevel),
+          if (hasReplies) ...[
+            GestureDetector(
+              onTap: () => _toggleExpanded(comment.id),
+              child: Padding(
+                padding: EdgeInsets.only(left: 40.sp, top: 4.sp, bottom: 4.sp),
+                child: Row(
+                  children: [
+                    Container(width: 24.sp, height: 1, color: Colors.grey[400]),
+                    SizedBox(width: 8.sp),
+                    Text(
+                      isExpanded
+                          ? 'Ẩn $totalReplies phản hồi'
+                          : 'Xem $totalReplies phản hồi',
+                      style: AppTextStyles.s12SemiBold(
+                        color: AppColors.primary_main,
+                      ),
+                    ),
+                    SizedBox(width: 4.sp),
+                    Icon(
+                      isExpanded ? Icons.expand_less : Icons.expand_more,
+                      size: 16.sp,
+                      color: AppColors.primary_main,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (isExpanded)
+              Column(
+                children: directReplies.map((reply) {
+                  // Recursively build nested replies
+                  return _buildCommentWithReplies(reply, repliesMap, depth + 1);
+                }).toList(),
+              ),
+          ],
+        ],
+      ),
+    );
   }
 
   void _addComment(String content) {
     if (content.trim().isNotEmpty) {
       context.read<PostDetailBloc>().add(
-        CreateCommentEvent(widget.postId, content),
+        CreateCommentEvent(
+          widget.postId,
+          content,
+          parentId: replyingToCommentId,
+        ),
       );
       _commentController.clear();
+      // Reset reply state after submission
+      if (isReplying) {
+        setState(() {
+          isReplying = false;
+          replyingToUsername = '';
+          replyingToCommentId = null;
+        });
+      }
       FocusScope.of(context).unfocus();
     }
   }
 
-  Widget _buildComment(CommentEntity comment, int index) {
+  Widget _buildImageCarousel(List<String> imageLinks) {
+    final ValueNotifier<int> currentPage = ValueNotifier<int>(0);
+    final PageController pageController = PageController();
+
+    return Column(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          height: 300.sp,
+          child: PageView.builder(
+            controller: pageController,
+            itemCount: imageLinks.length,
+            onPageChanged: (index) {
+              currentPage.value = index;
+            },
+            itemBuilder: (context, index) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(12.sp),
+                child: Image.network(
+                  imageLinks[index],
+                  fit: BoxFit.contain,
+                  width: double.infinity,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.sp),
+                        color: Colors.grey[300],
+                      ),
+                      child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+        if (imageLinks.length > 1)
+          Padding(
+            padding: EdgeInsets.only(top: 8.sp),
+            child: ValueListenableBuilder<int>(
+              valueListenable: currentPage,
+              builder: (context, page, child) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    imageLinks.length,
+                    (index) => AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      margin: EdgeInsets.symmetric(horizontal: 3.sp),
+                      width: page == index ? 20.sp : 8.sp,
+                      height: 8.sp,
+                      decoration: BoxDecoration(
+                        color: page == index
+                            ? AppColors.primary_main
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(4.sp),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildComment(CommentEntity comment, {bool isTopLevel = true}) {
     return Container(
       margin: EdgeInsets.only(bottom: 12.sp),
       child: Row(
@@ -419,7 +663,7 @@ class _PostDetailViewState extends State<PostDetailView> {
           Padding(
             padding: const EdgeInsets.only(top: 6.0),
             child: CircleAvatar(
-              radius: 16.sp,
+              radius: isTopLevel ? 16.sp : 14.sp,
               backgroundColor: Colors.green[200],
               backgroundImage: comment.avatar.isNotEmpty
                   ? NetworkImage(comment.avatar)
@@ -427,7 +671,9 @@ class _PostDetailViewState extends State<PostDetailView> {
               child: comment.avatar.isEmpty
                   ? Text(
                       comment.fullName.isNotEmpty ? comment.fullName[0] : '?',
-                      style: AppTextStyles.s12Bold(color: Colors.white),
+                      style: isTopLevel
+                          ? AppTextStyles.s12Bold(color: Colors.white)
+                          : AppTextStyles.s10Bold(color: Colors.white),
                     )
                   : null,
             ),
@@ -438,7 +684,7 @@ class _PostDetailViewState extends State<PostDetailView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: EdgeInsets.all(12.sp),
+                  padding: EdgeInsets.all(isTopLevel ? 12.sp : 10.sp),
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(12.sp),
@@ -448,12 +694,23 @@ class _PostDetailViewState extends State<PostDetailView> {
                     children: [
                       Text(
                         comment.isMe ? 'Bạn' : comment.fullName,
-                        style: AppTextStyles.s14Bold().copyWith(
-                          color: comment.isMe ? Colors.green : Colors.black,
-                        ),
+                        style:
+                            (isTopLevel
+                                    ? AppTextStyles.s14Bold()
+                                    : AppTextStyles.s12Bold())
+                                .copyWith(
+                                  color: comment.isMe
+                                      ? Colors.green
+                                      : Colors.black,
+                                ),
                       ),
                       SizedBox(height: 2.sp),
-                      Text(comment.content, style: AppTextStyles.s14Regular()),
+                      Text(
+                        comment.content,
+                        style: isTopLevel
+                            ? AppTextStyles.s14Regular()
+                            : AppTextStyles.s12Regular(),
+                      ),
                     ],
                   ),
                 ),
@@ -470,19 +727,29 @@ class _PostDetailViewState extends State<PostDetailView> {
                       ),
                       SizedBox(width: 12.sp),
                       InkWell(
-                        onTap: () {}, // Implement comment like later
+                        onTap: () {
+                          context.read<PostDetailBloc>().add(
+                            ToggleLikeComment(widget.postId, comment.id),
+                          );
+                        },
                         child: Row(
                           children: [
                             Icon(
-                              Icons.favorite_border,
+                              comment.isLike
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
                               size: 16.sp,
-                              color: Colors.grey[600],
+                              color: comment.isLike
+                                  ? AppColors.red
+                                  : Colors.grey[600],
                             ),
                             SizedBox(width: 4.sp),
                             Text(
                               '${comment.likeNumber}',
                               style: AppTextStyles.s12Regular(
-                                color: Colors.grey[600],
+                                color: comment.isLike
+                                    ? AppColors.red
+                                    : Colors.grey[600],
                               ),
                             ),
                           ],
@@ -491,7 +758,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                       SizedBox(width: 12.sp),
                       GestureDetector(
                         onTap: () {
-                          _handleReply(comment.fullName);
+                          _handleReply(comment.fullName, comment.id);
                         },
                         child: Text(
                           'Trả lời',

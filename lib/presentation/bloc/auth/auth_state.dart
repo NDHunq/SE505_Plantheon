@@ -30,6 +30,10 @@ class AuthUnauthenticated extends AuthState {
   const AuthUnauthenticated();
 }
 
+class AuthRegistered extends AuthState {
+  const AuthRegistered();
+}
+
 class AuthError extends AuthState {
   final String message;
 

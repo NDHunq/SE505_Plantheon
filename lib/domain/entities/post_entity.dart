@@ -16,6 +16,7 @@ class PostEntity {
   final List<String> tags;
   final int likeNumber;
   final bool liked;
+  final bool isMyPost;
   final int commentNumber;
   final List<CommentEntity>? commentList;
   final int shareNumber;
@@ -38,6 +39,7 @@ class PostEntity {
     required this.tags,
     required this.likeNumber,
     required this.liked,
+    required this.isMyPost,
     required this.commentNumber,
     this.commentList,
     required this.shareNumber,

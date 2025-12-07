@@ -2,7 +2,7 @@ import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
-import 'package:se501_plantheon/presentation/screens/community/widgets/report_button.dart';
+import 'package:se501_plantheon/presentation/screens/community/user_profile_screen.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
@@ -73,7 +73,7 @@ class _CommunityState extends State<Community> {
                     .tokenStorage,
           ),
         ),
-      )..add(FetchUserPosts('6937d944-c8d9-49b7-94c7-b281c23dbd31')),
+      )..add(FetchAllPosts()),
       child: SafeArea(
         child: Scaffold(
           backgroundColor: AppColors.white,
@@ -124,6 +124,7 @@ class _CommunityState extends State<Community> {
             ],
           ),
           floatingActionButton: FloatingActionButton(
+            heroTag: 'community_fab',
             onPressed: () {
               CreatePostModal.show(context);
             },
@@ -159,6 +160,7 @@ class _CommunityState extends State<Community> {
                         context: context,
                         postIndex: index,
                         postId: post.id,
+                        userId: post.userId,
                         username: post.fullName,
                         timeAgo: _formatTimeAgo(post.createdAt),
                         content: post.content,
@@ -177,6 +179,7 @@ class _CommunityState extends State<Community> {
                         scanHistoryId: post.scanHistoryId,
                         likes: post.likeNumber,
                         isLiked: post.liked,
+                        isMyPost: post.isMyPost,
                         comments: post.commentNumber,
                         shares: post.shareNumber,
                       );
@@ -205,10 +208,78 @@ class _CommunityState extends State<Community> {
     }
   }
 
+  Widget _buildImageCarousel(List<String> imageLinks) {
+    final ValueNotifier<int> currentPage = ValueNotifier<int>(0);
+    final PageController pageController = PageController();
+
+    return Column(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          height: 200.sp,
+          child: PageView.builder(
+            controller: pageController,
+            itemCount: imageLinks.length,
+            onPageChanged: (index) {
+              currentPage.value = index;
+            },
+            itemBuilder: (context, index) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(12.sp),
+                child: Image.network(
+                  imageLinks[index],
+                  fit: BoxFit.contain,
+                  width: double.infinity,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.sp),
+                        color: Colors.grey[300],
+                      ),
+                      child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+        if (imageLinks.length > 1)
+          Padding(
+            padding: EdgeInsets.only(top: 8.sp),
+            child: ValueListenableBuilder<int>(
+              valueListenable: currentPage,
+              builder: (context, page, child) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    imageLinks.length,
+                    (index) => AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      margin: EdgeInsets.symmetric(horizontal: 3.sp),
+                      width: page == index ? 20.sp : 8.sp,
+                      height: 8.sp,
+                      decoration: BoxDecoration(
+                        color: page == index
+                            ? AppColors.primary_main
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(4.sp),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+      ],
+    );
+  }
+
   Widget _buildPost({
     required BuildContext context,
     required int postIndex,
     required String postId,
+    required String userId,
     required String username,
     required String timeAgo,
     required String content,
@@ -223,15 +294,20 @@ class _CommunityState extends State<Community> {
     String? scanHistoryId,
     required int likes,
     required bool isLiked,
+    required bool isMyPost,
     required int comments,
     required int shares,
   }) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        await Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => PostDetail(postId: postId)),
         );
+        // Refresh posts when returning
+        if (context.mounted) {
+          context.read<CommunityBloc>().add(FetchAllPosts());
+        }
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 8.sp),
@@ -242,12 +318,26 @@ class _CommunityState extends State<Community> {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 20.sp,
-                  backgroundColor: Colors.green[200],
-                  child: Text(
-                    username[0],
-                    style: AppTextStyles.s16Bold(color: Colors.white),
+                GestureDetector(
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserProfileScreen(userId: userId),
+                      ),
+                    );
+                    // Refresh posts when returning
+                    if (context.mounted) {
+                      context.read<CommunityBloc>().add(FetchAllPosts());
+                    }
+                  },
+                  child: CircleAvatar(
+                    radius: 20.sp,
+                    backgroundColor: Colors.green[200],
+                    child: Text(
+                      username.isNotEmpty ? username[0] : '?',
+                      style: AppTextStyles.s16Bold(color: Colors.white),
+                    ),
                   ),
                 ),
                 SizedBox(width: 12.sp),
@@ -257,7 +347,12 @@ class _CommunityState extends State<Community> {
                     children: [
                       Row(
                         children: [
-                          Text(username, style: AppTextStyles.s16Bold()),
+                          Text(
+                            isMyPost ? 'Bạn' : username,
+                            style: AppTextStyles.s16Bold(
+                              color: isMyPost ? Colors.green : null,
+                            ),
+                          ),
                           SizedBox(width: 4.sp),
                           Container(
                             padding: EdgeInsets.all(2.sp),
@@ -282,31 +377,74 @@ class _CommunityState extends State<Community> {
                     ],
                   ),
                 ),
-                ReportButton(context: context),
+                PopupMenuButton<String>(
+                  icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+                  onSelected: (value) {
+                    if (value == 'delete') {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Xóa bài viết'),
+                          content: const Text(
+                            'Bạn có chắc muốn xóa bài viết này?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('Hủy'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(ctx);
+                                context.read<CommunityBloc>().add(
+                                  DeletePostEvent(postId),
+                                );
+                              },
+                              child: const Text(
+                                'Xóa',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    if (isMyPost)
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text(
+                              'Xóa bài viết',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                      ),
+                    const PopupMenuItem(
+                      value: 'report',
+                      child: Row(
+                        children: [
+                          Icon(Icons.flag_outlined),
+                          SizedBox(width: 8),
+                          Text('Báo cáo'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
             SizedBox(height: 8.sp),
             Text(content, style: AppTextStyles.s14Regular()),
             SizedBox(height: 8.sp),
-            // Post image
+            // Post images carousel
             if (imageLink != null && imageLink.isNotEmpty)
-              SizedBox(
-                width: double.infinity,
-                height: 200.sp,
-                child: Image.network(
-                  imageLink.first,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16.sp),
-                        color: Colors.grey[300],
-                      ),
-                      child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
-                    );
-                  },
-                ),
-              ),
+              _buildImageCarousel(imageLink),
             SizedBox(height: 8.sp),
             // Disease block
             DiseaseBlockWidget(
