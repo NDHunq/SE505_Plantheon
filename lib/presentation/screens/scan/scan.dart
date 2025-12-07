@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'dart:io';
@@ -18,6 +19,7 @@ import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 import 'package:toastification/toastification.dart';
+import 'package:se501_plantheon/core/services/camera_service.dart';
 
 class Scan extends StatefulWidget {
   const Scan({super.key});
@@ -44,19 +46,37 @@ class _ScanState extends State<Scan> {
 
   Future<void> _initCamera() async {
     try {
-      _cameras = await availableCameras();
+      _cameras ??= await CameraService.getCameras();
       if (_cameras == null || _cameras!.isEmpty) {
         setState(() => _cameraError = 'Không tìm thấy camera');
         return;
       }
       _cameraController = CameraController(
         _cameras![0],
-        ResolutionPreset.medium,
+        ResolutionPreset.max,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg,
       );
       await _cameraController!.initialize();
       setState(() => _isCameraReady = true);
+      // Thực hiện các cấu hình bổ sung sau khi preview đã sẵn sàng để giảm thời gian chờ
+      unawaited(_configureCameraAfterInit());
     } catch (e) {
       setState(() => _cameraError = 'Lỗi camera: $e');
+    }
+  }
+
+  Future<void> _configureCameraAfterInit() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+    try {
+      await _cameraController!.setFocusMode(FocusMode.auto);
+      await _cameraController!.setExposureMode(ExposureMode.auto);
+      await _cameraController!.setFocusPoint(const Offset(0.5, 0.5));
+      await _cameraController!.setExposurePoint(const Offset(0.5, 0.5));
+    } catch (_) {
+      // Một số thiết bị không hỗ trợ đặt điểm thủ công, bỏ qua
     }
   }
 
@@ -240,7 +260,16 @@ class _ScanState extends State<Scan> {
                     )
                   : (!_isCameraReady || _cameraController == null)
                   ? const Center(child: LoadingIndicator())
-                  : CameraPreview(_cameraController!),
+                  : ClipRect(
+                      child: FittedBox(
+                        fit: BoxFit.cover, // lấp đầy mà không méo
+                        child: SizedBox(
+                          width: _cameraController!.value.previewSize!.height,
+                          height: _cameraController!.value.previewSize!.width,
+                          child: CameraPreview(_cameraController!),
+                        ),
+                      ),
+                    ),
             ),
             Positioned(
               left: 0,
