@@ -15,3 +15,4 @@ class PlantEntity {
     required this.updatedAt,
   });
 }
+

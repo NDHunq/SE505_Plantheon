@@ -10,3 +10,4 @@ class GetPlants {
     return repository.getPlants();
   }
 }
+

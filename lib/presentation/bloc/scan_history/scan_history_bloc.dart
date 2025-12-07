@@ -88,25 +88,24 @@ class ScanHistoryBloc extends Bloc<ScanHistoryEvent, ScanHistoryState> {
     try {
       String? imageUrl;
 
-      // // Upload image if available
-      // if (event.scanImage != null) {
-      //   print('📸 BLoC: Uploading image to Supabase...');
-      //   final bytes = await event.scanImage!.readAsBytes();
-      //   final fileName = 'scan_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      // Upload image if available
+      if (event.scanImage != null) {
+        print('📸 BLoC: Uploading image to Supabase...');
+        final bytes = await event.scanImage!.readAsBytes();
+        final fileName = 'scan_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-      //   imageUrl = await SupabaseService.uploadFileFromBytes(
-      //     bucketName: 'uploads',
-      //     fileBytes: bytes,
-      //     fileName: fileName,
-      //   );
-      //   print('✅ BLoC: Image uploaded successfully: $imageUrl');
-      // }
+        imageUrl = await SupabaseService.uploadFileFromBytes(
+          bucketName: 'uploads',
+          fileBytes: bytes,
+          fileName: fileName,
+        );
+        print('✅ BLoC: Image uploaded successfully: $imageUrl');
+      }
 
       print('🌐 BLoC: Calling createScanHistory use case...');
       final scanHistory = await createScanHistory(
         event.diseaseId,
-        scanImage:
-            "https://thoidaicoffee.vn/wp-content/uploads/2022/08/tra-la-ca-phe-thuc-uong-thu-vi-tu-cay-ca-phe-1-600x375.jpeg",
+        scanImage: imageUrl,
       );
       print('✅ BLoC: Created scan history with id: ${scanHistory.id}');
 

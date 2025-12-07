@@ -17,3 +17,4 @@ class PlantError extends PlantState {
 
   PlantError({required this.message});
 }
+
