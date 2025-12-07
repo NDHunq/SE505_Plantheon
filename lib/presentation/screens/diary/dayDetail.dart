@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -28,6 +29,7 @@ import 'package:se501_plantheon/presentation/screens/diary/models/day_event.dart
 import 'package:se501_plantheon/presentation/screens/diary/helpers/day_event_mapper.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
+import 'package:se501_plantheon/presentation/screens/home/widgets/card/weather_card.dart';
 import 'package:se501_plantheon/presentation/screens/navigator/navigator.dart';
 
 class DayDetailScreen extends StatefulWidget {
@@ -148,10 +150,21 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
               }
             }
 
+            final now = DateTime.now();
+            final bool isSelectedDateToday =
+                selectedYear == now.year &&
+                selectedMonth == now.month &&
+                selectedDay == now.day;
+
             return Column(
               children: [
                 _buildDateHeader(),
-                _buildWeatherWidget(),
+                isSelectedDateToday
+                    ? Padding(
+                        padding: EdgeInsets.all(8.sp),
+                        child: WeatherCard(),
+                      )
+                    : const SizedBox.shrink(),
                 _buildAllDayEvents(),
                 Expanded(child: _buildHourlySchedule(events)),
               ],
@@ -363,53 +376,6 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                 ),
               );
             }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWeatherWidget() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.green.shade100,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          // Weather Icon
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.green.shade200,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.cloud, color: Colors.green, size: 25),
-          ),
-          const SizedBox(width: 12),
-
-          // Weather Text
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Hôm nay, Mưa có sấm chớp',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '28°C',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green.shade700,
-                  ),
-                ),
-              ],
-            ),
           ),
         ],
       ),
