@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:toastification/toastification.dart';
 
 class ReportButton extends StatelessWidget {
   const ReportButton({super.key, required this.context});
@@ -149,8 +150,14 @@ class ReportButton extends StatelessWidget {
                           : () {
                               // Xử lý gửi báo cáo ở đây nếu muốn
                               Navigator.of(context).pop();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Đã gửi báo cáo.')),
+                              toastification.show(
+                                context: context,
+                                type: ToastificationType.success,
+                                style: ToastificationStyle.flat,
+                                title: Text('Đã gửi báo cáo.'),
+                                autoCloseDuration: const Duration(seconds: 3),
+                                alignment: Alignment.bottomCenter,
+                                showProgressBar: true,
                               );
                             },
                       child: Text(

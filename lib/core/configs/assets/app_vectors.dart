@@ -39,4 +39,8 @@ class AppVectors {
   static const String postReport = '${basePath}post_report$format';
   static const String share = '${basePath}share$format';
   static const String filter = '${basePath}filter$format';
+  static const String flash = '${basePath}flash$format';
+  static const String unflash = '${basePath}unflash$format';
+  static const String reload = '${basePath}reload$format';
+  static const String info = '${basePath}info$format';
 }

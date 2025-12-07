@@ -8,6 +8,7 @@ import 'package:se501_plantheon/presentation/bloc/auth/auth_state.dart';
 import '../../../core/configs/constants/app_info.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/assets/app_text_styles.dart';
+import 'package:toastification/toastification.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -52,8 +53,14 @@ class _SignUpPageState extends State<SignUpPage> {
           Navigator.pop(context);
         } else if (state is AuthError) {
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+          toastification.show(
+            context: context,
+            type: ToastificationType.error,
+            style: ToastificationStyle.flat,
+            title: Text(state.message),
+            autoCloseDuration: const Duration(seconds: 3),
+            alignment: Alignment.bottomCenter,
+            showProgressBar: true,
           );
         }
       },
@@ -114,11 +121,14 @@ class _SignUpPageState extends State<SignUpPage> {
                       if (_formKey.currentState!.validate()) {
                         // Check if passwords match
                         if (_password.text != _confirmPassword.text) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Mật khẩu không khớp'),
-                              backgroundColor: Colors.red,
-                            ),
+                          toastification.show(
+                            context: context,
+                            type: ToastificationType.error,
+                            style: ToastificationStyle.flat,
+                            title: Text('Mật khẩu không khớp'),
+                            autoCloseDuration: const Duration(seconds: 3),
+                            alignment: Alignment.bottomCenter,
+                            showProgressBar: true,
                           );
                           return;
                         }

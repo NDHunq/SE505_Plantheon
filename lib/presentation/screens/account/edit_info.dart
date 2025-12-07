@@ -6,6 +6,7 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:toastification/toastification.dart';
 
 class EditInfo extends StatefulWidget {
   const EditInfo({super.key});
@@ -146,14 +147,17 @@ class _EditInfoState extends State<EditInfo> {
   void _saveUserInfo() {
     if (_formKey.currentState!.validate()) {
       // Handle save logic here
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Cập nhật thông tin thành công!',
-            style: AppTextStyles.s16Medium(color: Colors.white),
-          ),
-          backgroundColor: AppColors.primary_main,
+      toastification.show(
+        context: context,
+        type: ToastificationType.success,
+        style: ToastificationStyle.flat,
+        title: Text(
+          'Cập nhật thông tin thành công!',
+          style: AppTextStyles.s16Medium(color: Colors.white),
         ),
+        autoCloseDuration: const Duration(seconds: 3),
+        alignment: Alignment.bottomCenter,
+        showProgressBar: true,
       );
       Navigator.of(context).pop();
     }

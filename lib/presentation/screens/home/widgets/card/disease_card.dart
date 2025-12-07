@@ -6,15 +6,26 @@ class DiseaseWarningCard extends StatelessWidget {
   final String title;
   final String description;
   final String imagePath;
+  final bool isNetworkImage;
+  final String placeholderImagePath;
   const DiseaseWarningCard({
     super.key,
     required this.title,
     required this.description,
     required this.imagePath,
+    this.isNetworkImage = false,
+    this.placeholderImagePath = 'assets/images/plants.jpg',
   });
 
   @override
   Widget build(BuildContext context) {
+    final String effectiveImagePath = imagePath.isNotEmpty
+        ? imagePath
+        : placeholderImagePath;
+    final ImageProvider imageProvider = isNetworkImage
+        ? NetworkImage(effectiveImagePath)
+        : AssetImage(effectiveImagePath);
+
     return Container(
       width: 140,
       decoration: BoxDecoration(
@@ -28,10 +39,7 @@ class DiseaseWarningCard extends StatelessWidget {
             height: 114,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              image: DecorationImage(
-                image: AssetImage(imagePath),
-                fit: BoxFit.cover,
-              ),
+              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
             ),
           ),
           Padding(

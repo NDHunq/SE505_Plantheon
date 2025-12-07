@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:se501_plantheon/core/services/firebase_notification_service.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
+import 'package:toastification/toastification.dart';
 
 class PushNotificationDemoScreen extends StatefulWidget {
   const PushNotificationDemoScreen({super.key});
@@ -46,14 +47,16 @@ class _PushNotificationDemoScreenState
 
       // Show snackbar when message received
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'New notification: ${message.notification?.title ?? "No title"}',
-            ),
-            duration: const Duration(seconds: 3),
-            backgroundColor: AppColors.primary_main,
+        toastification.show(
+          context: context,
+          type: ToastificationType.info,
+          style: ToastificationStyle.flat,
+          title: Text(
+            'New notification: ${message.notification?.title ?? "No title"}',
           ),
+          autoCloseDuration: const Duration(seconds: 3),
+          alignment: Alignment.bottomCenter,
+          showProgressBar: true,
         );
       }
     });
@@ -61,11 +64,14 @@ class _PushNotificationDemoScreenState
 
   Future<void> _sendLocalNotification() async {
     if (_titleController.text.isEmpty || _bodyController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter both title and body'),
-          backgroundColor: Colors.red,
-        ),
+      toastification.show(
+        context: context,
+        type: ToastificationType.error,
+        style: ToastificationStyle.flat,
+        title: Text('Please enter both title and body'),
+        autoCloseDuration: const Duration(seconds: 3),
+        alignment: Alignment.bottomCenter,
+        showProgressBar: true,
       );
       return;
     }
@@ -80,11 +86,14 @@ class _PushNotificationDemoScreenState
     _bodyController.clear();
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Local notification sent!'),
-          backgroundColor: Colors.green,
-        ),
+      toastification.show(
+        context: context,
+        type: ToastificationType.success,
+        style: ToastificationStyle.flat,
+        title: Text('Local notification sent!'),
+        autoCloseDuration: const Duration(seconds: 3),
+        alignment: Alignment.bottomCenter,
+        showProgressBar: true,
       );
     }
   }
@@ -96,11 +105,14 @@ class _PushNotificationDemoScreenState
         _isSubscribedToPlants = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Unsubscribed from $topic'),
-            backgroundColor: Colors.orange,
-          ),
+        toastification.show(
+          context: context,
+          type: ToastificationType.info,
+          style: ToastificationStyle.flat,
+          title: Text('Unsubscribed from $topic'),
+          autoCloseDuration: const Duration(seconds: 3),
+          alignment: Alignment.bottomCenter,
+          showProgressBar: true,
         );
       }
     } else {
@@ -109,11 +121,14 @@ class _PushNotificationDemoScreenState
         _isSubscribedToPlants = true;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Subscribed to $topic'),
-            backgroundColor: Colors.green,
-          ),
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          style: ToastificationStyle.flat,
+          title: Text('Subscribed to $topic'),
+          autoCloseDuration: const Duration(seconds: 3),
+          alignment: Alignment.bottomCenter,
+          showProgressBar: true,
         );
       }
     }
@@ -122,11 +137,14 @@ class _PushNotificationDemoScreenState
   void _copyTokenToClipboard() {
     if (_fcmToken != null) {
       Clipboard.setData(ClipboardData(text: _fcmToken!));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('FCM Token copied to clipboard!'),
-          duration: Duration(seconds: 2),
-        ),
+      toastification.show(
+        context: context,
+        type: ToastificationType.success,
+        style: ToastificationStyle.flat,
+        title: Text('FCM Token copied to clipboard!'),
+        autoCloseDuration: const Duration(seconds: 2),
+        alignment: Alignment.bottomCenter,
+        showProgressBar: true,
       );
     }
   }

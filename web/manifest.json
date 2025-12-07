@@ -1,6 +1,6 @@
 {
-    "name": "se501_plantheon",
-    "short_name": "se501_plantheon",
+    "name": "Plantheon",
+    "short_name": "Plantheon",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

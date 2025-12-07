@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/common/widgets/button/sized_button.dart';
+import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_event.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_state.dart';
@@ -10,6 +11,7 @@ import '../../../core/configs/constants/app_info.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/assets/app_text_styles.dart';
 import 'signup.dart';
+import 'package:toastification/toastification.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -52,17 +54,21 @@ class _SignInPageState extends State<SignInPage> {
           );
         } else if (state is AuthError) {
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+          toastification.show(
+            context: context,
+            type: ToastificationType.error,
+            style: ToastificationStyle.flat,
+            title: Text(state.message),
+            autoCloseDuration: const Duration(seconds: 3),
+            alignment: Alignment.bottomCenter,
+            showProgressBar: true,
           );
         }
       },
       builder: (context, state) {
         // If already authenticated, show loading while redirecting
         if (state is AuthAuthenticated) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
+          return const Scaffold(body: Center(child: LoadingIndicator()));
         }
 
         return Scaffold(
