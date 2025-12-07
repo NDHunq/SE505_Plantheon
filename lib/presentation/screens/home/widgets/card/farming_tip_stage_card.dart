@@ -104,9 +104,7 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                           child: SizedBox(
                             width: 16.sp,
                             height: 16.sp,
-                            child: const CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
+                            child: const LoadingIndicator(),
                           ),
                         ),
                       ),
