@@ -223,8 +223,13 @@ class _PlantPickerSheetState extends State<_PlantPickerSheet> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height * 0.8.sp;
-    return SizedBox(
+    return Container(
       height: height,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.sp)),
+      ),
       child: Padding(
         padding: EdgeInsets.only(
           left: 16.sp,
