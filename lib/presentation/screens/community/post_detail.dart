@@ -15,6 +15,9 @@ import 'package:se501_plantheon/presentation/screens/community/widgets/disease_b
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
+import 'package:se501_plantheon/core/services/deep_link_service.dart';
+
+import 'package:toastification/toastification.dart';
 
 class PostDetail extends StatelessWidget {
   final String postId;
@@ -174,8 +177,16 @@ class _PostDetailViewState extends State<PostDetailView> {
                                   }
                                 } catch (e) {
                                   if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Lỗi: $e')),
+                                    toastification.show(
+                                      context: context,
+                                      type: ToastificationType.error,
+                                      style: ToastificationStyle.flat,
+                                      title: Text('Lỗi: $e'),
+                                      autoCloseDuration: const Duration(
+                                        seconds: 3,
+                                      ),
+                                      alignment: Alignment.bottomCenter,
+                                      showProgressBar: true,
                                     );
                                   }
                                 }
@@ -313,7 +324,13 @@ class _PostDetailViewState extends State<PostDetailView> {
                         ActionButton(
                           iconVector: AppVectors.share,
                           label: 'Chia sẻ',
-                          onPressed: () {},
+                          onPressed: () {
+                            DeepLinkService().copyLinkToClipboard(
+                              context,
+                              host: 'post',
+                              params: {'id': post.id},
+                            );
+                          },
                         ),
                       ],
                     ),

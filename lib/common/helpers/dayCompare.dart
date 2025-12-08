@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:toastification/toastification.dart';
 
 class DateValidator {
   /// Hàm kết hợp ngày (từ DateTime) và giờ (từ String) lại với nhau.
@@ -54,27 +55,17 @@ class DateValidator {
   }
 
   /// Hiển thị dialog lỗi thay vì SnackBar để tránh bị che bởi BottomSheet
+  /// Hiển thị Toast lỗi thay vì Dialog
   static void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
+    toastification.show(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Row(
-            children: [
-              Icon(Icons.error, color: Colors.red),
-              SizedBox(width: 8),
-              Text('Lỗi'),
-            ],
-          ),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
+      type: ToastificationType.error,
+      style: ToastificationStyle.flat,
+      title: const Text('Lỗi'),
+      description: Text(message),
+      autoCloseDuration: const Duration(seconds: 3),
+      alignment: Alignment.bottomCenter,
+      showProgressBar: true,
     );
   }
 }

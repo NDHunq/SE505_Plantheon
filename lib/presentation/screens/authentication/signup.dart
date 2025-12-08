@@ -44,11 +44,15 @@ class _SignUpPageState extends State<SignUpPage> {
       listener: (context, state) {
         if (state is AuthRegistered) {
           // Navigate back to login page on successful registration
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Đăng ký thành công! Vui lòng đăng nhập.'),
-              backgroundColor: Colors.green,
-            ),
+          toastification.show(
+            context: context,
+            type: ToastificationType.success,
+            style: ToastificationStyle.flat,
+            title: const Text('Đăng ký thành công! Vui lòng đăng nhập.'),
+            autoCloseDuration: const Duration(seconds: 3),
+            alignment: Alignment.bottomCenter,
+            showProgressBar: true,
+            icon: const Icon(Icons.check_circle_outline, color: Colors.green),
           );
           Navigator.pop(context);
         } else if (state is AuthError) {

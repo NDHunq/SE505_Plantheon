@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/presentation/screens/community/user_profile_screen.dart';
-import 'package:share_plus/share_plus.dart';
+
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
@@ -19,6 +19,7 @@ import 'package:se501_plantheon/presentation/screens/community/widgets/create_po
 import 'package:se501_plantheon/presentation/screens/community/widgets/disease_block_widget.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
+import 'package:se501_plantheon/core/services/deep_link_service.dart';
 
 class Community extends StatefulWidget {
   const Community({super.key});
@@ -41,24 +42,6 @@ class _CommunityState extends State<Community> {
   @override
   void dispose() {
     super.dispose();
-  }
-
-  void _handleShare({
-    required String username,
-    required String content,
-    required String category,
-    required int postIndex,
-  }) {
-    String shareText =
-        'Bài viết từ $username\n\n$content\n\n#$category\n\nChia sẻ từ Plantheon';
-
-    Share.share(shareText, subject: 'Bài viết từ Plantheon').then((_) {
-      // Cập nhật số lượt chia sẻ
-      // Note: Optimistic update for share count is not fully implemented in BLoC yet,
-      // but we can keep this local state update if 'posts' list was used.
-      // However, since we use BLoC, this local 'posts' list might not be the source of truth.
-      // For now, we'll just share.
-    });
   }
 
   @override
@@ -500,11 +483,10 @@ class _CommunityState extends State<Community> {
                   iconVector: AppVectors.share,
                   label: 'Chia sẻ',
                   onPressed: () {
-                    _handleShare(
-                      username: username,
-                      content: content,
-                      category: category,
-                      postIndex: postIndex,
+                    DeepLinkService().copyLinkToClipboard(
+                      context,
+                      host: 'post',
+                      params: {'id': postId},
                     );
                   },
                 ),

@@ -13,6 +13,7 @@ import 'package:se501_plantheon/presentation/screens/diary/other.dart';
 import 'package:se501_plantheon/presentation/screens/diary/kyThuat.dart';
 import 'package:se501_plantheon/presentation/screens/diary/dichBenh.dart';
 import 'package:se501_plantheon/presentation/screens/diary/climamate.dart';
+import 'package:toastification/toastification.dart';
 
 class ReusableActivitySuggestionItem extends StatefulWidget {
   final Activity activity;
@@ -608,9 +609,15 @@ class _ReusableAddButtonState extends State<ReusableAddButton> {
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Lỗi khi chuẩn bị dữ liệu: $e')));
+      toastification.show(
+        context: context,
+        type: ToastificationType.error,
+        style: ToastificationStyle.flat,
+        title: Text('Lỗi khi chuẩn bị dữ liệu: $e'),
+        autoCloseDuration: const Duration(seconds: 3),
+        alignment: Alignment.bottomCenter,
+        showProgressBar: true,
+      );
     }
   }
 
@@ -642,12 +649,15 @@ class _ReusableAddButtonState extends State<ReusableAddButton> {
                 _createdActivityId = state.response.id;
               });
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Đã thêm hoạt động vào nhật ký!'),
-                  backgroundColor: Colors.green,
-                  duration: Duration(seconds: 2),
-                ),
+              toastification.show(
+                context: context,
+                type: ToastificationType.success,
+                style: ToastificationStyle.flat,
+                title: const Text('Đã thêm hoạt động vào nhật ký!'),
+                autoCloseDuration: const Duration(seconds: 2),
+                alignment: Alignment.bottomCenter,
+                showProgressBar: true,
+                icon: const Icon(Icons.check_circle, color: Colors.green),
               );
             }
           }
@@ -657,11 +667,14 @@ class _ReusableAddButtonState extends State<ReusableAddButton> {
               setState(() {
                 _isLoading = false;
               });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Lỗi tạo hoạt động: ${state.message}'),
-                  backgroundColor: Colors.red,
-                ),
+              toastification.show(
+                context: context,
+                type: ToastificationType.error,
+                style: ToastificationStyle.flat,
+                title: Text('Lỗi tạo hoạt động: ${state.message}'),
+                autoCloseDuration: const Duration(seconds: 3),
+                alignment: Alignment.bottomCenter,
+                showProgressBar: true,
               );
             }
           }
@@ -674,12 +687,15 @@ class _ReusableAddButtonState extends State<ReusableAddButton> {
                 _createdActivityId = null;
               });
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Đã xóa hoạt động thành công!'),
-                  backgroundColor: Colors.green,
-                  duration: Duration(seconds: 2),
-                ),
+              toastification.show(
+                context: context,
+                type: ToastificationType.success,
+                style: ToastificationStyle.flat,
+                title: const Text('Đã xóa hoạt động thành công!'),
+                autoCloseDuration: const Duration(seconds: 2),
+                alignment: Alignment.bottomCenter,
+                showProgressBar: true,
+                icon: const Icon(Icons.check_circle, color: Colors.green),
               );
             }
           }
@@ -689,11 +705,14 @@ class _ReusableAddButtonState extends State<ReusableAddButton> {
               setState(() {
                 _isLoading = false;
               });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Lỗi xóa hoạt động: ${state.message}'),
-                  backgroundColor: Colors.red,
-                ),
+              toastification.show(
+                context: context,
+                type: ToastificationType.error,
+                style: ToastificationStyle.flat,
+                title: Text('Lỗi xóa hoạt động: ${state.message}'),
+                autoCloseDuration: const Duration(seconds: 3),
+                alignment: Alignment.bottomCenter,
+                showProgressBar: true,
               );
             }
           }
