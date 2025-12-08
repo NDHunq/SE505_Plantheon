@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
@@ -47,6 +48,8 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
   final CarouselSliderController _carouselController =
       CarouselSliderController();
   int _currentImageIndex = 0;
+  final FlutterTts _flutterTts = FlutterTts();
+  bool _isSpeaking = false;
 
   @override
   void initState() {
@@ -54,6 +57,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
     print(
       '🚀 Screen: initState called with diseaseLabel: ${widget.diseaseLabel}',
     );
+    _initTts();
     context.read<DiseaseBloc>().add(
       GetDiseaseEvent(diseaseId: widget.diseaseLabel),
     );
@@ -63,6 +67,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
 
   @override
   void dispose() {
+    _flutterTts.stop();
     super.dispose();
   }
 
@@ -162,7 +167,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                             children: [
                               InkWell(
                                 onTap: () {
-                                  // TODO: Handle listen description tap
+                                  _handleListenTap(disease.description);
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
@@ -170,12 +175,16 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Icon(
-                                        Icons.volume_up,
+                                        _isSpeaking
+                                            ? Icons.stop_circle_outlined
+                                            : Icons.volume_up,
                                         color: AppColors.primary_400,
                                         size: 24.sp,
                                       ),
                                       Text(
-                                        ' Nghe mô tả',
+                                        _isSpeaking
+                                            ? ' Dừng đọc'
+                                            : ' Nghe mô tả',
                                         style: AppTextStyles.s16SemiBold(
                                           color: AppColors.primary_400,
                                         ),
@@ -538,5 +547,48 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _initTts() async {
+    await _flutterTts.setLanguage('vi-VN');
+    await _flutterTts.awaitSpeakCompletion(true);
+
+    _flutterTts.setStartHandler(() {
+      if (!mounted) return;
+      setState(() => _isSpeaking = true);
+    });
+
+    _flutterTts.setCompletionHandler(() {
+      if (!mounted) return;
+      setState(() => _isSpeaking = false);
+    });
+
+    _flutterTts.setCancelHandler(() {
+      if (!mounted) return;
+      setState(() => _isSpeaking = false);
+    });
+
+    _flutterTts.setErrorHandler((message) {
+      print('TTS error: $message');
+      if (!mounted) return;
+      setState(() => _isSpeaking = false);
+    });
+  }
+
+  Future<void> _handleListenTap(String htmlContent) async {
+    if (_isSpeaking) {
+      await _flutterTts.stop();
+      return;
+    }
+
+    final textToSpeak = _stripHtmlTags(htmlContent);
+    if (textToSpeak.isEmpty) return;
+
+    await _flutterTts.speak(textToSpeak);
+  }
+
+  String _stripHtmlTags(String htmlString) {
+    final withoutTags = htmlString.replaceAll(RegExp(r'<[^>]*>'), ' ');
+    return withoutTags.replaceAll(RegExp(r'\s+'), ' ').trim();
   }
 }

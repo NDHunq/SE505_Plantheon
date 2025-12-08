@@ -276,7 +276,7 @@ class _ScanState extends State<Scan> {
               right: 0,
               top: 0,
               child: Container(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withOpacity(0.7),
                 padding: EdgeInsets.symmetric(vertical: 10.sp),
                 child: Padding(
                   padding: EdgeInsets.only(
@@ -332,7 +332,7 @@ class _ScanState extends State<Scan> {
                 right: 0,
                 bottom: 0,
                 child: Container(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withOpacity(0.7),
                   padding: EdgeInsets.symmetric(vertical: 20.sp),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -457,7 +457,7 @@ class _ScanState extends State<Scan> {
                 right: 0,
                 bottom: 0,
                 child: Container(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withOpacity(0.7),
                   padding: EdgeInsets.symmetric(vertical: 20.sp),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
