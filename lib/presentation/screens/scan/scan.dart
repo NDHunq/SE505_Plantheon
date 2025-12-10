@@ -8,6 +8,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
+import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/disease_prediction_service.dart';
@@ -144,9 +145,24 @@ class _ScanState extends State<Scan> {
       _cameraError = null;
     });
 
+    // Show loading gif dialog immediately
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Center(
+          child: SizedBox(
+            width: 100,
+            height: 100,
+            child: Image.asset('assets/gif/magnify.gif', fit: BoxFit.contain),
+          ),
+        ),
+      );
+    }
+
     try {
-      // Gọi API prediction
-      final result = await DiseasePredictionService.instance.predictDisease(
+      // Gọi API prediction v2 (with plant detection)
+      final result = await DiseasePredictionService.instance.predictDiseaseV2(
         _image!,
       );
 
@@ -158,20 +174,12 @@ class _ScanState extends State<Scan> {
       print('✅ Phân tích thành công: ${result.topPrediction?.label}');
 
       if (mounted && result.topPrediction != null) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => Center(
-            child: SizedBox(
-              width: 100,
-              height: 100,
-              child: Image.asset('assets/gif/magnify.gif', fit: BoxFit.contain),
-            ),
-          ),
-        );
+        // Wait a bit to show the loading animation
         await Future.delayed(const Duration(seconds: 2));
         if (mounted) {
+          // Close loading dialog
           Navigator.of(context).pop();
+          // Navigate to result screen
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -195,14 +203,54 @@ class _ScanState extends State<Scan> {
           );
         }
       }
+    } on NoPlantDetectedException catch (e) {
+      // Handle no plant detected error specifically
+      setState(() {
+        _loading = false;
+        _cameraError = 'Không phát hiện cây trong ảnh';
+      });
+
+      // Close loading dialog and show error dialog
+      if (mounted) {
+        // Wait a bit to show the loading animation
+        await Future.delayed(const Duration(seconds: 2));
+        if (mounted) {
+          // Close loading dialog
+          Navigator.of(context).pop();
+          // Show error dialog
+          showDialog(
+            context: context,
+            builder: (context) => BasicDialog(
+              title: 'Không phát hiện cây :(',
+              content:
+                  'Hình như đây không phải là cây nhỉ? Hãy thử chụp lại ảnh lá cây rõ nét hơn để tôi có thể giúp bạn chẩn đoán bệnh chính xác nhé!',
+              confirmText: 'Chụp lại',
+              onConfirm: () async {
+                Navigator.of(context).pop();
+                await _cameraController?.resumePreview();
+                setState(() {
+                  _image = null;
+                  _predictionResult = null;
+                  _cameraError = null;
+                });
+              },
+            ),
+          );
+        }
+      }
+
+      print('⚠️ Không phát hiện cây: $e');
     } catch (e) {
       setState(() {
         _loading = false;
         _cameraError = 'Lỗi phân tích: $e';
       });
 
-      // Show error dialog
+      // Close loading dialog and show error toast
       if (mounted) {
+        // Close loading dialog first
+        Navigator.of(context).pop();
+
         toastification.show(
           context: context,
           type: ToastificationType.error,

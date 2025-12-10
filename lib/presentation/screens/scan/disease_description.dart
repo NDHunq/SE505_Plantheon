@@ -234,7 +234,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                     print(
                                       '✅ UI: Scan history created successfully with id: ${state.scanHistory.id}',
                                     );
-                                    Navigator.push(
+                                    Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
