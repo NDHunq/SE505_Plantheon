@@ -11,6 +11,9 @@ import 'package:se501_plantheon/domain/entities/sub_guide_stage_entity.dart';
 import 'package:se501_plantheon/presentation/bloc/guide_stage_detail/guide_stage_detail_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/guide_stage_detail/guide_stage_detail_event.dart';
 import 'package:se501_plantheon/presentation/bloc/guide_stage_detail/guide_stage_detail_state.dart';
+import 'package:se501_plantheon/presentation/screens/news/detail_news.dart';
+import 'package:se501_plantheon/presentation/bloc/news/news_provider.dart';
+import 'package:se501_plantheon/data/repository/news_repository_impl.dart';
 
 class FarmingTipStageCard extends StatefulWidget {
   final String stageId;
@@ -283,6 +286,7 @@ class _SubGuideStageSection extends StatelessWidget {
                     itemCount: subStage.blogs.length,
                     separatorBuilder: (context, index) => SizedBox(width: 8.sp),
                     itemBuilder: (context, index) => _BlogCard(
+                      blogId: subStage.blogs[index].id,
                       title: subStage.blogs[index].title,
                       content: subStage.blogs[index].content,
                       coverImageUrl: subStage.blogs[index].coverImageUrl,
@@ -300,11 +304,13 @@ class _SubGuideStageSection extends StatelessWidget {
 }
 
 class _BlogCard extends StatelessWidget {
+  final String blogId;
   final String title;
   final String content;
   final String coverImageUrl;
 
   const _BlogCard({
+    required this.blogId,
     required this.title,
     required this.content,
     required this.coverImageUrl,
@@ -312,71 +318,97 @@ class _BlogCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 140.sp,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(8.sp),
-        border: Border.all(color: AppColors.text_color_50, width: 1.sp),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 140.sp,
-            height: 69.sp,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.sp),
-              image: coverImageUrl.isNotEmpty
-                  ? DecorationImage(
-                      image: NetworkImage(coverImageUrl),
-                      fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        final imageUrl = coverImageUrl.isNotEmpty
+            ? coverImageUrl
+            : 'assets/images/plants.jpg';
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewsProvider(
+              child: Builder(
+                builder: (context) => DetailNews(
+                  newsId: blogId,
+                  repository: context.read<NewsRepositoryImpl>(),
+                  fallbackTitle: title,
+                  fallbackDescription: content,
+                  fallbackImage: imageUrl,
+                  fallbackTag: '',
+                  fallbackDate: DateTime.now(),
+                  fallbackContent: content,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+      child: Container(
+        width: 140.sp,
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(8.sp),
+          border: Border.all(color: AppColors.text_color_50, width: 1.sp),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 140.sp,
+              height: 69.sp,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.sp),
+                image: coverImageUrl.isNotEmpty
+                    ? DecorationImage(
+                        image: NetworkImage(coverImageUrl),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+                color: coverImageUrl.isEmpty ? AppColors.primary_50 : null,
+              ),
+              child: coverImageUrl.isEmpty
+                  ? const Icon(
+                      Icons.image_not_supported,
+                      color: AppColors.primary_400,
                     )
                   : null,
-              color: coverImageUrl.isEmpty ? AppColors.primary_50 : null,
             ),
-            child: coverImageUrl.isEmpty
-                ? const Icon(
-                    Icons.image_not_supported,
-                    color: AppColors.primary_400,
-                  )
-                : null,
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.sp),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 15.sp,
-                    vertical: 4.sp,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary_100,
-                    borderRadius: BorderRadius.circular(20.sp),
-                  ),
-                  child: Text(
-                    title + "aaaaaaaaaaaaaaaaaaaaa",
-                    style: AppTextStyles.s12Medium(
-                      color: AppColors.primary_700,
+            Padding(
+              padding: EdgeInsets.all(8.sp),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 15.sp,
+                      vertical: 4.sp,
                     ),
-                    maxLines: 1,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary_100,
+                      borderRadius: BorderRadius.circular(20.sp),
+                    ),
+                    child: Text(
+                      title,
+                      style: AppTextStyles.s12Medium(
+                        color: AppColors.primary_700,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  SizedBox(height: 4.sp),
+                  Text(
+                    content,
+                    style: AppTextStyles.s10Regular(
+                      color: AppColors.text_color_400,
+                    ),
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                SizedBox(height: 4.sp),
-                Text(
-                  content,
-                  style: AppTextStyles.s10Regular(
-                    color: AppColors.text_color_400,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -86,11 +86,13 @@ class GetGuideStagesResponseModel {
 }
 
 class BlogModel {
+  final String id;
   final String title;
   final String content;
   final String coverImageUrl;
 
   BlogModel({
+    required this.id,
     required this.title,
     required this.content,
     required this.coverImageUrl,
@@ -98,6 +100,7 @@ class BlogModel {
 
   factory BlogModel.fromJson(Map<String, dynamic> json) {
     return BlogModel(
+      id: json['id'] as String? ?? '',
       title: json['title'] as String? ?? '',
       content: json['content'] as String? ?? '',
       coverImageUrl: json['cover_image_url'] as String? ?? '',
@@ -106,6 +109,7 @@ class BlogModel {
 
   BlogEntity toEntity() {
     return BlogEntity(
+      id: id,
       title: title,
       content: content,
       coverImageUrl: coverImageUrl,

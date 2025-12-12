@@ -6,9 +6,11 @@ import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/bloc/news/news_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/news/news_state.dart';
-import 'package:se501_plantheon/presentation/screens/home/widgets/card/disease_card.dart';
+import 'package:se501_plantheon/presentation/screens/home/widgets/card/blog_card.dart';
 import 'package:se501_plantheon/presentation/screens/news/news.dart';
+import 'package:se501_plantheon/presentation/screens/news/detail_news.dart';
 import 'package:se501_plantheon/presentation/bloc/news/news_provider.dart';
+import 'package:se501_plantheon/data/repository/news_repository_impl.dart';
 
 class NewsSection extends StatelessWidget {
   const NewsSection({super.key});
@@ -48,7 +50,7 @@ class NewsSection extends StatelessWidget {
           child: BlocBuilder<NewsBloc, NewsState>(
             builder: (context, state) {
               final isLoading = state is NewsLoading || state is NewsInitial;
-              
+
               if (state is NewsError) {
                 return Center(
                   child: Text(
@@ -61,7 +63,7 @@ class NewsSection extends StatelessWidget {
               }
 
               final news = state is NewsLoaded ? state.news : [];
-              
+
               if (!isLoading && news.isEmpty) {
                 return Center(
                   child: Text(
@@ -74,9 +76,9 @@ class NewsSection extends StatelessWidget {
               }
 
               // Show skeleton or real data
-              final displayNews = isLoading 
-                ? List.generate(3, (index) => null) // 3 skeleton items
-                : news;
+              final displayNews = isLoading
+                  ? List.generate(3, (index) => null) // 3 skeleton items
+                  : news;
 
               return Skeletonizer(
                 enabled: isLoading,
@@ -88,7 +90,7 @@ class NewsSection extends StatelessWidget {
                       // Skeleton card
                       return Padding(
                         padding: EdgeInsets.only(right: 8.sp),
-                        child: const DiseaseWarningCard(
+                        child: const BlogCard(
                           title: 'News Title Loading',
                           description: 'Description loading text here',
                           imagePath: '',
@@ -96,7 +98,7 @@ class NewsSection extends StatelessWidget {
                         ),
                       );
                     }
-                    
+
                     final newsItem = news[index];
                     final imageUrl = newsItem.coverImageUrl.isNotEmpty
                         ? newsItem.coverImageUrl
@@ -104,11 +106,32 @@ class NewsSection extends StatelessWidget {
 
                     return Padding(
                       padding: EdgeInsets.only(right: 8.sp),
-                      child: DiseaseWarningCard(
-                        title: newsItem.title,
-                        description: newsItem.description ?? '',
-                        imagePath: imageUrl,
-                        isNetworkImage: newsItem.coverImageUrl.isNotEmpty,
+                      child: GestureDetector(
+                        onTap: () {
+                          final repo = context.read<NewsRepositoryImpl>();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailNews(
+                                newsId: newsItem.id,
+                                repository: repo,
+                                fallbackTitle: newsItem.title,
+                                fallbackDescription: newsItem.description ?? '',
+                                fallbackImage: imageUrl,
+                                fallbackTag: newsItem.blogTagName ?? '',
+                                fallbackDate:
+                                    newsItem.publishedAt ?? newsItem.createdAt,
+                                fallbackContent: newsItem.description ?? '',
+                              ),
+                            ),
+                          );
+                        },
+                        child: BlogCard(
+                          title: newsItem.title,
+                          description: newsItem.description ?? '',
+                          imagePath: imageUrl,
+                          isNetworkImage: newsItem.coverImageUrl.isNotEmpty,
+                        ),
                       ),
                     );
                   },
