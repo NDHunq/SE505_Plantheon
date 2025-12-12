@@ -18,7 +18,7 @@ class LoadingIndicator extends StatelessWidget {
           width: size.sp,
           height: size.sp,
           child: RiveAnimation.asset(
-            'assets/gif/20330-38212-loading-green.riv',
+            'assets/animations/20330-38212-loading-green.riv',
             fit: BoxFit.cover,
           ),
         ),

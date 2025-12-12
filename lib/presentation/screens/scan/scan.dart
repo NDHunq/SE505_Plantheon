@@ -7,7 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:lottie/lottie.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
+import 'package:se501_plantheon/common/widgets/fast_lottie_loading.dart';
 import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
@@ -151,10 +153,11 @@ class _ScanState extends State<Scan> {
         context: context,
         barrierDismissible: false,
         builder: (context) => Center(
-          child: SizedBox(
-            width: 100,
-            height: 100,
-            child: Image.asset('assets/gif/magnify.gif', fit: BoxFit.contain),
+          child: FastLottieLoading(
+            assetPath: 'assets/animations/Search.json',
+            width: 250.sp,
+            height: 250.sp,
+            speed: 2.0, // 2x speed
           ),
         ),
       );

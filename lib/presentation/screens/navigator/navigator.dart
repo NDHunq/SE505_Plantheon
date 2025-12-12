@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:se501_plantheon/common/widgets/fast_lottie_loading.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/account/account.dart';
@@ -49,11 +50,11 @@ class _CustomNavigatorState extends State<CustomNavigator> {
           backgroundColor: AppColors.primary_main,
           elevation: 0,
           shape: CircleBorder(),
-          child: SvgPicture.asset(
-            AppVectors.scan,
-            height: 30.sp,
-            width: 30.sp,
-            color: Colors.white,
+          child: FastLottieLoading(
+            assetPath: 'assets/animations/Scan.json',
+            width: 50.sp,
+            height: 50.sp,
+            speed: 1.0,
           ),
         ),
       ),

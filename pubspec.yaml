@@ -42,6 +42,7 @@ dependencies:
   dotted_line: ^3.2.3
   flutter_tts: ^4.2.3
   rive: ^0.13.0
+  lottie: ^3.1.2
 
 dev_dependencies:
   flutter_test:
@@ -61,5 +62,5 @@ flutter:
   assets:
     - assets/images/
     - assets/vectors/
-    - assets/gif/
+    - assets/animations/
     - .env
