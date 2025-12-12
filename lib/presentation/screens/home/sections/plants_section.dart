@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/bloc/plant/plant_bloc.dart';
@@ -43,10 +43,8 @@ class PlantSection extends StatelessWidget {
           height: 114.sp,
           child: BlocBuilder<PlantBloc, PlantState>(
             builder: (context, state) {
-              if (state is PlantLoading || state is PlantInitial) {
-                return const Center(child: LoadingIndicator());
-              }
-
+              final isLoading = state is PlantLoading || state is PlantInitial;
+              
               if (state is PlantError) {
                 return Center(
                   child: Text(
@@ -56,18 +54,34 @@ class PlantSection extends StatelessWidget {
                 );
               }
 
-              if (state is PlantLoaded) {
-                if (state.plants.isEmpty) {
-                  return const Center(
-                    child: Text('Chưa có cây trồng để hiển thị'),
-                  );
-                }
+              final plants = state is PlantLoaded ? state.plants : [];
+              
+              if (!isLoading && plants.isEmpty) {
+                return const Center(
+                  child: Text('Chưa có cây trồng để hiển thị'),
+                );
+              }
 
-                return ListView.builder(
+              // Show skeleton or real data
+              final displayPlants = isLoading 
+                ? List.generate(4, (index) => null) // 4 skeleton items
+                : plants;
+
+              return Skeletonizer(
+                enabled: isLoading,
+                child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: state.plants.length,
+                  itemCount: displayPlants.length,
                   itemBuilder: (context, index) {
-                    final plant = state.plants[index];
+                    if (isLoading) {
+                      // Skeleton card
+                      return const PlantsCard(
+                        name: 'Plant Name',
+                        imageUrl: '',
+                      );
+                    }
+                    
+                    final plant = plants[index];
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -84,9 +98,8 @@ class PlantSection extends StatelessWidget {
                       ),
                     );
                   },
-                );
-              }
-              return const SizedBox.shrink();
+                ),
+              );
             },
           ),
         ),

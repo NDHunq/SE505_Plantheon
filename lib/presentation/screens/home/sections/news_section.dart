@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/bloc/news/news_bloc.dart';
@@ -47,10 +47,8 @@ class NewsSection extends StatelessWidget {
           height: 200.sp, // Adjust height as needed for your card
           child: BlocBuilder<NewsBloc, NewsState>(
             builder: (context, state) {
-              if (state is NewsLoading || state is NewsInitial) {
-                return const Center(child: LoadingIndicator());
-              }
-
+              final isLoading = state is NewsLoading || state is NewsInitial;
+              
               if (state is NewsError) {
                 return Center(
                   child: Text(
@@ -62,41 +60,60 @@ class NewsSection extends StatelessWidget {
                 );
               }
 
-              if (state is NewsLoaded) {
-                if (state.news.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'Hiện chưa có tin tức',
-                      style: AppTextStyles.s14Regular(
-                        color: AppColors.text_color_300,
-                      ),
+              final news = state is NewsLoaded ? state.news : [];
+              
+              if (!isLoading && news.isEmpty) {
+                return Center(
+                  child: Text(
+                    'Hiện chưa có tin tức',
+                    style: AppTextStyles.s14Regular(
+                      color: AppColors.text_color_300,
                     ),
-                  );
-                }
+                  ),
+                );
+              }
 
-                return ListView.builder(
+              // Show skeleton or real data
+              final displayNews = isLoading 
+                ? List.generate(3, (index) => null) // 3 skeleton items
+                : news;
+
+              return Skeletonizer(
+                enabled: isLoading,
+                child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: state.news.length,
+                  itemCount: displayNews.length,
                   itemBuilder: (context, index) {
-                    final news = state.news[index];
-                    final imageUrl = news.coverImageUrl.isNotEmpty
-                        ? news.coverImageUrl
+                    if (isLoading) {
+                      // Skeleton card
+                      return Padding(
+                        padding: EdgeInsets.only(right: 8.sp),
+                        child: const DiseaseWarningCard(
+                          title: 'News Title Loading',
+                          description: 'Description loading text here',
+                          imagePath: '',
+                          isNetworkImage: false,
+                        ),
+                      );
+                    }
+                    
+                    final newsItem = news[index];
+                    final imageUrl = newsItem.coverImageUrl.isNotEmpty
+                        ? newsItem.coverImageUrl
                         : 'assets/images/plants.jpg';
 
                     return Padding(
                       padding: EdgeInsets.only(right: 8.sp),
                       child: DiseaseWarningCard(
-                        title: news.title,
-                        description: news.description ?? '',
+                        title: newsItem.title,
+                        description: newsItem.description ?? '',
                         imagePath: imageUrl,
-                        isNetworkImage: news.coverImageUrl.isNotEmpty,
+                        isNetworkImage: newsItem.coverImageUrl.isNotEmpty,
                       ),
                     );
                   },
-                );
-              }
-
-              return const SizedBox.shrink();
+                ),
+              );
             },
           ),
         ),

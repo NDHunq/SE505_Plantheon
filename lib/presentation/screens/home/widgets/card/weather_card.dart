@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/enums/weather_type.dart';
@@ -85,12 +86,12 @@ class _WeatherCardState extends State<WeatherCard> {
   @override
   Widget build(BuildContext context) {
     final subtitle = _isLoading
-        ? 'Đang tải...'
+        ? 'Đang tải thời tiết...'
         : _error.isNotEmpty || _weatherData == null
         ? 'Không thể tải'
         : _getWeatherDescription(_weatherData!.currentWeatherType);
     final temperature = _isLoading || _error.isNotEmpty || _weatherData == null
-        ? '--°C'
+        ? '25°C'
         : '${_weatherData!.currentTemperature.toDouble().round()}°C';
     final iconAsset = _isLoading || _error.isNotEmpty || _weatherData == null
         ? AppVectors.weatherPartlyCloudy
@@ -103,51 +104,54 @@ class _WeatherCardState extends State<WeatherCard> {
           MaterialPageRoute(builder: (context) => const Weather()),
         );
       },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(100),
-          border: Border.all(color: AppColors.text_color_50, width: 1),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            spacing: 10.0,
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: AppColors.primary_main,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: Center(
-                  child: SvgPicture.asset(iconAsset, width: 28, height: 28),
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Bây giờ,',
-                    style: AppTextStyles.s16Medium(
-                      color: AppColors.primary_main,
-                    ),
+      child: Skeletonizer(
+        enabled: _isLoading,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(100),
+            border: Border.all(color: AppColors.text_color_50, width: 1),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Row(
+              spacing: 10.0,
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary_main,
+                    borderRadius: BorderRadius.circular(100),
                   ),
-                  Text(
-                    subtitle,
-                    style: AppTextStyles.s12Regular(
-                      color: AppColors.text_color_200,
-                    ),
+                  child: Center(
+                    child: SvgPicture.asset(iconAsset, width: 28, height: 28),
                   ),
-                ],
-              ),
-              Spacer(),
-              Text(
-                temperature,
-                style: AppTextStyles.s20Bold(color: AppColors.primary_600),
-              ),
-            ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Bây giờ,',
+                      style: AppTextStyles.s16Medium(
+                        color: AppColors.primary_main,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: AppTextStyles.s12Regular(
+                        color: AppColors.text_color_200,
+                      ),
+                    ),
+                  ],
+                ),
+                Spacer(),
+                Text(
+                  temperature,
+                  style: AppTextStyles.s20Bold(color: AppColors.primary_600),
+                ),
+              ],
+            ),
           ),
         ),
       ),

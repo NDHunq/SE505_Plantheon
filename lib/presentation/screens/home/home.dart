@@ -26,10 +26,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return PlantProvider(
       child: ScanHistoryProvider(
-        child: NewsProvider(
-          size: 5,
-          child: const _HomeContent(),
-        ),
+        child: NewsProvider(size: 5, child: const _HomeContent()),
       ),
     );
   }
@@ -48,7 +45,7 @@ class _HomeContentState extends State<_HomeContent> {
     context.read<NewsBloc>().add(FetchNewsEvent(size: 5));
     context.read<PlantBloc>().add(FetchPlantsEvent());
     context.read<ScanHistoryBloc>().add(GetAllScanHistoryEvent(size: 3));
-    
+
     // Wait a bit for the APIs to complete
     await Future.delayed(const Duration(milliseconds: 500));
   }

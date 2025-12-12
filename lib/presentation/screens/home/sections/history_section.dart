@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/bloc/scan_history/scan_history_bloc.dart';
@@ -62,31 +62,68 @@ class _HistorySectionState extends State<HistorySection> {
         ),
         BlocBuilder<ScanHistoryBloc, ScanHistoryState>(
           builder: (context, state) {
-            if (state is ScanHistoryLoading) {
+            final isLoading = state is ScanHistoryLoading;
+
+            if (state is ScanHistoryError) {
               return Center(
                 child: Padding(
                   padding: EdgeInsets.all(16.sp),
-                  child: LoadingIndicator(),
+                  child: Text(
+                    'Lỗi: ${state.message}',
+                    style: AppTextStyles.s14Regular(color: Colors.red),
+                  ),
                 ),
               );
-            } else if (state is ScanHistorySuccess) {
-              if (state.scanHistories.isEmpty) {
-                return Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.sp),
-                    child: Text(
-                      'Chưa có lịch sử quét bệnh',
-                      style: AppTextStyles.s14Regular(
-                        color: AppColors.text_color_300,
-                      ),
+            }
+
+            final scanHistories = state is ScanHistorySuccess
+                ? state.scanHistories
+                : [];
+
+            if (!isLoading && scanHistories.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.sp),
+                  child: Text(
+                    'Chưa có lịch sử quét bệnh',
+                    style: AppTextStyles.s14Regular(
+                      color: AppColors.text_color_300,
                     ),
                   ),
-                );
-              }
+                ),
+              );
+            }
 
-              return Column(
-                children: List.generate(state.scanHistories.length, (index) {
-                  final scanHistory = state.scanHistories[index];
+            // Show skeleton or real data
+            final displayItems = isLoading
+                ? List.generate(3, (index) => null) // 3 skeleton items
+                : scanHistories;
+
+            return Skeletonizer(
+              enabled: isLoading,
+              child: Column(
+                children: List.generate(displayItems.length, (index) {
+                  if (isLoading) {
+                    // Skeleton card
+                    return Column(
+                      children: [
+                        if (index > 0)
+                          Divider(
+                            height: 16.sp,
+                            color: AppColors.text_color_100,
+                            thickness: 1.sp,
+                          ),
+                        const HistoryCard(
+                          title: 'Disease Name Loading',
+                          dateTime: '01/01/2024 12:00',
+                          isSuccess: true,
+                          scanImageUrl: '',
+                        ),
+                      ],
+                    );
+                  }
+
+                  final scanHistory = scanHistories[index];
                   final disease = scanHistory.disease;
 
                   return Column(
@@ -122,20 +159,8 @@ class _HistorySectionState extends State<HistorySection> {
                     ],
                   );
                 }),
-              );
-            } else if (state is ScanHistoryError) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.sp),
-                  child: Text(
-                    'Lỗi: ${state.message}',
-                    style: AppTextStyles.s14Regular(color: Colors.red),
-                  ),
-                ),
-              );
-            }
-
-            return const SizedBox.shrink();
+              ),
+            );
           },
         ),
       ],
