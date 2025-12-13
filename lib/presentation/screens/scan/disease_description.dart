@@ -50,6 +50,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
   int _currentImageIndex = 0;
   final FlutterTts _flutterTts = FlutterTts();
   bool _isSpeaking = false;
+  bool _isLoadingTts = false;
 
   @override
   void initState() {
@@ -166,23 +167,39 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                           child: Column(
                             children: [
                               InkWell(
-                                onTap: () {
-                                  _handleListenTap(disease.description);
-                                },
+                                onTap: _isLoadingTts
+                                    ? null
+                                    : () {
+                                        _handleListenTap(disease.description);
+                                      },
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
-                                      Icon(
-                                        _isSpeaking
-                                            ? Icons.stop_circle_outlined
-                                            : Icons.volume_up,
-                                        color: AppColors.primary_400,
-                                        size: 24.sp,
-                                      ),
+                                      if (_isLoadingTts)
+                                        SizedBox(
+                                          width: 26.sp,
+                                          height: 26.sp,
+                                          child: LoadingIndicator(
+                                            size: 26.sp,
+                                            padding: EdgeInsets.zero,
+                                          ),
+                                        )
+                                      else
+                                        Icon(
+                                          _isSpeaking
+                                              ? Icons.stop_circle_outlined
+                                              : Icons.volume_up,
+                                          color: AppColors.primary_400,
+                                          size: 24.sp,
+                                        ),
                                       Text(
-                                        _isSpeaking
+                                        _isLoadingTts
+                                            ? ' Đang tải...'
+                                            : _isSpeaking
                                             ? ' Dừng đọc'
                                             : ' Nghe mô tả',
                                         style: AppTextStyles.s16SemiBold(
@@ -217,6 +234,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                 left: 16.sp,
                                 right: 16.sp,
                                 top: 16.sp,
+                                bottom: 16.sp,
                               ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -309,37 +327,37 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                 },
                               ),
                             ),
-                            Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.all(16.sp),
-                              decoration: BoxDecoration(color: Colors.white),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  // TODO: Handle button press
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.white,
-                                  foregroundColor: AppColors.primary_main,
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 16.sp,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12.sp),
-                                  ),
-                                  side: BorderSide(
-                                    color: AppColors.primary_main,
-                                    width: 1,
-                                  ),
-                                  elevation: 0,
-                                ),
-                                child: Text(
-                                  'Xem các chẩn đoán tương tự',
-                                  style: AppTextStyles.s16SemiBold(
-                                    color: AppColors.primary_main,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // Container(
+                            //   width: double.infinity,
+                            //   padding: EdgeInsets.all(16.sp),
+                            //   decoration: BoxDecoration(color: Colors.white),
+                            //   child: ElevatedButton(
+                            //     onPressed: () {
+                            //       // TODO: Handle button press
+                            //     },
+                            //     style: ElevatedButton.styleFrom(
+                            //       backgroundColor: AppColors.white,
+                            //       foregroundColor: AppColors.primary_main,
+                            //       padding: EdgeInsets.symmetric(
+                            //         vertical: 16.sp,
+                            //       ),
+                            //       shape: RoundedRectangleBorder(
+                            //         borderRadius: BorderRadius.circular(12.sp),
+                            //       ),
+                            //       side: BorderSide(
+                            //         color: AppColors.primary_main,
+                            //         width: 1,
+                            //       ),
+                            //       elevation: 0,
+                            //     ),
+                            //     child: Text(
+                            //       'Xem các chẩn đoán tương tự',
+                            //       style: AppTextStyles.s16SemiBold(
+                            //         color: AppColors.primary_main,
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
@@ -555,7 +573,10 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
 
     _flutterTts.setStartHandler(() {
       if (!mounted) return;
-      setState(() => _isSpeaking = true);
+      setState(() {
+        _isSpeaking = true;
+        _isLoadingTts = false;
+      });
     });
 
     _flutterTts.setCompletionHandler(() {
@@ -584,7 +605,25 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
     final textToSpeak = _stripHtmlTags(htmlContent);
     if (textToSpeak.isEmpty) return;
 
-    await _flutterTts.speak(textToSpeak);
+    setState(() => _isLoadingTts = true);
+
+    try {
+      await _flutterTts.speak(textToSpeak);
+
+      // Fallback: Reset loading state after a short delay if startHandler wasn't called
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted && _isLoadingTts) {
+        setState(() {
+          _isLoadingTts = false;
+          _isSpeaking = true;
+        });
+      }
+    } catch (e) {
+      print('TTS speak error: $e');
+      if (mounted) {
+        setState(() => _isLoadingTts = false);
+      }
+    }
   }
 
   String _stripHtmlTags(String htmlString) {
