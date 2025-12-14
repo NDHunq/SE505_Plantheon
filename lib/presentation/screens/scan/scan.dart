@@ -243,6 +243,45 @@ class _ScanState extends State<Scan> {
       }
 
       print('⚠️ Không phát hiện cây: $e');
+    } on LowConfidencePredictionException catch (e) {
+      // Handle low confidence prediction error
+      setState(() {
+        _loading = false;
+        _cameraError = 'Độ tin cậy dự đoán thấp';
+      });
+
+      // Close loading dialog and show error dialog
+      if (mounted) {
+        // Wait a bit to show the loading animation
+        await Future.delayed(const Duration(seconds: 2));
+        if (mounted) {
+          // Close loading dialog
+          Navigator.of(context).pop();
+          // Show error dialog
+          showDialog(
+            context: context,
+            builder: (context) => BasicDialog(
+              title: 'Không thể nhận diện chính xác',
+              content:
+                  'Hệ thống chưa thể nhận diện chính xác loại cây này (độ tin cậy: ${(e.confidence * 100).toStringAsFixed(1)}%). '
+                  'Có thể đây là loại cây mà hệ thống chưa được huấn luyện. '
+                  'Hãy thử chụp lại ảnh rõ nét hơn hoặc thử với loại cây khác nhé!',
+              confirmText: 'Chụp lại',
+              onConfirm: () async {
+                Navigator.of(context).pop();
+                await _cameraController?.resumePreview();
+                setState(() {
+                  _image = null;
+                  _predictionResult = null;
+                  _cameraError = null;
+                });
+              },
+            ),
+          );
+        }
+      }
+
+      print('⚠️ Độ tin cậy thấp: $e');
     } catch (e) {
       setState(() {
         _loading = false;

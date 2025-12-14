@@ -151,6 +151,19 @@ class DiseasePredictionService {
           );
         }
 
+        // Check confidence threshold (minimum 0.7 or 70%)
+        const double confidenceThreshold = 0.7;
+        if (result.topPrediction != null && 
+            result.topPrediction!.probability < confidenceThreshold) {
+          print(
+            '⚠️ Low confidence prediction: ${result.topPrediction!.confidencePercent} < ${(confidenceThreshold * 100).toInt()}%',
+          );
+          throw LowConfidencePredictionException(
+            'Độ tin cậy thấp: ${result.topPrediction!.confidencePercent}',
+            result.topPrediction!.probability,
+          );
+        }
+
         return result;
       } else if (response.statusCode == 422) {
         // No plant detected
@@ -187,6 +200,17 @@ class NoPlantDetectedException implements Exception {
   final String message;
   
   NoPlantDetectedException(this.message);
+  
+  @override
+  String toString() => message;
+}
+
+/// Custom exception for when prediction confidence is below threshold
+class LowConfidencePredictionException implements Exception {
+  final String message;
+  final double confidence;
+  
+  LowConfidencePredictionException(this.message, this.confidence);
   
   @override
   String toString() => message;
