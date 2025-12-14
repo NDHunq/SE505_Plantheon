@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -212,7 +212,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                               ),
 
                               // HTML Content Section
-                              _buildHtmlContentSection(state.disease),
+                              _buildMarkdownContentSection(state.disease),
 
                               // Padding để nội dung không bị che bởi button
                               SizedBox(height: 80.sp),
@@ -513,54 +513,38 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
     );
   }
 
-  Widget _buildHtmlContentSection(DiseaseModel disease) {
+  Widget _buildMarkdownContentSection(DiseaseModel disease) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(AppConstraints.mainPadding.sp),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Html(
+          MarkdownBody(
             data: disease.description,
-            style: {
-              "body": Style(margin: Margins.zero, padding: HtmlPaddings.zero),
-              "h2": Style(
+            styleSheet: MarkdownStyleSheet(
+              h2: AppTextStyles.s20Bold(
                 color: AppColors.primary_600,
-                fontSize: FontSize(20),
-                fontWeight: FontWeight.bold,
-                margin: Margins.only(bottom: 16),
-              ),
-              "h3": Style(
+              ).copyWith(height: 1.5),
+              h3: AppTextStyles.s16SemiBold(
                 color: AppColors.primary_400,
-                fontSize: FontSize(16),
-                fontWeight: FontWeight.w600,
-                margin: Margins.only(top: 0, bottom: 12),
-              ),
-              "h4": Style(
+              ).copyWith(height: 1.5),
+              h4: AppTextStyles.s14SemiBold(
                 color: AppColors.primary_600,
-                fontSize: FontSize(14),
-                fontWeight: FontWeight.w600,
-                margin: Margins.only(bottom: 8),
-              ),
-              "p": Style(
-                fontSize: FontSize(14),
-                lineHeight: const LineHeight(1.6),
-                margin: Margins.only(bottom: 16),
+              ).copyWith(height: 1.5),
+              p: AppTextStyles.s14Regular(
                 color: Colors.black87,
-              ),
-              "ul": Style(margin: Margins.only(bottom: 16)),
-              "ol": Style(margin: Margins.only(bottom: 16)),
-              "li": Style(
-                fontSize: FontSize(14),
-                lineHeight: const LineHeight(1.5),
-                margin: Margins.only(bottom: 4),
+              ).copyWith(height: 1.6),
+              listBullet: AppTextStyles.s14Regular(
                 color: Colors.black87,
-              ),
-              "strong": Style(
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary_700,
-              ),
-            },
+              ).copyWith(height: 1.5),
+              strong: AppTextStyles.s14SemiBold(color: AppColors.primary_700),
+              em: AppTextStyles.s14Regular(
+                color: Colors.black87,
+              ).copyWith(fontStyle: FontStyle.italic),
+              blockSpacing: 16.sp,
+              listIndent: 24.sp,
+            ),
           ),
         ],
       ),
@@ -569,6 +553,9 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
 
   Future<void> _initTts() async {
     await _flutterTts.setLanguage('vi-VN');
+    await _flutterTts.setSpeechRate(0.5); // Tốc độ đọc (0.0 - 1.0)
+    await _flutterTts.setVolume(1.0); // Âm lượng (0.0 - 1.0)
+    await _flutterTts.setPitch(1.0); // Cao độ giọng nói (0.5 - 2.0)
     await _flutterTts.awaitSpeakCompletion(true);
 
     _flutterTts.setStartHandler(() {
@@ -596,19 +583,28 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
     });
   }
 
-  Future<void> _handleListenTap(String htmlContent) async {
+  Future<void> _handleListenTap(String markdownlContent) async {
     if (_isSpeaking) {
       await _flutterTts.stop();
       return;
     }
 
-    final textToSpeak = _stripHtmlTags(htmlContent);
+    final textToSpeak = _stripMarkdownTags(markdownlContent);
+    print('🗣️ TTS: Text length: ${textToSpeak.length} characters');
     if (textToSpeak.isEmpty) return;
 
     setState(() => _isLoadingTts = true);
 
     try {
-      await _flutterTts.speak(textToSpeak);
+      // Split long text into chunks to avoid Android TTS limitations
+      final chunks = _splitTextIntoChunks(textToSpeak, maxLength: 4000);
+      print('🗣️ TTS: Split into ${chunks.length} chunks');
+
+      for (int i = 0; i < chunks.length; i++) {
+        if (!_isSpeaking && i > 0) break; // Stop if user cancelled
+        print('🗣️ TTS: Speaking chunk ${i + 1}/${chunks.length}');
+        await _flutterTts.speak(chunks[i]);
+      }
 
       // Fallback: Reset loading state after a short delay if startHandler wasn't called
       await Future.delayed(const Duration(milliseconds: 500));
@@ -626,8 +622,130 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
     }
   }
 
-  String _stripHtmlTags(String htmlString) {
-    final withoutTags = htmlString.replaceAll(RegExp(r'<[^>]*>'), ' ');
-    return withoutTags.replaceAll(RegExp(r'\s+'), ' ').trim();
+  List<String> _splitTextIntoChunks(String text, {int maxLength = 4000}) {
+    if (text.length <= maxLength) return [text];
+
+    final chunks = <String>[];
+    var currentChunk = '';
+
+    // Split by sentences (. ! ?)
+    final sentences = text.split(RegExp(r'(?<=[.!?])\s+'));
+
+    for (final sentence in sentences) {
+      // If single sentence is too long, split by words
+      if (sentence.length > maxLength) {
+        if (currentChunk.isNotEmpty) {
+          chunks.add(currentChunk.trim());
+          currentChunk = '';
+        }
+
+        final words = sentence.split(' ');
+        for (final word in words) {
+          if ((currentChunk + ' ' + word).length > maxLength) {
+            if (currentChunk.isNotEmpty) {
+              chunks.add(currentChunk.trim());
+              currentChunk = word;
+            } else {
+              chunks.add(word); // Single word too long, add anyway
+            }
+          } else {
+            currentChunk += (currentChunk.isEmpty ? '' : ' ') + word;
+          }
+        }
+      } else {
+        // Add sentence to current chunk if it fits
+        if ((currentChunk + ' ' + sentence).length > maxLength) {
+          if (currentChunk.isNotEmpty) {
+            chunks.add(currentChunk.trim());
+          }
+          currentChunk = sentence;
+        } else {
+          currentChunk += (currentChunk.isEmpty ? '' : ' ') + sentence;
+        }
+      }
+    }
+
+    // Add remaining chunk
+    if (currentChunk.isNotEmpty) {
+      chunks.add(currentChunk.trim());
+    }
+
+    return chunks;
+  }
+
+  String _stripMarkdownTags(String markdownString) {
+    // Remove markdown formatting for TTS
+    String text = markdownString;
+
+    // Remove headers (##, ###, etc.)
+    text = text.replaceAll(RegExp(r'^#{1,6}\s+', multiLine: true), '');
+
+    // Remove code blocks first (```code```) to avoid conflicts
+    text = text.replaceAll(RegExp(r'```[^`]*```', multiLine: true), '');
+
+    // Remove inline code (`code`) - keep the content
+    text = text.replaceAllMapped(
+      RegExp(r'`([^`]+)`'),
+      (match) => match.group(1) ?? '',
+    );
+
+    // Remove bold (**text** or __text__) - process bold before italic
+    text = text.replaceAllMapped(
+      RegExp(r'\*\*(.+?)\*\*'),
+      (match) => match.group(1) ?? '',
+    );
+    text = text.replaceAllMapped(
+      RegExp(r'__(.+?)__'),
+      (match) => match.group(1) ?? '',
+    );
+
+    // Remove italic (*text* or _text_)
+    text = text.replaceAllMapped(
+      RegExp(r'\*(.+?)\*'),
+      (match) => match.group(1) ?? '',
+    );
+    text = text.replaceAllMapped(
+      RegExp(r'\b_(.+?)_\b'),
+      (match) => match.group(1) ?? '',
+    );
+
+    // Remove strikethrough (~~text~~)
+    text = text.replaceAllMapped(
+      RegExp(r'~~(.+?)~~'),
+      (match) => match.group(1) ?? '',
+    );
+
+    // Remove images ![alt](url) - keep alt text
+    text = text.replaceAllMapped(
+      RegExp(r'!\[([^\]]*)\]\([^)]+\)'),
+      (match) => match.group(1) ?? '',
+    );
+
+    // Remove links [text](url) - keep link text
+    text = text.replaceAllMapped(
+      RegExp(r'\[([^\]]+)\]\([^)]+\)'),
+      (match) => match.group(1) ?? '',
+    );
+
+    // Remove horizontal rules (---, ***, ___)
+    text = text.replaceAll(RegExp(r'^[-*_]{3,}\s*$', multiLine: true), '');
+
+    // Remove blockquotes (>)
+    text = text.replaceAll(RegExp(r'^>\s+', multiLine: true), '');
+
+    // Remove unordered list markers (-, *, +)
+    text = text.replaceAll(RegExp(r'^\s*[-*+]\s+', multiLine: true), '');
+
+    // Remove ordered list markers (1., 2., etc.)
+    text = text.replaceAll(RegExp(r'^\s*\d+\.\s+', multiLine: true), '');
+
+    // Remove HTML tags if any remain
+    text = text.replaceAll(RegExp(r'<[^>]*>'), '');
+
+    // Clean up multiple spaces and newlines
+    text = text.replaceAll(RegExp(r'\n+'), ' ');
+    text = text.replaceAll(RegExp(r'\s+'), ' ');
+
+    return text.trim();
   }
 }

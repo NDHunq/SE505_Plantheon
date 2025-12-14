@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
@@ -123,37 +123,36 @@ class _ScanSolutionState extends State<ScanSolution> {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(8),
-                    child: Html(
+                    child: MarkdownBody(
                       data: disease.solution,
-                      style: {
-                        "body": Style(
-                          margin: Margins.zero,
-                          padding: HtmlPaddings.zero,
-                        ),
-                        "h3": Style(
+                      styleSheet: MarkdownStyleSheet(
+                        h3: const TextStyle(
                           color: Color(0xFF388E3C),
-                          fontSize: FontSize(16),
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          margin: Margins.only(top: 16, bottom: 8),
+                          height: 1.5,
                         ),
-                        "p": Style(
-                          fontSize: FontSize(14),
-                          lineHeight: const LineHeight(1.6),
-                          margin: Margins.only(bottom: 12),
+                        p: const TextStyle(
+                          fontSize: 14,
+                          height: 1.6,
                           color: Colors.black87,
                         ),
-                        "ul": Style(margin: Margins.only(bottom: 12)),
-                        "li": Style(
-                          fontSize: FontSize(14),
-                          lineHeight: const LineHeight(1.5),
-                          margin: Margins.only(bottom: 4),
+                        listBullet: const TextStyle(
+                          fontSize: 14,
+                          height: 1.5,
                           color: Colors.black87,
                         ),
-                        "strong": Style(
+                        strong: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF1976D2),
                         ),
-                      },
+                        em: const TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: Colors.black87,
+                        ),
+                        blockSpacing: 12,
+                        listIndent: 24,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),
