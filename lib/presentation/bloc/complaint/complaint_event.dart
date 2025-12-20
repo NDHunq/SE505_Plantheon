@@ -17,3 +17,24 @@ class SubmitScanComplaintEvent extends ComplaintEvent {
     this.content,
   });
 }
+
+class SubmitComplaintEvent extends ComplaintEvent {
+  final String targetId;
+  final String targetType;
+  final String category;
+  final String content;
+
+  SubmitComplaintEvent({
+    required this.targetId,
+    required this.targetType,
+    required this.category,
+    required this.content,
+  });
+}
+
+class FetchComplaintsAboutMeEvent extends ComplaintEvent {
+  final int page;
+  final int limit;
+
+  FetchComplaintsAboutMeEvent({this.page = 1, this.limit = 10});
+}
