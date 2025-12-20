@@ -149,14 +149,46 @@ class _CreatePostModalState extends State<CreatePostModal> {
 
   Future<void> _pickImages() async {
     try {
+      // Calculate current image count (selected + prefilled)
+      final int currentImageCount = _selectedImages.length + (_prefilledImageUrl != null ? 1 : 0);
+      final int remainingSlots = 5 - currentImageCount;
+
+      if (remainingSlots <= 0) {
+        toastification.show(
+          context: context,
+          type: ToastificationType.warning,
+          style: ToastificationStyle.flat,
+          title: const Text('Đã đạt giới hạn 5 ảnh'),
+          autoCloseDuration: const Duration(seconds: 3),
+          alignment: Alignment.bottomCenter,
+          showProgressBar: true,
+        );
+        return;
+      }
+
       final List<XFile> pickedImages = await _picker.pickMultiImage(
         imageQuality: 80,
       );
 
       if (pickedImages.isNotEmpty) {
-        setState(() {
-          _selectedImages.addAll(pickedImages);
-        });
+        if (pickedImages.length > remainingSlots) {
+          toastification.show(
+            context: context,
+            type: ToastificationType.warning,
+            style: ToastificationStyle.flat,
+            title: Text('Chỉ có thể thêm $remainingSlots ảnh nữa (tối đa 5 ảnh)'),
+            autoCloseDuration: const Duration(seconds: 3),
+            alignment: Alignment.bottomCenter,
+            showProgressBar: true,
+          );
+          setState(() {
+            _selectedImages.addAll(pickedImages.take(remainingSlots));
+          });
+        } else {
+          setState(() {
+            _selectedImages.addAll(pickedImages);
+          });
+        }
       }
     } catch (e) {
       // Handle error
@@ -195,7 +227,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 600.sp, // Increased height to accommodate disease info
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -335,6 +366,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                   child: TextField(
                     controller: _postController,
                     maxLines: null,
+                    maxLength: 300,
                     textAlignVertical: TextAlignVertical.top,
                     decoration: InputDecoration(
                       hintText: 'Bạn đang nghĩ gì ?',
@@ -524,7 +556,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                 Container(
                   width: double.infinity,
                   constraints: BoxConstraints(
-                    minHeight: 120.sp,
+                    minHeight: 100.sp,
                     maxHeight:
                         (_selectedImages.isEmpty && _prefilledImageUrl == null)
                         ? 120.sp
