@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/supabase_service.dart';
 import 'package:se501_plantheon/core/services/firebase_notification_service.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_provider.dart';
 import 'package:se501_plantheon/core/services/deep_link_service.dart';
+import 'package:se501_plantheon/presentation/screens/on_boarding/on_boarding.dart';
 
 import 'package:toastification/toastification.dart';
 import 'package:se501_plantheon/core/services/camera_service.dart';
@@ -90,7 +90,7 @@ class MainApp extends StatelessWidget {
                   ),
                 ),
               ),
-              home: const SignInPage(),
+              home: const OnboardingScreen(),
               debugShowCheckedModeBanner: false,
             ),
           );
