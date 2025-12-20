@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/enums/weather_type.dart';
@@ -46,20 +48,20 @@ class WeatherVerticalCard extends StatelessWidget {
         decoration: isSelected
             ? BoxDecoration(
                 color: AppColors.primary_300,
-                borderRadius: BorderRadius.circular(25),
-                border: Border.all(color: AppColors.text_color_50, width: 1),
+                borderRadius: BorderRadius.circular(25.sp),
+                border: Border.all(color: AppColors.text_color_50, width: 1.sp),
               )
             : null,
         child: Padding(
-          padding: EdgeInsets.all(isSelected ? 8.0 : 0),
+          padding: EdgeInsets.all(isSelected ? 8.0.sp : 0.sp),
           child: Column(
-            spacing: 12,
+            spacing: 12.sp,
             children: [
               Text(
                 "$temperature°C",
                 style: AppTextStyles.s16Medium(color: AppColors.white),
               ),
-              SvgPicture.asset(weatherAsset, width: 40, height: 40),
+              SvgPicture.asset(weatherAsset, width: 40.sp, height: 40.sp),
               Text(
                 "${hour.toString().padLeft(2, '0')}:00",
                 style: AppTextStyles.s16Medium(color: AppColors.white),

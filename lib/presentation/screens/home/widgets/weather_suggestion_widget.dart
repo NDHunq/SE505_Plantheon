@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:se501_plantheon/data/models/weather.model.dart';
 import 'package:se501_plantheon/core/configs/enums/weather_type.dart';
 import 'package:se501_plantheon/presentation/screens/scan/models/activity_ui_model.dart';
@@ -214,18 +216,18 @@ class WeatherSuggestionWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
+          padding: EdgeInsets.fromLTRB(16.sp, -0.sp, 16.sp, 8.sp),
           child: Text(
             'Gợi ý hôm nay',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 16.sp,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 22),
+          padding: EdgeInsets.symmetric(horizontal: 8.sp),
           child: ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -235,7 +237,7 @@ class WeatherSuggestionWidget extends StatelessWidget {
                 activity: suggestions[index],
               );
             },
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            separatorBuilder: (context, index) => SizedBox(height: 12.sp),
           ),
         ),
       ],

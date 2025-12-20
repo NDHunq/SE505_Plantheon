@@ -192,7 +192,7 @@ class DetailNews extends StatelessWidget {
                       image: DecorationImage(
                         image: news.coverImageUrl.isNotEmpty
                             ? NetworkImage(news.coverImageUrl)
-                            : const AssetImage('assets/images/plants.jpg')
+                            : AssetImage('assets/images/plants.jpg')
                                   as ImageProvider,
                         fit: BoxFit.cover,
                       ),

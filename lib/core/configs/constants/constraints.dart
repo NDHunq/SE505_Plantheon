@@ -43,6 +43,9 @@ class AppConstraints {
   /// Font size cho title trung bình
   static const double titleMediumFontSize = 20.0;
 
+  /// Font size cho title nhỏ
+  static const double titleSmallFontSize = 16.0;
+
   /// Font size cho text nhỏ
   static const double smallTextFontSize = 10.0;
 

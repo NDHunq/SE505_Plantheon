@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
@@ -109,23 +111,23 @@ class _WeatherCardState extends State<WeatherCard> {
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(100),
-            border: Border.all(color: AppColors.text_color_50, width: 1),
+            borderRadius: BorderRadius.circular(100.sp),
+            border: Border.all(color: AppColors.text_color_50, width: 1.sp),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: EdgeInsets.symmetric(horizontal: 16.0.sp, vertical: 8.0.sp),
             child: Row(
-              spacing: 10.0,
+              spacing: 10.0.sp,
               children: [
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 44.sp,
+                  height: 44.sp,
                   decoration: BoxDecoration(
                     color: AppColors.primary_main,
-                    borderRadius: BorderRadius.circular(100),
+                    borderRadius: BorderRadius.circular(100.sp),
                   ),
                   child: Center(
-                    child: SvgPicture.asset(iconAsset, width: 28, height: 28),
+                    child: SvgPicture.asset(iconAsset, width: 28.sp, height: 28.sp),
                   ),
                 ),
                 Column(

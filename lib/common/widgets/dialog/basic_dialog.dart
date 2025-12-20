@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
 class BasicDialog extends StatelessWidget {
@@ -27,8 +29,8 @@ class BasicDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: AppColors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      contentPadding: const EdgeInsets.all(16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.sp)),
+      contentPadding: EdgeInsets.all(16.sp),
       content: SizedBox(
         width: width ?? MediaQuery.of(context).size.width * 0.8,
         child: Column(
@@ -42,7 +44,7 @@ class BasicDialog extends StatelessWidget {
                     style: TextStyle(
                       color: AppColors.primary_600,
                       fontWeight: FontWeight.w700,
-                      fontSize: 16,
+                      fontSize: 16.sp,
                     ),
                   ),
                 ),
@@ -54,18 +56,18 @@ class BasicDialog extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.sp),
             if (content.isNotEmpty)
               Text(
                 content,
                 style: TextStyle(
                   color: AppColors.text_color_main,
-                  fontSize: 14,
+                  fontSize: 14.sp,
                 ),
               ),
-            if (child != null) ...[const SizedBox(height: 8), child!],
+            if (child != null) ...[SizedBox(height: 8.sp), child!],
             if (cancelText != null || confirmText != null) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: 16.sp),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -74,7 +76,7 @@ class BasicDialog extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.text_color_100,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(8.sp),
                         ),
                       ),
                       onPressed: () {
@@ -82,20 +84,20 @@ class BasicDialog extends StatelessWidget {
                       },
                       child: Text(
                         cancelText!,
-                        style: const TextStyle(
-                          fontSize: 14,
+                        style: TextStyle(
+                          fontSize: 14.sp,
                           color: AppColors.white,
                         ),
                       ),
                     ),
                   if (cancelText != null && confirmText != null)
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8.sp),
                   if (confirmText != null)
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary_main,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(8.sp),
                         ),
                       ),
                       onPressed: () {
@@ -103,8 +105,8 @@ class BasicDialog extends StatelessWidget {
                       },
                       child: Text(
                         confirmText!,
-                        style: const TextStyle(
-                          fontSize: 14,
+                        style: TextStyle(
+                          fontSize: 14.sp,
                           color: AppColors.white,
                         ),
                       ),

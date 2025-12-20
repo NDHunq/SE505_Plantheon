@@ -345,11 +345,11 @@ class _ScanState extends State<Scan> {
                   ? Center(
                       child: Text(
                         _cameraError!,
-                        style: const TextStyle(color: Colors.red),
+                        style: TextStyle(color: Colors.red),
                       ),
                     )
                   : (!_isCameraReady || _cameraController == null)
-                  ? const Center(child: LoadingIndicator())
+                  ? Center(child: LoadingIndicator())
                   : ClipRect(
                       child: FittedBox(
                         fit: BoxFit.cover, // lấp đầy mà không méo
@@ -362,9 +362,9 @@ class _ScanState extends State<Scan> {
                     ),
             ),
             Positioned(
-              left: 0,
-              right: 0,
-              top: 0,
+              left: 0.sp,
+              right: 0.sp,
+              top: 0.sp,
               child: Container(
                 color: Colors.black.withOpacity(0.7),
                 padding: EdgeInsets.symmetric(vertical: 10.sp),
@@ -418,9 +418,9 @@ class _ScanState extends State<Scan> {
             ),
             if (_image == null)
               Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
+                left: 0.sp,
+                right: 0.sp,
+                bottom: 0.sp,
                 child: Container(
                   color: Colors.black.withOpacity(0.7),
                   padding: EdgeInsets.symmetric(vertical: 20.sp),
@@ -433,8 +433,8 @@ class _ScanState extends State<Scan> {
                         child: SvgPicture.asset(
                           AppVectors.gallery,
                           color: AppColors.primary_600,
-                          height: 34,
-                          width: 34,
+                          height: 34.sp,
+                          width: 34.sp,
                         ),
                       ),
                       Container(
@@ -443,7 +443,7 @@ class _ScanState extends State<Scan> {
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: AppColors.primary_300,
-                            width: 6,
+                            width: 6.sp,
                           ),
                           borderRadius: BorderRadius.circular(50.sp),
                         ),
@@ -462,9 +462,9 @@ class _ScanState extends State<Scan> {
                             builder: (context) => AlertDialog(
                               backgroundColor: AppColors.white,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(16.sp),
                               ),
-                              contentPadding: const EdgeInsets.all(16),
+                              contentPadding: EdgeInsets.all(16.sp),
                               content: SizedBox(
                                 width: MediaQuery.of(context).size.width * 0.8,
                                 child: Column(
@@ -478,7 +478,7 @@ class _ScanState extends State<Scan> {
                                             style: TextStyle(
                                               color: AppColors.primary_600,
                                               fontWeight: FontWeight.w700,
-                                              fontSize: 16,
+                                              fontSize: 16.sp,
                                             ),
                                           ),
                                         ),
@@ -493,14 +493,14 @@ class _ScanState extends State<Scan> {
                                         ),
                                       ],
                                     ),
-                                    const Text(
+                                    Text(
                                       "• Đảm bảo ánh sáng đủ để camera có thể chụp rõ ràng.\n"
                                       "• Giữ điện thoại ổn định khi chụp ảnh để tránh mờ.\n"
                                       "• Chụp ảnh từ khoảng cách vừa phải, không quá gần hoặc quá xa.\n"
                                       "• Tập trung vào vùng bị bệnh trên lá cây để có kết quả chính xác hơn.",
                                       style: TextStyle(
                                         color: AppColors.text_color_main,
-                                        fontSize: 14,
+                                        fontSize: 14.sp,
                                       ),
                                     ),
                                     SizedBox(height: 8.sp),
@@ -509,7 +509,7 @@ class _ScanState extends State<Scan> {
                                         backgroundColor: AppColors.primary_main,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
-                                            8,
+                                            8.sp,
                                           ),
                                         ),
                                       ),
@@ -518,8 +518,8 @@ class _ScanState extends State<Scan> {
                                       },
                                       child: Text(
                                         "Đã hiểu",
-                                        style: const TextStyle(
-                                          fontSize: 14,
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
                                           color: AppColors.white,
                                         ),
                                       ),
@@ -543,9 +543,9 @@ class _ScanState extends State<Scan> {
               ),
             if (_image != null)
               Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
+                left: 0.sp,
+                right: 0.sp,
+                bottom: 0.sp,
                 child: Container(
                   color: Colors.black.withOpacity(0.7),
                   padding: EdgeInsets.symmetric(vertical: 20.sp),
@@ -576,7 +576,7 @@ class _ScanState extends State<Scan> {
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: AppColors.primary_300,
-                            width: 6,
+                            width: 6.sp,
                           ),
                           borderRadius: BorderRadius.circular(50.sp),
                         ),
@@ -586,9 +586,9 @@ class _ScanState extends State<Scan> {
                           elevation: 0,
                           shape: CircleBorder(),
                           child: _loading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
+                              ? SizedBox(
+                                  height: 20.sp,
+                                  width: 20.sp,
                                   child: LoadingIndicator(),
                                 )
                               : Icon(

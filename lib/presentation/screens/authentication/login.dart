@@ -74,7 +74,7 @@ class _SignInPageState extends State<SignInPage> {
         return Scaffold(
           bottomNavigationBar: _bottomText(context),
           body: Padding(
-            padding: const EdgeInsets.all(AppInfo.main_padding),
+            padding: EdgeInsets.all(AppInfo.main_padding),
             child: SingleChildScrollView(
               reverse: true,
               child: Column(
@@ -309,9 +309,9 @@ class _SignInPageState extends State<SignInPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // SvgPicture.asset(AppVectors.google, height: 35),
+        // SvgPicture.asset(AppVectors.google, height: 35.sp),
         SizedBox(width: 50.sp),
-        // SvgPicture.asset(AppVectors.facebook, height: 35),
+        // SvgPicture.asset(AppVectors.facebook, height: 35.sp),
       ],
     );
   }
@@ -395,9 +395,9 @@ class _SignInPageState extends State<SignInPage> {
                 bottom: MediaQuery.of(
                   context,
                 ).viewInsets.bottom, // Lấy khoảng trống của bàn phím
-                left: 25.0,
-                right: 25.0,
-                top: 25.0,
+                left: 25.0.sp,
+                right: 25.0.sp,
+                top: 25.0.sp,
               ),
               child: SingleChildScrollView(
                 // Bao bọc nội dung để cho phép cuộn
@@ -407,11 +407,11 @@ class _SignInPageState extends State<SignInPage> {
                   children: [
                     Center(
                       child: Container(
-                        width: 100,
-                        height: 5,
+                        width: 100.sp,
+                        height: 5.sp,
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(10.sp),
                         ),
                       ),
                     ),
@@ -434,7 +434,7 @@ class _SignInPageState extends State<SignInPage> {
                     //   },
                     //   pinTheme: PinTheme(
                     //     shape: PinCodeFieldShape.box,
-                    //     borderRadius: BorderRadius.circular(5),
+                    //     borderRadius: BorderRadius.circular(5.sp),
                     //     fieldHeight: 50,
                     //     fieldWidth: 40,
                     //     activeFillColor: Colors.white,
@@ -461,7 +461,7 @@ class _SignInPageState extends State<SignInPage> {
                       text: 'Tiếp tục',
                       width: double.infinity,
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10.sp),
                   ],
                 ),
               ),
@@ -486,9 +486,9 @@ class _SignInPageState extends State<SignInPage> {
                 bottom: MediaQuery.of(
                   context,
                 ).viewInsets.bottom, // Lấy khoảng trống của bàn phím
-                left: 25.0,
-                right: 25.0,
-                top: 25.0,
+                left: 25.0.sp,
+                right: 25.0.sp,
+                top: 25.0.sp,
               ),
               child: SingleChildScrollView(
                 // Bao bọc nội dung để cho phép cuộn
@@ -498,11 +498,11 @@ class _SignInPageState extends State<SignInPage> {
                   children: [
                     Center(
                       child: Container(
-                        width: 100,
-                        height: 5,
+                        width: 100.sp,
+                        height: 5.sp,
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(10.sp),
                         ),
                       ),
                     ),
@@ -518,8 +518,8 @@ class _SignInPageState extends State<SignInPage> {
                       controller: _newPasswordController,
                       decoration: InputDecoration(
                         labelText: 'Mật khẩu mới',
-                        border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12.sp)),
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -607,7 +607,7 @@ class _SignInPageState extends State<SignInPage> {
                       text: 'Cập nhật mật khẩu',
                       width: double.infinity,
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10.sp),
                   ],
                 ),
               ),

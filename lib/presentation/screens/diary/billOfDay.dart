@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
@@ -150,21 +152,21 @@ class _BillOfDayState extends State<BillOfDay> {
       children: [
         // Tổng kết tháng
         _buildMonthSummary(data),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0.sp),
           child: Divider(),
         ),
 
         // Danh sách ngày
         Expanded(
           child: Container(
-            margin: const EdgeInsets.symmetric(
-              horizontal: AppConstraints.mainPadding,
+            margin: EdgeInsets.symmetric(
+              horizontal: AppConstraints.mainPadding.sp,
             ),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(
-                AppConstraints.mediumBorderRadius,
+                AppConstraints.mediumBorderRadius.sp,
               ),
             ),
             child: Column(
@@ -203,55 +205,60 @@ class _BillOfDayState extends State<BillOfDay> {
     final monthBalance = data.netAmount;
 
     return Container(
-      padding: const EdgeInsets.only(right: AppConstraints.largePadding),
+      padding: EdgeInsets.only(right: 24.sp),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+        borderRadius: BorderRadius.circular(
+          AppConstraints.mediumBorderRadius.sp,
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Tháng hiện tại
-          Row(
-            children: [
-              IconButton(
-                onPressed: _previousMonth,
-                icon: const Icon(
-                  Icons.chevron_left,
-                  color: AppColors.primary_600,
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  if (widget.onNavigateToBillOfMonth != null) {
-                    widget.onNavigateToBillOfMonth!(currentMonth);
-                  } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            BillOfMonth(initialDate: currentMonth),
-                      ),
-                    );
-                  }
-                },
-                child: Text(
-                  "Thg ${currentMonth.month}, ${currentMonth.year}",
-                  style: const TextStyle(
-                    fontSize: 24,
+          Expanded(
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: _previousMonth,
+                  icon: const Icon(
+                    Icons.chevron_left,
                     color: AppColors.primary_600,
                   ),
                 ),
-              ),
-              IconButton(
-                onPressed: _nextMonth,
-                icon: const Icon(
-                  Icons.chevron_right,
-                  color: AppColors.primary_600,
+
+                GestureDetector(
+                  onTap: () {
+                    if (widget.onNavigateToBillOfMonth != null) {
+                      widget.onNavigateToBillOfMonth!(currentMonth);
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              BillOfMonth(initialDate: currentMonth),
+                        ),
+                      );
+                    }
+                  },
+                  child: Text(
+                    "Thg ${currentMonth.month}, ${currentMonth.year}",
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      color: AppColors.primary_600,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ],
+
+                IconButton(
+                  onPressed: _nextMonth,
+                  icon: Icon(Icons.chevron_right, color: AppColors.primary_600),
+                ),
+              ],
+            ),
           ),
 
           // Tổng kết
@@ -259,19 +266,20 @@ class _BillOfDayState extends State<BillOfDay> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "+${monthIncome.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: AppColors.primary_600,
+                "+${monthIncome.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                style: TextStyle(fontSize: 13.sp, color: AppColors.primary_600),
+              ),
+              Text(
+                "-${monthExpense.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                style: TextStyle(color: Colors.red, fontSize: 13.sp),
+              ),
+              Text(
+                "= ${monthBalance.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.bold,
                 ),
-              ),
-              Text(
-                "-${monthExpense.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
-                style: const TextStyle(color: Colors.red, fontSize: 16),
-              ),
-              Text(
-                "= ${monthBalance.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
-                style: const TextStyle(color: Colors.black, fontSize: 16),
               ),
             ],
           ),
@@ -292,9 +300,9 @@ class _BillOfDayState extends State<BillOfDay> {
         InkWell(
           onTap: () => _toggleDay(day),
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppConstraints.mainPadding,
-              vertical: AppConstraints.smallPadding,
+            padding: EdgeInsets.symmetric(
+              horizontal: AppConstraints.mainPadding.sp,
+              vertical: AppConstraints.smallPadding.sp,
             ),
             child: Row(
               children: [
@@ -302,7 +310,8 @@ class _BillOfDayState extends State<BillOfDay> {
                   child: Text(
                     day.toString().padLeft(2, '0'),
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
                       color: _isToday(day)
                           ? AppColors.primary_600
                           : _isFutureDay(day)
@@ -314,10 +323,10 @@ class _BillOfDayState extends State<BillOfDay> {
                 Expanded(
                   child: Text(
                     balance == 0
-                        ? "0 đ"
-                        : "${balance > 0 ? '+' : ''}${balance.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
+                        ? "0 ₫"
+                        : "${balance > 0 ? '+' : ''}${balance.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
                     style: TextStyle(
-                      fontSize: AppConstraints.normalTextFontSize,
+                      fontSize: AppConstraints.normalTextFontSize.sp,
                       color: balance > 0
                           ? AppColors.primary_600
                           : balance < 0
@@ -339,16 +348,16 @@ class _BillOfDayState extends State<BillOfDay> {
         if (isExpanded && activities.isNotEmpty)
           ...activities.map(
             (activity) => Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppConstraints.mainPadding,
-                vertical: AppConstraints.smallPadding / 2,
+              padding: EdgeInsets.symmetric(
+                horizontal: AppConstraints.mainPadding.sp,
+                vertical: AppConstraints.smallPadding.sp / 2,
               ),
               child: _buildActivityWidget(activity),
             ),
           ),
 
         // Divider
-        const Divider(height: 1, color: Colors.grey),
+        Divider(height: 1.sp, color: Colors.grey),
       ],
     );
   }
@@ -426,14 +435,14 @@ class _BillOfDayState extends State<BillOfDay> {
     }
 
     final String amountText = activity.money != null
-        ? "${activity.money! > 0 ? '+' : ''}${activity.money!.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ"
+        ? "${activity.money! > 0 ? '+' : ''}${activity.money!.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫"
         : "0 đ";
 
     // Determine color based on type (defensive: handle empty string)
-    final String _type = (activity.type.isNotEmpty ? activity.type : 'OTHER')
+    final String type = (activity.type.isNotEmpty ? activity.type : 'OTHER')
         .toUpperCase();
     Color baseColor;
-    switch (_type) {
+    switch (type) {
       case 'EXPENSE':
         baseColor = Colors.red;
         break;

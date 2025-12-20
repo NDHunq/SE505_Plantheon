@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/common/widgets/topnavigation/navigation.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
@@ -323,32 +325,40 @@ class _DiaryState extends State<Diary> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: DiaryNavigationBar(
-        selectedYear: selectedYear,
-        selectedMonth: selectedMonth,
-        showYearSelector: currentView == DiaryViewType.yearSelector,
-        onToggleYearSelector: _toggleYearSelector,
-        onBackToMonthSelection: _backToMonthSelection,
-        showBackButton: _shouldShowBackButton(),
-        onBackPressed: _shouldShowBackButton() ? _handleBackPressed : null,
-        customTitle: customTitle,
-        actions: _getActions(),
-      ),
-      body: Stack(
-        children: [
-          _buildContent(),
-          if (isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.3),
-              child: const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [LoadingIndicator(), SizedBox(height: 16)],
+    return Container(
+      color: AppColors.white,
+      child: SafeArea(
+        child: Scaffold(
+          appBar: DiaryNavigationBar(
+            selectedYear: selectedYear,
+            selectedMonth: selectedMonth,
+            showYearSelector: currentView == DiaryViewType.yearSelector,
+            onToggleYearSelector: _toggleYearSelector,
+            onBackToMonthSelection: _backToMonthSelection,
+            showBackButton: _shouldShowBackButton(),
+            onBackPressed: _shouldShowBackButton() ? _handleBackPressed : null,
+            customTitle: customTitle,
+            actions: _getActions(),
+          ),
+          body: Stack(
+            children: [
+              _buildContent(),
+              if (isLoading)
+                Container(
+                  color: Colors.black.withOpacity(0.3),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        LoadingIndicator(),
+                        SizedBox(height: 16.sp),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -414,12 +424,12 @@ class _DiaryState extends State<Diary> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.95,
-        decoration: const BoxDecoration(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+            topLeft: Radius.circular(20.sp),
+            topRight: Radius.circular(20.sp),
           ),
         ),
         child: AddNewScreen(initialDate: selectedDate),
@@ -456,7 +466,7 @@ class _DiaryState extends State<Diary> {
   /// Lazy load 12 tháng
   Widget _buildMonthGrid() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8.0.sp),
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
@@ -503,15 +513,15 @@ class _DiaryState extends State<Diary> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: isSelected ? AppColors.primary_600 : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8.sp),
               border: isCurrentYear
-                  ? Border.all(color: AppColors.primary_600, width: 2)
+                  ? Border.all(color: AppColors.primary_600, width: 2.sp)
                   : null,
             ),
             child: Text(
               "$year",
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.bold,
                 color: isSelected ? Colors.white : Colors.black,
               ),
@@ -526,16 +536,16 @@ class _DiaryState extends State<Diary> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(
+        title: Text(
           "Thông báo",
           style: TextStyle(
             color: AppColors.primary_600,
             fontWeight: FontWeight.bold,
           ),
         ),
-        content: const Text(
+        content: Text(
           "Không có thống kê trong tương lai",
-          style: TextStyle(fontSize: 16),
+          style: TextStyle(fontSize: 16.sp),
         ),
         actions: [
           TextButton(
@@ -607,12 +617,12 @@ class _MonthWidgetState extends State<MonthWidget> {
     final int daysInMonth = DateUtils.getDaysInMonth(widget.year, widget.month);
 
     return Padding(
-      padding: const EdgeInsets.all(4.0),
+      padding: EdgeInsets.all(4.0.sp),
       child: GestureDetector(
         onTap: () => _navigateToMonth(context),
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.sp),
             border: Border.all(
               color: isCurrentMonth
                   ? AppColors.primary_600
@@ -622,25 +632,25 @@ class _MonthWidgetState extends State<MonthWidget> {
             color: isCurrentMonth ? AppColors.primary_50 : Colors.white,
           ),
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8.sp),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   "Tháng ${widget.month}",
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                     color: isCurrentMonth
                         ? AppColors.primary_600
                         : Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.sp),
                 Text(
                   "$daysInMonth ngày",
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     color: isCurrentMonth
                         ? AppColors.primary_600
                         : Colors.grey.shade600,
@@ -648,10 +658,10 @@ class _MonthWidgetState extends State<MonthWidget> {
                   ),
                 ),
                 if (isCurrentMonth) ...[
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4.sp),
                   Container(
-                    width: 6,
-                    height: 6,
+                    width: 6.sp,
+                    height: 6.sp,
                     decoration: const BoxDecoration(
                       color: AppColors.primary_600,
                       shape: BoxShape.circle,

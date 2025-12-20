@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:intl/intl.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
@@ -44,19 +46,19 @@ class _BasicDatepickerState extends State<BasicDatepicker> {
     return GestureDetector(
       onTap: () => _pickDate(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 4.sp),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.primary_700, width: 1),
+          borderRadius: BorderRadius.circular(8.sp),
+          border: Border.all(color: AppColors.primary_700, width: 1.sp),
         ),
         child: Row(
-          spacing: 16,
+          spacing: 16.sp,
           children: [
             Text(
               _formattedDate,
               style: TextStyle(
                 color: AppColors.text_color_200,
-                fontSize: 14,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
               ),
             ),

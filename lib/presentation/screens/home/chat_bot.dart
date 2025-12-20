@@ -48,7 +48,7 @@ class _ChatBotState extends State<ChatBot> {
           right: 10.sp,
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.symmetric(vertical: 8.sp),
           child: TextField(
             controller: messageController,
             decoration: InputDecoration(
@@ -91,7 +91,7 @@ class _ChatBotState extends State<ChatBot> {
                   }
                 },
               ),
-              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+              contentPadding: EdgeInsets.symmetric(vertical: 0.sp, horizontal: 0.sp),
             ),
           ),
         ),

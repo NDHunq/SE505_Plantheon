@@ -202,8 +202,8 @@ class _EditInfoState extends State<EditInfo> {
                           : null,
                     ),
                     Positioned(
-                      bottom: 0,
-                      right: 0,
+                      bottom: 0.sp,
+                      right: 0.sp,
                       child: GestureDetector(
                         onTap: _pickImage,
                         child: Container(
@@ -235,7 +235,7 @@ class _EditInfoState extends State<EditInfo> {
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32.sp),
 
               // Full Name Field
               _buildInputField(
@@ -249,7 +249,7 @@ class _EditInfoState extends State<EditInfo> {
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.sp),
 
               // Gender Field
               _buildSectionTitle('Giới tính'),

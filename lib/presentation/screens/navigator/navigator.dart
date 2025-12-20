@@ -37,7 +37,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
         height: 70.sp,
         width: 70.sp,
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.primary_300, width: 5),
+          border: Border.all(color: AppColors.primary_300, width: 5.sp),
           borderRadius: BorderRadius.circular(50.sp),
         ),
 
@@ -60,7 +60,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
+        shape: CircularNotchedRectangle(),
         notchMargin: 8.0,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

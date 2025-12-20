@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_svg/svg.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
@@ -22,8 +24,8 @@ class buildBackButton extends StatelessWidget {
       },
       icon: SvgPicture.asset(
         AppVectors.arrowBack,
-        width: 30,
-        height: 30,
+        width: 30.sp,
+        height: 30.sp,
         color: AppColors.primary_600,
       ),
     );

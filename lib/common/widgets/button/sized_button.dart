@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 
 import '../../../core/configs/theme/app_colors.dart';
 
@@ -38,9 +40,9 @@ class _SizedbuttonState extends State<Sizedbutton> {
       style: ElevatedButton.styleFrom(
         backgroundColor: widget.isEnabled
             ? widget.backgroundColor
-            : const Color.fromARGB(255, 48, 46, 46), // Background color
+            : Color.fromARGB(255, 48, 46, 46), // Background color
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: BorderRadius.circular(50.sp),
           // Rounded corners
           side: widget.isStroke
               ? BorderSide(color: widget.StrokeColor)
@@ -51,7 +53,7 @@ class _SizedbuttonState extends State<Sizedbutton> {
       child: Text(
         widget.text,
         style: TextStyle(
-          fontSize: 15,
+          fontSize: 15.sp,
           fontFamily: 'Inter',
           fontWeight: FontWeight.w500,
           color: widget.textColor,

@@ -22,17 +22,17 @@ class NotificationCard extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: 87,
-          height: 69,
+          width: 87.sp,
+          height: 69.sp,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.sp),
             image: DecorationImage(
               fit: BoxFit.cover,
               image: AssetImage('assets/images/noti.png'),
             ),
           ),
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8.sp),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -40,12 +40,12 @@ class NotificationCard extends StatelessWidget {
               title,
               style: AppTextStyles.s14Medium(color: AppColors.text_color_main),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.sp),
             Text(
               dateTime,
               style: AppTextStyles.s12Regular(color: AppColors.text_color_200),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.sp),
             Text(
               content,
               style: AppTextStyles.s12Regular(color: AppColors.text_color_200),

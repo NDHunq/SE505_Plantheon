@@ -121,7 +121,7 @@ class _CommunityState extends State<Community> {
                       ),
                     ),
                     SizedBox(width: 8.sp),
-                    const Icon(Icons.search_rounded, color: Colors.grey),
+                    Icon(Icons.search_rounded, color: Colors.grey),
                   ],
                 ),
               ),
@@ -189,9 +189,9 @@ class _CommunityState extends State<Community> {
                           : state.posts.length + 1,
                       itemBuilder: (context, index) {
                         if (index >= state.posts.length) {
-                          return const Center(
+                          return Center(
                             child: Padding(
-                              padding: EdgeInsets.all(16.0),
+                              padding: EdgeInsets.all(16.0.sp),
                               child: LoadingIndicator(),
                             ),
                           );
@@ -297,7 +297,7 @@ class _CommunityState extends State<Community> {
                   children: List.generate(
                     imageLinks.length,
                     (index) => AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
+                      duration: Duration(milliseconds: 300),
                       margin: EdgeInsets.symmetric(horizontal: 3.sp),
                       width: page == index ? 20.sp : 8.sp,
                       height: 8.sp,
@@ -356,7 +356,7 @@ class _CommunityState extends State<Community> {
         color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          // spacing: 8, // This line causes an error, assuming it's meant to be a property of a different widget or removed.
+          // spacing: 8.sp, // This line causes an error, assuming it's meant to be a property of a different widget or removed.
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.sp),
@@ -420,7 +420,7 @@ class _CommunityState extends State<Community> {
                             SizedBox(width: 4.sp),
                             Container(
                               padding: EdgeInsets.all(2.sp),
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 color: Colors.orange,
                                 shape: BoxShape.circle,
                               ),
@@ -478,12 +478,12 @@ class _CommunityState extends State<Community> {
                     },
                     itemBuilder: (context) => [
                       if (isMyPost)
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: Row(
                             children: [
                               Icon(Icons.delete, color: Colors.red),
-                              SizedBox(width: 8),
+                              SizedBox(width: 8.sp),
                               Text(
                                 'Xóa bài viết',
                                 style: TextStyle(color: Colors.red),
@@ -491,12 +491,12 @@ class _CommunityState extends State<Community> {
                             ],
                           ),
                         ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'report',
                         child: Row(
                           children: [
                             Icon(Icons.flag_outlined),
-                            SizedBox(width: 8),
+                            SizedBox(width: 8.sp),
                             Text('Báo cáo'),
                           ],
                         ),
@@ -539,7 +539,7 @@ class _CommunityState extends State<Community> {
                   ),
                   SizedBox(width: 4.sp),
                   Text('$likes lượt thích', style: AppTextStyles.s12Regular()),
-                  const Spacer(),
+                  Spacer(),
                   Text(
                     '$comments bình luận',
                     style: AppTextStyles.s12Regular(),

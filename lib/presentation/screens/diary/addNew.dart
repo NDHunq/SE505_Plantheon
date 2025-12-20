@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -133,10 +135,10 @@ class _AddNewScreenState extends State<AddNewScreen>
   Widget _buildSelectedCategoryView() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.sp),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8.sp),
         color: Colors.white,
       ),
       child: SingleChildScrollView(child: _buildCategoryContent()),
@@ -148,13 +150,14 @@ class _AddNewScreenState extends State<AddNewScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Subtitle
+        SizedBox(height: 16.sp),
         Center(
-          child: const Text(
+          child: Text(
             'Chọn chủ đề cho nhật ký hôm nay',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: TextStyle(fontSize: 14.sp, color: Colors.grey),
           ),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 16.sp),
 
         // Grid 6 mục
         Expanded(
@@ -180,22 +183,22 @@ class _AddNewScreenState extends State<AddNewScreen>
                 child: Container(
                   decoration: BoxDecoration(
                     color: selectedCategory == category['id']
-                        ? const Color(0xFFE6F4EA)
+                        ? Color(0xFFE6F4EA)
                         : Colors.grey[50], // Lighter grey for better look
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(16.sp),
                     border: Border.all(
                       color: selectedCategory == category['id']
                           ? AppColors.primary_600
                           : Colors.transparent,
-                      width: 2,
+                      width: 2.sp,
                     ),
                     boxShadow: [
                       if (selectedCategory != category['id'])
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.1),
                           spreadRadius: 1,
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
+                          blurRadius: 4.sp,
+                          offset: Offset(0, 2),
                         ),
                     ],
                   ),
@@ -205,25 +208,25 @@ class _AddNewScreenState extends State<AddNewScreen>
                       category['image'] != null
                           ? Image.asset(
                               category['image'],
-                              width: 80, // Increased size
-                              height: 80,
+                              width: 80.sp, // Increased size
+                              height: 80.sp,
                               fit: BoxFit.contain,
                             )
                           : Icon(
                               category['icon'],
-                              size: 64, // Increased icon size
+                              size: 64.sp, // Increased icon size
                               color: selectedCategory == category['id']
                                   ? AppColors.primary_600
                                   : Colors.grey[600],
                             ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24.sp),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        padding: EdgeInsets.symmetric(horizontal: 8.sp),
                         child: Text(
                           category['title'],
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 14, // Slightly bigger text
+                            fontSize: 12.sp, // Slightly bigger text
                             color: selectedCategory == category['id']
                                 ? AppColors.primary_600
                                 : Colors.black87,
@@ -262,29 +265,29 @@ class _AddNewScreenState extends State<AddNewScreen>
         );
       },
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20.sp)),
         ),
         child: Column(
           children: [
             // Handle bar
             Center(
               child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.symmetric(vertical: 8),
+                width: 36.sp,
+                height: 4.sp,
+                margin: EdgeInsets.symmetric(vertical: 8.sp),
                 decoration: BoxDecoration(
                   color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(2.sp),
                 ),
               ),
             ),
             // Header Row
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
+              padding: EdgeInsets.symmetric(
+                horizontal: 16.0.sp,
+                vertical: 8.0.sp,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -301,17 +304,17 @@ class _AddNewScreenState extends State<AddNewScreen>
                       }
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 4,
+                      padding: EdgeInsets.symmetric(
+                        vertical: 8.sp,
+                        horizontal: 4.sp,
                       ),
                       color: Colors.transparent,
                       child: selectedCategory != null
-                          ? const Icon(Icons.arrow_back, size: 24)
-                          : const Text(
+                          ? Icon(Icons.arrow_back, size: 24.sp)
+                          : Text(
                               'Hủy',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 14.sp,
                                 color: Colors.black54,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -320,24 +323,21 @@ class _AddNewScreenState extends State<AddNewScreen>
                   ),
                   Text(
                     'Thêm mới',
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   // Empty container for balance
-                  const SizedBox(width: 40),
+                  SizedBox(width: 36.sp),
                 ],
               ),
             ),
-            const Divider(height: 1, color: Color(0xFFEEEEEE)),
+            Divider(height: 1.sp, color: Color(0xFFEEEEEE)),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(AppConstraints.mainPadding),
-                child: selectedCategory != null
-                    ? _buildSelectedCategoryView()
-                    : _buildCategoriesGrid(),
-              ),
+              child: selectedCategory != null
+                  ? _buildSelectedCategoryView()
+                  : _buildCategoriesGrid(),
             ),
           ],
         ),

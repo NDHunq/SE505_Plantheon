@@ -30,7 +30,7 @@ import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart'
 import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 class ScanSolution extends StatefulWidget {
   final String scanHistoryId;
   const ScanSolution({super.key, required this.scanHistoryId});
@@ -55,11 +55,11 @@ class _ScanSolutionState extends State<ScanSolution> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const BasicAppbar(
+      appBar: BasicAppbar(
         title: 'Kết quả quét bệnh',
         actions: [
           Icon(Icons.share_rounded, color: AppColors.primary_main),
-          SizedBox(width: 16),
+          SizedBox(width: 16.sp),
         ],
       ),
       body: BlocBuilder<ScanHistoryBloc, ScanHistoryState>(
@@ -71,10 +71,10 @@ class _ScanSolutionState extends State<ScanSolution> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
+                  Icon(Icons.error_outline, size: 64.sp, color: Colors.red),
+                  SizedBox(height: 16.sp),
                   Text('Lỗi: ${state.message}'),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.sp),
                   ElevatedButton(
                     onPressed: () {
                       context.read<ScanHistoryBloc>().add(
@@ -91,7 +91,7 @@ class _ScanSolutionState extends State<ScanSolution> {
             final disease = scanHistory.disease;
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 12.sp),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -101,7 +101,7 @@ class _ScanSolutionState extends State<ScanSolution> {
                     title: 'Kết quả chẩn đoán',
                     action: TextButton(
                       onPressed: () {},
-                      child: const Text(
+                      child: Text(
                         'Thay đổi',
                         style: TextStyle(
                           color: Color(0xFF1976D2),
@@ -110,61 +110,61 @@ class _ScanSolutionState extends State<ScanSolution> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.sp),
                   _DiagnosisCard(
                     disease: disease,
                     scanImageUrl: scanHistory.scanImage,
                   ),
-                  const SizedBox(height: 20),
-                  Divider(height: 32, thickness: 1, color: Color(0xFFE0E0E0)),
+                  SizedBox(height: 20.sp),
+                  Divider(height: 32.sp, thickness: 1.sp, color: Color(0xFFE0E0E0)),
                   // 2. Recommended Solution
                   _SectionTitle(index: 2, title: 'Giải pháp khuyến nghị'),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.sp),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(8.sp),
                     child: MarkdownBody(
                       data: disease.solution,
                       styleSheet: MarkdownStyleSheet(
-                        h3: const TextStyle(
+                        h3: TextStyle(
                           color: Color(0xFF388E3C),
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
-                          height: 1.5,
+                          height: 1.5.sp,
                         ),
-                        p: const TextStyle(
-                          fontSize: 14,
-                          height: 1.6,
+                        p: TextStyle(
+                          fontSize: 14.sp,
+                          height: 1.6.sp,
                           color: Colors.black87,
                         ),
-                        listBullet: const TextStyle(
-                          fontSize: 14,
-                          height: 1.5,
+                        listBullet: TextStyle(
+                          fontSize: 14.sp,
+                          height: 1.5.sp,
                           color: Colors.black87,
                         ),
-                        strong: const TextStyle(
+                        strong: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF1976D2),
                         ),
-                        em: const TextStyle(
+                        em: TextStyle(
                           fontStyle: FontStyle.italic,
                           color: Colors.black87,
                         ),
-                        blockSpacing: 12,
-                        listIndent: 24,
+                        blockSpacing: 12.sp,
+                        listIndent: 24.sp,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.sp),
                   CommunitySuggestionWidget(
                     diseaseId: disease.className,
                     diseaseIdForPost: disease.id,
                     scanImageUrl: scanHistory.scanImage,
                     scanHistoryId: scanHistory.id,
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.sp),
                   _SectionTitle(index: 3, title: 'Hoạt động gợi ý'),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.sp),
                   MultiBlocProvider(
                     providers: [
                       BlocProvider(
@@ -203,7 +203,7 @@ class _ScanSolutionState extends State<ScanSolution> {
                     ],
                     child: ActivitiesSuggestionList(diseaseId: disease.id),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.sp),
                 ],
               ),
             );
@@ -227,26 +227,26 @@ class _SectionTitle extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          width: 28,
-          height: 28,
+          width: 28.sp,
+          height: 28.sp,
           decoration: BoxDecoration(
-            color: const Color(0xFF00BFA5),
+            color: Color(0xFF00BFA5),
             shape: BoxShape.circle,
           ),
           alignment: Alignment.center,
           child: Text(
             '$index',
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
-        const SizedBox(width: 10),
+        SizedBox(width: 10.sp),
         Expanded(
           child: Text(
             title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
           ),
         ),
         if (action != null) action!,
@@ -265,12 +265,12 @@ class _DiagnosisCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
+        borderRadius: BorderRadius.circular(12.sp),
+        border: Border.all(color: Color(0xFFE0E0E0)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
-            blurRadius: 4,
+            blurRadius: 4.sp,
             offset: const Offset(0, 2),
           ),
         ],
@@ -304,27 +304,27 @@ class _DiagnosisCard extends StatelessWidget {
           );
         },
         child: ListTile(
-          contentPadding: const EdgeInsets.all(12),
+          contentPadding: EdgeInsets.all(12.sp),
           leading: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(8.sp),
             child: scanImageUrl != null
                 ? Image.network(
                     scanImageUrl!,
-                    width: 56,
-                    height: 56,
+                    width: 56.sp,
+                    height: 56.sp,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return disease.imageLink.isNotEmpty
                           ? Image.network(
                               disease.imageLink[0],
-                              width: 56,
-                              height: 56,
+                              width: 56.sp,
+                              height: 56.sp,
                               fit: BoxFit.cover,
                             )
                           : Image.asset(
                               'assets/images/plants.jpg',
-                              width: 56,
-                              height: 56,
+                              width: 56.sp,
+                              height: 56.sp,
                               fit: BoxFit.cover,
                             );
                     },
@@ -332,14 +332,14 @@ class _DiagnosisCard extends StatelessWidget {
                 : disease.imageLink.isNotEmpty
                 ? Image.network(
                     disease.imageLink[0],
-                    width: 56,
-                    height: 56,
+                    width: 56.sp,
+                    height: 56.sp,
                     fit: BoxFit.cover,
                   )
                 : Image.asset(
                     'assets/images/plants.jpg',
-                    width: 56,
-                    height: 56,
+                    width: 56.sp,
+                    height: 56.sp,
                     fit: BoxFit.cover,
                   ),
           ),

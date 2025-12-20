@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
@@ -97,10 +99,10 @@ class _BillOfMonthState extends State<BillOfMonth> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                const SizedBox(height: 16),
+                Icon(Icons.error_outline, size: 48.sp, color: Colors.red),
+                SizedBox(height: 16.sp),
                 Text('Lỗi: ${state.message}'),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.sp),
                 ElevatedButton(
                   onPressed: _fetchAnnualData,
                   child: const Text('Thử lại'),
@@ -132,20 +134,20 @@ class _BillOfMonthState extends State<BillOfMonth> {
         _buildYearSummary(summaryMap),
 
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 16.0.sp),
           child: Divider(),
         ),
 
         // Danh sách tháng
         Expanded(
           child: Container(
-            margin: const EdgeInsets.symmetric(
-              horizontal: AppConstraints.mainPadding,
+            margin: EdgeInsets.symmetric(
+              horizontal: AppConstraints.mainPadding.sp,
             ),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(
-                AppConstraints.mediumBorderRadius,
+                AppConstraints.mediumBorderRadius.sp,
               ),
             ),
             child: ListView(
@@ -175,55 +177,59 @@ class _BillOfMonthState extends State<BillOfMonth> {
     double yearBalance = yearIncome - yearExpense;
 
     return Container(
-      padding: const EdgeInsets.only(right: AppConstraints.largePadding),
+      padding: EdgeInsets.only(right: 24.sp),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+        borderRadius: BorderRadius.circular(
+          AppConstraints.mediumBorderRadius.sp,
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Năm hiện tại
-          Row(
-            children: [
-              IconButton(
-                onPressed: _previousYear,
-                icon: const Icon(
-                  Icons.chevron_left,
-                  color: AppColors.primary_600,
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  if (widget.onNavigateToBillOfYear != null) {
-                    widget.onNavigateToBillOfYear!(currentYear);
-                  } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            BillOfYear(initialDate: currentYear),
-                      ),
-                    );
-                  }
-                },
-                child: Text(
-                  "Năm ${currentYear.year}",
-                  style: const TextStyle(
-                    fontSize: 24,
+          Expanded(
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: _previousYear,
+                  icon: const Icon(
+                    Icons.chevron_left,
                     color: AppColors.primary_600,
                   ),
                 ),
-              ),
-              IconButton(
-                onPressed: _nextYear,
-                icon: const Icon(
-                  Icons.chevron_right,
-                  color: AppColors.primary_600,
+                GestureDetector(
+                  onTap: () {
+                    if (widget.onNavigateToBillOfYear != null) {
+                      widget.onNavigateToBillOfYear!(currentYear);
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              BillOfYear(initialDate: currentYear),
+                        ),
+                      );
+                    }
+                  },
+                  child: Text(
+                    "Năm ${currentYear.year}",
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      color: AppColors.primary_600,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ],
+
+                IconButton(
+                  onPressed: _nextYear,
+                  icon: Icon(Icons.chevron_right, color: AppColors.primary_600),
+                ),
+              ],
+            ),
           ),
 
           // Tổng kết năm
@@ -231,19 +237,20 @@ class _BillOfMonthState extends State<BillOfMonth> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "+${yearIncome.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: AppColors.primary_600,
+                "+${yearIncome.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                style: TextStyle(fontSize: 13.sp, color: AppColors.primary_600),
+              ),
+              Text(
+                "-${yearExpense.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                style: TextStyle(color: Colors.red, fontSize: 13.sp),
+              ),
+              Text(
+                "= ${yearBalance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.bold,
                 ),
-              ),
-              Text(
-                "-${yearExpense.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
-                style: const TextStyle(color: Colors.red, fontSize: 16),
-              ),
-              Text(
-                "= ${yearBalance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
-                style: const TextStyle(color: Colors.black, fontSize: 16),
               ),
             ],
           ),
@@ -279,18 +286,19 @@ class _BillOfMonthState extends State<BillOfMonth> {
             }
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppConstraints.mainPadding,
-              vertical: AppConstraints.largePadding,
+            padding: EdgeInsets.symmetric(
+              horizontal: AppConstraints.mainPadding.sp,
+              vertical: AppConstraints.largePadding.sp,
             ),
             child: Row(
               children: [
                 Expanded(
-                  flex: 2,
+                  flex: 1,
                   child: Text(
                     monthName,
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
                       color: _isCurrentMonth(month)
                           ? AppColors.primary_600
                           : AppColors.text_color_900,
@@ -298,24 +306,25 @@ class _BillOfMonthState extends State<BillOfMonth> {
                   ),
                 ),
                 Expanded(
+                  flex: 3,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        "+${income.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
-                        style: const TextStyle(
-                          fontSize: 12,
+                        "+${income.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                        style: TextStyle(
+                          fontSize: 12.sp,
                           color: AppColors.primary_600,
                         ),
                       ),
                       Text(
-                        "-${expense.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
-                        style: const TextStyle(fontSize: 12, color: Colors.red),
+                        "-${expense.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                        style: TextStyle(fontSize: 12.sp, color: Colors.red),
                       ),
                       Text(
-                        "= ${balance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
-                        style: const TextStyle(
-                          fontSize: AppConstraints.normalTextFontSize,
+                        "= ${balance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                        style: TextStyle(
+                          fontSize: AppConstraints.normalTextFontSize.sp,
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
@@ -328,7 +337,7 @@ class _BillOfMonthState extends State<BillOfMonth> {
           ),
         ),
         // Divider
-        const Divider(height: 1, color: Colors.grey),
+        Divider(height: 1.sp, color: Colors.grey),
       ],
     );
   }

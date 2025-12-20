@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:se501_plantheon/presentation/bloc/keyword_activities/keyword_activities_bloc.dart';
@@ -74,34 +76,34 @@ class ActivitiesSuggestionList extends StatelessWidget {
 
           return Center(
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20.sp),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     is404 ? Icons.cloud_off_outlined : Icons.error_outline,
-                    size: 48,
+                    size: 48.sp,
                     color: is404 ? Colors.orange : Colors.red,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.sp),
                   Text(
                     is404 ? 'API chưa sẵn sàng' : 'Lỗi khi tải dữ liệu',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                       color: is404 ? Colors.orange : Colors.red,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.sp),
                   Text(
                     is404
                         ? 'Endpoint /keyword-activities/disease/{id}\nchưa được triển khai trên backend'
                         : state.message,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.grey, fontSize: 14),
+                    style: TextStyle(color: Colors.grey, fontSize: 14.sp),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.sp),
                   ElevatedButton.icon(
                     onPressed: () {
                       context.read<KeywordActivitiesBloc>().add(
@@ -123,9 +125,9 @@ class ActivitiesSuggestionList extends StatelessWidget {
 
         if (state is KeywordActivitiesLoaded) {
           if (state.activities.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
-                padding: EdgeInsets.all(20),
+                padding: EdgeInsets.all(20.sp),
                 child: Text(
                   'Không có hoạt động gợi ý',
                   style: TextStyle(color: Colors.grey),
@@ -154,7 +156,7 @@ class ActivitiesSuggestionList extends StatelessWidget {
                 activity: activities[index],
               );
             },
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            separatorBuilder: (context, index) => SizedBox(height: 12.sp),
           );
         }
 

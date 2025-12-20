@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:se501_plantheon/core/services/firebase_notification_service.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:toastification/toastification.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PushNotificationDemoScreen extends StatefulWidget {
   const PushNotificationDemoScreen({super.key});
@@ -22,7 +23,7 @@ class _PushNotificationDemoScreenState
   final TextEditingController _topicController = TextEditingController();
 
   String? _fcmToken;
-  List<RemoteMessage> _messages = [];
+  final List<RemoteMessage> _messages = [];
   bool _isSubscribedToPlants = false;
 
   @override
@@ -161,12 +162,12 @@ class _PushNotificationDemoScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Push Notification Demo'),
+        title: Text('Push Notification Demo'),
         backgroundColor: AppColors.primary_main,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0.sp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -177,25 +178,25 @@ class _PushNotificationDemoScreenState
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: EdgeInsets.all(12.sp),
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.sp),
                       border: Border.all(color: Colors.grey[300]!),
                     ),
                     child: SelectableText(
                       _fcmToken ?? 'Loading...',
-                      style: const TextStyle(
-                        fontSize: 12,
+                      style: TextStyle(
+                        fontSize: 12.sp,
                         fontFamily: 'monospace',
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.sp),
                   ElevatedButton.icon(
                     onPressed: _copyTokenToClipboard,
-                    icon: const Icon(Icons.copy),
-                    label: const Text('Copy Token'),
+                    icon: Icon(Icons.copy),
+                    label: Text('Copy Token'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary_main,
                       foregroundColor: Colors.white,
@@ -204,7 +205,7 @@ class _PushNotificationDemoScreenState
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.sp),
 
             // Send Local Notification Section
             _buildSectionCard(
@@ -216,50 +217,50 @@ class _PushNotificationDemoScreenState
                     decoration: InputDecoration(
                       labelText: 'Title',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.sp),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.sp),
                         borderSide: BorderSide(
                           color: AppColors.primary_main,
-                          width: 2,
+                          width: 2.sp,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.sp),
                   TextField(
                     controller: _bodyController,
                     maxLines: 3,
                     decoration: InputDecoration(
                       labelText: 'Body',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.sp),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.sp),
                         borderSide: BorderSide(
                           color: AppColors.primary_main,
-                          width: 2,
+                          width: 2.sp,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.sp),
                   ElevatedButton.icon(
                     onPressed: _sendLocalNotification,
-                    icon: const Icon(Icons.send),
-                    label: const Text('Send Local Notification'),
+                    icon: Icon(Icons.send),
+                    label: Text('Send Local Notification'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary_main,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: EdgeInsets.symmetric(vertical: 14.sp),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.sp),
 
             // Topic Subscription Section
             _buildSectionCard(
@@ -271,8 +272,8 @@ class _PushNotificationDemoScreenState
                       Expanded(
                         child: Text(
                           'Subscribe to "plants" topic',
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: TextStyle(
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -281,17 +282,17 @@ class _PushNotificationDemoScreenState
                         value: _isSubscribedToPlants,
                         onChanged: (value) =>
                             _toggleTopicSubscription('plants'),
-                        activeColor: AppColors.primary_main,
+                        activeThumbColor: AppColors.primary_main,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.sp),
                   Text(
                     _isSubscribedToPlants
                         ? '✓ You will receive notifications for plants topic'
                         : '✗ Not subscribed to plants topic',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 12.sp,
                       color: _isSubscribedToPlants
                           ? Colors.green[700]
                           : Colors.grey[600],
@@ -300,28 +301,28 @@ class _PushNotificationDemoScreenState
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.sp),
 
             // Received Messages Section
             _buildSectionCard(
               title: 'Received Messages (${_messages.length})',
               child: _messages.isEmpty
                   ? Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20.sp),
                       child: Center(
                         child: Column(
                           children: [
                             Icon(
                               Icons.notifications_none,
-                              size: 48,
+                              size: 48.sp,
                               color: Colors.grey[400],
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8.sp),
                             Text(
                               'No messages received yet',
                               style: TextStyle(
                                 color: Colors.grey[600],
-                                fontSize: 14,
+                                fontSize: 14.sp,
                               ),
                             ),
                           ],
@@ -338,26 +339,26 @@ class _PushNotificationDemoScreenState
                         return ListTile(
                           leading: CircleAvatar(
                             backgroundColor: AppColors.primary_main,
-                            child: const Icon(
+                            child: Icon(
                               Icons.notifications,
                               color: Colors.white,
-                              size: 20,
+                              size: 20.sp,
                             ),
                           ),
                           title: Text(
                             message.notification?.title ?? 'No Title',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(height: 4),
+                              SizedBox(height: 4.sp),
                               Text(message.notification?.body ?? 'No Body'),
-                              const SizedBox(height: 4),
+                              SizedBox(height: 4.sp),
                               Text(
                                 'Data: ${message.data.toString()}',
                                 style: TextStyle(
-                                  fontSize: 11,
+                                  fontSize: 11.sp,
                                   color: Colors.grey[600],
                                 ),
                               ),
@@ -368,7 +369,7 @@ class _PushNotificationDemoScreenState
                       },
                     ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.sp),
 
             // Instructions Section
             _buildSectionCard(
@@ -394,23 +395,23 @@ class _PushNotificationDemoScreenState
                     text:
                         'Or use the "Send Local Notification" feature above for quick testing',
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.sp),
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: EdgeInsets.all(12.sp),
                     decoration: BoxDecoration(
                       color: Colors.blue[50],
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.sp),
                       border: Border.all(color: Colors.blue[200]!),
                     ),
                     child: Row(
                       children: [
                         Icon(Icons.info_outline, color: Colors.blue[700]),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8.sp),
                         Expanded(
                           child: Text(
                             'Topic subscriptions allow you to send notifications to multiple devices at once.',
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               color: Colors.blue[900],
                             ),
                           ),
@@ -430,21 +431,21 @@ class _PushNotificationDemoScreenState
   Widget _buildSectionCard({required String title, required Widget child}) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.sp)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0.sp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 18,
+              style: TextStyle(
+                fontSize: 18.sp,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.sp),
             child,
           ],
         ),
@@ -454,24 +455,26 @@ class _PushNotificationDemoScreenState
 
   Widget _buildInstructionItem({required String number, required String text}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: EdgeInsets.only(bottom: 8.0.sp),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
-            radius: 12,
+            radius: 12.sp,
             backgroundColor: AppColors.primary_main,
             child: Text(
               number,
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 12,
+                fontSize: 12.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 14))),
+          SizedBox(width: 12.sp),
+          Expanded(
+            child: Text(text, style: TextStyle(fontSize: 14.sp)),
+          ),
         ],
       ),
     );

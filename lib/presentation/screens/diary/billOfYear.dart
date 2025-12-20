@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
@@ -91,10 +93,10 @@ class _BillOfYearState extends State<BillOfYear> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                const SizedBox(height: 16),
+                Icon(Icons.error_outline, size: 48.sp, color: Colors.red),
+                SizedBox(height: 16.sp),
                 Text('Lỗi: ${state.message}'),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.sp),
                 ElevatedButton(
                   onPressed: _fetchMultiYearData,
                   child: const Text('Thử lại'),
@@ -126,20 +128,20 @@ class _BillOfYearState extends State<BillOfYear> {
         _buildDecadeSummary(summaryMap),
 
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 16.0.sp),
           child: Divider(),
         ),
 
         // Danh sách năm
         Expanded(
           child: Container(
-            margin: const EdgeInsets.symmetric(
-              horizontal: AppConstraints.mainPadding,
+            margin: EdgeInsets.symmetric(
+              horizontal: AppConstraints.mainPadding.sp,
             ),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(
-                AppConstraints.mediumBorderRadius,
+                AppConstraints.mediumBorderRadius.sp,
               ),
             ),
             child: ListView(
@@ -173,40 +175,40 @@ class _BillOfYearState extends State<BillOfYear> {
     final endYear = startYear + 9;
 
     return Container(
-      padding: const EdgeInsets.only(right: AppConstraints.largePadding),
+      padding: EdgeInsets.only(right: 24.sp),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+        borderRadius: BorderRadius.circular(
+          AppConstraints.mediumBorderRadius.sp,
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Thập kỷ hiện tại
-          Row(
-            children: [
-              IconButton(
-                onPressed: _previousDecade,
-                icon: const Icon(
-                  Icons.chevron_left,
-                  color: AppColors.primary_600,
+          Expanded(
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: _previousDecade,
+                  icon: Icon(Icons.chevron_left, color: AppColors.primary_600),
                 ),
-              ),
-              Text(
-                "$startYear - $endYear",
-                style: const TextStyle(
-                  fontSize: 24,
-                  color: AppColors.primary_600,
+                Text(
+                  "$startYear - $endYear",
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    color: AppColors.primary_600,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              IconButton(
-                onPressed: _nextDecade,
-                icon: const Icon(
-                  Icons.chevron_right,
-                  color: AppColors.primary_600,
+                IconButton(
+                  onPressed: _nextDecade,
+                  icon: Icon(Icons.chevron_right, color: AppColors.primary_600),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
           // Tổng kết thập kỷ
@@ -214,19 +216,20 @@ class _BillOfYearState extends State<BillOfYear> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "+${decadeIncome.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: AppColors.primary_600,
+                "+${decadeIncome.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                style: TextStyle(fontSize: 13.sp, color: AppColors.primary_600),
+              ),
+              Text(
+                "-${decadeExpense.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                style: TextStyle(color: Colors.red, fontSize: 13.sp),
+              ),
+              Text(
+                "= ${decadeBalance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.bold,
                 ),
-              ),
-              Text(
-                "-${decadeExpense.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
-                style: const TextStyle(color: Colors.red, fontSize: 16),
-              ),
-              Text(
-                "= ${decadeBalance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
-                style: const TextStyle(color: Colors.black, fontSize: 16),
               ),
             ],
           ),
@@ -258,9 +261,9 @@ class _BillOfYearState extends State<BillOfYear> {
             }
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppConstraints.mainPadding,
-              vertical: AppConstraints.largePadding,
+            padding: EdgeInsets.symmetric(
+              horizontal: AppConstraints.mainPadding.sp,
+              vertical: AppConstraints.largePadding.sp,
             ),
             child: Row(
               children: [
@@ -269,7 +272,8 @@ class _BillOfYearState extends State<BillOfYear> {
                   child: Text(
                     "Năm $year",
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
                       color: _isCurrentYear(year)
                           ? AppColors.primary_600
                           : AppColors.text_color_900,
@@ -279,11 +283,11 @@ class _BillOfYearState extends State<BillOfYear> {
                 Expanded(
                   child: Text(
                     balance == 0
-                        ? "0 đ"
-                        : "${balance > 0 ? '+' : ''}${balance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ",
+                        ? "0 ₫"
+                        : "${balance > 0 ? '+' : ''}${balance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
                     textAlign: TextAlign.end,
                     style: TextStyle(
-                      fontSize: AppConstraints.normalTextFontSize,
+                      fontSize: AppConstraints.normalTextFontSize.sp,
                       color: balance > 0
                           ? AppColors.primary_600
                           : balance < 0
@@ -298,7 +302,7 @@ class _BillOfYearState extends State<BillOfYear> {
         ),
 
         // Divider
-        const Divider(height: 1, color: Colors.grey),
+        Divider(height: 1.sp, color: Colors.grey),
       ],
     );
   }

@@ -115,14 +115,14 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
+                  Icon(Icons.error_outline, size: 64.sp, color: Colors.red),
+                  SizedBox(height: 16.sp),
                   Text(
                     'Lỗi: ${state.message}',
                     style: AppTextStyles.s16Regular(),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.sp),
                   ElevatedButton(
                     onPressed: () {
                       context.read<DiseaseBloc>().add(
@@ -173,7 +173,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                         _handleListenTap(disease.description);
                                       },
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: EdgeInsets.all(8.0.sp),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment:
@@ -224,7 +224,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                   ),
                 ),
                 widget.isPreview
-                    ? const SizedBox.shrink()
+                    ? SizedBox.shrink()
                     : ScanHistoryProvider(
                         child: Column(
                           children: [
@@ -241,7 +241,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 8,
+                                    blurRadius: 8.sp,
                                     offset: const Offset(0, -2),
                                   ),
                                 ],
@@ -346,7 +346,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                             //       ),
                             //       side: BorderSide(
                             //         color: AppColors.primary_main,
-                            //         width: 1,
+                            //         width: 1.sp,
                             //       ),
                             //       elevation: 0,
                             //     ),
@@ -412,17 +412,17 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 2.sp),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.sp),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        blurRadius: 8.sp,
+                        offset: Offset(0, 2),
                       ),
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.sp),
                     child: Image.network(
                       disease.imageLink[index],
                       fit: BoxFit.cover,
@@ -525,19 +525,19 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
             styleSheet: MarkdownStyleSheet(
               h2: AppTextStyles.s20Bold(
                 color: AppColors.primary_600,
-              ).copyWith(height: 1.5),
+              ).copyWith(height: 1.5.sp),
               h3: AppTextStyles.s16SemiBold(
                 color: AppColors.primary_400,
-              ).copyWith(height: 1.5),
+              ).copyWith(height: 1.5.sp),
               h4: AppTextStyles.s14SemiBold(
                 color: AppColors.primary_600,
-              ).copyWith(height: 1.5),
+              ).copyWith(height: 1.5.sp),
               p: AppTextStyles.s14Regular(
                 color: Colors.black87,
-              ).copyWith(height: 1.6),
+              ).copyWith(height: 1.6.sp),
               listBullet: AppTextStyles.s14Regular(
                 color: Colors.black87,
-              ).copyWith(height: 1.5),
+              ).copyWith(height: 1.5.sp),
               strong: AppTextStyles.s14SemiBold(color: AppColors.primary_700),
               em: AppTextStyles.s14Regular(
                 color: Colors.black87,

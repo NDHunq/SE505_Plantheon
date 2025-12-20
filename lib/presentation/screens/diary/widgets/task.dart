@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 
 class TaskWidget extends StatelessWidget {
@@ -24,20 +26,22 @@ class TaskWidget extends StatelessWidget {
     final Color taskColor = baseColor ?? Colors.blue;
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+      borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius.sp),
       child: Container(
         clipBehavior: Clip.hardEdge,
-        margin: const EdgeInsets.only(right: 8, top: 0, bottom: 0),
+        margin: EdgeInsets.only(right: 8.sp, top: 0.sp, bottom: 0.sp),
         padding: EdgeInsets.symmetric(
-          horizontal: AppConstraints.smallPadding,
-          vertical: isShort ? 6 : AppConstraints.smallPadding,
+          horizontal: AppConstraints.smallPadding.sp,
+          vertical: isShort ? 6 : AppConstraints.smallPadding.sp,
         ),
         decoration: BoxDecoration(
           color: taskColor.withOpacity(0.15),
           borderRadius: BorderRadius.circular(
-            AppConstraints.mediumBorderRadius,
+            AppConstraints.mediumBorderRadius.sp,
           ),
-          border: Border(left: BorderSide(color: taskColor, width: 3)),
+          border: Border(
+            left: BorderSide(color: taskColor, width: 3.sp),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,7 +52,7 @@ class TaskWidget extends StatelessWidget {
               title,
               maxLines: isShort ? 1 : 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w600),
             ),
 
             // Amount text (if provided)
@@ -59,7 +63,7 @@ class TaskWidget extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: AppConstraints.smallTextFontSize,
+                  fontSize: 8.sp,
                   color: Colors.red.shade600,
                   fontWeight: FontWeight.w500,
                 ),
@@ -72,8 +76,8 @@ class TaskWidget extends StatelessWidget {
               '$startTime - $endTime',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: AppConstraints.smallTextFontSize,
+              style: TextStyle(
+                fontSize: 9,
                 color: Colors.black54,
                 fontWeight: FontWeight.w400,
               ),

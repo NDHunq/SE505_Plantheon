@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_svg/svg.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
@@ -37,12 +39,12 @@ class CustomNavigationBar extends StatelessWidget
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(AppConstraints.appBarHeight);
+  Size get preferredSize => Size.fromHeight(AppConstraints.appBarHeight.sp);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: AppConstraints.appBarHeight,
+      height: AppConstraints.appBarHeight.sp,
       decoration: BoxDecoration(
         color:
             backgroundColor ??
@@ -53,22 +55,22 @@ class CustomNavigationBar extends StatelessWidget
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: elevation!,
-                  offset: const Offset(0, 2),
+                  offset: Offset(0, 2.sp),
                 ),
               ]
             : null,
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppConstraints.mainPadding,
+          padding: EdgeInsets.symmetric(
+            horizontal: AppConstraints.mainPadding.sp,
           ),
           child: Row(
             children: [
               // Nút Back
               if (showBackButton) ...[
                 _buildBackButton(context),
-                const SizedBox(width: AppConstraints.smallPadding),
+                SizedBox(width: AppConstraints.smallPadding.sp),
               ],
 
               // Title với khả năng tap (như trong Diary)
@@ -98,7 +100,7 @@ class CustomNavigationBar extends StatelessWidget
           Text(
             title,
             style: TextStyle(
-              fontSize: AppConstraints.titleMediumFontSize,
+              fontSize: AppConstraints.titleSmallFontSize.sp,
               fontWeight: FontWeight.bold,
               color:
                   textColor ??
@@ -107,7 +109,7 @@ class CustomNavigationBar extends StatelessWidget
             ),
           ),
           if (showYearSelector) ...[
-            const SizedBox(width: 4),
+            SizedBox(width: 4.sp),
             Icon(
               showYearSelector ? Icons.arrow_drop_up : Icons.arrow_drop_down,
               color:
@@ -134,8 +136,8 @@ class CustomNavigationBar extends StatelessWidget
       },
       child: SvgPicture.asset(
         AppVectors.arrowBack,
-        width: 30,
-        height: 30,
+        width: 30.sp,
+        height: 30.sp,
         color: AppColors.primary_600,
       ),
     );
@@ -143,7 +145,7 @@ class CustomNavigationBar extends StatelessWidget
 
   Widget _buildActionButton(BuildContext context, NavigationAction action) {
     return Padding(
-      padding: const EdgeInsets.only(left: AppConstraints.smallPadding),
+      padding: EdgeInsets.only(left: AppConstraints.smallPadding.sp),
       child: GestureDetector(
         onTap: () async {
           if (action.onPressed != null) {
@@ -153,14 +155,14 @@ class CustomNavigationBar extends StatelessWidget
           }
         },
         child: SizedBox(
-          width: 40,
-          height: 40,
+          width: 40.sp,
+          height: 40.sp,
 
           child: action.icon != null
               ? Icon(
                   action.icon,
 
-                  size: AppConstraints.mediumIconSize,
+                  size: AppConstraints.mediumIconSize.sp,
                   color: AppColors.primary_600,
                 )
               : action.child,
@@ -254,7 +256,7 @@ class DiaryNavigationBar extends StatelessWidget
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(AppConstraints.appBarHeight);
+  Size get preferredSize => Size.fromHeight(AppConstraints.appBarHeight.sp);
 
   @override
   Widget build(BuildContext context) {
@@ -279,6 +281,7 @@ class DiaryNavigationBar extends StatelessWidget
 
     return CustomNavigationBar(
       title: titleText,
+      backgroundColor: AppColors.white,
       showBackButton: showBackButton,
       onBackPressed: onBackPressed,
       showYearSelector: customTitle == null
@@ -294,13 +297,13 @@ class DiaryNavigationBar extends StatelessWidget
                 children: [
                   Text(
                     titleText,
-                    style: const TextStyle(
-                      fontSize: 24,
+                    style: TextStyle(
+                      fontSize: AppConstraints.titleMediumFontSize.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   if (selectedMonth == null) ...[
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4.sp),
                     Icon(
                       showYearSelector
                           ? Icons.arrow_drop_up
@@ -312,7 +315,12 @@ class DiaryNavigationBar extends StatelessWidget
             )
           : Text(
               titleText,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+                overflow: TextOverflow.ellipsis,
+              ),
+              maxLines: 1,
             ),
     );
   }

@@ -8,7 +8,7 @@ class FastLottieLoading extends StatefulWidget {
   final double height;
   final double speed;
 
-  const FastLottieLoading({
+  FastLottieLoading({
     Key? key,
     required this.assetPath,
     this.width = 200,

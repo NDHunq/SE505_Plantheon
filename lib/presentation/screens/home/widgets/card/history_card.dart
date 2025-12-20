@@ -33,12 +33,12 @@ class HistoryCard extends StatelessWidget {
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Bone.square(
                     size: 87.sp,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.sp),
                   ),
                 )
               : Bone.square(
                   size: 70.sp,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.sp),
                 ),
         ),
         SizedBox(width: 8.sp),

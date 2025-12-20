@@ -33,7 +33,7 @@ class NewsSection extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => NewsProvider(
                     size: null, // fetch all for full screen
-                    child: const News(),
+                    child: News(),
                   ),
                 ),
               ),

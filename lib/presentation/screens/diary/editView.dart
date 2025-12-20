@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/domain/usecases/activity/update_activity.dart';
@@ -48,7 +50,7 @@ class _EditViewScreenState extends State<EditViewScreen> {
         );
       },
       child: Container(
-        padding: const EdgeInsets.all(AppConstraints.mainPadding),
+        padding: EdgeInsets.all(AppConstraints.mainPadding.sp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -58,33 +60,28 @@ class _EditViewScreenState extends State<EditViewScreen> {
               children: [
                 TextButton(
                   onPressed: widget.onCancel ?? () => Navigator.pop(context),
-                  child: const Text(
+                  child: Text(
                     'Hủy',
-                    style: TextStyle(color: Colors.red, fontSize: 16),
+                    style: TextStyle(color: Colors.red, fontSize: 16.sp),
                   ),
                 ),
                 Text(
                   widget.title ?? 'Chỉnh sửa',
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(width: 60),
+                SizedBox(width: 60.sp),
               ],
             ),
-            const SizedBox(height: 20),
 
             // Nội dung được truyền vào
             Expanded(
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.white,
-                ),
+                padding: EdgeInsets.all(8.sp),
+                decoration: BoxDecoration(color: Colors.white),
                 child: SingleChildScrollView(child: widget.contentWidget),
               ),
             ),

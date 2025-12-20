@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
@@ -239,7 +241,7 @@ class _ReusableActivitySuggestionItemState
         return BlocProvider.value(
           value: activitiesBloc,
           child: AnimatedPadding(
-            duration: const Duration(milliseconds: 200),
+            duration: Duration(milliseconds: 200),
             curve: Curves.easeOut,
             padding: EdgeInsets.only(bottom: bottomInset),
             child: Align(
@@ -249,38 +251,38 @@ class _ReusableActivitySuggestionItemState
                 child: Container(
                   width: double.infinity,
                   height: mediaQuery.size.height * 0.92,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
+                      top: Radius.circular(20.sp),
                     ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10.sp),
                       Center(
                         child: Container(
-                          width: 48,
-                          height: 4,
+                          width: 48.sp,
+                          height: 4.sp,
                           decoration: BoxDecoration(
                             color: Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(2),
+                            borderRadius: BorderRadius.circular(2.sp),
                           ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.sp,
+                          vertical: 12.sp,
                         ),
                         child: Row(
                           children: [
                             Expanded(
                               child: Text(
                                 title,
-                                style: const TextStyle(
-                                  fontSize: 18,
+                                style: TextStyle(
+                                  fontSize: 18.sp,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -294,12 +296,12 @@ class _ReusableActivitySuggestionItemState
                           ],
                         ),
                       ),
-                      const Divider(height: 1),
+                      Divider(height: 1.sp),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.sp,
+                            vertical: 12.sp,
                           ),
                           child: screen,
                         ),
@@ -326,21 +328,21 @@ class _ReusableActivitySuggestionItemState
     return Container(
       decoration: BoxDecoration(
         color: config.backgroundColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.sp),
         border: Border.all(
           color: config.accentColor.withOpacity(0.3),
-          width: 1.5,
+          width: 1.5.sp,
         ),
         boxShadow: [
           BoxShadow(
             color: config.accentColor.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            blurRadius: 8.sp,
+            offset: Offset(0, 4.sp),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.sp),
         child: Row(
           children: [
             // Icon bên trái
@@ -354,50 +356,50 @@ class _ReusableActivitySuggestionItemState
                     currentTitle,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       color: Colors.grey[900],
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.sp),
                   // Type trên 1 hàng
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10.sp,
+                          vertical: 4.sp,
                         ),
                         decoration: BoxDecoration(
                           color: config.accentColor.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(8.sp),
                         ),
                         child: Text(
                           _getTypeString(widget.activity.type),
                           style: TextStyle(
                             color: config.accentColor,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4.sp),
                   // Ngày giờ trên hàng mới
                   Row(
                     children: [
                       Icon(
                         Icons.access_time_rounded,
-                        size: 14,
+                        size: 14.sp,
                         color: Colors.grey[600],
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4.sp),
                       Expanded(
                         child: Text(
                           '$currentStartTime - $currentEndTime, ${DateFormat('dd/MM/yyyy').format(widget.activity.suggestedTime)}',
                           style: TextStyle(
                             color: Colors.grey[700],
-                            fontSize: 13,
+                            fontSize: 13.sp,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -408,29 +410,29 @@ class _ReusableActivitySuggestionItemState
                 ],
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12.sp),
             // 2 nút bên phải trên 1 hàng
             Row(
               children: [
                 Container(
-                  width: 36,
-                  height: 36,
+                  width: 36.sp,
+                  height: 36.sp,
                   decoration: BoxDecoration(
                     color: config.accentColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.sp),
                   ),
                   child: IconButton(
                     padding: EdgeInsets.zero,
                     icon: Icon(
                       Icons.edit_outlined,
                       color: config.accentColor,
-                      size: 20,
+                      size: 20.sp,
                     ),
                     onPressed: () =>
                         _openBottomSheet(context, widget.activity.type),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.sp),
                 ReusableAddButton(
                   accentColor: config.accentColor,
                   activity: widget.activity,
@@ -717,22 +719,22 @@ class _ReusableAddButtonState extends State<ReusableAddButton> {
         }
       },
       child: Container(
-        width: 36,
-        height: 36,
+        width: 36.sp,
+        height: 36.sp,
         decoration: BoxDecoration(
           color: widget.accentColor.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.sp),
         ),
         child: IconButton(
           padding: EdgeInsets.zero,
           icon: _isLoading
-              ? const SizedBox(width: 20, height: 20, child: LoadingIndicator())
+              ? SizedBox(width: 20.sp, height: 20.sp, child: LoadingIndicator())
               : _isAdded
-              ? Icon(Icons.check_circle, color: widget.accentColor, size: 20)
+              ? Icon(Icons.check_circle, color: widget.accentColor, size: 20.sp)
               : Icon(
                   Icons.add_circle_outline,
                   color: widget.accentColor,
-                  size: 20,
+                  size: 20.sp,
                 ),
           onPressed: _isLoading
               ? null

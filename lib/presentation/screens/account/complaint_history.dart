@@ -147,8 +147,8 @@ class _ComplaintCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            blurRadius: 12.sp,
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -177,7 +177,7 @@ class _ComplaintCard extends StatelessWidget {
                   ).withOpacity(0.1),
                   textColor: _getCategoryColor(complaint.category),
                 ),
-                const Spacer(),
+                Spacer(),
                 Text(
                   _formatDateTime(complaint.createdAt),
                   style: AppTextStyles.s12Regular(color: Colors.grey[500]),
@@ -336,19 +336,21 @@ class _ComplaintCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Spacer(),
+                Spacer(),
                 if (complaint.resolvedAt != null) ...[
                   Row(
                     children: [
                       Icon(
                         Icons.check_circle_outline_rounded,
                         size: 14.sp,
-                        color: Colors.green,
+                        color: AppColors.primary_main,
                       ),
                       SizedBox(width: 4.sp),
                       Text(
                         _formatDateTime(complaint.resolvedAt!),
-                        style: AppTextStyles.s12Regular(color: Colors.green),
+                        style: AppTextStyles.s12Regular(
+                          color: AppColors.primary_main,
+                        ),
                       ),
                     ],
                   ),

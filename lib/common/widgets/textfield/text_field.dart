@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter/services.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
@@ -118,42 +120,42 @@ class AppTextField extends StatelessWidget {
       contentPadding:
           contentPadding ??
           EdgeInsets.symmetric(
-            horizontal: AppConstraints.smallPadding,
+            horizontal: AppConstraints.smallPadding.sp,
             vertical: contentPaddingVertical!,
           ),
       labelStyle: labelStyle,
       hintStyle: hintStyle,
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(color: defaultBorderColor, width: borderWidth!),
-        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius.sp),
       ),
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: defaultFocusedBorderColor,
           width: focusedBorderWidth!,
         ),
-        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius.sp),
       ),
       errorBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: defaultErrorBorderColor,
           width: borderWidth!,
         ),
-        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius.sp),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: defaultErrorBorderColor,
           width: focusedBorderWidth!,
         ),
-        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius.sp),
       ),
       disabledBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: defaultBorderColor.withOpacity(0.5),
           width: borderWidth!,
         ),
-        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius.sp),
       ),
     );
   }
@@ -270,36 +272,36 @@ class AppTextFormField extends StatelessWidget {
       isDense: isDense,
       contentPadding:
           contentPadding ??
-          const EdgeInsets.symmetric(
-            horizontal: AppConstraints.smallPadding,
-            vertical: AppConstraints.largePadding,
+          EdgeInsets.symmetric(
+            horizontal: AppConstraints.smallPadding.sp,
+            vertical: AppConstraints.largePadding.sp,
           ),
       labelStyle: labelStyle,
       hintStyle: hintStyle,
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(color: defaultBorderColor, width: borderWidth!),
-        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius.sp),
       ),
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: defaultFocusedBorderColor,
           width: focusedBorderWidth!,
         ),
-        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius.sp),
       ),
       errorBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: defaultErrorBorderColor,
           width: borderWidth!,
         ),
-        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius.sp),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: defaultErrorBorderColor,
           width: focusedBorderWidth!,
         ),
-        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius.sp),
       ),
 
       disabledBorder: OutlineInputBorder(
@@ -307,7 +309,7 @@ class AppTextFormField extends StatelessWidget {
           color: defaultBorderColor.withOpacity(0.5),
           width: borderWidth!,
         ),
-        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius),
+        borderRadius: BorderRadius.circular(AppConstraints.mediumBorderRadius.sp),
       ),
     );
   }

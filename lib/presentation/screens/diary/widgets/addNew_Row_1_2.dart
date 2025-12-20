@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// Widget tái sử dụng cho form row với label và child
 class AddNewRow extends StatelessWidget {
@@ -12,15 +13,15 @@ class AddNewRow extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: EdgeInsets.only(bottom: 12.sp),
           child: Row(
             children: [
               Expanded(
-                flex: 2,
-                child: Text(label, style: const TextStyle(fontSize: 16)),
+                flex: 4,
+                child: Text(label, style: TextStyle(fontSize: 14.sp)),
               ),
               Expanded(
-                flex: 3,
+                flex: 7,
                 child: Align(alignment: Alignment.centerRight, child: child),
               ),
             ],

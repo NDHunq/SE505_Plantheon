@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -808,7 +810,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
 
   // Helper method to format date display
   String _formatDateDisplay(DateTime date) {
-    return "ngày ${date.day} thg ${date.month}, ${date.year}";
+    return "${date.day} thg ${date.month}, ${date.year}";
   }
 
   // Method to create activity
@@ -1056,29 +1058,29 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
               children: [
                 // Row trên cùng: Loại nhật ký (trái) | Nút sát phải
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: EdgeInsets.symmetric(vertical: 8.sp),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         "Loại nhật ký",
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 14.sp),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 6,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 14.sp,
+                          vertical: 6.sp,
                         ),
                         decoration: BoxDecoration(
                           color: Color(0xFFE6F4EA),
-                          borderRadius: BorderRadius.circular(50),
+                          borderRadius: BorderRadius.circular(50.sp),
                           border: Border.all(
                             color: Colors.grey.shade200,
-                            width: 1,
+                            width: 1.sp,
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           "Bán sản phẩm, vật tư",
                           style: TextStyle(
                             color: Colors.green,
@@ -1095,32 +1097,29 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   validator: _validateTitle,
                   decoration: InputDecoration(
                     hintText: "Thêm tiêu đề",
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 12,
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 10.sp,
+                      horizontal: 12.sp,
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.sp),
                       borderSide: BorderSide(color: Colors.grey.shade300),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.sp),
                       borderSide: BorderSide(color: Colors.grey.shade300),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Colors.green,
-                        width: 2,
-                      ),
+                      borderRadius: BorderRadius.circular(8.sp),
+                      borderSide: BorderSide(color: Colors.green, width: 2.sp),
                     ),
                     errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.red, width: 1),
+                      borderRadius: BorderRadius.circular(8.sp),
+                      borderSide: BorderSide(color: Colors.red, width: 1.sp),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.red, width: 2),
+                      borderRadius: BorderRadius.circular(8.sp),
+                      borderSide: BorderSide(color: Colors.red, width: 2.sp),
                     ),
                   ),
                 ),
@@ -1140,69 +1139,91 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                     !allDay) ...[
                   AddNewRow(
                     label: "Thời gian",
-                    child: Row(
+                    child: Column(
                       children: [
-                        // Cột 1: Ngày
-                        Expanded(
-                          flex: 2,
-                          child: GestureDetector(
-                            onTap: () => _selectStartDate(context),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                _formatDateDisplay(startDate),
-                                textAlign: TextAlign.center,
+                        Row(
+                          children: [
+                            // Cột 2: Giờ bắt đầu
+                            Expanded(
+                              flex: 2,
+                              child: GestureDetector(
+                                onTap: () => _selectStartTime(context),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12.sp,
+                                    vertical: 8.sp,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.sp),
+                                  ),
+                                  child: Text(
+                                    startTime,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                            SizedBox(width: 8.sp),
+                            Icon(Icons.arrow_forward_ios, size: 16.sp),
+                            SizedBox(width: 8.sp),
+                            // Cột 3: Giờ kết thúc
+                            Expanded(
+                              flex: 2,
+                              child: GestureDetector(
+                                onTap: () => _selectEndTime(context),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12.sp,
+                                    vertical: 8.sp,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.sp),
+                                  ),
+                                  child: Text(
+                                    endTime,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        // Cột 2: Giờ bắt đầu
-                        Expanded(
-                          flex: 1,
-                          child: GestureDetector(
-                            onTap: () => _selectStartTime(context),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                startTime,
-                                textAlign: TextAlign.center,
+                        SizedBox(height: 8.sp),
+                        Row(
+                          children: [
+                            // Cột 1: Ngày
+                            Expanded(
+                              flex: 10,
+                              child: GestureDetector(
+                                onTap: () => _selectStartDate(context),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12.sp,
+                                    vertical: 8.sp,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.sp),
+                                  ),
+                                  child: Text(
+                                    _formatDateDisplay(startDate),
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        // Cột 3: Giờ kết thúc
-                        Expanded(
-                          flex: 1,
-                          child: GestureDetector(
-                            onTap: () => _selectEndTime(context),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(endTime, textAlign: TextAlign.center),
-                            ),
-                          ),
+
+                            // Cột 2: Giờ bắt đầu
+                          ],
                         ),
                       ],
                     ),
@@ -1220,30 +1241,30 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                           GestureDetector(
                             onTap: () => _selectStartTime(context),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.sp,
+                                vertical: 8.sp,
                               ),
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(8.sp),
                               ),
                               child: Text(startTime),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8.sp),
                         ],
                         Expanded(
                           child: GestureDetector(
                             onTap: () => _selectStartDate(context),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.sp,
+                                vertical: 8.sp,
                               ),
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(8.sp),
                               ),
                               child: Text(_formatDateDisplay(startDate)),
                             ),
@@ -1265,34 +1286,34 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                             GestureDetector(
                               onTap: () => _selectEndTime(context),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.sp,
+                                  vertical: 8.sp,
                                 ),
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: Colors.grey.shade300,
                                   ),
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(8.sp),
                                 ),
                                 child: Text(endTime),
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8.sp),
                           ],
                           Expanded(
                             child: GestureDetector(
                               onTap: () => _selectEndDate(context),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.sp,
+                                  vertical: 8.sp,
                                 ),
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: Colors.grey.shade300,
                                   ),
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(8.sp),
                                 ),
                                 child: Text(_formatDateDisplay(endDate)),
                               ),
@@ -1302,7 +1323,6 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                       ),
                     ),
                 ],
-                Divider(height: 1, color: AppColors.text_color_100),
 
                 // Lặp lại
                 AddNewRow(
@@ -1310,19 +1330,19 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   child: GestureDetector(
                     onTap: () => _showRepeatDialog(context),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.sp,
+                        vertical: 8.sp,
                       ),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.sp),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(repeatType),
-                          const Icon(Icons.arrow_drop_down, size: 20),
+                          Icon(Icons.arrow_drop_down, size: 20.sp),
                         ],
                       ),
                     ),
@@ -1336,19 +1356,19 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                     child: GestureDetector(
                       onTap: () => _showEndRepeatDialog(context),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.sp,
+                          vertical: 8.sp,
                         ),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(8.sp),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(endRepeatType),
-                            const Icon(Icons.arrow_drop_down, size: 20),
+                            Icon(Icons.arrow_drop_down, size: 20.sp),
                           ],
                         ),
                       ),
@@ -1362,20 +1382,19 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                     child: GestureDetector(
                       onTap: () => _selectRepeatEndDate(context),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.sp,
+                          vertical: 8.sp,
                         ),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(8.sp),
                         ),
                         child: Text(_formatDateDisplay(repeatEndDate)),
                       ),
                     ),
                   ),
                 ],
-                Divider(height: 1, color: AppColors.text_color_100),
 
                 // Cảnh báo
                 AddNewRow(
@@ -1383,25 +1402,24 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   child: GestureDetector(
                     onTap: () => _showAlertDialog(context),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.sp,
+                        vertical: 8.sp,
                       ),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.sp),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(alertTime),
-                          const Icon(Icons.arrow_drop_down, size: 20),
+                          Icon(Icons.arrow_drop_down, size: 20.sp),
                         ],
                       ),
                     ),
                   ),
                 ),
-                Divider(height: 1, color: AppColors.text_color_100),
 
                 // Vật mua
                 AddNewRow(
@@ -1428,19 +1446,19 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   child: GestureDetector(
                     onTap: () => _showUnitDialog(context),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.sp,
+                        vertical: 8.sp,
                       ),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.sp),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(unit),
-                          const Icon(Icons.arrow_drop_down, size: 20),
+                          Icon(Icons.arrow_drop_down, size: 20.sp),
                         ],
                       ),
                     ),
@@ -1461,24 +1479,24 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8.sp),
                       Expanded(
                         child: GestureDetector(
                           onTap: () => _showCurrencyDialog(context),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12.sp,
+                              vertical: 8.sp,
                             ),
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey.shade300),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(8.sp),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(currency),
-                                const Icon(Icons.arrow_drop_down, size: 20),
+                                Icon(Icons.arrow_drop_down, size: 20.sp),
                               ],
                             ),
                           ),
@@ -1505,17 +1523,15 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   label: "Người bán",
                   child: AppTextField(controller: buyerController),
                 ),
-                Divider(height: 1, color: AppColors.text_color_100),
 
-                // Hình ảnh đính kèm
                 AddNewRow(
                   label: "Hình ảnh đính kèm",
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (_isUploadingImage)
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
+                        Padding(
+                          padding: EdgeInsets.all(8.sp),
                           child: Center(child: LoadingIndicator()),
                         )
                       else if (attachedLink != null && attachedLink!.isNotEmpty)
@@ -1523,18 +1539,18 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(8.sp),
                               child: Image.network(
                                 attachedLink!,
-                                height: 200,
+                                height: 200.sp,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Container(
-                                    height: 200,
+                                    height: 200.sp,
                                     color: Colors.grey[300],
-                                    child: const Center(
-                                      child: Icon(Icons.error, size: 50),
+                                    child: Center(
+                                      child: Icon(Icons.error, size: 50.sp),
                                     ),
                                   );
                                 },
@@ -1542,7 +1558,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                                     (context, child, loadingProgress) {
                                       if (loadingProgress == null) return child;
                                       return Container(
-                                        height: 200,
+                                        height: 200.sp,
                                         color: Colors.grey[300],
                                         child: Center(
                                           child: CircularProgressIndicator(
@@ -1561,23 +1577,23 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                                     },
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8.sp),
                             Row(
                               children: [
                                 Expanded(
                                   child: OutlinedButton.icon(
                                     onPressed: _showImageSourceDialog,
-                                    icon: const Icon(Icons.edit, size: 18),
-                                    label: const Text('Đổi ảnh'),
+                                    icon: Icon(Icons.edit, size: 18.sp),
+                                    label: Text('Đổi'),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: AppColors.primary_600,
-                                      side: const BorderSide(
+                                      side: BorderSide(
                                         color: AppColors.primary_600,
                                       ),
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8.sp),
                                 Expanded(
                                   child: OutlinedButton.icon(
                                     onPressed: () {
@@ -1585,11 +1601,11 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                                         attachedLink = "";
                                       });
                                     },
-                                    icon: const Icon(Icons.delete, size: 18),
-                                    label: const Text('Xóa ảnh'),
+                                    icon: Icon(Icons.delete, size: 18.sp),
+                                    label: Text('Xóa'),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: Colors.red,
-                                      side: const BorderSide(color: Colors.red),
+                                      side: BorderSide(color: Colors.red),
                                     ),
                                   ),
                                 ),
@@ -1602,24 +1618,18 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             onPressed: _showImageSourceDialog,
-                            icon: const Icon(
-                              Icons.add_photo_alternate,
-                              size: 20,
-                            ),
-                            label: const Text('Upload Ảnh'),
+                            icon: Icon(Icons.add_photo_alternate, size: 20.sp),
+                            label: Text('Upload Ảnh'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.primary_600,
-                              side: const BorderSide(
-                                color: AppColors.primary_600,
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              side: BorderSide(color: AppColors.primary_600),
+                              padding: EdgeInsets.symmetric(vertical: 12.sp),
                             ),
                           ),
                         ),
                     ],
                   ),
                 ),
-                Divider(height: 1, color: AppColors.text_color_100),
 
                 // Ghi chú
                 AddNewRow(
@@ -1629,7 +1639,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
 
                 // Save / Delete actions
                 Padding(
-                  padding: const EdgeInsets.only(top: 16),
+                  padding: EdgeInsets.only(top: 16.sp),
                   child: widget.activityToEdit != null
                       ? Row(
                           children: [
@@ -1637,35 +1647,35 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                               child: OutlinedButton(
                                 onPressed: _deleteActivity,
                                 style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Colors.red),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
+                                  side: BorderSide(color: Colors.red),
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 12.sp,
                                   ),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   'Xóa',
                                   style: TextStyle(color: Colors.red),
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12.sp),
                             Expanded(
                               child: ElevatedButton(
                                 onPressed: _createActivity,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
+                                  backgroundColor: AppColors.primary_600,
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 12.sp,
                                   ),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(32),
+                                    borderRadius: BorderRadius.circular(40.sp),
                                   ),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   'Lưu thay đổi',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -1678,17 +1688,17 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                           child: ElevatedButton(
                             onPressed: _createActivity,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: AppColors.primary_600,
+                              padding: EdgeInsets.symmetric(vertical: 12.sp),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(40.sp),
                               ),
                             ),
-                            child: const Text(
+                            child: Text(
                               'Lưu Nhật ký',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 16,
+                                fontSize: 14.sp,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),

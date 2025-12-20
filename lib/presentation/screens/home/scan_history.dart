@@ -123,18 +123,18 @@ class _ScanHistoryContent extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline,
-                      size: 64,
+                      size: 64.sp,
                       color: Colors.red,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.sp),
                     Text(
                       'Lỗi: ${state.message}',
-                      style: const TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16.sp),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.sp),
                     ElevatedButton(
                       onPressed: () {
                         context.read<ScanHistoryBloc>().add(
@@ -152,11 +152,11 @@ class _ScanHistoryContent extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.history, size: 64, color: Colors.grey),
-                      const SizedBox(height: 16),
+                      Icon(Icons.history, size: 64.sp, color: Colors.grey),
+                      SizedBox(height: 16.sp),
                       Text(
                         'Chưa có lịch sử quét bệnh',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                        style: TextStyle(fontSize: 16.sp, color: Colors.grey),
                       ),
                     ],
                   ),

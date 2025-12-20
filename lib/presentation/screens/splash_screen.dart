@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/diary/diary.dart';
 
 /// Splash Screen với loading indicator
@@ -90,9 +93,9 @@ class _SplashScreenState extends State<SplashScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.green.shade400,
-              Colors.green.shade600,
-              Colors.green.shade800,
+              AppColors.primary_400,
+              AppColors.primary_600,
+              AppColors.primary_800,
             ],
           ),
         ),
@@ -110,23 +113,23 @@ class _SplashScreenState extends State<SplashScreen>
                       child: Opacity(
                         opacity: _logoAnimation.value,
                         child: Container(
-                          width: 120,
-                          height: 120,
+                          width: 120.sp,
+                          height: 120.sp,
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(30.sp),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.2),
-                                blurRadius: 20,
-                                offset: const Offset(0, 10),
+                                blurRadius: 20.sp,
+                                offset: Offset(0, 10),
                               ),
                             ],
                           ),
                           child: Icon(
                             Icons.eco,
-                            size: 60,
-                            color: Colors.green.shade600,
+                            size: 60.sp,
+                            color: AppColors.primary_600,
                           ),
                         ),
                       ),
@@ -134,7 +137,7 @@ class _SplashScreenState extends State<SplashScreen>
                   },
                 ),
 
-                const SizedBox(height: 40),
+                SizedBox(height: 40.sp),
 
                 // App Name
                 AnimatedBuilder(
@@ -147,17 +150,17 @@ class _SplashScreenState extends State<SplashScreen>
                           Text(
                             'Plantheon',
                             style: TextStyle(
-                              fontSize: 32,
+                              fontSize: 32.sp,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                               letterSpacing: 2,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8.sp),
                           Text(
                             'Nhật ký nông nghiệp thông minh',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 16.sp,
                               color: Colors.white.withOpacity(0.9),
                               fontWeight: FontWeight.w300,
                             ),
@@ -168,7 +171,7 @@ class _SplashScreenState extends State<SplashScreen>
                   },
                 ),
 
-                const SizedBox(height: 60),
+                SizedBox(height: 60.sp),
 
                 // Loading Indicator
                 AnimatedBuilder(
@@ -177,13 +180,13 @@ class _SplashScreenState extends State<SplashScreen>
                     return Transform.rotate(
                       angle: _loadingAnimation.value * 2 * 3.14159,
                       child: Container(
-                        width: 50,
-                        height: 50,
+                        width: 50.sp,
+                        height: 50.sp,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: Colors.white.withOpacity(0.3),
-                            width: 3,
+                            width: 3.sp,
                           ),
                         ),
                         child: LoadingIndicator(),
@@ -192,7 +195,7 @@ class _SplashScreenState extends State<SplashScreen>
                   },
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20.sp),
 
                 // Loading Text
                 AnimatedBuilder(
@@ -203,7 +206,7 @@ class _SplashScreenState extends State<SplashScreen>
                       child: Text(
                         'Đang tải ứng dụng...',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 14.sp,
                           color: Colors.white.withOpacity(0.8),
                           fontWeight: FontWeight.w300,
                         ),
@@ -281,9 +284,9 @@ class _SimpleSplashScreenState extends State<SimpleSplashScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.green.shade400,
-              Colors.green.shade600,
-              Colors.green.shade800,
+              AppColors.primary_400,
+              AppColors.primary_600,
+              AppColors.primary_800,
             ],
           ),
         ),
@@ -299,36 +302,36 @@ class _SimpleSplashScreenState extends State<SimpleSplashScreen>
                     Transform.scale(
                       scale: 0.8 + (_animation.value * 0.2),
                       child: Container(
-                        width: 100,
-                        height: 100,
+                        width: 100.sp,
+                        height: 100.sp,
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(25.sp),
                         ),
                         child: Icon(
                           Icons.eco,
-                          size: 50,
-                          color: Colors.green.shade600,
+                          size: 50.sp,
+                          color: AppColors.primary_600,
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 30),
+                    SizedBox(height: 30.sp),
 
                     // App Name với fade in
                     Opacity(
                       opacity: _animation.value,
                       child: Text(
                         'Plantheon',
-                        style: const TextStyle(
-                          fontSize: 28,
+                        style: TextStyle(
+                          fontSize: 28.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 40),
+                    SizedBox(height: 40.sp),
 
                     // Loading indicator
                     LoadingIndicator(),

@@ -533,7 +533,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                   decoration: BoxDecoration(
                     color: Colors.grey[50],
                     borderRadius: BorderRadius.circular(12.sp),
-                    border: Border.all(color: Colors.grey[300]!, width: 1),
+                    border: Border.all(color: Colors.grey[300]!, width: 1.sp),
                   ),
                   child: (_selectedImages.isEmpty && _prefilledImageUrl == null)
                       ? InkWell(
@@ -628,7 +628,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                 ),
                                 child: GridView.builder(
                                   shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
+                                  physics: NeverScrollableScrollPhysics(),
                                   gridDelegate:
                                       SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 3,
@@ -651,7 +651,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                                   BorderRadius.circular(8.sp),
                                               border: Border.all(
                                                 color: AppColors.primary_main,
-                                                width: 2,
+                                                width: 2.sp,
                                               ),
                                             ),
                                             child: ClipRRect(

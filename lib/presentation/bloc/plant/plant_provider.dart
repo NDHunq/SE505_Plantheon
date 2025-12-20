@@ -43,4 +43,3 @@ class PlantProvider extends StatelessWidget {
     );
   }
 }
-

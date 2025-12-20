@@ -84,7 +84,7 @@ class Contact extends StatelessWidget {
                 elevation: 2,
                 shadowColor: Colors.black.withOpacity(0.1),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.sp),
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(16.sp),

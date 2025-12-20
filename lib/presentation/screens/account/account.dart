@@ -73,10 +73,10 @@ class Account extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Color(0xFFE6F3F1),
-                      borderRadius: BorderRadius.circular(12.0),
+                      borderRadius: BorderRadius.circular(12.0.sp),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: EdgeInsets.symmetric(horizontal: 8.0.sp),
                       child: SettingListItem(
                         leading: SizedBox(),
                         text: "Đăng xuất",
@@ -189,13 +189,13 @@ class _ProfileCardState extends State<_profileCard> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
+            blurRadius: 12.sp,
             offset: Offset(0, 2),
           ),
         ],
         border: Border.all(
           color: AppColors.primary_200.withOpacity(0.3),
-          width: 1,
+          width: 1.sp,
         ),
       ),
       child: Padding(
@@ -272,7 +272,7 @@ class _ProfileCardState extends State<_profileCard> {
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.primary_50,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.sp),
                       border: Border.all(
                         color: AppColors.primary_200,
                         width: 1.sp,
@@ -331,7 +331,7 @@ class _ProfileCardState extends State<_profileCard> {
         borderRadius: BorderRadius.circular(16.sp),
         border: Border.all(
           color: AppColors.primary_200.withOpacity(0.3),
-          width: 1,
+          width: 1.sp,
         ),
       ),
       child: Padding(
@@ -451,10 +451,10 @@ class _ProfileCardState extends State<_profileCard> {
                 Navigator.of(dialogContext).pop();
                 await _pickImage(ImageSource.camera);
               },
-              icon: const Icon(Icons.camera_alt),
-              label: const Text('Chụp ảnh'),
+              icon: Icon(Icons.camera_alt),
+              label: Text('Chụp ảnh'),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.sp),
             ElevatedButton.icon(
               onPressed: () async {
                 Navigator.of(dialogContext).pop();
@@ -570,7 +570,7 @@ class _PersonalSettingState extends State<PersonalSetting> {
     return Container(
       decoration: BoxDecoration(
         color: Color(0xFFE6F3F1),
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(12.0.sp),
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 12.sp),
@@ -578,7 +578,7 @@ class _PersonalSettingState extends State<PersonalSetting> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SettingTitleItem(text: "Cá nhân"),
-            Divider(height: 1, color: AppColors.white),
+            Divider(height: 1.sp, color: AppColors.white),
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -599,7 +599,7 @@ class _PersonalSettingState extends State<PersonalSetting> {
                 action: Icon(Icons.keyboard_arrow_right_rounded, size: 20.sp),
               ),
             ),
-            Divider(height: 1, color: AppColors.white),
+            Divider(height: 1.sp, color: AppColors.white),
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -620,7 +620,7 @@ class _PersonalSettingState extends State<PersonalSetting> {
                 action: Icon(Icons.keyboard_arrow_right_rounded, size: 20.sp),
               ),
             ),
-            Divider(height: 1, color: AppColors.white),
+            Divider(height: 1.sp, color: AppColors.white),
             SettingListItem(
               isHavePadding: false,
               leading: SvgPicture.asset(
@@ -649,7 +649,7 @@ class _PersonalSettingState extends State<PersonalSetting> {
                 ),
               ),
             ),
-            Divider(height: 1, color: AppColors.white),
+            Divider(height: 1.sp, color: AppColors.white),
             GestureDetector(
               onTap: showLanguageDialog,
               child: SettingListItem(
@@ -678,7 +678,7 @@ class HelpingSetting extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Color(0xFFE6F3F1),
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(12.0.sp),
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 12.sp),
@@ -686,7 +686,7 @@ class HelpingSetting extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SettingTitleItem(text: "Hỗ trợ"),
-            Divider(height: 1, color: AppColors.white),
+            Divider(height: 1.sp, color: AppColors.white),
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -707,7 +707,7 @@ class HelpingSetting extends StatelessWidget {
                 action: Icon(Icons.keyboard_arrow_right_rounded, size: 20.sp),
               ),
             ),
-            Divider(height: 1, color: AppColors.white),
+            Divider(height: 1.sp, color: AppColors.white),
             GestureDetector(
               onTap: () {
                 Navigator.push(

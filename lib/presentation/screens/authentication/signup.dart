@@ -72,7 +72,7 @@ class _SignUpPageState extends State<SignUpPage> {
         return Scaffold(
           bottomNavigationBar: _bottomText(context),
           body: Padding(
-            padding: const EdgeInsets.all(AppInfo.main_padding),
+            padding: EdgeInsets.all(AppInfo.main_padding),
             child: SingleChildScrollView(
               reverse: true,
               child: Column(
@@ -383,9 +383,9 @@ class _SignUpPageState extends State<SignUpPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // SvgPicture.asset(AppVectors.google, height: 35),
+        // SvgPicture.asset(AppVectors.google, height: 35.sp),
         SizedBox(width: 50.sp),
-        // SvgPicture.asset(AppVectors.facebook, height: 35),
+        // SvgPicture.asset(AppVectors.facebook, height: 35.sp),
       ],
     );
   }

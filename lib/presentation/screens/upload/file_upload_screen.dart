@@ -1,5 +1,8 @@
+
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
@@ -200,9 +203,9 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.green),
-            const SizedBox(width: 8),
-            const Text('Upload Thành Công!'),
+            Icon(Icons.check_circle, color: Colors.green),
+            SizedBox(width: 8.sp),
+            Text('Upload Thành Công!'),
           ],
         ),
         content: Column(
@@ -211,24 +214,24 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
           children: [
             Text(
               'File: $fileName',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
-            const Text(
+            SizedBox(height: 16.sp),
+            Text(
               'Public URL (không expire):',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(fontSize: 12.sp, color: Colors.grey),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.sp),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12.sp),
               decoration: BoxDecoration(
                 color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(8.sp),
                 border: Border.all(color: Colors.grey.shade300),
               ),
               child: SelectableText(
                 url,
-                style: const TextStyle(fontSize: 12, fontFamily: 'monospace'),
+                style: TextStyle(fontSize: 12.sp, fontFamily: 'monospace'),
               ),
             ),
           ],
@@ -273,7 +276,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Upload File lên Supabase'),
+        title: Text('Upload File lên Supabase'),
         backgroundColor: AppColors.primary_600,
         foregroundColor: Colors.white,
       ),
@@ -281,7 +284,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
         children: [
           // Bucket name input
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0.sp),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -291,15 +294,15 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
                     labelText: 'Bucket Name',
                     hintText: 'Nhập tên bucket (ví dụ: uploads, images)',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.sp),
                     ),
-                    prefixIcon: const Icon(Icons.folder),
+                    prefixIcon: Icon(Icons.folder),
                   ),
                 ),
                 if (_availableBuckets.isNotEmpty) ...[
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.sp),
                   Wrap(
-                    spacing: 8,
+                    spacing: 8.sp,
                     children: _availableBuckets
                         .map(
                           (bucket) => ActionChip(
@@ -327,44 +330,44 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
 
           // Upload buttons
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: EdgeInsets.symmetric(horizontal: 16.0.sp),
             child: Row(
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: _isLoading ? null : _pickAndUploadFile,
-                    icon: const Icon(Icons.upload_file),
-                    label: const Text('Chọn File'),
+                    icon: Icon(Icons.upload_file),
+                    label: Text('Chọn File'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary_600,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(vertical: 12.sp),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.sp),
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: _isLoading ? null : _pickAndUploadImage,
-                    icon: const Icon(Icons.photo_library),
-                    label: const Text('Chọn Ảnh'),
+                    icon: Icon(Icons.photo_library),
+                    label: Text('Chọn Ảnh'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(vertical: 12.sp),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.sp),
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: _isLoading ? null : _takePhotoAndUpload,
-                    icon: const Icon(Icons.camera_alt),
-                    label: const Text('Chụp Ảnh'),
+                    icon: Icon(Icons.camera_alt),
+                    label: Text('Chụp Ảnh'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(vertical: 12.sp),
                     ),
                   ),
                 ),
@@ -374,27 +377,27 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
 
           // Loading indicator
           if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.all(16.0),
+            Padding(
+              padding: EdgeInsets.all(16.0.sp),
               child: LoadingIndicator(),
             ),
 
           // Error message
           if (_errorMessage != null)
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0.sp),
               child: Card(
                 color: Colors.red.shade50,
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: EdgeInsets.all(12.0.sp),
                   child: Row(
                     children: [
-                      const Icon(Icons.error, color: Colors.red),
-                      const SizedBox(width: 8),
+                      Icon(Icons.error, color: Colors.red),
+                      SizedBox(width: 8.sp),
                       Expanded(
                         child: Text(
                           _errorMessage!,
-                          style: const TextStyle(color: Colors.red),
+                          style: TextStyle(color: Colors.red),
                         ),
                       ),
                     ],
@@ -406,26 +409,26 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
           // Uploaded files list
           Expanded(
             child: _uploadedFiles.isEmpty
-                ? const Center(
+                ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.cloud_upload, size: 80, color: Colors.grey),
-                        SizedBox(height: 16),
+                        Icon(Icons.cloud_upload, size: 80.sp, color: Colors.grey),
+                        SizedBox(height: 16.sp),
                         Text(
                           'Chưa có file nào được upload',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                          style: TextStyle(fontSize: 16.sp, color: Colors.grey),
                         ),
                       ],
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16.sp),
                     itemCount: _uploadedFiles.length,
                     itemBuilder: (context, index) {
                       final file = _uploadedFiles[index];
                       return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
+                        margin: EdgeInsets.only(bottom: 12.sp),
                         child: ListTile(
                           leading: CircleAvatar(
                             backgroundColor: AppColors.primary_600,
@@ -445,7 +448,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
                               Text(_formatFileSize(file.size)),
                               Text(
                                 'Uploaded: ${file.uploadedAt.hour}:${file.uploadedAt.minute.toString().padLeft(2, '0')}',
-                                style: const TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 12.sp),
                               ),
                             ],
                           ),
@@ -453,7 +456,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.copy, size: 20),
+                                icon: Icon(Icons.copy, size: 20.sp),
                                 tooltip: 'Copy URL',
                                 onPressed: () async {
                                   // Copy URL to clipboard
@@ -478,14 +481,14 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
                                 },
                               ),
                               IconButton(
-                                icon: const Icon(Icons.link, size: 20),
+                                icon: Icon(Icons.link, size: 20.sp),
                                 tooltip: 'Xem URL',
                                 onPressed: () {
                                   // Show full URL
                                   showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(
-                                      title: const Text('Public URL'),
+                                      title: Text('Public URL'),
                                       content: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         crossAxisAlignment:
@@ -493,22 +496,22 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
                                         children: [
                                           Text(
                                             file.name,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          const SizedBox(height: 12),
+                                          SizedBox(height: 12.sp),
                                           Container(
-                                            padding: const EdgeInsets.all(12),
+                                            padding: EdgeInsets.all(12.sp),
                                             decoration: BoxDecoration(
                                               color: Colors.grey.shade100,
                                               borderRadius:
-                                                  BorderRadius.circular(8),
+                                                  BorderRadius.circular(8.sp),
                                             ),
                                             child: SelectableText(
                                               file.url,
-                                              style: const TextStyle(
-                                                fontSize: 12,
+                                              style: TextStyle(
+                                                fontSize: 12.sp,
                                                 fontFamily: 'monospace',
                                               ),
                                             ),

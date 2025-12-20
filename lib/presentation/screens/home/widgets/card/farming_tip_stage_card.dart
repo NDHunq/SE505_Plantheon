@@ -84,7 +84,7 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
               child: Row(
-                // spacing: 16, // Row does not have spacing, use SizedBox
+                // spacing: 16.sp, // Row does not have spacing, use SizedBox
                 children: [
                   CachedNetworkImage(
                     imageUrl: widget.imageUrl,
@@ -107,7 +107,7 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                           child: SizedBox(
                             width: 16.sp,
                             height: 16.sp,
-                            child: const LoadingIndicator(),
+                            child: LoadingIndicator(),
                           ),
                         ),
                       ),
@@ -118,7 +118,7 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                         width: 60.sp,
                         height: 60.sp,
                         color: AppColors.primary_50,
-                        child: const Icon(
+                        child: Icon(
                           Icons.image_not_supported,
                           color: AppColors.primary_400,
                         ),
@@ -250,7 +250,7 @@ class _SubGuideStageSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(color: AppColors.white),
+      decoration: BoxDecoration(color: AppColors.white),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -366,7 +366,7 @@ class _BlogCard extends StatelessWidget {
                 color: coverImageUrl.isEmpty ? AppColors.primary_50 : null,
               ),
               child: coverImageUrl.isEmpty
-                  ? const Icon(
+                  ? Icon(
                       Icons.image_not_supported,
                       color: AppColors.primary_400,
                     )

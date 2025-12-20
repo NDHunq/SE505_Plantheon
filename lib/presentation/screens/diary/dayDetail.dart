@@ -97,22 +97,9 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
     // Gọi callback để cập nhật title
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.onTitleChange != null) {
-        final monthNames = [
-          'Tháng 1',
-          'Tháng 2',
-          'Tháng 3',
-          'Tháng 4',
-          'Tháng 5',
-          'Tháng 6',
-          'Tháng 7',
-          'Tháng 8',
-          'Tháng 9',
-          'Tháng 10',
-          'Tháng 11',
-          'Tháng 12',
-        ];
-        final monthName = monthNames[selectedMonth - 1];
-        widget.onTitleChange!('$selectedDay $monthName $selectedYear');
+        final formattedDate =
+            '${selectedDay.toString().padLeft(2, '0')}/${selectedMonth.toString().padLeft(2, '0')}/$selectedYear';
+        widget.onTitleChange!(formattedDate);
       }
     });
   }
@@ -201,11 +188,11 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.95,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+            topLeft: Radius.circular(20.sp),
+            topRight: Radius.circular(20.sp),
           ),
         ),
         child: AddNewScreen(initialDate: selectedDate),
@@ -255,7 +242,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
     ];
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: EdgeInsets.symmetric(vertical: 16.sp),
       child: Column(
         children: [
           // Weekdays
@@ -266,8 +253,8 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                 child: Center(
                   child: Text(
                     label,
-                    style: const TextStyle(
-                      fontSize: 14,
+                    style: TextStyle(
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -275,7 +262,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
               );
             }).toList(),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.sp),
           // Dates
           Row(
             children: weekDates.map((d) {
@@ -327,43 +314,28 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
 
                       // Cập nhật title khi chọn ngày khác
                       if (widget.onTitleChange != null) {
-                        final monthNames = [
-                          'Tháng 1',
-                          'Tháng 2',
-                          'Tháng 3',
-                          'Tháng 4',
-                          'Tháng 5',
-                          'Tháng 6',
-                          'Tháng 7',
-                          'Tháng 8',
-                          'Tháng 9',
-                          'Tháng 10',
-                          'Tháng 11',
-                          'Tháng 12',
-                        ];
-                        final monthName = monthNames[selectedMonth - 1];
-                        widget.onTitleChange!(
-                          '$selectedDay $monthName $selectedYear',
-                        );
+                        final formattedDate =
+                            '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+                        widget.onTitleChange!(formattedDate);
                       }
                     },
                     child: Container(
-                      width: 32,
-                      height: 32,
+                      width: 32.sp,
+                      height: 32.sp,
                       decoration: BoxDecoration(
                         color: isSelected ? Colors.green : Colors.transparent,
                         shape: BoxShape.circle,
                         border: isSelected
                             ? null
                             : (isToday
-                                  ? Border.all(color: Colors.green, width: 2)
+                                  ? Border.all(color: Colors.green, width: 2.sp)
                                   : null),
                       ),
                       child: Center(
                         child: Text(
                           '${d.day}',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             fontWeight: isSelected
                                 ? FontWeight.bold
                                 : FontWeight.normal,
@@ -395,31 +367,31 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
         }
 
         return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          margin: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 8.sp),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Cả ngày',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.sp),
               ...allDayActivities.map((activity) {
                 final activityColor = _getColorByType(activity.type);
                 return GestureDetector(
                   onTap: () => _showEditActivityBottomSheet(activity),
                   child: Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
+                    margin: EdgeInsets.only(bottom: 8.sp),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.sp,
+                      vertical: 10.sp,
                     ),
                     decoration: BoxDecoration(
                       color: activityColor.shade100,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.sp),
                       border: Border.all(
                         color: activityColor.shade300,
-                        width: 1,
+                        width: 1.sp,
                       ),
                     ),
                     child: Row(
@@ -428,8 +400,8 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                         Expanded(
                           child: Text(
                             activity.title,
-                            style: const TextStyle(
-                              fontSize: 14,
+                            style: TextStyle(
+                              fontSize: 12.sp,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -439,15 +411,15 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                             Text(
                               _getTypeDisplayText(activity.type),
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 10.sp,
                                 fontWeight: FontWeight.w500,
                                 color: activityColor.shade700,
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8.sp),
                             Icon(
                               Icons.arrow_forward_ios,
-                              size: 14,
+                              size: 14.sp,
                               color: activityColor.shade700,
                             ),
                           ],
@@ -570,10 +542,10 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
     final eventPositions = _calculateEventPositions(events);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: EdgeInsets.symmetric(horizontal: 16.sp),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final double availableWidth = constraints.maxWidth - 50;
+          final double availableWidth = constraints.maxWidth - 50.sp;
 
           return SingleChildScrollView(
             child: Column(
@@ -585,7 +557,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                     children: [
                       // Cột giờ bên trái
                       SizedBox(
-                        width: 50,
+                        width: 50.sp,
                         child: Column(
                           children: List.generate(25, (i) {
                             final label = '${i.toString().padLeft(2, '0')}:00';
@@ -595,8 +567,8 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                                 alignment: Alignment.topLeft,
                                 child: Text(
                                   label,
-                                  style: const TextStyle(
-                                    fontSize: 12,
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
                                     color: Colors.grey,
                                   ),
                                 ),
@@ -615,10 +587,10 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                               final double top = i * hourHeight;
                               return Positioned(
                                 top: top,
-                                left: 0,
-                                right: 0,
+                                left: 0.sp,
+                                right: 0.sp,
                                 child: Container(
-                                  height: 1,
+                                  height: 1.sp,
                                   color: Colors.grey.shade300,
                                 ),
                               );
@@ -642,7 +614,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                                 width: widthFraction * availableWidth,
                                 height: height,
                                 child: Padding(
-                                  padding: const EdgeInsets.only(right: 2.0),
+                                  padding: EdgeInsets.only(right: 2.0.sp),
                                   child: _buildEventCard(e),
                                 ),
                               );
@@ -654,7 +626,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                   ),
                 ),
                 // Thêm padding dưới cùng để đẩy nội dung lên
-                const SizedBox(height: 100),
+                SizedBox(height: 100.sp),
               ],
             ),
           );
@@ -844,12 +816,12 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.95,
-        decoration: const BoxDecoration(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+            topLeft: Radius.circular(20.sp),
+            topRight: Radius.circular(20.sp),
           ),
         ),
         child: EditViewScreen(contentWidget: contentWidget),
@@ -964,81 +936,81 @@ extension DayDetailExtension on _DayDetailScreenState {
         //   MaterialPageRoute(builder: (context) => Navigation(tab: index)),
         // );
       },
-      height: 56,
+      height: 56.sp,
       indicatorColor: Colors.transparent,
       destinations: [
         NavigationDestination(
           selectedIcon: Padding(
-            padding: const EdgeInsets.only(top: 3),
+            padding: EdgeInsets.only(top: 3.sp),
             child: SvgPicture.asset(
               AppVectors.homeSolid,
-              height: 23,
-              width: 23,
+              height: 23.sp,
+              width: 23.sp,
             ),
           ),
           icon: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
+            padding: EdgeInsets.only(top: 20.0.sp),
             child: SvgPicture.asset(
               AppVectors.homeStroke,
-              height: 23,
-              width: 23,
+              height: 23.sp,
+              width: 23.sp,
             ),
           ),
           label: '',
         ),
         NavigationDestination(
           selectedIcon: Padding(
-            padding: const EdgeInsets.only(top: 3),
+            padding: EdgeInsets.only(top: 3.sp),
             child: SvgPicture.asset(
               AppVectors.diarySolid,
-              height: 23,
-              width: 23,
+              height: 23.sp,
+              width: 23.sp,
             ),
           ),
           icon: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
+            padding: EdgeInsets.only(top: 20.0.sp),
             child: SvgPicture.asset(
               AppVectors.diaryStroke,
-              height: 23,
-              width: 23,
+              height: 23.sp,
+              width: 23.sp,
             ),
           ),
           label: '',
         ),
         NavigationDestination(
           selectedIcon: Padding(
-            padding: const EdgeInsets.only(top: 3),
+            padding: EdgeInsets.only(top: 3.sp),
             child: SvgPicture.asset(
               AppVectors.communitySolid,
-              height: 23,
-              width: 23,
+              height: 23.sp,
+              width: 23.sp,
             ),
           ),
           icon: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
+            padding: EdgeInsets.only(top: 20.0.sp),
             child: SvgPicture.asset(
               AppVectors.communityStroke,
-              height: 23,
-              width: 23,
+              height: 23.sp,
+              width: 23.sp,
             ),
           ),
           label: '',
         ),
         NavigationDestination(
           selectedIcon: Padding(
-            padding: const EdgeInsets.only(top: 3),
+            padding: EdgeInsets.only(top: 3.sp),
             child: SvgPicture.asset(
               AppVectors.accountSolid,
-              height: 23,
-              width: 23,
+              height: 23.sp,
+              width: 23.sp,
             ),
           ),
           icon: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
+            padding: EdgeInsets.only(top: 20.0.sp),
             child: SvgPicture.asset(
               AppVectors.accountStroke,
-              height: 23,
-              width: 23,
+              height: 23.sp,
+              width: 23.sp,
             ),
           ),
           label: '',

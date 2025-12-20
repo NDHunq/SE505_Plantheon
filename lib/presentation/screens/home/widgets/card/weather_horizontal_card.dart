@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/enums/weather_type.dart';
@@ -37,12 +39,12 @@ class WeatherHorizontalCard extends StatelessWidget {
         break;
     }
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.0),
+      padding: EdgeInsets.symmetric(horizontal: 8.0.sp),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(date, style: AppTextStyles.s16Medium(color: AppColors.white)),
-          SvgPicture.asset(weatherAsset, width: 40, height: 40),
+          SvgPicture.asset(weatherAsset, width: 40.sp, height: 40.sp),
           Text(
             "$temperature°C",
             style: AppTextStyles.s16Medium(color: AppColors.white),

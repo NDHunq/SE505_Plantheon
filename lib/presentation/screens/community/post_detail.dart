@@ -75,7 +75,11 @@ class _PostDetailViewState extends State<PostDetailView> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: SvgPicture.asset(AppVectors.arrowBack, width: 28, height: 28),
+          icon: SvgPicture.asset(
+            AppVectors.arrowBack,
+            width: 28.sp,
+            height: 28.sp,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -143,7 +147,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                             SizedBox(width: 4.sp),
                             Container(
                               padding: EdgeInsets.all(2.sp),
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 color: Colors.orange,
                                 shape: BoxShape.circle,
                               ),
@@ -232,12 +236,12 @@ class _PostDetailViewState extends State<PostDetailView> {
                   },
                   itemBuilder: (ctx) => [
                     if (state.post.isMyPost)
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'delete',
                         child: Row(
                           children: [
                             Icon(Icons.delete, color: Colors.red),
-                            SizedBox(width: 8),
+                            SizedBox(width: 8.sp),
                             Text(
                               'Xóa bài viết',
                               style: TextStyle(color: Colors.red),
@@ -245,12 +249,12 @@ class _PostDetailViewState extends State<PostDetailView> {
                           ],
                         ),
                       ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'report',
                       child: Row(
                         children: [
                           Icon(Icons.flag_outlined),
-                          SizedBox(width: 8),
+                          SizedBox(width: 8.sp),
                           Text('Báo cáo'),
                         ],
                       ),
@@ -303,9 +307,9 @@ class _PostDetailViewState extends State<PostDetailView> {
                           '${post.likeNumber} lượt thích',
                           style: AppTextStyles.s12Regular(),
                         ),
-                        const Spacer(),
+                        Spacer(),
                         Text(
-                          '${post.commentNumber} bình luận',
+                          '${post.commentList?.length ?? post.commentNumber} bình luận',
                           style: AppTextStyles.s12Regular(),
                         ),
                         SizedBox(width: 16.sp),
@@ -578,7 +582,11 @@ class _PostDetailViewState extends State<PostDetailView> {
                 padding: EdgeInsets.only(left: 40.sp, top: 4.sp, bottom: 4.sp),
                 child: Row(
                   children: [
-                    Container(width: 24.sp, height: 1, color: Colors.grey[400]),
+                    Container(
+                      width: 24.sp,
+                      height: 1.sp,
+                      color: Colors.grey[400],
+                    ),
                     SizedBox(width: 8.sp),
                     Text(
                       isExpanded
@@ -598,7 +606,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                 ),
               ),
             ),
-            if (isExpanded)
+            if (isExpanded && depth < 1)
               Column(
                 children: directReplies.map((reply) {
                   // Recursively build nested replies
@@ -680,7 +688,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                   children: List.generate(
                     imageLinks.length,
                     (index) => AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
+                      duration: Duration(milliseconds: 300),
                       margin: EdgeInsets.symmetric(horizontal: 3.sp),
                       width: page == index ? 20.sp : 8.sp,
                       height: 8.sp,
@@ -707,7 +715,7 @@ class _PostDetailViewState extends State<PostDetailView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 6.0),
+            padding: EdgeInsets.only(top: 6.0.sp),
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -794,12 +802,12 @@ class _PostDetailViewState extends State<PostDetailView> {
                               }
                             },
                             itemBuilder: (ctx) => [
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'report',
                                 child: Row(
                                   children: [
-                                    Icon(Icons.flag_outlined, size: 16),
-                                    SizedBox(width: 8),
+                                    Icon(Icons.flag_outlined, size: 16.sp),
+                                    SizedBox(width: 8.sp),
                                     Text('Báo cáo'),
                                   ],
                                 ),
@@ -820,7 +828,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                 ),
                 SizedBox(height: 4.sp),
                 Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                  padding: EdgeInsets.only(left: 8.0.sp),
                   child: Row(
                     children: [
                       Text(
@@ -860,17 +868,18 @@ class _PostDetailViewState extends State<PostDetailView> {
                         ),
                       ),
                       SizedBox(width: 12.sp),
-                      GestureDetector(
-                        onTap: () {
-                          _handleReply(comment.fullName, comment.id);
-                        },
-                        child: Text(
-                          'Trả lời',
-                          style: AppTextStyles.s12SemiBold(
-                            color: Colors.grey[600],
+                      if (isTopLevel)
+                        GestureDetector(
+                          onTap: () {
+                            _handleReply(comment.fullName, comment.id);
+                          },
+                          child: Text(
+                            'Trả lời',
+                            style: AppTextStyles.s12SemiBold(
+                              color: Colors.grey[600],
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),

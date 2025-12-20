@@ -23,4 +23,3 @@ class PlantBloc extends Bloc<PlantEvent, PlantState> {
     }
   }
 }
-

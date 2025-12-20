@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -108,18 +110,46 @@ class _MonthScreenState extends State<MonthScreen> {
         children: [
           Scaffold(
             body: Padding(
-              padding: const EdgeInsets.all(AppConstraints.mainPadding),
+              padding: EdgeInsets.all(AppConstraints.mainPadding.sp),
               child: Column(
                 children: [
                   Row(
                     children: [
-                      Expanded(child: Center(child: Text("T2"))),
-                      Expanded(child: Center(child: Text("T3"))),
-                      Expanded(child: Center(child: Text("T4"))),
-                      Expanded(child: Center(child: Text("T5"))),
-                      Expanded(child: Center(child: Text("T6"))),
-                      Expanded(child: Center(child: Text("T7"))),
-                      Expanded(child: Center(child: Text("CN"))),
+                      Expanded(
+                        child: Center(
+                          child: Text("T2", style: TextStyle(fontSize: 12.sp)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text("T3", style: TextStyle(fontSize: 12.sp)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text("T4", style: TextStyle(fontSize: 12.sp)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text("T5", style: TextStyle(fontSize: 12.sp)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text("T6", style: TextStyle(fontSize: 12.sp)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text("T7", style: TextStyle(fontSize: 12.sp)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text("CN", style: TextStyle(fontSize: 12.sp)),
+                        ),
+                      ),
                     ],
                   ),
                   const Divider(),
@@ -242,14 +272,14 @@ class ADayWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(4),
+        padding: EdgeInsets.all(4.sp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Số ngày - cố định ở đầu
             Container(
-              width: 28,
-              height: 28,
+              width: 28.sp,
+              height: 28.sp,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: isToday ? AppColors.primary_600 : Colors.transparent,
@@ -260,11 +290,11 @@ class ADayWidget extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
                   color: isToday ? Colors.white : Colors.black,
-                  fontSize: 18,
+                  fontSize: 16.sp,
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.sp),
             // Phần tasks - co giãn để lấp đầy không gian còn lại
             Expanded(
               child: SizedBox(
@@ -275,7 +305,7 @@ class ADayWidget extends StatelessWidget {
             // Gạch dưới - cố định ở cuối
             Container(
               width: double.infinity,
-              height: 1,
+              height: 1.sp,
               color: Colors.grey.withOpacity(0.3),
             ),
           ],
@@ -328,18 +358,18 @@ class ArrayTaskWidget extends StatelessWidget {
           final Color bgColor = _getColorByType(activity.type);
           return Container(
             width: double.infinity,
-            height: 8,
-            margin: const EdgeInsets.only(top: 1),
-            padding: const EdgeInsets.symmetric(horizontal: 2),
+            height: 8.sp,
+            margin: EdgeInsets.only(top: 1.sp),
+            padding: EdgeInsets.symmetric(horizontal: 2.sp),
             decoration: BoxDecoration(
               color: bgColor,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(4.sp),
             ),
             alignment: Alignment.center,
             child: Text(
               activity.title,
-              style: const TextStyle(
-                fontSize: 8,
+              style: TextStyle(
+                fontSize: 8.sp,
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
               ),
@@ -353,10 +383,10 @@ class ArrayTaskWidget extends StatelessWidget {
         if (remaining > 0)
           Container(
             width: double.infinity,
-            margin: const EdgeInsets.only(top: 2),
+            margin: EdgeInsets.only(top: 2.sp),
             child: Text(
               "+$remaining",
-              style: const TextStyle(fontSize: 10, color: Colors.grey),
+              style: TextStyle(fontSize: 10.sp, color: Colors.grey),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               softWrap: false,

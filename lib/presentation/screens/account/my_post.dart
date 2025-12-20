@@ -137,7 +137,11 @@ class _MyPostView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12.sp),
                         color: Colors.grey[300],
                       ),
-                      child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
+                      child: Icon(
+                        Icons.eco,
+                        size: 100.sp,
+                        color: AppColors.primary_main,
+                      ),
                     );
                   },
                 ),
@@ -156,7 +160,7 @@ class _MyPostView extends StatelessWidget {
                   children: List.generate(
                     imageLinks.length,
                     (index) => AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
+                      duration: Duration(milliseconds: 300),
                       margin: EdgeInsets.symmetric(horizontal: 3.sp),
                       width: page == index ? 20.sp : 8.sp,
                       height: 8.sp,
@@ -233,7 +237,7 @@ class _MyPostView extends StatelessWidget {
                             SizedBox(width: 4.sp),
                             Container(
                               padding: EdgeInsets.all(2.sp),
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 color: Colors.orange,
                                 shape: BoxShape.circle,
                               ),
@@ -288,12 +292,12 @@ class _MyPostView extends StatelessWidget {
                       }
                     },
                     itemBuilder: (context) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'delete',
                         child: Row(
                           children: [
                             Icon(Icons.delete, color: Colors.red),
-                            SizedBox(width: 8),
+                            SizedBox(width: 8.sp),
                             Text(
                               'Xóa bài viết',
                               style: TextStyle(color: Colors.red),
@@ -339,7 +343,7 @@ class _MyPostView extends StatelessWidget {
                   ),
                   SizedBox(width: 4.sp),
                   Text('$likes lượt thích', style: AppTextStyles.s12Regular()),
-                  const Spacer(),
+                  Spacer(),
                   Text(
                     '$comments bình luận',
                     style: AppTextStyles.s12Regular(),

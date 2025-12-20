@@ -84,7 +84,7 @@ class _ImageComparisonScreenState extends State<ImageComparisonScreen> {
                               ),
                       ),
                     ),
-                    Container(height: 2, color: AppColors.white),
+                    Container(height: 2.sp, color: AppColors.white),
                     // Bottom half - Disease reference images carousel
                     Expanded(
                       child: Container(
@@ -127,8 +127,8 @@ class _ImageComparisonScreenState extends State<ImageComparisonScreen> {
                             if (widget.diseaseImageUrls.length > 1)
                               Positioned(
                                 bottom: 16.sp,
-                                left: 0,
-                                right: 0,
+                                left: 0.sp,
+                                right: 0.sp,
                                 child: Center(
                                   child: Container(
                                     padding: EdgeInsets.symmetric(

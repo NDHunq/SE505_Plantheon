@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
@@ -103,7 +105,7 @@ class _FarmingTipsState extends State<FarmingTips> {
                   title: 'Mẹo canh tác',
                   actions: [
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.menu_rounded,
                         color: AppColors.primary_700,
                       ),
@@ -112,13 +114,13 @@ class _FarmingTipsState extends State<FarmingTips> {
                   ],
                 ),
                 body: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  padding: EdgeInsets.symmetric(vertical: 16.0.sp),
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          padding: EdgeInsets.symmetric(horizontal: 16.0.sp),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -129,7 +131,7 @@ class _FarmingTipsState extends State<FarmingTips> {
                                 ),
                               ),
                               Row(
-                                spacing: 16,
+                                spacing: 16.sp,
                                 children: [
                                   BasicDatepicker(
                                     initialDate: _sowingDate,
@@ -141,7 +143,7 @@ class _FarmingTipsState extends State<FarmingTips> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 24),
+                              SizedBox(height: 24.sp),
                             ],
                           ),
                         ),
@@ -149,8 +151,8 @@ class _FarmingTipsState extends State<FarmingTips> {
                           builder: (context, state) {
                             if (_selectedPlant == null) {
                               return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 16.0.sp,
                                 ),
                                 child: Text(
                                   'Hãy chọn cây trồng để xem lộ trình chăm sóc.',
@@ -167,8 +169,8 @@ class _FarmingTipsState extends State<FarmingTips> {
 
                             if (state is GuideStageError) {
                               return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 16.0.sp,
                                 ),
                                 child: Text(
                                   'Không tải được lộ trình: ${state.message}',
@@ -182,8 +184,8 @@ class _FarmingTipsState extends State<FarmingTips> {
                             if (state is GuideStageLoaded) {
                               if (state.stages.isEmpty) {
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16.0.sp,
                                   ),
                                   child: Text(
                                     'Chưa có dữ liệu lộ trình cho cây này.',

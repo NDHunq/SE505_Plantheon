@@ -15,15 +15,15 @@ class PlantsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 12.0),
+      padding: EdgeInsets.only(right: 12.0.sp),
       child: Column(
         spacing: 4.sp,
         children: [
           Container(
-            width: 87,
-            height: 87,
+            width: 87.sp,
+            height: 87.sp,
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.text_color_main, width: 1),
+              border: Border.all(color: AppColors.text_color_main, width: 1.sp),
               borderRadius: BorderRadius.circular(50.sp),
             ),
             child: ClipRRect(
@@ -35,15 +35,15 @@ class PlantsCard extends StatelessWidget {
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) => Icon(
                               Icons.local_florist,
-                              size: 36,
+                              size: 36.sp,
                               color: AppColors.primary_main,
                             ),
                             loadingBuilder: (context, child, loadingProgress) {
                               if (loadingProgress == null) return child;
                               return Center(
                                 child: SizedBox(
-                                  width: 24,
-                                  height: 24,
+                                  width: 24.sp,
+                                  height: 24.sp,
                                   child: LoadingIndicator(),
                                 ),
                               );
@@ -54,26 +54,26 @@ class PlantsCard extends StatelessWidget {
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Center(
                               child: SizedBox(
-                                width: 24,
-                                height: 24,
+                                width: 24.sp,
+                                height: 24.sp,
                                 child: LoadingIndicator(),
                               ),
                             ),
                             errorWidget: (context, url, error) => Icon(
                               Icons.local_florist,
-                              size: 36,
+                              size: 36.sp,
                               color: AppColors.primary_main,
                             ),
                           ))
                   : Icon(
                       Icons.local_florist,
-                      size: 36,
+                      size: 36.sp,
                       color: AppColors.primary_main,
                     ),
             ),
           ),
           SizedBox(
-            width: 80,
+            width: 80.sp,
             child: Text(
               name,
               style: AppTextStyles.s12Medium(color: AppColors.primary_900),

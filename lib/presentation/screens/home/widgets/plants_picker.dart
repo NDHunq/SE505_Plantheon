@@ -61,7 +61,7 @@ class _PlantsPickerState extends State<PlantsPicker> {
               SizedBox(width: 16.sp, height: 16.sp, child: LoadingIndicator()),
               Text(
                 'Đang tải...',
-                style: TextStyle(color: AppColors.text_color_200, fontSize: 14),
+                style: TextStyle(color: AppColors.text_color_200, fontSize: 14.sp),
               ),
             ],
           ),
@@ -83,7 +83,7 @@ class _PlantsPickerState extends State<PlantsPicker> {
 
   Widget _buildField(BuildContext context, List<PlantEntity> plants) {
     return InkWell(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(12.sp),
       onTap: () async {
         final PlantEntity? picked = await showModalBottomSheet<PlantEntity>(
           context: context,
@@ -263,7 +263,7 @@ class _PlantPickerSheetState extends State<_PlantPickerSheet> {
             TextField(
               onChanged: _filter,
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: Icon(Icons.search),
                 hintText: 'Tìm kiếm',
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 12.sp,
@@ -271,7 +271,7 @@ class _PlantPickerSheetState extends State<_PlantPickerSheet> {
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.sp),
-                  borderSide: const BorderSide(color: AppColors.text_color_100),
+                  borderSide: BorderSide(color: AppColors.text_color_100),
                 ),
               ),
             ),
@@ -389,7 +389,7 @@ class _PlantItem extends StatelessWidget {
                     )),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.sp),
           Text(
             plant.name,
             textAlign: TextAlign.center,

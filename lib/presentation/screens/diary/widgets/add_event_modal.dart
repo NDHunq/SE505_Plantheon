@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:toastification/toastification.dart';
 
@@ -62,11 +64,11 @@ class _AddEventModalState extends State<AddEventModal> {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.95,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+          topLeft: Radius.circular(20.sp),
+          topRight: Radius.circular(20.sp),
         ),
       ),
       child: Column(
@@ -86,18 +88,18 @@ class _AddEventModalState extends State<AddEventModal> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.sp),
       decoration: BoxDecoration(
         color: Colors.blue.shade50,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.sp),
+          topRight: Radius.circular(20.sp),
         ),
       ),
       child: Row(
         children: [
-          Icon(Icons.add_circle_outline, color: Colors.blue.shade700, size: 28),
-          const SizedBox(width: 12),
+          Icon(Icons.add_circle_outline, color: Colors.blue.shade700, size: 28.sp),
+          SizedBox(width: 12.sp),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,14 +107,14 @@ class _AddEventModalState extends State<AddEventModal> {
                 Text(
                   'Thêm sự kiện mới',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.blue.shade800,
                   ),
                 ),
                 Text(
                   '${_selectedDate?.day}/${_selectedDate?.month}/${_selectedDate?.year}',
-                  style: TextStyle(fontSize: 14, color: Colors.blue.shade600),
+                  style: TextStyle(fontSize: 14.sp, color: Colors.blue.shade600),
                 ),
               ],
             ),
@@ -128,7 +130,7 @@ class _AddEventModalState extends State<AddEventModal> {
 
   Widget _buildForm() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.sp),
       child: Form(
         key: _formKey,
         child: Column(
@@ -148,7 +150,7 @@ class _AddEventModalState extends State<AddEventModal> {
               },
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16.sp),
 
             // Description Field
             _buildTextField(
@@ -159,20 +161,20 @@ class _AddEventModalState extends State<AddEventModal> {
               maxLines: 3,
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16.sp),
 
             // Date Picker
             _buildDatePicker(),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16.sp),
 
             // Time Picker (if not all day)
-            if (!_isAllDay) ...[_buildTimePicker(), const SizedBox(height: 16)],
+            if (!_isAllDay) ...[_buildTimePicker(), SizedBox(height: 16.sp)],
 
             // All Day Toggle
             _buildAllDayToggle(),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16.sp),
 
             // Category Picker
             _buildCategoryPicker(),
@@ -195,9 +197,9 @@ class _AddEventModalState extends State<AddEventModal> {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.sp),
         TextFormField(
           controller: controller,
           maxLines: maxLines,
@@ -206,16 +208,16 @@ class _AddEventModalState extends State<AddEventModal> {
             hintText: hint,
             prefixIcon: Icon(icon, color: Colors.blue.shade600),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.sp),
               borderSide: BorderSide(color: Colors.grey.shade300),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.sp),
               borderSide: BorderSide(color: Colors.grey.shade300),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.blue.shade600, width: 2),
+              borderRadius: BorderRadius.circular(12.sp),
+              borderSide: BorderSide(color: Colors.blue.shade600, width: 2.sp),
             ),
             filled: true,
             fillColor: Colors.grey.shade50,
@@ -229,27 +231,27 @@ class _AddEventModalState extends State<AddEventModal> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Ngày',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.sp),
         InkWell(
           onTap: _selectDate,
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16.sp),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade300),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.sp),
               color: Colors.grey.shade50,
             ),
             child: Row(
               children: [
                 Icon(Icons.calendar_today, color: Colors.blue.shade600),
-                const SizedBox(width: 12),
+                SizedBox(width: 12.sp),
                 Text(
                   '${_selectedDate?.day}/${_selectedDate?.month}/${_selectedDate?.year}',
-                  style: const TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 16.sp),
                 ),
                 const Spacer(),
                 Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
@@ -265,27 +267,27 @@ class _AddEventModalState extends State<AddEventModal> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Thời gian',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.sp),
         InkWell(
           onTap: _selectTime,
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16.sp),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade300),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.sp),
               color: Colors.grey.shade50,
             ),
             child: Row(
               children: [
                 Icon(Icons.access_time, color: Colors.blue.shade600),
-                const SizedBox(width: 12),
+                SizedBox(width: 12.sp),
                 Text(
                   _selectedTime?.format(context) ?? 'Chọn thời gian',
-                  style: const TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 16.sp),
                 ),
                 const Spacer(),
                 Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
@@ -309,7 +311,7 @@ class _AddEventModalState extends State<AddEventModal> {
           },
           activeColor: Colors.blue.shade600,
         ),
-        const Text('Cả ngày', style: TextStyle(fontSize: 16)),
+        Text('Cả ngày', style: TextStyle(fontSize: 16.sp)),
       ],
     );
   }
@@ -318,26 +320,26 @@ class _AddEventModalState extends State<AddEventModal> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Danh mục',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.sp),
         DropdownButtonFormField<String>(
           value: _selectedCategory,
           decoration: InputDecoration(
             prefixIcon: Icon(Icons.category, color: Colors.blue.shade600),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.sp),
               borderSide: BorderSide(color: Colors.grey.shade300),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.sp),
               borderSide: BorderSide(color: Colors.grey.shade300),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.blue.shade600, width: 2),
+              borderRadius: BorderRadius.circular(12.sp),
+              borderSide: BorderSide(color: Colors.blue.shade600, width: 2.sp),
             ),
             filled: true,
             fillColor: Colors.grey.shade50,
@@ -357,12 +359,12 @@ class _AddEventModalState extends State<AddEventModal> {
 
   Widget _buildActionButtons() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.sp),
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(20.sp),
+          bottomRight: Radius.circular(20.sp),
         ),
       ),
       child: Row(
@@ -371,37 +373,37 @@ class _AddEventModalState extends State<AddEventModal> {
             child: OutlinedButton(
               onPressed: () => Navigator.pop(context),
               style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: 16.sp),
                 side: BorderSide(color: Colors.grey.shade400),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.sp),
                 ),
               ),
-              child: const Text('Hủy', style: TextStyle(fontSize: 16)),
+              child: Text('Hủy', style: TextStyle(fontSize: 16.sp)),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12.sp),
           Expanded(
             flex: 2,
             child: ElevatedButton(
               onPressed: _isLoading ? null : _saveEvent,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue.shade600,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: 16.sp),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.sp),
                 ),
               ),
               child: _isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
+                  ? SizedBox(
+                      width: 20.sp,
+                      height: 20.sp,
                       child: LoadingIndicator(),
                     )
-                  : const Text(
+                  : Text(
                       'Lưu sự kiện',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                       ),

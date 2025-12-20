@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter/services.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/presentation/screens/diary/diary.dart';
@@ -143,27 +145,27 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                         child: Opacity(
                           opacity: _logoAnimation.value,
                           child: Container(
-                            width: 140,
-                            height: 140,
+                            width: 140.sp,
+                            height: 140.sp,
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(35),
+                              borderRadius: BorderRadius.circular(35.sp),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 30,
-                                  offset: const Offset(0, 15),
+                                  blurRadius: 30.sp,
+                                  offset: Offset(0, 15),
                                 ),
                                 BoxShadow(
                                   color: Colors.white.withOpacity(0.2),
-                                  blurRadius: 20,
-                                  offset: const Offset(0, -5),
+                                  blurRadius: 20.sp,
+                                  offset: Offset(0, -5),
                                 ),
                               ],
                             ),
                             child: Icon(
                               Icons.eco,
-                              size: 70,
+                              size: 70.sp,
                               color: Colors.green.shade600,
                             ),
                           ),
@@ -172,7 +174,7 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                     },
                   ),
 
-                  const SizedBox(height: 50),
+                  SizedBox(height: 50.sp),
 
                   // App Name with typing effect
                   AnimatedBuilder(
@@ -185,24 +187,24 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                             Text(
                               'Plantheon',
                               style: TextStyle(
-                                fontSize: 36,
+                                fontSize: 36.sp,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                                 letterSpacing: 3,
                                 shadows: [
                                   Shadow(
                                     color: Colors.black.withOpacity(0.3),
-                                    offset: const Offset(2, 2),
-                                    blurRadius: 4,
+                                    offset: Offset(2, 2),
+                                    blurRadius: 4.sp,
                                   ),
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12.sp),
                             Text(
                               'Nhật ký nông nghiệp thông minh',
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 18.sp,
                                 color: Colors.white.withOpacity(0.9),
                                 fontWeight: FontWeight.w300,
                                 letterSpacing: 1,
@@ -214,7 +216,7 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                     },
                   ),
 
-                  const SizedBox(height: 80),
+                  SizedBox(height: 80.sp),
 
                   // Enhanced Loading Indicator
                   AnimatedBuilder(
@@ -226,20 +228,20 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                           Transform.rotate(
                             angle: _loadingAnimation.value * 2 * 3.14159,
                             child: Container(
-                              width: 60,
-                              height: 60,
+                              width: 60.sp,
+                              height: 60.sp,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: Colors.white.withOpacity(0.3),
-                                  width: 4,
+                                  width: 4.sp,
                                 ),
                               ),
                               child: LoadingIndicator(),
                             ),
                           ),
 
-                          const SizedBox(height: 30),
+                          SizedBox(height: 30.sp),
 
                           // Loading dots animation
                           Row(
@@ -258,14 +260,14 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                                       .abs();
 
                                   return Container(
-                                    margin: const EdgeInsets.symmetric(
-                                      horizontal: 4,
+                                    margin: EdgeInsets.symmetric(
+                                      horizontal: 4.sp,
                                     ),
                                     child: Opacity(
                                       opacity: opacity,
                                       child: Container(
-                                        width: 8,
-                                        height: 8,
+                                        width: 8.sp,
+                                        height: 8.sp,
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           shape: BoxShape.circle,
@@ -282,7 +284,7 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                     },
                   ),
 
-                  const SizedBox(height: 30),
+                  SizedBox(height: 30.sp),
 
                   // Loading Text with fade effect
                   AnimatedBuilder(
@@ -293,7 +295,7 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                         child: Text(
                           'Đang khởi tạo ứng dụng...',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             color: Colors.white.withOpacity(0.8),
                             fontWeight: FontWeight.w300,
                             letterSpacing: 1,

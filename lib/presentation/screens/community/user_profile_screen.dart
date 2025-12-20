@@ -221,7 +221,7 @@ class _UserProfileView extends StatelessWidget {
                           SizedBox(width: 4.sp),
                           Container(
                             padding: EdgeInsets.all(2.sp),
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               color: Colors.orange,
                               shape: BoxShape.circle,
                             ),
@@ -277,12 +277,12 @@ class _UserProfileView extends StatelessWidget {
                   },
                   itemBuilder: (context) => [
                     if (post.isMyPost)
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'delete',
                         child: Row(
                           children: [
                             Icon(Icons.delete, color: Colors.red),
-                            SizedBox(width: 8),
+                            SizedBox(width: 8.sp),
                             Text(
                               'Xóa bài viết',
                               style: TextStyle(color: Colors.red),
@@ -290,12 +290,12 @@ class _UserProfileView extends StatelessWidget {
                           ],
                         ),
                       ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'report',
                       child: Row(
                         children: [
                           Icon(Icons.flag_outlined),
-                          SizedBox(width: 8),
+                          SizedBox(width: 8.sp),
                           Text('Báo cáo'),
                         ],
                       ),
@@ -340,7 +340,7 @@ class _UserProfileView extends StatelessWidget {
                     '${post.likeNumber} lượt thích',
                     style: AppTextStyles.s12Regular(),
                   ),
-                  const Spacer(),
+                  Spacer(),
                   Text(
                     '${post.commentNumber} bình luận',
                     style: AppTextStyles.s12Regular(),

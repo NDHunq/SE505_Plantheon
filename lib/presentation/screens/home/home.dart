@@ -26,7 +26,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return PlantProvider(
       child: ScanHistoryProvider(
-        child: NewsProvider(size: 5, child: const _HomeContent()),
+        child: NewsProvider(size: 5, child: _HomeContent()),
       ),
     );
   }
@@ -79,15 +79,15 @@ class _HomeContentState extends State<_HomeContent> {
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 16.sp),
             child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
+              physics: AlwaysScrollableScrollPhysics(),
               child: Column(
                 children: [
                   WeatherCard(),
                   SizedBox(height: 12.sp),
-                  const PlantSection(),
-                  const HistorySection(),
+                  PlantSection(),
+                  HistorySection(),
                   SizedBox(height: 16.sp),
-                  const NewsSection(),
+                  NewsSection(),
                   SizedBox(height: 30.sp),
                 ],
               ),
