@@ -3,12 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
+import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/data/datasources/complaint_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
 import 'package:se501_plantheon/data/repository/complaint_repository_impl.dart';
+import 'package:se501_plantheon/domain/usecases/complaint/submit_scan_complaint.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/complaint/complaint_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/complaint/complaint_event.dart';
+import 'package:se501_plantheon/presentation/bloc/complaint/complaint_state.dart';
 import 'package:toastification/toastification.dart';
 
 class ReportModal extends StatefulWidget {
@@ -58,15 +62,19 @@ class _ReportModalState extends State<ReportModal> {
     // Capture AuthBloc from parent context BEFORE creating BlocProvider
     final authBloc = context.read<AuthBloc>();
 
+    final repository = ComplaintRepositoryImpl(
+      remoteDataSource: ComplaintRemoteDataSourceImpl(
+        client: http.Client(),
+        baseUrl: ApiConstants.baseUrl,
+        tokenStorage:
+            (authBloc.authRepository as AuthRepositoryImpl).tokenStorage,
+      ),
+    );
+
     return BlocProvider(
       create: (_) => ComplaintBloc(
-        complaintRepository: ComplaintRepositoryImpl(
-          remoteDataSource: ComplaintRemoteDataSource(
-            client: http.Client(),
-            tokenStorage:
-                (authBloc.authRepository as AuthRepositoryImpl).tokenStorage,
-          ),
-        ),
+        submitScanComplaint: SubmitScanComplaint(repository: repository),
+        complaintRepository: repository,
       ),
       child: Builder(
         builder: (context) {

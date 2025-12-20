@@ -392,6 +392,19 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                               ),
                                         ),
                                       ),
+                                      complaintRepository:
+                                          ComplaintRepositoryImpl(
+                                            remoteDataSource:
+                                                ComplaintRemoteDataSourceImpl(
+                                                  client: http.Client(),
+                                                  baseUrl: ApiConstants
+                                                      .diseaseApiUrl,
+                                                  tokenStorage:
+                                                      TokenStorageService(
+                                                        prefs: snapshot.data!,
+                                                      ),
+                                                ),
+                                          ),
                                     ),
                                     child: BlocConsumer<ComplaintBloc, ComplaintState>(
                                       listener: (context, state) {
@@ -978,7 +991,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
             ElevatedButton(
               onPressed: () async {
                 Navigator.of(dialogContext).pop();
-                
+
                 await _submitComplaint(
                   complaintBloc,
                   disease,
