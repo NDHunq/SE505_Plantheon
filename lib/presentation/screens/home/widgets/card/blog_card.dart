@@ -29,7 +29,7 @@ class BlogCard extends StatelessWidget {
         : AssetImage(effectiveImagePath);
 
     return Container(
-      width: 140.sp,
+      width: 160.sp,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.sp),
         border: Border.all(color: AppColors.text_color_50, width: 1.sp),
@@ -37,7 +37,7 @@ class BlogCard extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            width: 140.sp,
+            width: double.infinity,
             height: 114.sp,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.sp),

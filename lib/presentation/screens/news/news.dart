@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,6 +28,7 @@ class News extends StatefulWidget {
 
 class _NewsState extends State<News> {
   final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
   String _selectedFilter = 'Tất cả';
   String _selectedSort = 'Mới nhất';
   String _tempSelectedSort = 'Mới nhất';
@@ -34,6 +36,7 @@ class _NewsState extends State<News> {
   @override
   void dispose() {
     _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -105,41 +108,43 @@ class _NewsState extends State<News> {
       ),
       body: Column(
         children: [
-          // Search Bar
-          Container(
-            padding: EdgeInsets.all(16.sp),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8.sp,
-                  offset: Offset(0, 2.sp),
-                ),
-              ],
-            ),
+          // Search Bar (match Community style with debounce)
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 4.sp),
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
               decoration: BoxDecoration(
-                color: AppColors.text_color_50.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(24.sp),
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(25.sp),
               ),
-              child: TextField(
-                controller: _searchController,
-                onChanged: (_) => setState(() {}),
-                decoration: InputDecoration(
-                  hintText: 'Tìm kiếm tin tức...',
-                  border: InputBorder.none,
-                  hintStyle: AppTextStyles.s14Regular(
-                    color: AppColors.text_color_100,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (value) {
+                        if (_debounce?.isActive ?? false) _debounce!.cancel();
+                        _debounce = Timer(const Duration(milliseconds: 500), () {
+                          // Filter happens client-side from state.news using _searchController.text
+                          if (mounted) setState(() {});
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Tìm kiếm tin tức...',
+                        filled: true,
+                        fillColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        focusColor: Colors.transparent,
+                        border: InputBorder.none,
+                        hintStyle: AppTextStyles.s14Regular(
+                          color: AppColors.text_color_100,
+                        ),
+                      ),
+                    ),
                   ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: AppColors.text_color_200,
-                    size: 20.sp,
-                  ),
-                ),
-                style: AppTextStyles.s14Regular(),
+                  SizedBox(width: 8.sp),
+                  Icon(Icons.search_rounded, color: Colors.grey),
+                ],
               ),
             ),
           ),
@@ -205,13 +210,11 @@ class _NewsState extends State<News> {
                           ),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? AppColors.primary_main
+                                ? AppColors.primary_600
                                 : AppColors.white,
                             borderRadius: BorderRadius.circular(20.sp),
                             border: Border.all(
-                              color: isSelected
-                                  ? AppColors.primary_main
-                                  : AppColors.text_color_50,
+                              color: AppColors.primary_600,
                               width: 1.sp,
                             ),
                           ),
@@ -228,10 +231,10 @@ class _NewsState extends State<News> {
                               ],
                               Text(
                                 filter,
-                                style: AppTextStyles.s12Medium(
+                                style: AppTextStyles.s12SemiBold(
                                   color: isSelected
                                       ? AppColors.white
-                                      : AppColors.text_color_400,
+                                      : AppColors.primary_600,
                                 ),
                               ),
                             ],
@@ -324,6 +327,7 @@ class _NewsState extends State<News> {
                                 fallbackDate:
                                     post.publishedAt ?? post.createdAt,
                                 fallbackContent: post.description ?? '',
+                                isFromFarmingTip: false,
                               ),
                             ),
                           );
@@ -406,8 +410,7 @@ class _NewsState extends State<News> {
                         ),
                       ],
                     ),
-
-                    SizedBox(height: 16.sp),
+                    SizedBox(height: 8.sp),
 
                     // Sort by section
                     Align(
@@ -515,8 +518,6 @@ class _NewsState extends State<News> {
                         ),
                       ],
                     ),
-
-                    SizedBox(height: 16.sp),
                   ],
                 ),
               ),
@@ -533,14 +534,16 @@ class _NewsState extends State<News> {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 10.sp),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.text_color_50 : AppColors.white,
+          color: isSelected ? AppColors.primary_600 : AppColors.white,
           borderRadius: BorderRadius.circular(8.sp),
-          border: Border.all(color: AppColors.text_color_50, width: 1.sp),
+          border: Border.all(color: AppColors.primary_600, width: 1.sp),
         ),
         child: Center(
           child: Text(
             label,
-            style: AppTextStyles.s12Medium(color: AppColors.text_color_400),
+            style: AppTextStyles.s12SemiBold(
+              color: !isSelected ? AppColors.primary_600 : AppColors.white,
+            ),
             textAlign: TextAlign.center,
           ),
         ),

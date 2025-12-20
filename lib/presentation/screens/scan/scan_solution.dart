@@ -31,6 +31,8 @@ import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+
 class ScanSolution extends StatefulWidget {
   final String scanHistoryId;
   const ScanSolution({super.key, required this.scanHistoryId});
@@ -40,9 +42,14 @@ class ScanSolution extends StatefulWidget {
 }
 
 class _ScanSolutionState extends State<ScanSolution> {
+  final FlutterTts _flutterTts = FlutterTts();
+  bool _isSpeaking = false;
+  bool _isLoadingTts = false;
+
   @override
   void initState() {
     super.initState();
+    _initTts();
     print(
       '🚀 ScanSolution: initState called with scanHistoryId: ${widget.scanHistoryId}',
     );
@@ -50,6 +57,175 @@ class _ScanSolutionState extends State<ScanSolution> {
       GetScanHistoryByIdEvent(id: widget.scanHistoryId),
     );
     print('📤 ScanSolution: GetScanHistoryByIdEvent sent to BLoC');
+  }
+
+  Future<void> _initTts() async {
+    await _flutterTts.setLanguage('vi-VN');
+    await _flutterTts.setSpeechRate(0.5); // Tốc độ đọc (0.0 - 1.0)
+    await _flutterTts.setVolume(1.0); // Âm lượng (0.0 - 1.0)
+    await _flutterTts.setPitch(1.0); // Cao độ giọng nói (0.5 - 2.0)
+    await _flutterTts.awaitSpeakCompletion(true);
+
+    _flutterTts.setStartHandler(() {
+      if (!mounted) return;
+      setState(() {
+        _isSpeaking = true;
+        _isLoadingTts = false;
+      });
+    });
+
+    _flutterTts.setCompletionHandler(() {
+      if (!mounted) return;
+      setState(() => _isSpeaking = false);
+    });
+
+    _flutterTts.setCancelHandler(() {
+      if (!mounted) return;
+      setState(() => _isSpeaking = false);
+    });
+
+    _flutterTts.setErrorHandler((message) {
+      print('TTS error: $message');
+      if (!mounted) return;
+      setState(() => _isSpeaking = false);
+    });
+  }
+
+  Future<void> _handleListenTap(String markdownContent) async {
+    if (_isSpeaking) {
+      await _flutterTts.stop();
+      return;
+    }
+
+    var textToSpeak = _stripMarkdownTags(markdownContent);
+    print('🗣️ TTS: Text length: ${textToSpeak.length} characters');
+
+    // Only read first 300 characters
+    if (textToSpeak.length > 300) {
+      textToSpeak = textToSpeak.substring(0, 300);
+      print('🗣️ TTS: Text truncated to 300 characters');
+    }
+
+    if (textToSpeak.isEmpty) return;
+
+    setState(() => _isLoadingTts = true);
+
+    try {
+      // Split long text into chunks to avoid Android TTS limitations
+      final chunks = _splitTextIntoChunks(textToSpeak, maxLength: 4000);
+      print('🗣️ TTS: Split into ${chunks.length} chunks');
+
+      for (int i = 0; i < chunks.length; i++) {
+        if (!_isSpeaking && i > 0) break; // Stop if user cancelled
+        print('🗣️ TTS: Speaking chunk ${i + 1}/${chunks.length}');
+        await _flutterTts.speak(chunks[i]);
+      }
+
+      // Fallback: Reset loading state after a short delay if startHandler wasn't called
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted && _isLoadingTts) {
+        setState(() {
+          _isLoadingTts = false;
+          _isSpeaking = true;
+        });
+      }
+    } catch (e) {
+      print('TTS speak error: $e');
+      if (mounted) {
+        setState(() => _isLoadingTts = false);
+      }
+    }
+  }
+
+  List<String> _splitTextIntoChunks(String text, {int maxLength = 4000}) {
+    if (text.length <= maxLength) return [text];
+
+    final chunks = <String>[];
+    var currentChunk = '';
+
+    // Split by sentences (. ! ?)
+    final sentences = text.split(RegExp(r'(?<=[.!?])\s+'));
+
+    for (final sentence in sentences) {
+      // If single sentence is too long, split by words
+      if (sentence.length > maxLength) {
+        if (currentChunk.isNotEmpty) {
+          chunks.add(currentChunk.trim());
+          currentChunk = '';
+        }
+
+        final words = sentence.split(' ');
+        for (final word in words) {
+          if ((currentChunk + ' ' + word).length > maxLength) {
+            if (currentChunk.isNotEmpty) {
+              chunks.add(currentChunk.trim());
+              currentChunk = word;
+            } else {
+              chunks.add(word); // Single word too long, add anyway
+            }
+          } else {
+            currentChunk += (currentChunk.isEmpty ? '' : ' ') + word;
+          }
+        }
+      } else {
+        // Add sentence to current chunk if it fits
+        if ((currentChunk + ' ' + sentence).length > maxLength) {
+          if (currentChunk.isNotEmpty) {
+            chunks.add(currentChunk.trim());
+          }
+          currentChunk = sentence;
+        } else {
+          currentChunk += (currentChunk.isEmpty ? '' : ' ') + sentence;
+        }
+      }
+    }
+
+    // Add remaining chunk
+    if (currentChunk.isNotEmpty) {
+      chunks.add(currentChunk.trim());
+    }
+
+    return chunks;
+  }
+
+  String _stripMarkdownTags(String markdownString) {
+    String text = markdownString;
+    text = text.replaceAll(RegExp(r'^#{1,6}\s+', multiLine: true), '');
+    text = text.replaceAll(RegExp(r'```[^`]*```', multiLine: true), '');
+    text = text.replaceAllMapped(RegExp(r'`([^`]+)`'), (m) => m.group(1) ?? '');
+    text = text.replaceAllMapped(
+      RegExp(r'\*\*(.+?)\*\*'),
+      (m) => m.group(1) ?? '',
+    );
+    text = text.replaceAllMapped(RegExp(r'__(.+?)__'), (m) => m.group(1) ?? '');
+    text = text.replaceAllMapped(RegExp(r'\*(.+?)\*'), (m) => m.group(1) ?? '');
+    text = text.replaceAllMapped(
+      RegExp(r'\b_(.+?)_\b'),
+      (m) => m.group(1) ?? '',
+    );
+    text = text.replaceAllMapped(RegExp(r'~~(.+?)~~'), (m) => m.group(1) ?? '');
+    text = text.replaceAllMapped(
+      RegExp(r'!\[([^\]]*)\]\([^)]+\)'),
+      (m) => m.group(1) ?? '',
+    );
+    text = text.replaceAllMapped(
+      RegExp(r'\[([^\]]+)\]\([^)]+\)'),
+      (m) => m.group(1) ?? '',
+    );
+    text = text.replaceAll(RegExp(r'^[-*_]{3,}\s*$', multiLine: true), '');
+    text = text.replaceAll(RegExp(r'^>\s+', multiLine: true), '');
+    text = text.replaceAll(RegExp(r'^\s*[-*+]\s+', multiLine: true), '');
+    text = text.replaceAll(RegExp(r'^\s*\d+\.\s+', multiLine: true), '');
+    text = text.replaceAll(RegExp(r'<[^>]*>'), '');
+    text = text.replaceAll(RegExp(r'\n+'), ' ');
+    text = text.replaceAll(RegExp(r'\s+'), ' ');
+    return text.trim();
+  }
+
+  @override
+  void dispose() {
+    _flutterTts.stop();
+    super.dispose();
   }
 
   @override
@@ -96,29 +272,42 @@ class _ScanSolutionState extends State<ScanSolution> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 1. Diagnosis Result
-                  _SectionTitle(
-                    index: 1,
-                    title: 'Kết quả chẩn đoán',
-                    action: TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Thay đổi',
-                        style: TextStyle(
-                          color: Color(0xFF1976D2),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
+                  _SectionTitle(index: 1, title: 'Kết quả chẩn đoán'),
                   SizedBox(height: 8.sp),
                   _DiagnosisCard(
                     disease: disease,
                     scanImageUrl: scanHistory.scanImage,
                   ),
                   SizedBox(height: 20.sp),
-                  Divider(height: 32.sp, thickness: 1.sp, color: Color(0xFFE0E0E0)),
+                  Divider(
+                    height: 32.sp,
+                    thickness: 1.sp,
+                    color: Color(0xFFE0E0E0),
+                  ),
                   // 2. Recommended Solution
-                  _SectionTitle(index: 2, title: 'Giải pháp khuyến nghị'),
+                  _SectionTitle(
+                    index: 2,
+                    title: 'Giải pháp khuyến nghị',
+                    action: IconButton(
+                      onPressed: () {
+                        print('🔊 TTS: speak button pressed');
+                        _handleListenTap(disease.solution).catchError((e) {
+                          print('TTS error: $e');
+                        });
+                      },
+                      icon: _isLoadingTts
+                          ? LoadingIndicator(size: 26.sp)
+                          : Icon(
+                              _isSpeaking
+                                  ? Icons.stop_circle_outlined
+                                  : Icons.volume_up,
+                              color: _isSpeaking
+                                  ? AppColors.primary_600
+                                  : AppColors.primary_400,
+                              size: 24.sp,
+                            ),
+                    ),
+                  ),
                   SizedBox(height: 8.sp),
                   Container(
                     width: double.infinity,
@@ -230,16 +419,13 @@ class _SectionTitle extends StatelessWidget {
           width: 28.sp,
           height: 28.sp,
           decoration: BoxDecoration(
-            color: Color(0xFF00BFA5),
+            color: AppColors.primary_600,
             shape: BoxShape.circle,
           ),
           alignment: Alignment.center,
           child: Text(
             '$index',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
         SizedBox(width: 10.sp),

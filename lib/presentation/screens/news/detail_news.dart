@@ -23,6 +23,7 @@ class DetailNews extends StatelessWidget {
   final String? fallbackTag;
   final DateTime? fallbackDate;
   final String? fallbackContent;
+  final bool isFromFarmingTip;
 
   const DetailNews({
     super.key,
@@ -34,6 +35,7 @@ class DetailNews extends StatelessWidget {
     this.fallbackTag,
     this.fallbackDate,
     this.fallbackContent,
+    required this.isFromFarmingTip,
   });
 
   String _formatDateUtcPlus7(DateTime? dt) {
@@ -52,7 +54,9 @@ class DetailNews extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: BasicAppbar(
-          title: 'Chi tiết tin tức',
+          title: isFromFarmingTip
+              ? 'Chi tiết mẹo canh tác'
+              : 'Chi tiết tin tức',
           actions: [
             Padding(
               padding: EdgeInsets.only(right: 8.sp),
@@ -276,21 +280,22 @@ class DetailNews extends StatelessWidget {
                           SizedBox(height: 24.sp),
                         ],
 
-                        // Related Topics Section
-                        Text(
-                          'Chủ đề liên quan',
-                          style: AppTextStyles.s16Bold(
-                            color: AppColors.primary_700,
+                        if (!isFromFarmingTip) ...[
+                          Text(
+                            'Chủ đề liên quan',
+                            style: AppTextStyles.s16Bold(
+                              color: AppColors.primary_700,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 12.sp),
-                        Wrap(
-                          spacing: 8.sp,
-                          runSpacing: 8.sp,
-                          children: [
-                            _buildTopicChip(news.blogTagName ?? 'Tin tức'),
-                          ],
-                        ),
+                          SizedBox(height: 12.sp),
+                          Wrap(
+                            spacing: 8.sp,
+                            runSpacing: 8.sp,
+                            children: [
+                              _buildTopicChip(news.blogTagName ?? 'Tin tức'),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
                   ),

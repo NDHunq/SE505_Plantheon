@@ -122,6 +122,7 @@ class NewsSection extends StatelessWidget {
                                 fallbackDate:
                                     newsItem.publishedAt ?? newsItem.createdAt,
                                 fallbackContent: newsItem.description ?? '',
+                                isFromFarmingTip: false,
                               ),
                             ),
                           );
