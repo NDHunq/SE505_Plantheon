@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/core/configs/assets/app_images.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
-import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
+import 'package:se501_plantheon/presentation/screens/authentication/signin.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -126,7 +126,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ? Color.fromARGB(255, 241, 127, 33)
                             : Color(0xFF1074BC),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.sp),
+                          borderRadius: BorderRadius.circular(30.sp),
                         ),
                       ),
                       onPressed: () {
@@ -148,7 +148,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         _currentPage == onboardingData.length - 1
                             ? "Bắt đầu ngay"
                             : "Tiếp tục",
-                        style: TextStyle(fontSize: 18.sp, color: Colors.white),
+                        style: TextStyle(fontSize: 16.sp, color: Colors.white),
                       ),
                     ),
                   ),

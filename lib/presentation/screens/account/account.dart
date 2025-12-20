@@ -14,7 +14,7 @@ import 'package:se501_plantheon/presentation/screens/account/my_post.dart';
 import 'package:se501_plantheon/presentation/screens/account/complaint_history.dart';
 import 'package:se501_plantheon/presentation/screens/account/widgets/setting_list_item.dart';
 import 'package:se501_plantheon/presentation/screens/account/widgets/setting_title_item.dart';
-import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
+import 'package:se501_plantheon/presentation/screens/authentication/signin.dart';
 import 'package:se501_plantheon/presentation/screens/home/scan_history.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';

@@ -28,6 +28,7 @@ class _SignInPageState extends State<SignInPage> {
 
   bool _obscureText = true;
   bool isShowErrText = false;
+  bool _isLoadingDialogVisible = false;
 
   @override
   void initState() {
@@ -40,6 +41,12 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
+        if (state is AuthLoading) {
+          _showLoadingDialog(context);
+        } else {
+          _hideLoadingDialog();
+        }
+
         if (state is AuthAuthenticated) {
           // Navigate to main screen on successful authentication
           Navigator.pushReplacement(
@@ -62,11 +69,7 @@ class _SignInPageState extends State<SignInPage> {
         }
       },
       builder: (context, state) {
-        // If already authenticated, show loading while redirecting
-        if (state is AuthAuthenticated) {
-          return const Scaffold(body: Center(child: LoadingIndicator()));
-        }
-
+        // Keep the login UI visible and use a dialog for loading state
         return Scaffold(
           bottomNavigationBar: _bottomText(context),
           body: Padding(
@@ -318,5 +321,41 @@ class _SignInPageState extends State<SignInPage> {
         );
       },
     );
+  }
+
+  void _showLoadingDialog(BuildContext context) {
+    if (_isLoadingDialogVisible) return;
+    _isLoadingDialogVisible = true;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: AlertDialog(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            content: Center(child: const LoadingIndicator()),
+          ),
+        );
+      },
+    );
+  }
+
+  void _hideLoadingDialog() {
+    if (!_isLoadingDialogVisible) return;
+    _isLoadingDialogVisible = false;
+    try {
+      Navigator.of(context, rootNavigator: true).pop();
+    } catch (_) {}
+  }
+
+  @override
+  void dispose() {
+    _hideLoadingDialog();
+    _email.dispose();
+    _password.dispose();
+    _phoneDialogController.dispose();
+    super.dispose();
   }
 }
