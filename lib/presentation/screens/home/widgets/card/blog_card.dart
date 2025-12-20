@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 
-class DiseaseWarningCard extends StatelessWidget {
+class BlogCard extends StatelessWidget {
   final String title;
   final String description;
   final String imagePath;
   final bool isNetworkImage;
   final String placeholderImagePath;
-  const DiseaseWarningCard({
+  const BlogCard({
     super.key,
     required this.title,
     required this.description,

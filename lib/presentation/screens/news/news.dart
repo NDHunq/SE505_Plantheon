@@ -12,7 +12,7 @@ import 'package:se501_plantheon/presentation/bloc/news/news_state.dart';
 import 'package:se501_plantheon/presentation/bloc/news_tag/news_tag_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/news_tag/news_tag_state.dart';
 import 'package:se501_plantheon/presentation/screens/news/detail_news.dart';
-import 'package:se501_plantheon/presentation/screens/home/widgets/card/disease_card.dart';
+import 'package:se501_plantheon/presentation/screens/home/widgets/card/blog_card.dart';
 import 'package:se501_plantheon/presentation/bloc/news/news_event.dart';
 import 'package:se501_plantheon/presentation/bloc/news_tag/news_tag_event.dart';
 import 'package:se501_plantheon/domain/entities/news_entity.dart';
@@ -328,7 +328,7 @@ class _NewsState extends State<News> {
                             ),
                           );
                         },
-                        child: DiseaseWarningCard(
+                        child: BlogCard(
                           title: post.title,
                           description: post.description ?? '',
                           imagePath: imageUrl,

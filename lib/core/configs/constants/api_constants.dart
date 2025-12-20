@@ -10,4 +10,5 @@ class ApiConstants {
   // Full API URLs
   static const String diseaseApiUrl = '$baseUrl/$apiVersion';
   static const String predictDiseaseUrl = '$aiPredictionBaseUrl/predict';
+  static const String predictDiseaseV2Url = '$aiPredictionBaseUrl/predict-v2';
 }

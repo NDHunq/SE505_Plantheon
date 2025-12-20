@@ -130,6 +130,7 @@ class _ScanSolutionState extends State<ScanSolution> {
                           color: Color(0xFF388E3C),
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
+                          height: 1.5,
                         ),
                         p: const TextStyle(
                           fontSize: 14,
@@ -138,13 +139,19 @@ class _ScanSolutionState extends State<ScanSolution> {
                         ),
                         listBullet: const TextStyle(
                           fontSize: 14,
+                          height: 1.5,
                           color: Colors.black87,
                         ),
                         strong: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF1976D2),
                         ),
-                        blockSpacing: 12.0,
+                        em: const TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: Colors.black87,
+                        ),
+                        blockSpacing: 12,
+                        listIndent: 24,
                       ),
                     ),
                   ),

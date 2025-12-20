@@ -9,6 +9,7 @@ import 'package:se501_plantheon/presentation/bloc/auth/auth_provider.dart';
 import 'package:se501_plantheon/core/services/deep_link_service.dart';
 
 import 'package:toastification/toastification.dart';
+import 'package:se501_plantheon/core/services/camera_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -20,6 +21,8 @@ void main() async {
   // Initialize Deep Link Service
   await DeepLinkService().initialize(navigatorKey: navigatorKey);
 
+  // Prefetch camera descriptions to speed up scan screen initialization
+  await CameraService.prefetch();
   runApp(const MainApp());
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'dart:io';
@@ -6,8 +7,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
-import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
+import 'package:lottie/lottie.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
+import 'package:se501_plantheon/common/widgets/fast_lottie_loading.dart';
+import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/disease_prediction_service.dart';
@@ -19,6 +22,7 @@ import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 import 'package:toastification/toastification.dart';
+import 'package:se501_plantheon/core/services/camera_service.dart';
 
 class Scan extends StatefulWidget {
   const Scan({super.key});
@@ -45,19 +49,37 @@ class _ScanState extends State<Scan> {
 
   Future<void> _initCamera() async {
     try {
-      _cameras = await availableCameras();
+      _cameras ??= await CameraService.getCameras();
       if (_cameras == null || _cameras!.isEmpty) {
         setState(() => _cameraError = 'Không tìm thấy camera');
         return;
       }
       _cameraController = CameraController(
         _cameras![0],
-        ResolutionPreset.medium,
+        ResolutionPreset.max,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg,
       );
       await _cameraController!.initialize();
       setState(() => _isCameraReady = true);
+      // Thực hiện các cấu hình bổ sung sau khi preview đã sẵn sàng để giảm thời gian chờ
+      unawaited(_configureCameraAfterInit());
     } catch (e) {
       setState(() => _cameraError = 'Lỗi camera: $e');
+    }
+  }
+
+  Future<void> _configureCameraAfterInit() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+    try {
+      await _cameraController!.setFocusMode(FocusMode.auto);
+      await _cameraController!.setExposureMode(ExposureMode.auto);
+      await _cameraController!.setFocusPoint(const Offset(0.5, 0.5));
+      await _cameraController!.setExposurePoint(const Offset(0.5, 0.5));
+    } catch (_) {
+      // Một số thiết bị không hỗ trợ đặt điểm thủ công, bỏ qua
     }
   }
 
@@ -125,9 +147,25 @@ class _ScanState extends State<Scan> {
       _cameraError = null;
     });
 
+    // Show loading gif dialog immediately
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Center(
+          child: FastLottieLoading(
+            assetPath: 'assets/animations/Search.json',
+            width: 250.sp,
+            height: 250.sp,
+            speed: 2.0, // 2x speed
+          ),
+        ),
+      );
+    }
+
     try {
-      // Gọi API prediction
-      final result = await DiseasePredictionService.instance.predictDisease(
+      // Gọi API prediction v2 (with plant detection)
+      final result = await DiseasePredictionService.instance.predictDiseaseV2(
         _image!,
       );
 
@@ -139,20 +177,12 @@ class _ScanState extends State<Scan> {
       print('✅ Phân tích thành công: ${result.topPrediction?.label}');
 
       if (mounted && result.topPrediction != null) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => Center(
-            child: SizedBox(
-              width: 100,
-              height: 100,
-              child: Image.asset('assets/gif/magnify.gif', fit: BoxFit.contain),
-            ),
-          ),
-        );
+        // Wait a bit to show the loading animation
         await Future.delayed(const Duration(seconds: 2));
         if (mounted) {
+          // Close loading dialog
           Navigator.of(context).pop();
+          // Navigate to result screen
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -176,14 +206,93 @@ class _ScanState extends State<Scan> {
           );
         }
       }
+    } on NoPlantDetectedException catch (e) {
+      // Handle no plant detected error specifically
+      setState(() {
+        _loading = false;
+        _cameraError = 'Không phát hiện cây trong ảnh';
+      });
+
+      // Close loading dialog and show error dialog
+      if (mounted) {
+        // Wait a bit to show the loading animation
+        await Future.delayed(const Duration(seconds: 2));
+        if (mounted) {
+          // Close loading dialog
+          Navigator.of(context).pop();
+          // Show error dialog
+          showDialog(
+            context: context,
+            builder: (context) => BasicDialog(
+              title: 'Không phát hiện cây :(',
+              content:
+                  'Hình như đây không phải là cây nhỉ? Hãy thử chụp lại ảnh lá cây rõ nét hơn để tôi có thể giúp bạn chẩn đoán bệnh chính xác nhé!',
+              confirmText: 'Chụp lại',
+              onConfirm: () async {
+                Navigator.of(context).pop();
+                await _cameraController?.resumePreview();
+                setState(() {
+                  _image = null;
+                  _predictionResult = null;
+                  _cameraError = null;
+                });
+              },
+            ),
+          );
+        }
+      }
+
+      print('⚠️ Không phát hiện cây: $e');
+    } on LowConfidencePredictionException catch (e) {
+      // Handle low confidence prediction error
+      setState(() {
+        _loading = false;
+        _cameraError = 'Độ tin cậy dự đoán thấp';
+      });
+
+      // Close loading dialog and show error dialog
+      if (mounted) {
+        // Wait a bit to show the loading animation
+        await Future.delayed(const Duration(seconds: 2));
+        if (mounted) {
+          // Close loading dialog
+          Navigator.of(context).pop();
+          // Show error dialog
+          showDialog(
+            context: context,
+            builder: (context) => BasicDialog(
+              title: 'Không thể nhận diện chính xác',
+              content:
+                  'Hệ thống chưa thể nhận diện chính xác loại cây này (độ tin cậy: ${(e.confidence * 100).toStringAsFixed(1)}%). '
+                  'Có thể đây là loại cây mà hệ thống chưa được huấn luyện. '
+                  'Hãy thử chụp lại ảnh rõ nét hơn hoặc thử với loại cây khác nhé!',
+              confirmText: 'Chụp lại',
+              onConfirm: () async {
+                Navigator.of(context).pop();
+                await _cameraController?.resumePreview();
+                setState(() {
+                  _image = null;
+                  _predictionResult = null;
+                  _cameraError = null;
+                });
+              },
+            ),
+          );
+        }
+      }
+
+      print('⚠️ Độ tin cậy thấp: $e');
     } catch (e) {
       setState(() {
         _loading = false;
         _cameraError = 'Lỗi phân tích: $e';
       });
 
-      // Show error dialog
+      // Close loading dialog and show error toast
       if (mounted) {
+        // Close loading dialog first
+        Navigator.of(context).pop();
+
         toastification.show(
           context: context,
           type: ToastificationType.error,
@@ -241,14 +350,23 @@ class _ScanState extends State<Scan> {
                     )
                   : (!_isCameraReady || _cameraController == null)
                   ? const Center(child: LoadingIndicator())
-                  : CameraPreview(_cameraController!),
+                  : ClipRect(
+                      child: FittedBox(
+                        fit: BoxFit.cover, // lấp đầy mà không méo
+                        child: SizedBox(
+                          width: _cameraController!.value.previewSize!.height,
+                          height: _cameraController!.value.previewSize!.width,
+                          child: CameraPreview(_cameraController!),
+                        ),
+                      ),
+                    ),
             ),
             Positioned(
               left: 0,
               right: 0,
               top: 0,
               child: Container(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withOpacity(0.7),
                 padding: EdgeInsets.symmetric(vertical: 10.sp),
                 child: Padding(
                   padding: EdgeInsets.only(
@@ -304,7 +422,7 @@ class _ScanState extends State<Scan> {
                 right: 0,
                 bottom: 0,
                 child: Container(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withOpacity(0.7),
                   padding: EdgeInsets.symmetric(vertical: 20.sp),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -429,7 +547,7 @@ class _ScanState extends State<Scan> {
                 right: 0,
                 bottom: 0,
                 child: Container(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withOpacity(0.7),
                   padding: EdgeInsets.symmetric(vertical: 20.sp),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

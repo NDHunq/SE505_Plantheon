@@ -41,7 +41,10 @@ dependencies:
   cached_network_image : ^3.4.1
   dotted_line: ^3.2.3
   app_links: ^6.4.1
-
+  flutter_tts: ^4.2.3
+  rive: ^0.13.0
+  lottie: ^3.1.2
+  skeletonizer: ^2.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -60,5 +63,5 @@ flutter:
   assets:
     - assets/images/
     - assets/vectors/
-    - assets/gif/
+    - assets/animations/
     - .env
