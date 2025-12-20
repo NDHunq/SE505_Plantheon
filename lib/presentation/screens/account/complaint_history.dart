@@ -7,10 +7,14 @@ import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/token_storage_service.dart';
+import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 import 'package:se501_plantheon/data/datasources/complaint_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/complaint_repository_impl.dart';
 import 'package:se501_plantheon/domain/entities/complaint_history_entity.dart';
+import 'package:se501_plantheon/domain/usecases/complaint/submit_scan_complaint.dart';
 import 'package:se501_plantheon/presentation/bloc/complaint/complaint_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/complaint/complaint_event.dart';
+import 'package:se501_plantheon/presentation/bloc/complaint/complaint_state.dart';
 import 'package:se501_plantheon/presentation/screens/community/post_detail.dart';
 import 'package:se501_plantheon/presentation/screens/community/user_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,15 +30,18 @@ class ComplaintHistory extends StatelessWidget {
         if (!snapshot.hasData) {
           return const Scaffold(body: Center(child: LoadingIndicator()));
         }
+        final repository = ComplaintRepositoryImpl(
+          remoteDataSource: ComplaintRemoteDataSourceImpl(
+            client: http.Client(),
+            baseUrl: ApiConstants.baseUrl,
+            tokenStorage: TokenStorageService(prefs: snapshot.data!),
+          ),
+        );
         return BlocProvider(
           create: (context) => ComplaintBloc(
-            complaintRepository: ComplaintRepositoryImpl(
-              remoteDataSource: ComplaintRemoteDataSource(
-                client: http.Client(),
-                tokenStorage: TokenStorageService(prefs: snapshot.data!),
-              ),
-            ),
-          )..add(FetchComplaintsAboutMe()),
+            submitScanComplaint: SubmitScanComplaint(repository: repository),
+            complaintRepository: repository,
+          )..add(FetchComplaintsAboutMeEvent()),
           child: const _ComplaintHistoryView(),
         );
       },
@@ -77,7 +84,7 @@ class _ComplaintHistoryView extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () {
                         context.read<ComplaintBloc>().add(
-                          FetchComplaintsAboutMe(),
+                          FetchComplaintsAboutMeEvent(),
                         );
                       },
                       child: const Text('Thử lại'),
@@ -114,7 +121,9 @@ class _ComplaintHistoryView extends StatelessWidget {
             }
             return RefreshIndicator(
               onRefresh: () async {
-                context.read<ComplaintBloc>().add(FetchComplaintsAboutMe());
+                context.read<ComplaintBloc>().add(
+                  FetchComplaintsAboutMeEvent(),
+                );
               },
               child: ListView.builder(
                 padding: EdgeInsets.all(16.sp),

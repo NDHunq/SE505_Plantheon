@@ -1,67 +1,52 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:se501_plantheon/domain/entities/complaint_entity.dart';
-import 'package:se501_plantheon/domain/entities/complaint_history_entity.dart';
+import 'package:se501_plantheon/domain/usecases/complaint/submit_scan_complaint.dart';
 import 'package:se501_plantheon/domain/repository/complaint_repository.dart';
+import 'package:se501_plantheon/domain/entities/complaint_entity.dart';
+import 'package:se501_plantheon/presentation/bloc/complaint/complaint_event.dart';
+import 'package:se501_plantheon/presentation/bloc/complaint/complaint_state.dart';
 
-// Events
-abstract class ComplaintEvent {}
-
-class SubmitComplaintEvent extends ComplaintEvent {
-  final String targetId;
-  final String targetType;
-  final String category;
-  final String content;
-
-  SubmitComplaintEvent({
-    required this.targetId,
-    required this.targetType,
-    required this.category,
-    required this.content,
-  });
-}
-
-class FetchComplaintsAboutMe extends ComplaintEvent {
-  final int page;
-  final int limit;
-
-  FetchComplaintsAboutMe({this.page = 1, this.limit = 10});
-}
-
-// States
-abstract class ComplaintState {}
-
-class ComplaintInitial extends ComplaintState {}
-
-class ComplaintSubmitting extends ComplaintState {}
-
-class ComplaintSubmitted extends ComplaintState {}
-
-class ComplaintError extends ComplaintState {
-  final String message;
-  ComplaintError(this.message);
-}
-
-// States for loading complaints about me
-class ComplaintsLoading extends ComplaintState {}
-
-class ComplaintsLoaded extends ComplaintState {
-  final List<ComplaintHistoryEntity> complaints;
-  ComplaintsLoaded(this.complaints);
-}
-
-class ComplaintsLoadError extends ComplaintState {
-  final String message;
-  ComplaintsLoadError(this.message);
-}
-
-// BLoC
 class ComplaintBloc extends Bloc<ComplaintEvent, ComplaintState> {
+  final SubmitScanComplaint submitScanComplaint;
   final ComplaintRepository complaintRepository;
 
-  ComplaintBloc({required this.complaintRepository})
-    : super(ComplaintInitial()) {
+  ComplaintBloc({
+    required this.submitScanComplaint,
+    required this.complaintRepository,
+  }) : super(ComplaintInitial()) {
+    on<SubmitScanComplaintEvent>(_onSubmitScanComplaint);
     on<SubmitComplaintEvent>(_onSubmitComplaint);
-    on<FetchComplaintsAboutMe>(_onFetchComplaintsAboutMe);
+    on<FetchComplaintsAboutMeEvent>(_onFetchComplaintsAboutMe);
+  }
+
+  Future<void> _onSubmitScanComplaint(
+    SubmitScanComplaintEvent event,
+    Emitter<ComplaintState> emit,
+  ) async {
+    print(
+      '🔍 BLoC: Received SubmitScanComplaintEvent for disease: ${event.predictedDiseaseId}',
+    );
+    emit(ComplaintLoading());
+    print('📡 BLoC: Emitted ComplaintLoading state');
+
+    try {
+      print('🌐 BLoC: Calling submitScanComplaint use case...');
+      final complaint = await submitScanComplaint(
+        predictedDiseaseId: event.predictedDiseaseId,
+        confidenceScore: event.confidenceScore,
+        category: event.category,
+        imageUrl: event.imageUrl,
+        userSuggestedDiseaseId: event.userSuggestedDiseaseId,
+        content: event.content,
+      );
+      print('✅ BLoC: Complaint submitted with id: ${complaint.id}');
+
+      emit(ComplaintSuccess(complaint: complaint));
+      print('🎉 BLoC: Emitted ComplaintSuccess state');
+    } catch (e) {
+      print('❌ BLoC: Error occurred: $e');
+      emit(ComplaintError(message: e.toString()));
+      print('💥 BLoC: Emitted ComplaintError state');
+    }
   }
 
   Future<void> _onSubmitComplaint(
@@ -71,21 +56,30 @@ class ComplaintBloc extends Bloc<ComplaintEvent, ComplaintState> {
     emit(ComplaintSubmitting());
     try {
       final complaint = ComplaintEntity(
+        id: '',
+        userId: '',
         targetId: event.targetId,
         targetType: event.targetType,
         category: event.category,
         content: event.content,
+        imageUrl: '',
+        status: '',
+        predictedDiseaseId: '',
+        confidenceScore: 0.0,
+        isVerified: false,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
 
       await complaintRepository.submitComplaint(complaint);
       emit(ComplaintSubmitted());
     } catch (e) {
-      emit(ComplaintError(e.toString()));
+      emit(ComplaintError(message: e.toString()));
     }
   }
 
   Future<void> _onFetchComplaintsAboutMe(
-    FetchComplaintsAboutMe event,
+    FetchComplaintsAboutMeEvent event,
     Emitter<ComplaintState> emit,
   ) async {
     emit(ComplaintsLoading());
@@ -94,9 +88,9 @@ class ComplaintBloc extends Bloc<ComplaintEvent, ComplaintState> {
         page: event.page,
         limit: event.limit,
       );
-      emit(ComplaintsLoaded(complaints));
+      emit(ComplaintsLoaded(complaints: complaints));
     } catch (e) {
-      emit(ComplaintsLoadError(e.toString()));
+      emit(ComplaintsLoadError(message: e.toString()));
     }
   }
 }
