@@ -511,22 +511,37 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
     return groups;
   }
 
-  // Tính toán vị trí và width cho mỗi event
+  // Tính toán vị trí và width cho mỗi event với minimum width
   Map<DayEvent, Map<String, double>> _calculateEventPositions(
     List<DayEvent> events,
+    double availableWidth,
   ) {
     final overlappingGroups = _calculateOverlappingGroups(events);
     final Map<DayEvent, Map<String, double>> positions = {};
+    final double minWidth = 160.sp; // Minimum width cho mỗi activity
 
     for (final group in overlappingGroups) {
       if (group.length == 1) {
-        // Không có overlap, dùng full width
-        positions[group[0]] = {'left': 0, 'width': 1.0};
+        // Không có overlap, dùng full width nhưng ít nhất là minWidth
+        final double width = availableWidth.clamp(minWidth, double.infinity);
+        positions[group[0]] = {'left': 0, 'width': width};
       } else {
-        // Có overlap, chia đều width
-        final double width = 1.0 / group.length;
+        // Có overlap, kiểm tra nếu tổng minWidth < (availableWidth - 40) thì chia đều
+        final double distributionWidth = availableWidth + 40.sp;
+
+        final double totalMinWidth = group.length * minWidth;
+        final double actualWidth;
+
+        if (totalMinWidth <= distributionWidth) {
+          // Tổng minWidth nhỏ hơn (màn hình - 40), chia đều (màn hình - 40)
+          actualWidth = availableWidth / group.length;
+        } else {
+          // Tổng minWidth lớn hơn (màn hình - 40), dùng minWidth
+          actualWidth = minWidth;
+        }
+
         for (int i = 0; i < group.length; i++) {
-          positions[group[i]] = {'left': i * width, 'width': width};
+          positions[group[i]] = {'left': i * actualWidth, 'width': actualWidth};
         }
       }
     }
@@ -539,15 +554,27 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
     const double minEventHeight = 56; // tối thiểu để không overflow
     final double totalHeight = 25 * hourHeight;
 
-    final eventPositions = _calculateEventPositions(events);
-
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.sp),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final double availableWidth = constraints.maxWidth - 50.sp;
+          final eventPositions = _calculateEventPositions(
+            events,
+            availableWidth,
+          );
+
+          // Tính toán tổng width cần thiết để chứa tất cả activities
+          double maxWidth = availableWidth;
+          for (final position in eventPositions.values) {
+            final double rightEdge = position['left']! + position['width']!;
+            if (rightEdge > maxWidth) {
+              maxWidth = rightEdge;
+            }
+          }
 
           return SingleChildScrollView(
+            scrollDirection: Axis.vertical,
             child: Column(
               children: [
                 SizedBox(
@@ -578,48 +605,57 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                         ),
                       ),
 
-                      // Khu vực timeline và events
+                      // Khu vực timeline và events với horizontal scrolling
                       Expanded(
-                        child: Stack(
-                          children: [
-                            // Vẽ lưới các đường giờ
-                            ...List.generate(25, (i) {
-                              final double top = i * hourHeight;
-                              return Positioned(
-                                top: top,
-                                left: 0.sp,
-                                right: 0.sp,
-                                child: Container(
-                                  height: 1.sp,
-                                  color: Colors.grey.shade300,
-                                ),
-                              );
-                            }),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                            width: maxWidth,
+                            child: Stack(
+                              children: [
+                                // Vẽ lưới các đường giờ
+                                ...List.generate(25, (i) {
+                                  final double top = i * hourHeight;
+                                  return Positioned(
+                                    top: top,
+                                    left: 0.sp,
+                                    right: 0.sp,
+                                    child: Container(
+                                      height: 1.sp,
+                                      color: Colors.grey.shade300,
+                                    ),
+                                  );
+                                }),
 
-                            // Vẽ các event phủ theo start-end với vị trí đã tính toán
-                            ...events.map((e) {
-                              final double top = e.startHour * hourHeight;
-                              final double height =
-                                  (e.durationHours * hourHeight)
-                                      .toDouble()
-                                      .clamp(minEventHeight, double.infinity);
+                                // Vẽ các event phủ theo start-end với vị trí đã tính toán
+                                ...events.map((e) {
+                                  final double top = e.startHour * hourHeight;
+                                  final double height =
+                                      (e.durationHours * hourHeight)
+                                          .toDouble()
+                                          .clamp(
+                                            minEventHeight,
+                                            double.infinity,
+                                          );
 
-                              final position = eventPositions[e]!;
-                              final double leftFraction = position['left']!;
-                              final double widthFraction = position['width']!;
+                                  final position = eventPositions[e]!;
+                                  final double left = position['left']!;
+                                  final double width = position['width']!;
 
-                              return Positioned(
-                                top: top,
-                                left: leftFraction * availableWidth,
-                                width: widthFraction * availableWidth,
-                                height: height,
-                                child: Padding(
-                                  padding: EdgeInsets.only(right: 2.0.sp),
-                                  child: _buildEventCard(e),
-                                ),
-                              );
-                            }),
-                          ],
+                                  return Positioned(
+                                    top: top,
+                                    left: left,
+                                    width: width,
+                                    height: height,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(right: 2.0.sp),
+                                      child: _buildEventCard(e),
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ],

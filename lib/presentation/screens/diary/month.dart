@@ -272,7 +272,7 @@ class ADayWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(4.sp),
+        padding: EdgeInsets.only(top: 4.sp, bottom: 4.sp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
