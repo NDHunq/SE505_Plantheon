@@ -88,7 +88,6 @@ class DiseasePredictionService {
   Future<DiseasePredictionResponse> predictDiseaseV2(File imageFile) async {
     try {
       print('🔍 Gửi ảnh đến AI server (v2 - with plant detection)...');
-      print('📍 URL: ${ApiConstants.predictDiseaseV2Url}');
 
       // Create multipart request
       var request = http.MultipartRequest(

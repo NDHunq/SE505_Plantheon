@@ -522,7 +522,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: repeatType == option
-                    ? const Icon(Icons.check, color: Colors.green)
+                    ? const Icon(Icons.check, color: AppColors.primary_600)
                     : null,
               );
             }).toList(),
@@ -553,7 +553,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: endRepeatType == option
-                    ? const Icon(Icons.check, color: Colors.green)
+                    ? const Icon(Icons.check, color: AppColors.primary_600)
                     : null,
               );
             }).toList(),
@@ -599,7 +599,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: alertTime == option
-                    ? const Icon(Icons.check, color: Colors.green)
+                    ? const Icon(Icons.check, color: AppColors.primary_600)
                     : null,
               );
             }).toList(),
@@ -906,7 +906,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                           ),
                         ),
                         child: const Text(
-                          "Thích ứng với BĐKH và môi trường",
+                          "Thích ứng BĐKH & MT",
                           style: TextStyle(
                             color: Colors.green,
                             fontWeight: FontWeight.w600,
@@ -1163,7 +1163,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
 
                 // Các hành động thích ứng với BĐKH và môi trường
                 AddNewRowVertical(
-                  label: "Các hành động thích ứng với BĐKH và môi trường",
+                  label: "Các hành động thích ứng BĐKH & MT",
                   child: AppTextField(
                     controller: adaptationActionsController,
                     maxLines: 5,
@@ -1217,6 +1217,9 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                                 onPressed: _deleteActivity,
                                 style: OutlinedButton.styleFrom(
                                   side: const BorderSide(color: Colors.red),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                 ),
                                 child: const Text(
                                   'Xóa',

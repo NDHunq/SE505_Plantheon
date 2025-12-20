@@ -65,6 +65,28 @@ class ScanComplaintModel {
     );
   }
 
+  factory ScanComplaintModel.fromEntity(entity) {
+    return ScanComplaintModel(
+      id: entity.id,
+      userId: entity.userId,
+      targetId: entity.targetId,
+      targetType: entity.targetType,
+      category: entity.category,
+      content: entity.content,
+      imageUrl: entity.imageUrl,
+      status: entity.status,
+      predictedDiseaseId: entity.predictedDiseaseId,
+      userSuggestedDiseaseId: entity.userSuggestedDiseaseId,
+      confidenceScore: entity.confidenceScore,
+      isVerified: entity.isVerified,
+      verifiedDiseaseId: entity.verifiedDiseaseId,
+      verifiedBy: entity.verifiedBy,
+      verifiedAt: entity.verifiedAt,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -126,13 +148,9 @@ class SubmitScanComplaintResponseModel {
   final String message;
   final ScanComplaintModel data;
 
-  SubmitScanComplaintResponseModel({
-    required this.message,
-    required this.data,
-  });
+  SubmitScanComplaintResponseModel({required this.message, required this.data});
 
-  factory SubmitScanComplaintResponseModel.fromJson(
-      Map<String, dynamic> json) {
+  factory SubmitScanComplaintResponseModel.fromJson(Map<String, dynamic> json) {
     return SubmitScanComplaintResponseModel(
       message: json['message'] as String? ?? '',
       data: ScanComplaintModel.fromJson(json['data'] as Map<String, dynamic>),
@@ -140,9 +158,6 @@ class SubmitScanComplaintResponseModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'message': message,
-      'data': data.toJson(),
-    };
+    return {'message': message, 'data': data.toJson()};
   }
 }

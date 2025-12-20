@@ -7,7 +7,13 @@ import 'package:se501_plantheon/domain/repository/post_repository.dart';
 // Events
 abstract class CommunityEvent {}
 
-class FetchAllPosts extends CommunityEvent {}
+class FetchPosts extends CommunityEvent {
+  final String keyword;
+  final bool isRefresh;
+  FetchPosts({this.keyword = '', this.isRefresh = false});
+}
+
+class LoadMorePosts extends CommunityEvent {}
 
 class FetchMyPosts extends CommunityEvent {}
 
@@ -50,7 +56,30 @@ class CommunityLoading extends CommunityState {}
 
 class CommunityLoaded extends CommunityState {
   final List<PostEntity> posts;
-  CommunityLoaded(this.posts);
+  final int page;
+  final bool hasReachedMax;
+  final String keyword;
+
+  CommunityLoaded({
+    required this.posts,
+    this.page = 1,
+    this.hasReachedMax = false,
+    this.keyword = '',
+  });
+
+  CommunityLoaded copyWith({
+    List<PostEntity>? posts,
+    int? page,
+    bool? hasReachedMax,
+    String? keyword,
+  }) {
+    return CommunityLoaded(
+      posts: posts ?? this.posts,
+      page: page ?? this.page,
+      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
+      keyword: keyword ?? this.keyword,
+    );
+  }
 }
 
 class CommunityError extends CommunityState {
@@ -63,25 +92,84 @@ class CommunityPostCreated extends CommunityState {}
 // BLoC
 class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
   final PostRepository postRepository;
+  static const int _limit = 10;
 
   CommunityBloc({required this.postRepository}) : super(CommunityInitial()) {
-    on<FetchAllPosts>(_onFetchAllPosts);
+    on<FetchPosts>(_onFetchPosts);
+    on<LoadMorePosts>(_onLoadMorePosts);
     on<FetchMyPosts>(_onFetchMyPosts);
     on<ToggleLikeEvent>(_onToggleLike);
     on<DeletePostEvent>(_onDeletePost);
     on<CreatePostEvent>(_onCreatePost);
   }
 
-  Future<void> _onFetchAllPosts(
-    FetchAllPosts event,
+  Future<void> _onFetchPosts(
+    FetchPosts event,
     Emitter<CommunityState> emit,
   ) async {
-    emit(CommunityLoading());
+    if (event.isRefresh || state is! CommunityLoaded) {
+      emit(CommunityLoading());
+    }
+
     try {
-      final posts = await postRepository.getAllPosts();
-      emit(CommunityLoaded(posts));
+      final posts = event.keyword.isEmpty
+          ? await postRepository.getAllPosts(page: 1, limit: _limit)
+          : await postRepository.searchPosts(
+              keyword: event.keyword,
+              page: 1,
+              limit: _limit,
+            );
+
+      emit(
+        CommunityLoaded(
+          posts: posts,
+          page: 1,
+          hasReachedMax: posts.length < _limit,
+          keyword: event.keyword,
+        ),
+      );
     } catch (e) {
       emit(CommunityError(e.toString()));
+    }
+  }
+
+  Future<void> _onLoadMorePosts(
+    LoadMorePosts event,
+    Emitter<CommunityState> emit,
+  ) async {
+    if (state is CommunityLoaded) {
+      final currentState = state as CommunityLoaded;
+      if (currentState.hasReachedMax) return;
+
+      try {
+        final nextPage = currentState.page + 1;
+        final newPosts = currentState.keyword.isEmpty
+            ? await postRepository.getAllPosts(page: nextPage, limit: _limit)
+            : await postRepository.searchPosts(
+                keyword: currentState.keyword,
+                page: nextPage,
+                limit: _limit,
+              );
+
+        if (newPosts.isEmpty) {
+          emit(currentState.copyWith(hasReachedMax: true));
+        } else {
+          emit(
+            currentState.copyWith(
+              posts: List.of(currentState.posts)..addAll(newPosts),
+              page: nextPage,
+              hasReachedMax: newPosts.length < _limit,
+            ),
+          );
+        }
+      } catch (e) {
+        // Don't emit Error state required for LoadMore effectively?
+        // Usually showing a snackbar is handled in UI listener.
+        // We might want to keep current state but maybe emit a side effect.
+        // For simplicity, we keep the state (ignore error) or emit error if we want full screen error (not ideal).
+        // Let's just print log for now or emit nothing.
+        print('Error loading more posts: $e');
+      }
     }
   }
 
@@ -92,7 +180,9 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
     emit(CommunityLoading());
     try {
       final posts = await postRepository.getMyPosts();
-      emit(CommunityLoaded(posts));
+      emit(
+        CommunityLoaded(posts: posts, hasReachedMax: true),
+      ); // No pagination for My Posts yet
     } catch (e) {
       emit(CommunityError(e.toString()));
     }
@@ -110,7 +200,7 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
       if (index != -1) {
         // Remove post from UI
         posts.removeAt(index);
-        emit(CommunityLoaded(posts));
+        emit(currentState.copyWith(posts: posts));
 
         try {
           await postRepository.deletePost(event.postId);
@@ -118,7 +208,7 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
         } catch (e) {
           print('Debug: Failed to delete post: $e');
           // Refresh posts if failed
-          add(FetchAllPosts());
+          add(FetchPosts());
         }
       }
     }
@@ -166,7 +256,7 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
           updatedAt: post.updatedAt,
         );
 
-        emit(CommunityLoaded(posts));
+        emit(currentState.copyWith(posts: posts));
 
         try {
           if (isLiked) {
@@ -177,7 +267,7 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
         } catch (e) {
           // Revert if failed
           posts[index] = post;
-          emit(CommunityLoaded(posts));
+          emit(currentState.copyWith(posts: posts));
         }
       }
     }
@@ -232,6 +322,8 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
       );
       print('CommunityBloc: Post created successfully');
       emit(CommunityPostCreated());
+      // Refresh list
+      add(FetchPosts(isRefresh: true));
     } catch (e) {
       print('CommunityBloc: Error creating post: $e');
       emit(CommunityError(e.toString()));

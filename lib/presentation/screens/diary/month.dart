@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
@@ -173,7 +174,7 @@ class _MonthScreenState extends State<MonthScreen> {
       physics: const AlwaysScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
-        childAspectRatio: 0.8,
+        childAspectRatio: 0.6,
       ),
       itemCount: totalCells,
       itemBuilder: (context, index) {
@@ -251,7 +252,7 @@ class ADayWidget extends StatelessWidget {
               height: 28,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: isToday ? Colors.green : Colors.transparent,
+                color: isToday ? AppColors.primary_600 : Colors.transparent,
                 shape: BoxShape.circle,
               ),
               child: Text(
@@ -266,7 +267,7 @@ class ADayWidget extends StatelessWidget {
             const SizedBox(height: 8),
             // Phần tasks - co giãn để lấp đầy không gian còn lại
             Expanded(
-              child: Container(
+              child: SizedBox(
                 width: double.infinity,
                 child: ArrayTaskWidget(tasks),
               ),

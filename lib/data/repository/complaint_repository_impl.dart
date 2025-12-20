@@ -1,6 +1,7 @@
 import 'package:se501_plantheon/data/datasources/complaint_remote_datasource.dart';
 import 'package:se501_plantheon/data/models/complaint_model.dart';
 import 'package:se501_plantheon/domain/entities/complaint_entity.dart';
+import 'package:se501_plantheon/domain/entities/complaint_history_entity.dart';
 import 'package:se501_plantheon/domain/repository/complaint_repository.dart';
 
 class ComplaintRepositoryImpl implements ComplaintRepository {
@@ -18,8 +19,7 @@ class ComplaintRepositoryImpl implements ComplaintRepository {
     String? content,
   }) async {
     print('🏛️ Repository: Submitting scan complaint');
-    final ScanComplaintModel model =
-        await remoteDataSource.submitScanComplaint(
+    final ScanComplaintModel model = await remoteDataSource.submitScanComplaint(
       predictedDiseaseId: predictedDiseaseId,
       confidenceScore: confidenceScore,
       category: category,
@@ -32,6 +32,23 @@ class ComplaintRepositoryImpl implements ComplaintRepository {
     final entity = _mapModelToEntity(model);
     print('🔄 Repository: Mapped to entity');
     return entity;
+  }
+
+  @override
+  Future<void> submitComplaint(ComplaintEntity complaint) async {
+    final model = ScanComplaintModel.fromEntity(complaint);
+    await remoteDataSource.submitComplaint(model);
+  }
+
+  @override
+  Future<List<ComplaintHistoryEntity>> getComplaintsAboutMe({
+    int page = 1,
+    int limit = 10,
+  }) async {
+    return await remoteDataSource.getComplaintsAboutMe(
+      page: page,
+      limit: limit,
+    );
   }
 
   ComplaintEntity _mapModelToEntity(ScanComplaintModel model) {

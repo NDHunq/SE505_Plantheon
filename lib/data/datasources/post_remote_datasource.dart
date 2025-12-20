@@ -11,10 +11,13 @@ class PostRemoteDataSource {
 
   PostRemoteDataSource({required this.client, required this.tokenStorage});
 
-  Future<List<PostModel>> getAllPosts() async {
-    final url = '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts';
+  Future<List<PostModel>> getAllPosts({int page = 1, int limit = 10}) async {
+    final url =
+        '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts?page=$page&limit=$limit';
 
-    print('PostRemoteDataSource: Fetching all posts');
+    print(
+      'PostRemoteDataSource: Fetching all posts (page: $page, limit: $limit)',
+    );
     print('PostRemoteDataSource: GET $url');
 
     final token = await tokenStorage.getToken();
@@ -31,7 +34,7 @@ class PostRemoteDataSource {
     );
 
     print('PostRemoteDataSource: Response status: ${response.statusCode}');
-    print('PostRemoteDataSource: Response body: ${response.body}');
+    // print('PostRemoteDataSource: Response body: ${response.body}');
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
@@ -42,6 +45,48 @@ class PostRemoteDataSource {
       throw Exception('Token expired. Please login again.');
     } else {
       throw Exception('Failed to load posts');
+    }
+  }
+
+  Future<List<PostModel>> searchPosts({
+    required String keyword,
+    int page = 1,
+    int limit = 5,
+  }) async {
+    final url =
+        '${ApiConstants.baseUrl}/${ApiConstants.apiVersion}/posts/search?keyword=$keyword&page=$page&limit=$limit';
+
+    print(
+      'PostRemoteDataSource: Searching posts (keyword: $keyword, page: $page, limit: $limit)',
+    );
+    print('PostRemoteDataSource: GET $url');
+
+    final token = await tokenStorage.getToken();
+    if (token == null) {
+      throw Exception('User not authenticated');
+    }
+
+    final response = await client.get(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print('PostRemoteDataSource: Response status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      final postResponse = PostResponseModel.fromJson(jsonResponse);
+      print(
+        'PostRemoteDataSource: Found ${postResponse.posts.length} posts for keyword "$keyword"',
+      );
+      return postResponse.posts;
+    } else if (response.statusCode == 401) {
+      throw Exception('Token expired. Please login again.');
+    } else {
+      throw Exception('Failed to search posts');
     }
   }
 

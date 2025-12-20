@@ -502,10 +502,10 @@ class _DiaryState extends State<Diary> {
           child: Container(
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: isSelected ? Colors.green : Colors.transparent,
+              color: isSelected ? AppColors.primary_600 : Colors.transparent,
               borderRadius: BorderRadius.circular(8),
               border: isCurrentYear
-                  ? Border.all(color: Colors.red, width: 2)
+                  ? Border.all(color: AppColors.primary_600, width: 2)
                   : null,
             ),
             child: Text(
@@ -614,10 +614,12 @@ class _MonthWidgetState extends State<MonthWidget> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isCurrentMonth ? Colors.green : Colors.grey.shade300,
+              color: isCurrentMonth
+                  ? AppColors.primary_600
+                  : Colors.grey.shade300,
               width: isCurrentMonth ? 2 : 1,
             ),
-            color: isCurrentMonth ? Colors.green.shade50 : Colors.white,
+            color: isCurrentMonth ? AppColors.primary_50 : Colors.white,
           ),
           child: Padding(
             padding: const EdgeInsets.all(8),
@@ -630,7 +632,7 @@ class _MonthWidgetState extends State<MonthWidget> {
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: isCurrentMonth
-                        ? Colors.green.shade700
+                        ? AppColors.primary_600
                         : Colors.black87,
                   ),
                 ),
@@ -640,7 +642,7 @@ class _MonthWidgetState extends State<MonthWidget> {
                   style: TextStyle(
                     fontSize: 12,
                     color: isCurrentMonth
-                        ? Colors.green.shade600
+                        ? AppColors.primary_600
                         : Colors.grey.shade600,
                     fontWeight: FontWeight.w500,
                   ),
@@ -651,7 +653,7 @@ class _MonthWidgetState extends State<MonthWidget> {
                     width: 6,
                     height: 6,
                     decoration: const BoxDecoration(
-                      color: Colors.green,
+                      color: AppColors.primary_600,
                       shape: BoxShape.circle,
                     ),
                   ),

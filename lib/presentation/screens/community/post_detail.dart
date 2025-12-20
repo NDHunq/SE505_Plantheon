@@ -14,7 +14,12 @@ import 'package:se501_plantheon/presentation/screens/community/widgets/acction_b
 import 'package:se501_plantheon/presentation/screens/community/widgets/disease_block_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
+import 'package:se501_plantheon/presentation/screens/community/user_profile_screen.dart';
 import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
+import 'package:se501_plantheon/core/services/deep_link_service.dart';
+
+import 'package:toastification/toastification.dart';
+import 'package:se501_plantheon/presentation/screens/community/widgets/report_modal.dart';
 
 class PostDetail extends StatelessWidget {
   final String postId;
@@ -80,20 +85,31 @@ class _PostDetailViewState extends State<PostDetailView> {
             if (state is PostDetailLoaded) {
               return Row(
                 children: [
-                  CircleAvatar(
-                    radius: 20.sp,
-                    backgroundColor: Colors.green[200],
-                    backgroundImage: state.post.avatar.isNotEmpty
-                        ? NetworkImage(state.post.avatar)
-                        : null,
-                    child: state.post.avatar.isEmpty
-                        ? Text(
-                            state.post.fullName.isNotEmpty
-                                ? state.post.fullName[0]
-                                : '?',
-                            style: AppTextStyles.s16Bold(color: Colors.white),
-                          )
-                        : null,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              UserProfileScreen(userId: state.post.userId),
+                        ),
+                      );
+                    },
+                    child: CircleAvatar(
+                      radius: 20.sp,
+                      backgroundColor: Colors.green[200],
+                      backgroundImage: state.post.avatar.isNotEmpty
+                          ? NetworkImage(state.post.avatar)
+                          : null,
+                      child: state.post.avatar.isEmpty
+                          ? Text(
+                              state.post.fullName.isNotEmpty
+                                  ? state.post.fullName[0]
+                                  : '?',
+                              style: AppTextStyles.s16Bold(color: Colors.white),
+                            )
+                          : null,
+                    ),
                   ),
                   SizedBox(width: 12.sp),
                   Expanded(
@@ -102,12 +118,26 @@ class _PostDetailViewState extends State<PostDetailView> {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              state.post.isMyPost ? 'Bạn' : state.post.fullName,
-                              style: AppTextStyles.s16Bold(
-                                color: state.post.isMyPost
-                                    ? Colors.green
-                                    : null,
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => UserProfileScreen(
+                                      userId: state.post.userId,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                state.post.isMyPost
+                                    ? 'Bạn'
+                                    : state.post.fullName,
+                                style: AppTextStyles.s16Bold(
+                                  color: state.post.isMyPost
+                                      ? Colors.green
+                                      : Colors.black, // Explicit black
+                                ),
                               ),
                             ),
                             SizedBox(width: 4.sp),
@@ -174,8 +204,16 @@ class _PostDetailViewState extends State<PostDetailView> {
                                   }
                                 } catch (e) {
                                   if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Lỗi: $e')),
+                                    toastification.show(
+                                      context: context,
+                                      type: ToastificationType.error,
+                                      style: ToastificationStyle.flat,
+                                      title: Text('Lỗi: $e'),
+                                      autoCloseDuration: const Duration(
+                                        seconds: 3,
+                                      ),
+                                      alignment: Alignment.bottomCenter,
+                                      showProgressBar: true,
                                     );
                                   }
                                 }
@@ -188,6 +226,8 @@ class _PostDetailViewState extends State<PostDetailView> {
                           ],
                         ),
                       );
+                    } else if (value == 'report') {
+                      ReportModal.show(context, state.post.id, 'POST');
                     }
                   },
                   itemBuilder: (ctx) => [
@@ -313,7 +353,13 @@ class _PostDetailViewState extends State<PostDetailView> {
                         ActionButton(
                           iconVector: AppVectors.share,
                           label: 'Chia sẻ',
-                          onPressed: () {},
+                          onPressed: () {
+                            DeepLinkService().copyLinkToClipboard(
+                              context,
+                              host: 'post',
+                              params: {'id': post.id},
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -662,20 +708,31 @@ class _PostDetailViewState extends State<PostDetailView> {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 6.0),
-            child: CircleAvatar(
-              radius: isTopLevel ? 16.sp : 14.sp,
-              backgroundColor: Colors.green[200],
-              backgroundImage: comment.avatar.isNotEmpty
-                  ? NetworkImage(comment.avatar)
-                  : null,
-              child: comment.avatar.isEmpty
-                  ? Text(
-                      comment.fullName.isNotEmpty ? comment.fullName[0] : '?',
-                      style: isTopLevel
-                          ? AppTextStyles.s12Bold(color: Colors.white)
-                          : AppTextStyles.s10Bold(color: Colors.white),
-                    )
-                  : null,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        UserProfileScreen(userId: comment.userId),
+                  ),
+                );
+              },
+              child: CircleAvatar(
+                radius: isTopLevel ? 16.sp : 14.sp,
+                backgroundColor: Colors.green[200],
+                backgroundImage: comment.avatar.isNotEmpty
+                    ? NetworkImage(comment.avatar)
+                    : null,
+                child: comment.avatar.isEmpty
+                    ? Text(
+                        comment.fullName.isNotEmpty ? comment.fullName[0] : '?',
+                        style: isTopLevel
+                            ? AppTextStyles.s12Bold(color: Colors.white)
+                            : AppTextStyles.s10Bold(color: Colors.white),
+                      )
+                    : null,
+              ),
             ),
           ),
           SizedBox(width: 8.sp),
@@ -692,17 +749,64 @@ class _PostDetailViewState extends State<PostDetailView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        comment.isMe ? 'Bạn' : comment.fullName,
-                        style:
-                            (isTopLevel
-                                    ? AppTextStyles.s14Bold()
-                                    : AppTextStyles.s12Bold())
-                                .copyWith(
-                                  color: comment.isMe
-                                      ? Colors.green
-                                      : Colors.black,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => UserProfileScreen(
+                                      userId: comment.userId,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                comment.isMe ? 'Bạn' : comment.fullName,
+                                style:
+                                    (isTopLevel
+                                            ? AppTextStyles.s14Bold()
+                                            : AppTextStyles.s12Bold())
+                                        .copyWith(
+                                          color: comment.isMe
+                                              ? Colors.green
+                                              : Colors.black,
+                                        ),
+                              ),
+                            ),
+                          ),
+                          PopupMenuButton<String>(
+                            icon: Icon(
+                              Icons.more_horiz,
+                              size: 16.sp,
+                              color: Colors.grey[600],
+                            ),
+                            padding: EdgeInsets.zero,
+                            onSelected: (value) {
+                              if (value == 'report') {
+                                ReportModal.show(
+                                  context,
+                                  comment.id,
+                                  'COMMENT',
+                                );
+                              }
+                            },
+                            itemBuilder: (ctx) => [
+                              const PopupMenuItem(
+                                value: 'report',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.flag_outlined, size: 16),
+                                    SizedBox(width: 8),
+                                    Text('Báo cáo'),
+                                  ],
                                 ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                       SizedBox(height: 2.sp),
                       Text(

@@ -531,7 +531,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: repeatType == option
-                    ? const Icon(Icons.check, color: Colors.green)
+                    ? const Icon(Icons.check, color: AppColors.primary_600)
                     : null,
               );
             }).toList(),
@@ -562,7 +562,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: endRepeatType == option
-                    ? const Icon(Icons.check, color: Colors.green)
+                    ? const Icon(Icons.check, color: AppColors.primary_600)
                     : null,
               );
             }).toList(),
@@ -710,7 +710,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: alertTime == option
-                    ? const Icon(Icons.check, color: Colors.green)
+                    ? const Icon(Icons.check, color: AppColors.primary_600)
                     : null,
               );
             }).toList(),
@@ -739,7 +739,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: unit == unitItem
-                    ? const Icon(Icons.check, color: Colors.green)
+                    ? const Icon(Icons.check, color: AppColors.primary_600)
                     : null,
               );
             }).toList(),
@@ -768,7 +768,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: currency == currencyItem
-                    ? const Icon(Icons.check, color: Colors.green)
+                    ? const Icon(Icons.check, color: AppColors.primary_600)
                     : null,
               );
             }).toList(),
@@ -1638,6 +1638,9 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                                 onPressed: _deleteActivity,
                                 style: OutlinedButton.styleFrom(
                                   side: const BorderSide(color: Colors.red),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                 ),
                                 child: const Text(
                                   'Xóa',
