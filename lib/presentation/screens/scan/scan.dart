@@ -200,6 +200,7 @@ class _ScanState extends State<Scan> {
                 child: DiseaseDescriptionScreen(
                   diseaseLabel: result.topPrediction!.label,
                   myImage: _image,
+                  confidenceScore: result.topPrediction!.probability,
                 ),
               ),
             ),
