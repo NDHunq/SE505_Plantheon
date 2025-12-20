@@ -207,104 +207,110 @@ class _MyPostView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 20.sp,
-                  backgroundColor: Colors.green[200],
-                  child: Text(
-                    username.isNotEmpty ? username[0] : '?',
-                    style: AppTextStyles.s16Bold(color: Colors.white),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.sp),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20.sp,
+                    backgroundColor: Colors.green[200],
+                    child: Text(
+                      username.isNotEmpty ? username[0] : '?',
+                      style: AppTextStyles.s16Bold(color: Colors.white),
+                    ),
                   ),
-                ),
-                SizedBox(width: 12.sp),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Bạn',
-                            style: AppTextStyles.s16Bold(color: Colors.green),
-                          ),
-                          SizedBox(width: 4.sp),
-                          Container(
-                            padding: EdgeInsets.all(2.sp),
-                            decoration: const BoxDecoration(
-                              color: Colors.orange,
-                              shape: BoxShape.circle,
+                  SizedBox(width: 12.sp),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Bạn',
+                              style: AppTextStyles.s16Bold(color: Colors.green),
                             ),
-                            child: Icon(
-                              Icons.check,
-                              size: 12.sp,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        '$category • $timeAgo',
-                        style: AppTextStyles.s12Regular(
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                PopupMenuButton<String>(
-                  icon: Icon(Icons.more_vert, color: Colors.grey[600]),
-                  onSelected: (value) {
-                    if (value == 'delete') {
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: const Text('Xóa bài viết'),
-                          content: const Text(
-                            'Bạn có chắc muốn xóa bài viết này?',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx),
-                              child: const Text('Hủy'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(ctx);
-                                context.read<CommunityBloc>().add(
-                                  DeletePostEvent(postId),
-                                );
-                              },
-                              child: const Text(
-                                'Xóa',
-                                style: TextStyle(color: Colors.red),
+                            SizedBox(width: 4.sp),
+                            Container(
+                              padding: EdgeInsets.all(2.sp),
+                              decoration: const BoxDecoration(
+                                color: Colors.orange,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.check,
+                                size: 12.sp,
+                                color: Colors.white,
                               ),
                             ),
                           ],
                         ),
-                      );
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'delete',
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete, color: Colors.red),
-                          SizedBox(width: 8),
-                          Text(
-                            'Xóa bài viết',
-                            style: TextStyle(color: Colors.red),
+                        Text(
+                          '$category • $timeAgo',
+                          style: AppTextStyles.s12Regular(
+                            color: Colors.grey[600],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+                    onSelected: (value) {
+                      if (value == 'delete') {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Xóa bài viết'),
+                            content: const Text(
+                              'Bạn có chắc muốn xóa bài viết này?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                child: const Text('Hủy'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(ctx);
+                                  context.read<CommunityBloc>().add(
+                                    DeletePostEvent(postId),
+                                  );
+                                },
+                                child: const Text(
+                                  'Xóa',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text(
+                              'Xóa bài viết',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
             SizedBox(height: 8.sp),
-            Text(content, style: AppTextStyles.s14Regular()),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.sp),
+              child: Text(content, style: AppTextStyles.s14Regular()),
+            ),
             SizedBox(height: 8.sp),
             // Post images carousel
             if (imageLink != null && imageLink.isNotEmpty)
@@ -321,23 +327,35 @@ class _MyPostView extends StatelessWidget {
               postImageLinks: imageLink,
             ),
             SizedBox(height: 8.sp),
-            Row(
-              children: [
-                SvgPicture.asset(
-                  isLiked ? AppVectors.heartSolid : AppVectors.heart,
-                  color: AppColors.red,
-                  width: 16.sp,
-                  height: 16.sp,
-                ),
-                SizedBox(width: 4.sp),
-                Text('$likes lượt thích', style: AppTextStyles.s12Regular()),
-                const Spacer(),
-                Text('$comments bình luận', style: AppTextStyles.s12Regular()),
-                SizedBox(width: 16.sp),
-                Text('$shares lượt chia sẻ', style: AppTextStyles.s12Regular()),
-              ],
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.sp),
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    isLiked ? AppVectors.heartSolid : AppVectors.heart,
+                    color: AppColors.red,
+                    width: 16.sp,
+                    height: 16.sp,
+                  ),
+                  SizedBox(width: 4.sp),
+                  Text('$likes lượt thích', style: AppTextStyles.s12Regular()),
+                  const Spacer(),
+                  Text(
+                    '$comments bình luận',
+                    style: AppTextStyles.s12Regular(),
+                  ),
+                  SizedBox(width: 16.sp),
+                  Text(
+                    '$shares lượt chia sẻ',
+                    style: AppTextStyles.s12Regular(),
+                  ),
+                ],
+              ),
             ),
+            SizedBox(height: 8.sp),
             Container(height: 1.sp, color: Colors.grey[200]),
+            SizedBox(height: 4.sp),
+
             Row(
               children: [
                 ActionButton(

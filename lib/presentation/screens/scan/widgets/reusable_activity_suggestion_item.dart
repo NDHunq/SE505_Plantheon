@@ -344,16 +344,7 @@ class _ReusableActivitySuggestionItemState
         child: Row(
           children: [
             // Icon bên trái
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: config.accentColor.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(config.icon, color: config.accentColor, size: 28),
-            ),
-            const SizedBox(width: 16),
+
             // Nội dung chính
             Expanded(
               child: Column(
@@ -363,12 +354,12 @@ class _ReusableActivitySuggestionItemState
                     currentTitle,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 14,
                       color: Colors.grey[900],
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Type và ngày giờ trên 1 hàng
+                  // Type trên 1 hàng
                   Row(
                     children: [
                       Container(
@@ -389,7 +380,12 @@ class _ReusableActivitySuggestionItemState
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  // Ngày giờ trên hàng mới
+                  Row(
+                    children: [
                       Icon(
                         Icons.access_time_rounded,
                         size: 14,
@@ -403,6 +399,8 @@ class _ReusableActivitySuggestionItemState
                             color: Colors.grey[700],
                             fontSize: 13,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],

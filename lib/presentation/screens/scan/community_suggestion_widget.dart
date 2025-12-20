@@ -50,13 +50,13 @@ class CommunitySuggestionWidget extends StatelessWidget {
           children: [
             Text(
               'Bạn vẫn còn thắc mắc ?',
-              style: AppTextStyles.s14Regular(color: Colors.black),
+              style: AppTextStyles.s12Regular(color: Colors.black),
             ),
             Row(
               children: [
                 Text(
-                  'Hỏi cộng đồng ngay',
-                  style: AppTextStyles.s14Bold(color: AppColors.primary_main),
+                  'Đăng bài ngay',
+                  style: AppTextStyles.s12Bold(color: AppColors.primary_main),
                 ),
                 SizedBox(width: 4.sp),
                 Icon(

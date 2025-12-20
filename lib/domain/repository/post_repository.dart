@@ -1,7 +1,12 @@
 import 'package:se501_plantheon/domain/entities/post_entity.dart';
 
 abstract class PostRepository {
-  Future<List<PostEntity>> getAllPosts();
+  Future<List<PostEntity>> getAllPosts({int page = 1, int limit = 10});
+  Future<List<PostEntity>> searchPosts({
+    required String keyword,
+    int page = 1,
+    int limit = 10,
+  });
   Future<List<PostEntity>> getMyPosts();
   Future<void> likePost(String postId);
   Future<void> unlikePost(String postId);

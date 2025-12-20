@@ -8,8 +8,26 @@ class PostRepositoryImpl implements PostRepository {
   PostRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<PostEntity>> getAllPosts() async {
-    final postModels = await remoteDataSource.getAllPosts();
+  @override
+  Future<List<PostEntity>> getAllPosts({int page = 1, int limit = 10}) async {
+    final postModels = await remoteDataSource.getAllPosts(
+      page: page,
+      limit: limit,
+    );
+    return postModels.map((e) => e.toEntity()).toList();
+  }
+
+  @override
+  Future<List<PostEntity>> searchPosts({
+    required String keyword,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    final postModels = await remoteDataSource.searchPosts(
+      keyword: keyword,
+      page: page,
+      limit: limit,
+    );
     return postModels.map((e) => e.toEntity()).toList();
   }
 

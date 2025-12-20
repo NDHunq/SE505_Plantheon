@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:se501_plantheon/core/configs/assets/app_images.dart';
 import 'package:se501_plantheon/presentation/screens/diary/banSanPham.dart';
 import 'package:se501_plantheon/presentation/screens/diary/chiTieu.dart';
 import 'package:se501_plantheon/presentation/screens/diary/climamate.dart';
@@ -27,25 +29,68 @@ class AddNewScreen extends StatefulWidget {
   State<AddNewScreen> createState() => _AddNewScreenState();
 }
 
-class _AddNewScreenState extends State<AddNewScreen> {
+class _AddNewScreenState extends State<AddNewScreen>
+    with SingleTickerProviderStateMixin {
   String? selectedCategory;
-  bool showCategorySelection = true;
+  bool showCategorySelection =
+      true; // This might become redundant or its usage needs to be aligned with selectedCategory != null
+
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   final List<Map<String, dynamic>> categories = [
-    {'id': 'targets', 'title': 'Chỉ tiêu', 'icon': Icons.track_changes},
+    {
+      'id': 'targets',
+      'title': 'Chỉ tiêu',
+      'icon': Icons.track_changes,
+      'image':
+          AppImages.expense, // Using expense as placeholder/appropriate image
+    },
     {
       'id': 'sales',
       'title': 'Bán sản phẩm, vật tư',
       'icon': Icons.shopping_cart,
+      'image':
+          AppImages.income, // Using income as placeholder/appropriate image
     },
-    {'id': 'disasters', 'title': 'Dịch bệnh thiên tai', 'icon': Icons.warning},
-    {'id': 'techniques', 'title': 'Kỹ thuật chăm sóc', 'icon': Icons.science},
+    {
+      'id': 'disasters',
+      'title': 'Dịch bệnh thiên tai',
+      'icon': Icons.warning,
+      'image': AppImages.disease,
+    },
+    {
+      'id': 'techniques',
+      'title': 'Kỹ thuật chăm sóc',
+      'icon': Icons.science,
+      'image': AppImages.technique,
+    },
     {
       'id': 'climate',
-      'title': 'Thích ứng với BĐKH và mô...',
+      'title': 'Thích ứng BĐKH & MT',
       'icon': Icons.cloud,
+      'image': AppImages.climate,
     },
-    {'id': 'other', 'title': 'Khác', 'icon': Icons.more_horiz},
+    {
+      'id': 'other',
+      'title': 'Khác',
+      'icon': Icons.more_horiz,
+      'image': AppImages.other,
+    },
   ];
 
   Widget _buildCategoryContent() {
@@ -85,6 +130,120 @@ class _AddNewScreenState extends State<AddNewScreen> {
     }
   }
 
+  Widget _buildSelectedCategoryView() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+      ),
+      child: SingleChildScrollView(child: _buildCategoryContent()),
+    );
+  }
+
+  Widget _buildCategoriesGrid() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Subtitle
+        Center(
+          child: const Text(
+            'Chọn chủ đề cho nhật ký hôm nay',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // Grid 6 mục
+        Expanded(
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 1.2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              // final isSelected = selectedCategory == category['id']; // This is now handled by the outer selectedCategory check
+
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedCategory = category['id'];
+                    _animationController.forward();
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: selectedCategory == category['id']
+                        ? const Color(0xFFE6F4EA)
+                        : Colors.grey[50], // Lighter grey for better look
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: selectedCategory == category['id']
+                          ? AppColors.primary_600
+                          : Colors.transparent,
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      if (selectedCategory != category['id'])
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      category['image'] != null
+                          ? Image.asset(
+                              category['image'],
+                              width: 80, // Increased size
+                              height: 80,
+                              fit: BoxFit.contain,
+                            )
+                          : Icon(
+                              category['icon'],
+                              size: 64, // Increased icon size
+                              color: selectedCategory == category['id']
+                                  ? AppColors.primary_600
+                                  : Colors.grey[600],
+                            ),
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          category['title'],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14, // Slightly bigger text
+                            color: selectedCategory == category['id']
+                                ? AppColors.primary_600
+                                : Colors.black87,
+                            fontWeight: selectedCategory == category['id']
+                                ? FontWeight.bold
+                                : FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -103,134 +262,83 @@ class _AddNewScreenState extends State<AddNewScreen> {
         );
       },
       child: Container(
-        padding: const EdgeInsets.all(AppConstraints.mainPadding),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header với nút Hủy/Quay lại và Thêm
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    if (showCategorySelection) {
-                      Navigator.pop(context);
-                    } else {
-                      setState(() {
-                        showCategorySelection = true;
-                        selectedCategory = null;
-                      });
-                    }
-                  },
-                  child: Text(
-                    showCategorySelection ? 'Hủy' : 'Quay lại',
-                    style: TextStyle(
-                      color: showCategorySelection ? Colors.red : Colors.blue,
-                      fontSize: 16,
+            // Handle bar
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            // Header Row
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (selectedCategory != null) {
+                        setState(() {
+                          selectedCategory = null;
+                          _animationController.reverse();
+                        });
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 4,
+                      ),
+                      color: Colors.transparent,
+                      child: selectedCategory != null
+                          ? const Icon(Icons.arrow_back, size: 24)
+                          : const Text(
+                              'Hủy',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                     ),
                   ),
-                ),
-                const Text(
-                  'Thêm mới',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(width: 60),
-              ],
+                  Text(
+                    'Thêm mới',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  // Empty container for balance
+                  const SizedBox(width: 40),
+                ],
+              ),
             ),
-            const SizedBox(height: 20),
-
-            // Hiển thị subtitle và grid khi chưa chọn category
-            if (showCategorySelection) ...[
-              // Subtitle
-              const Text(
-                'Chọn chủ đề cho nhật ký hôm nay',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+            const Divider(height: 1, color: Color(0xFFEEEEEE)),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(AppConstraints.mainPadding),
+                child: selectedCategory != null
+                    ? _buildSelectedCategoryView()
+                    : _buildCategoriesGrid(),
               ),
-              const SizedBox(height: 20),
-
-              // Grid 6 mục
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1.2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    final category = categories[index];
-                    final isSelected = selectedCategory == category['id'];
-
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedCategory = category['id'];
-                          showCategorySelection = false;
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: isSelected
-                                ? Colors.purple
-                                : Colors.grey.shade300,
-                            width: isSelected ? 2 : 1,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.grey.shade50,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              category['icon'],
-                              size: 32,
-                              color: isSelected ? Colors.purple : Colors.grey,
-                            ),
-                            const SizedBox(height: 8),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              child: Text(
-                                category['title'],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: isSelected
-                                      ? Colors.purple
-                                      : Colors.black87,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-
-            // Nội dung được chọn
-            if (!showCategorySelection && selectedCategory != null) ...[
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.white,
-                  ),
-                  child: SingleChildScrollView(child: _buildCategoryContent()),
-                ),
-              ),
-            ],
+            ),
           ],
         ),
       ),

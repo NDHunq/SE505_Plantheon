@@ -11,6 +11,7 @@ import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/account/contact.dart';
 import 'package:se501_plantheon/presentation/screens/account/my_post.dart';
+import 'package:se501_plantheon/presentation/screens/account/complaint_history.dart';
 import 'package:se501_plantheon/presentation/screens/account/widgets/setting_list_item.dart';
 import 'package:se501_plantheon/presentation/screens/account/widgets/setting_title_item.dart';
 import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
@@ -707,15 +708,25 @@ class HelpingSetting extends StatelessWidget {
               ),
             ),
             Divider(height: 1, color: AppColors.white),
-            SettingListItem(
-              leading: SvgPicture.asset(
-                AppVectors.postReport,
-                width: 20.sp,
-                height: 20.sp,
-                color: AppColors.primary_700,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const ComplaintHistory(),
+                  ),
+                );
+              },
+              child: SettingListItem(
+                leading: SvgPicture.asset(
+                  AppVectors.postReport,
+                  width: 20.sp,
+                  height: 20.sp,
+                  color: AppColors.primary_700,
+                ),
+                text: "Báo cáo",
+                action: Icon(Icons.keyboard_arrow_right_rounded, size: 20.sp),
               ),
-              text: "Báo cáo",
-              action: Icon(Icons.keyboard_arrow_right_rounded, size: 20.sp),
             ),
           ],
         ),
