@@ -20,6 +20,9 @@ import 'package:se501_plantheon/core/services/deep_link_service.dart';
 
 import 'package:toastification/toastification.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/report_modal.dart';
+import 'package:se501_plantheon/presentation/bloc/user/user_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/user/user_state.dart';
+import 'package:se501_plantheon/presentation/bloc/user/user_provider.dart';
 
 class PostDetail extends StatelessWidget {
   final String postId;
@@ -28,18 +31,21 @@ class PostDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => PostDetailBloc(
-        postRepository: PostRepositoryImpl(
-          remoteDataSource: PostRemoteDataSource(
-            client: http.Client(),
-            tokenStorage:
-                (context.read<AuthBloc>().authRepository as AuthRepositoryImpl)
-                    .tokenStorage,
+    return UserProvider(
+      child: BlocProvider(
+        create: (context) => PostDetailBloc(
+          postRepository: PostRepositoryImpl(
+            remoteDataSource: PostRemoteDataSource(
+              client: http.Client(),
+              tokenStorage:
+                  (context.read<AuthBloc>().authRepository
+                          as AuthRepositoryImpl)
+                      .tokenStorage,
+            ),
           ),
-        ),
-      )..add(FetchPostDetail(postId)),
-      child: PostDetailView(postId: postId),
+        )..add(FetchPostDetail(postId)),
+        child: PostDetailView(postId: postId),
+      ),
     );
   }
 }
@@ -101,7 +107,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                     },
                     child: CircleAvatar(
                       radius: 20.sp,
-                      backgroundColor: Colors.green[200],
+                      backgroundColor: AppColors.primary_200,
                       backgroundImage: state.post.avatar.isNotEmpty
                           ? NetworkImage(state.post.avatar)
                           : null,
@@ -139,7 +145,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                                     : state.post.fullName,
                                 style: AppTextStyles.s16Bold(
                                   color: state.post.isMyPost
-                                      ? Colors.green
+                                      ? AppColors.primary_main
                                       : Colors.black, // Explicit black
                                 ),
                               ),
@@ -276,14 +282,16 @@ class _PostDetailViewState extends State<PostDetailView> {
           } else if (state is PostDetailLoaded) {
             final post = state.post;
             return Padding(
-              padding: EdgeInsets.all(16.sp),
+              padding: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 8.sp),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(post.content, style: AppTextStyles.s14Regular()),
+                    SizedBox(height: 8.sp),
                     if (post.imageLink != null && post.imageLink!.isNotEmpty)
                       _buildImageCarousel(post.imageLink!),
+
                     // Disease block
                     DiseaseBlockWidget(
                       diseaseLink: post.diseaseLink,
@@ -294,6 +302,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                       scanHistoryId: post.scanHistoryId,
                       postImageLinks: post.imageLink,
                     ),
+                    SizedBox(height: 8.sp),
                     Row(
                       children: [
                         SvgPicture.asset(
@@ -319,53 +328,57 @@ class _PostDetailViewState extends State<PostDetailView> {
                         ),
                       ],
                     ),
+                    SizedBox(height: 8.sp),
                     Container(height: 1.sp, color: Colors.grey[200]),
-                    Row(
-                      children: [
-                        ActionButton(
-                          iconVector: post.liked
-                              ? AppVectors.heartSolid
-                              : AppVectors.heart,
-                          label: 'Thích',
-                          onPressed: () {
-                            context.read<PostDetailBloc>().add(
-                              ToggleLikePostDetail(post.id),
-                            );
-                          },
-                          iconColor: post.liked
-                              ? AppColors.red
-                              : AppColors.text_color_200,
-                          textColor: post.liked
-                              ? AppColors.red
-                              : AppColors.text_color_400,
-                        ),
-                        Container(
-                          width: 1.sp,
-                          height: 40.sp,
-                          color: Colors.grey[200],
-                        ),
-                        ActionButton(
-                          iconVector: AppVectors.comment,
-                          label: 'Bình luận',
-                          onPressed: () {},
-                        ),
-                        Container(
-                          width: 1.sp,
-                          height: 40.sp,
-                          color: Colors.grey[200],
-                        ),
-                        ActionButton(
-                          iconVector: AppVectors.share,
-                          label: 'Chia sẻ',
-                          onPressed: () {
-                            DeepLinkService().copyLinkToClipboard(
-                              context,
-                              host: 'post',
-                              params: {'id': post.id},
-                            );
-                          },
-                        ),
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Row(
+                        children: [
+                          ActionButton(
+                            iconVector: post.liked
+                                ? AppVectors.heartSolid
+                                : AppVectors.heart,
+                            label: 'Thích',
+                            onPressed: () {
+                              context.read<PostDetailBloc>().add(
+                                ToggleLikePostDetail(post.id),
+                              );
+                            },
+                            iconColor: post.liked
+                                ? AppColors.red
+                                : AppColors.text_color_200,
+                            textColor: post.liked
+                                ? AppColors.red
+                                : AppColors.text_color_400,
+                          ),
+                          Container(
+                            width: 1.sp,
+                            height: 40.sp,
+                            color: Colors.grey[200],
+                          ),
+                          ActionButton(
+                            iconVector: AppVectors.comment,
+                            label: 'Bình luận',
+                            onPressed: () {},
+                          ),
+                          Container(
+                            width: 1.sp,
+                            height: 40.sp,
+                            color: Colors.grey[200],
+                          ),
+                          ActionButton(
+                            iconVector: AppVectors.share,
+                            label: 'Chia sẻ',
+                            onPressed: () {
+                              DeepLinkService().copyLinkToClipboard(
+                                context,
+                                host: 'post',
+                                params: {'id': post.id},
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                     SizedBox(height: 16.sp),
                     Container(height: 1.sp, color: Colors.grey[200]),
@@ -414,15 +427,41 @@ class _PostDetailViewState extends State<PostDetailView> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            CircleAvatar(
-                              radius: 16.sp,
-                              backgroundColor: Colors.green[200],
-                              child: Text(
-                                'M',
-                                style: AppTextStyles.s12Bold(
-                                  color: Colors.white,
-                                ),
-                              ),
+                            BlocBuilder<UserBloc, UserState>(
+                              builder: (context, userState) {
+                                if (userState is UserLoaded) {
+                                  final user = userState.user;
+                                  return CircleAvatar(
+                                    radius: 16.sp,
+                                    backgroundColor: AppColors.primary_200,
+                                    backgroundImage: user.avatar.isNotEmpty
+                                        ? NetworkImage(user.avatar)
+                                        : null,
+                                    child: user.avatar.isEmpty
+                                        ? Text(
+                                            user.fullName.isNotEmpty
+                                                ? user.fullName[0]
+                                                : (user.username.isNotEmpty
+                                                      ? user.username[0]
+                                                      : 'M'),
+                                            style: AppTextStyles.s12Bold(
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : null,
+                                  );
+                                }
+                                return CircleAvatar(
+                                  radius: 16.sp,
+                                  backgroundColor: AppColors.primary_200,
+                                  child: Text(
+                                    'M',
+                                    style: AppTextStyles.s12Bold(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                             SizedBox(width: 8.sp),
                             Expanded(
@@ -669,7 +708,11 @@ class _PostDetailViewState extends State<PostDetailView> {
                         borderRadius: BorderRadius.circular(12.sp),
                         color: Colors.grey[300],
                       ),
-                      child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
+                      child: Icon(
+                        Icons.eco,
+                        size: 100.sp,
+                        color: AppColors.primary_main,
+                      ),
                     );
                   },
                 ),
@@ -704,6 +747,7 @@ class _PostDetailViewState extends State<PostDetailView> {
               },
             ),
           ),
+        SizedBox(height: 8.sp),
       ],
     );
   }
@@ -728,7 +772,7 @@ class _PostDetailViewState extends State<PostDetailView> {
               },
               child: CircleAvatar(
                 radius: isTopLevel ? 16.sp : 14.sp,
-                backgroundColor: Colors.green[200],
+                backgroundColor: AppColors.primary_200,
                 backgroundImage: comment.avatar.isNotEmpty
                     ? NetworkImage(comment.avatar)
                     : null,
@@ -749,81 +793,83 @@ class _PostDetailViewState extends State<PostDetailView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: EdgeInsets.all(isTopLevel ? 12.sp : 10.sp),
+                  padding: EdgeInsets.fromLTRB(8.sp, 0.sp, 8.sp, 12.sp),
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(12.sp),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => UserProfileScreen(
-                                      userId: comment.userId,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 8.sp),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => UserProfileScreen(
+                                        userId: comment.userId,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                comment.isMe ? 'Bạn' : comment.fullName,
-                                style:
-                                    (isTopLevel
-                                            ? AppTextStyles.s14Bold()
-                                            : AppTextStyles.s12Bold())
-                                        .copyWith(
-                                          color: comment.isMe
-                                              ? Colors.green
-                                              : Colors.black,
-                                        ),
-                              ),
-                            ),
-                          ),
-                          PopupMenuButton<String>(
-                            icon: Icon(
-                              Icons.more_horiz,
-                              size: 16.sp,
-                              color: Colors.grey[600],
-                            ),
-                            padding: EdgeInsets.zero,
-                            onSelected: (value) {
-                              if (value == 'report') {
-                                ReportModal.show(
-                                  context,
-                                  comment.id,
-                                  'COMMENT',
-                                );
-                              }
-                            },
-                            itemBuilder: (ctx) => [
-                              PopupMenuItem(
-                                value: 'report',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.flag_outlined, size: 16.sp),
-                                    SizedBox(width: 8.sp),
-                                    Text('Báo cáo'),
-                                  ],
+                                  );
+                                },
+                                child: Text(
+                                  comment.isMe ? 'Bạn' : comment.fullName,
+                                  style:
+                                      (isTopLevel
+                                              ? AppTextStyles.s14Bold()
+                                              : AppTextStyles.s12Bold())
+                                          .copyWith(
+                                            color: comment.isMe
+                                                ? AppColors.primary_main
+                                                : Colors.black,
+                                          ),
                                 ),
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 2.sp),
-                      Text(
-                        comment.content,
-                        style: isTopLevel
-                            ? AppTextStyles.s14Regular()
-                            : AppTextStyles.s12Regular(),
-                      ),
-                    ],
+                            ),
+                            PopupMenuButton<String>(
+                              icon: Icon(
+                                Icons.more_horiz,
+                                size: 16.sp,
+                                color: Colors.grey[600],
+                              ),
+
+                              onSelected: (value) {
+                                if (value == 'report') {
+                                  ReportModal.show(
+                                    context,
+                                    comment.id,
+                                    'COMMENT',
+                                  );
+                                }
+                              },
+                              itemBuilder: (ctx) => [
+                                PopupMenuItem(
+                                  value: 'report',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.flag_outlined, size: 16.sp),
+                                      Text('Báo cáo'),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        Text(
+                          comment.content,
+                          style: isTopLevel
+                              ? AppTextStyles.s14Regular()
+                              : AppTextStyles.s12Regular(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(height: 4.sp),

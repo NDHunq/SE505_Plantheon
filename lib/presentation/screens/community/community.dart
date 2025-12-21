@@ -278,7 +278,11 @@ class _CommunityState extends State<Community> {
                         borderRadius: BorderRadius.circular(12.sp),
                         color: Colors.grey[300],
                       ),
-                      child: Icon(Icons.eco, size: 100.sp, color: Colors.green),
+                      child: Icon(
+                        Icons.eco,
+                        size: 100.sp,
+                        color: AppColors.primary_main,
+                      ),
                     );
                   },
                 ),
@@ -313,6 +317,7 @@ class _CommunityState extends State<Community> {
               },
             ),
           ),
+        SizedBox(height: 8.sp),
       ],
     );
   }
@@ -359,7 +364,7 @@ class _CommunityState extends State<Community> {
           // spacing: 8.sp, // This line causes an error, assuming it's meant to be a property of a different widget or removed.
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.sp),
+              padding: EdgeInsets.only(left: 12.sp),
               child: Row(
                 children: [
                   GestureDetector(
@@ -380,11 +385,19 @@ class _CommunityState extends State<Community> {
                     },
                     child: CircleAvatar(
                       radius: 20.sp,
-                      backgroundColor: Colors.green[200],
-                      child: Text(
-                        username.isNotEmpty ? username[0] : '?',
-                        style: AppTextStyles.s16Bold(color: Colors.white),
-                      ),
+                      backgroundColor: AppColors.primary_200,
+                      backgroundImage:
+                          imageUrl.isNotEmpty &&
+                              !imageUrl.contains('placeholder')
+                          ? NetworkImage(imageUrl)
+                          : null,
+                      child:
+                          (imageUrl.isEmpty || imageUrl.contains('placeholder'))
+                          ? Text(
+                              username.isNotEmpty ? username[0] : '?',
+                              style: AppTextStyles.s16Bold(color: Colors.white),
+                            )
+                          : null,
                     ),
                   ),
                   SizedBox(width: 12.sp),
@@ -413,7 +426,9 @@ class _CommunityState extends State<Community> {
                               child: Text(
                                 isMyPost ? 'Bạn' : username,
                                 style: AppTextStyles.s16Bold(
-                                  color: isMyPost ? Colors.green : null,
+                                  color: isMyPost
+                                      ? AppColors.primary_main
+                                      : null,
                                 ),
                               ),
                             ),
@@ -441,6 +456,7 @@ class _CommunityState extends State<Community> {
                       ],
                     ),
                   ),
+
                   PopupMenuButton<String>(
                     icon: Icon(Icons.more_vert, color: Colors.grey[600]),
                     onSelected: (value) {
@@ -515,7 +531,6 @@ class _CommunityState extends State<Community> {
             // Post images carousel
             if (imageLink != null && imageLink.isNotEmpty)
               _buildImageCarousel(imageLink),
-            SizedBox(height: 8.sp),
             // Disease block
             DiseaseBlockWidget(
               diseaseLink: diseaseLink,

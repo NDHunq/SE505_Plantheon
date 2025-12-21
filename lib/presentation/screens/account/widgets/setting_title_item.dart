@@ -13,7 +13,7 @@ class SettingTitleItem extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 8.sp),
       child: Text(
         text,
-        style: AppTextStyles.s16Bold(color: AppColors.text_color_main),
+        style: AppTextStyles.s14Bold(color: AppColors.text_color_main),
       ),
     );
   }

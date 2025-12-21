@@ -95,7 +95,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
   String alertTime = "";
   String category = "";
   String unit = "Kg";
-  String currency = "đ";
+  String currency = "VNĐ";
   String? attachedLink;
   bool _isUploadingImage = false;
 
@@ -1083,7 +1083,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                         child: Text(
                           "Bán sản phẩm, vật tư",
                           style: TextStyle(
-                            color: Colors.green,
+                            color: AppColors.primary_main,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -1111,7 +1111,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.sp),
-                      borderSide: BorderSide(color: Colors.green, width: 2.sp),
+                      borderSide: BorderSide(
+                        color: AppColors.primary_main,
+                        width: 2.sp,
+                      ),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.sp),
@@ -1129,7 +1132,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   child: Switch(
                     value: allDay,
                     onChanged: (value) => setState(() => allDay = value),
-                    activeThumbColor: Colors.green,
+                    activeThumbColor: AppColors.primary_main,
                   ),
                 ),
 
@@ -1471,6 +1474,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   child: Row(
                     children: [
                       Expanded(
+                        flex: 2,
                         child: AppTextField(
                           controller: amountController,
                           keyboardType: TextInputType.number,
@@ -1480,27 +1484,16 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                         ),
                       ),
                       SizedBox(width: 8.sp),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => _showCurrencyDialog(context),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.sp,
-                              vertical: 8.sp,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade300),
-                              borderRadius: BorderRadius.circular(8.sp),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(currency),
-                                Icon(Icons.arrow_drop_down, size: 20.sp),
-                              ],
-                            ),
-                          ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.sp,
+                          vertical: 8.sp,
                         ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8.sp),
+                        ),
+                        child: Text("VNĐ", style: TextStyle(fontSize: 14.sp)),
                       ),
                     ],
                   ),

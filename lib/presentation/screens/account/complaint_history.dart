@@ -392,7 +392,7 @@ class _ComplaintCard extends StatelessWidget {
       case 'PENDING':
         return Colors.orange;
       case 'RESOLVED':
-        return Colors.green;
+        return AppColors.primary_main;
       case 'REJECTED':
         return Colors.red;
       default:

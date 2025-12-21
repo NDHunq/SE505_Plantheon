@@ -30,7 +30,6 @@ import 'package:se501_plantheon/presentation/screens/diary/helpers/day_event_map
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/weather_card.dart';
-import 'package:se501_plantheon/presentation/screens/navigator/navigator.dart';
 
 class DayDetailScreen extends StatefulWidget {
   final Map<String, dynamic>? arguments;
@@ -323,12 +322,17 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                       width: 32.sp,
                       height: 32.sp,
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.green : Colors.transparent,
+                        color: isSelected
+                            ? AppColors.primary_main
+                            : Colors.transparent,
                         shape: BoxShape.circle,
                         border: isSelected
                             ? null
                             : (isToday
-                                  ? Border.all(color: Colors.green, width: 2.sp)
+                                  ? Border.all(
+                                      color: AppColors.primary_main,
+                                      width: 2.sp,
+                                    )
                                   : null),
                       ),
                       child: Center(
@@ -377,7 +381,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
               ),
               SizedBox(height: 8.sp),
               ...allDayActivities.map((activity) {
-                final activityColor = _getColorByType(activity.type);
+                final activityColor = _getColorSetByType(activity.type);
                 return GestureDetector(
                   onTap: () => _showEditActivityBottomSheet(activity),
                   child: Container(
@@ -387,10 +391,10 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                       vertical: 10.sp,
                     ),
                     decoration: BoxDecoration(
-                      color: activityColor.shade100,
+                      color: activityColor.background,
                       borderRadius: BorderRadius.circular(8.sp),
                       border: Border.all(
-                        color: activityColor.shade300,
+                        color: activityColor.border,
                         width: 1.sp,
                       ),
                     ),
@@ -413,14 +417,14 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                               style: TextStyle(
                                 fontSize: 10.sp,
                                 fontWeight: FontWeight.w500,
-                                color: activityColor.shade700,
+                                color: activityColor.text,
                               ),
                             ),
                             SizedBox(width: 8.sp),
                             Icon(
                               Icons.arrow_forward_ios,
                               size: 14.sp,
-                              color: activityColor.shade700,
+                              color: activityColor.text,
                             ),
                           ],
                         ),
@@ -455,22 +459,50 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
     }
   }
 
-  MaterialColor _getColorByType(String type) {
+  _ActivityColors _getColorSetByType(String type) {
     switch (type.toUpperCase()) {
       case 'EXPENSE':
-        return Colors.red;
+        return _ActivityColors(
+          background: Colors.red.shade100,
+          border: Colors.red.shade300,
+          text: Colors.red.shade700,
+        );
       case 'INCOME':
-        return Colors.green;
+        return _ActivityColors(
+          background: AppColors.primary_100,
+          border: AppColors.primary_300,
+          text: AppColors.primary_700,
+        );
       case 'DISEASE':
-        return Colors.orange;
+        return _ActivityColors(
+          background: Colors.orange.shade100,
+          border: Colors.orange.shade300,
+          text: Colors.orange.shade700,
+        );
       case 'TECHNIQUE':
-        return Colors.blue;
+        return _ActivityColors(
+          background: Colors.blue.shade100,
+          border: Colors.blue.shade300,
+          text: Colors.blue.shade700,
+        );
       case 'CLIMATE':
-        return Colors.teal;
+        return _ActivityColors(
+          background: Colors.teal.shade100,
+          border: Colors.teal.shade300,
+          text: Colors.teal.shade700,
+        );
       case 'OTHER':
-        return Colors.purple;
+        return _ActivityColors(
+          background: Colors.purple.shade100,
+          border: Colors.purple.shade300,
+          text: Colors.purple.shade700,
+        );
       default:
-        return Colors.blueGrey;
+        return _ActivityColors(
+          background: Colors.blueGrey.shade100,
+          border: Colors.blueGrey.shade300,
+          text: Colors.blueGrey.shade700,
+        );
     }
   }
 
@@ -1055,4 +1087,16 @@ extension DayDetailExtension on _DayDetailScreenState {
       selectedIndex: 2, // Diary tab
     );
   }
+}
+
+class _ActivityColors {
+  final Color background;
+  final Color border;
+  final Color text;
+
+  _ActivityColors({
+    required this.background,
+    required this.border,
+    required this.text,
+  });
 }

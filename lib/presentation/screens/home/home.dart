@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/weather_card.dart';
-import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
-import 'package:se501_plantheon/presentation/screens/home/chat_bot.dart';
 import 'package:se501_plantheon/presentation/screens/home/sections/news_section.dart';
 import 'package:se501_plantheon/presentation/screens/home/sections/history_section.dart';
 import 'package:se501_plantheon/presentation/screens/home/sections/plants_section.dart';
@@ -54,25 +51,6 @@ class _HomeContentState extends State<_HomeContent> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ChatBot()),
-            );
-          },
-          backgroundColor: AppColors.orange,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100.sp),
-            side: BorderSide(color: AppColors.orange_400, width: 5.sp),
-          ),
-          child: SvgPicture.asset(
-            AppVectors.chatBot,
-            width: 30.sp,
-            height: 23.sp,
-            color: AppColors.text_color_main,
-          ),
-        ),
         body: RefreshIndicator(
           onRefresh: _onRefresh,
           color: AppColors.primary_main,

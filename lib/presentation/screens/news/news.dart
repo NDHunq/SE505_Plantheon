@@ -13,6 +13,7 @@ import 'package:se501_plantheon/presentation/bloc/news_tag/news_tag_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/news_tag/news_tag_state.dart';
 import 'package:se501_plantheon/presentation/screens/news/detail_news.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/blog_card.dart';
+import 'package:se501_plantheon/presentation/screens/news/widgets/horizontal_news_card.dart';
 import 'package:se501_plantheon/presentation/bloc/news/news_event.dart';
 import 'package:se501_plantheon/presentation/bloc/news_tag/news_tag_event.dart';
 import 'package:se501_plantheon/domain/entities/news_entity.dart';
@@ -27,13 +28,18 @@ class News extends StatefulWidget {
 
 class _NewsState extends State<News> {
   final TextEditingController _searchController = TextEditingController();
+  final PageController _carouselController = PageController(
+    viewportFraction: 0.85,
+  );
   String _selectedFilter = 'Tất cả';
   String _selectedSort = 'Mới nhất';
   String _tempSelectedSort = 'Mới nhất';
+  int _currentCarouselPage = 0;
 
   @override
   void dispose() {
     _searchController.dispose();
+    _carouselController.dispose();
     super.dispose();
   }
 
@@ -245,7 +251,7 @@ class _NewsState extends State<News> {
             ),
           ),
 
-          // Blog Grid
+          // Content - Carousel + List
           Expanded(
             child: BlocBuilder<NewsBloc, NewsState>(
               builder: (context, state) {
@@ -294,48 +300,205 @@ class _NewsState extends State<News> {
                     );
                   }
 
-                  return GridView.builder(
-                    padding: EdgeInsets.all(16.sp),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12.sp,
-                      mainAxisSpacing: 12.sp,
-                      childAspectRatio: 0.75,
-                    ),
-                    itemCount: sortedPosts.length,
-                    itemBuilder: (context, index) {
-                      final post = sortedPosts[index];
-                      final imageUrl = post.coverImageUrl.isNotEmpty
-                          ? post.coverImageUrl
-                          : 'assets/images/plants.jpg';
-                      return GestureDetector(
-                        onTap: () {
-                          final repo = context.read<NewsRepositoryImpl>();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DetailNews(
-                                newsId: post.id,
-                                repository: repo,
-                                fallbackTitle: post.title,
-                                fallbackDescription: post.description ?? '',
-                                fallbackImage: imageUrl,
-                                fallbackTag: post.blogTagName ?? '',
-                                fallbackDate:
-                                    post.publishedAt ?? post.createdAt,
-                                fallbackContent: post.description ?? '',
+                  // Split posts into carousel (first 3) and list (rest)
+                  final carouselPosts = sortedPosts.take(3).toList();
+                  final listPosts = sortedPosts.length > 3
+                      ? sortedPosts.sublist(3)
+                      : <NewsEntity>[];
+
+                  return SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Section 1: Carousel for first 3 posts
+                        if (carouselPosts.isNotEmpty) ...[
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16.sp,
+                              vertical: 8.sp,
+                            ),
+                            child: Text(
+                              'Nổi bật',
+                              style: AppTextStyles.s16Bold(
+                                color: AppColors.text_color_400,
                               ),
                             ),
-                          );
-                        },
-                        child: BlogCard(
-                          title: post.title,
-                          description: post.description ?? '',
-                          imagePath: imageUrl,
-                          isNetworkImage: post.coverImageUrl.isNotEmpty,
-                        ),
-                      );
-                    },
+                          ),
+                          SizedBox(
+                            height: 220.sp,
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: PageView.builder(
+                                    controller: _carouselController,
+                                    itemCount: carouselPosts.length,
+                                    padEnds: false,
+                                    onPageChanged: (index) {
+                                      setState(() {
+                                        _currentCarouselPage = index;
+                                      });
+                                    },
+                                    itemBuilder: (context, index) {
+                                      final post = carouselPosts[index];
+                                      final imageUrl =
+                                          post.coverImageUrl.isNotEmpty
+                                          ? post.coverImageUrl
+                                          : 'assets/images/plants.jpg';
+                                      // Custom padding based on index
+                                      EdgeInsets itemPadding;
+                                      if (index == 0) {
+                                        itemPadding = EdgeInsets.only(
+                                          left: 16.sp,
+                                          right: 8.sp,
+                                        );
+                                      } else if (index ==
+                                          carouselPosts.length - 1) {
+                                        itemPadding = EdgeInsets.only(
+                                          left: 8.sp,
+                                          right: 16.sp,
+                                        );
+                                      } else {
+                                        itemPadding = EdgeInsets.symmetric(
+                                          horizontal: 8.sp,
+                                        );
+                                      }
+
+                                      return Padding(
+                                        padding: itemPadding,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            final repo = context
+                                                .read<NewsRepositoryImpl>();
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailNews(
+                                                      newsId: post.id,
+                                                      repository: repo,
+                                                      fallbackTitle: post.title,
+                                                      fallbackDescription:
+                                                          post.description ??
+                                                          '',
+                                                      fallbackImage: imageUrl,
+                                                      fallbackTag:
+                                                          post.blogTagName ??
+                                                          '',
+                                                      fallbackDate:
+                                                          post.publishedAt ??
+                                                          post.createdAt,
+                                                      fallbackContent:
+                                                          post.description ??
+                                                          '',
+                                                    ),
+                                              ),
+                                            );
+                                          },
+                                          child: BlogCard(
+                                            title: post.title,
+                                            description: post.description ?? '',
+                                            imagePath: imageUrl,
+                                            isNetworkImage:
+                                                post.coverImageUrl.isNotEmpty,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: 8.sp),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(
+                                    carouselPosts.length,
+                                    (index) => AnimatedContainer(
+                                      duration: Duration(milliseconds: 300),
+                                      margin: EdgeInsets.symmetric(
+                                        horizontal: 4.sp,
+                                      ),
+                                      width: _currentCarouselPage == index
+                                          ? 20.sp
+                                          : 8.sp,
+                                      height: 8.sp,
+                                      decoration: BoxDecoration(
+                                        color: _currentCarouselPage == index
+                                            ? AppColors.primary_600
+                                            : AppColors.text_color_100,
+                                        borderRadius: BorderRadius.circular(
+                                          4.sp,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+
+                        // Section 2: Vertical list for remaining posts
+                        if (listPosts.isNotEmpty) ...[
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16.sp,
+                              vertical: 8.sp,
+                            ),
+                            child: Text(
+                              'Tất cả tin tức',
+                              style: AppTextStyles.s16Bold(
+                                color: AppColors.text_color_400,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: listPosts.length,
+                              itemBuilder: (context, index) {
+                                final post = listPosts[index];
+                                final imageUrl = post.coverImageUrl.isNotEmpty
+                                    ? post.coverImageUrl
+                                    : 'assets/images/plants.jpg';
+                                return HorizontalNewsCard(
+                                  title: post.title,
+                                  description: post.description ?? '',
+                                  imagePath: imageUrl,
+                                  isNetworkImage: post.coverImageUrl.isNotEmpty,
+                                  showDivider: index != listPosts.length - 1,
+                                  onTap: () {
+                                    final repo = context
+                                        .read<NewsRepositoryImpl>();
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetailNews(
+                                          newsId: post.id,
+                                          repository: repo,
+                                          fallbackTitle: post.title,
+                                          fallbackDescription:
+                                              post.description ?? '',
+                                          fallbackImage: imageUrl,
+                                          fallbackTag: post.blogTagName ?? '',
+                                          fallbackDate:
+                                              post.publishedAt ??
+                                              post.createdAt,
+                                          fallbackContent:
+                                              post.description ?? '',
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+
+                        SizedBox(height: 16.sp),
+                      ],
+                    ),
                   );
                 }
 

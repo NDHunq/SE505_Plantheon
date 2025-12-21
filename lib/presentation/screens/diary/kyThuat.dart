@@ -991,7 +991,7 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                         child: Text(
                           "Kỹ thuật chăm sóc",
                           style: TextStyle(
-                            color: Colors.green,
+                            color: AppColors.primary_main,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -1019,7 +1019,10 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.sp),
-                      borderSide: BorderSide(color: Colors.green, width: 2.sp),
+                      borderSide: BorderSide(
+                        color: AppColors.primary_main,
+                        width: 2.sp,
+                      ),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.sp),
@@ -1037,7 +1040,7 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                   child: Switch(
                     value: allDay,
                     onChanged: (value) => setState(() => allDay = value),
-                    activeThumbColor: Colors.green,
+                    activeThumbColor: AppColors.primary_main,
                   ),
                 ),
 

@@ -1024,7 +1024,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                         child: Text(
                           "Thích ứng BĐKH & MT",
                           style: TextStyle(
-                            color: Colors.green,
+                            color: AppColors.primary_main,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -1052,7 +1052,10 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.sp),
-                      borderSide: BorderSide(color: Colors.green, width: 2.sp),
+                      borderSide: BorderSide(
+                        color: AppColors.primary_main,
+                        width: 2.sp,
+                      ),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.sp),
@@ -1070,7 +1073,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                   child: Switch(
                     value: allDay,
                     onChanged: (value) => setState(() => allDay = value),
-                    activeThumbColor: Colors.green,
+                    activeThumbColor: AppColors.primary_main,
                   ),
                 ),
 

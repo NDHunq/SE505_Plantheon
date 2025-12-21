@@ -944,7 +944,7 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                         child: Text(
                           "Dịch bệnh",
                           style: TextStyle(
-                            color: Colors.green,
+                            color: AppColors.primary_main,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -972,7 +972,10 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.sp),
-                      borderSide: BorderSide(color: Colors.green, width: 2.sp),
+                      borderSide: BorderSide(
+                        color: AppColors.primary_main,
+                        width: 2.sp,
+                      ),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.sp),
@@ -990,7 +993,7 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                   child: Switch(
                     value: allDay,
                     onChanged: (value) => setState(() => allDay = value),
-                    activeThumbColor: Colors.green,
+                    activeThumbColor: AppColors.primary_main,
                   ),
                 ),
 
@@ -1444,7 +1447,10 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                 // Ghi chú
                 AddNewRowVertical(
                   label: "Ghi chú",
-                  child: AppTextField(controller: noteController, maxLines: 5),
+                  child: AppTextField(
+                    controller: noteController,
+                    textStyle: TextStyle(fontSize: 14.sp),
+                  ),
                 ),
 
                 // Save / Delete actions

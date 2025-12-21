@@ -448,7 +448,7 @@ class _BillOfDayState extends State<BillOfDay> {
         break;
       case 'INCOME':
       case 'PRODUCT':
-        baseColor = Colors.green;
+        baseColor = AppColors.primary_main;
         break;
       case 'DISEASE':
         baseColor = Colors.orange;

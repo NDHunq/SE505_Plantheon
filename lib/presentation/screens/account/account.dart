@@ -296,7 +296,7 @@ class _ProfileCardState extends State<_profileCard> {
                         height: 16.sp,
                         child: const LoadingIndicator(),
                       )
-                    : const Icon(Icons.save, color: Colors.green),
+                    : const Icon(Icons.save, color: AppColors.primary_main),
                 onPressed: isSaving ? null : _saveProfile,
               ),
               IconButton(
@@ -499,74 +499,8 @@ class PersonalSetting extends StatefulWidget {
 }
 
 class _PersonalSettingState extends State<PersonalSetting> {
-  bool isNotificationsEnabled = false;
-
   @override
   Widget build(BuildContext context) {
-    String selectedLanguage = 'vi';
-
-    void showLanguageDialog() {
-      showDialog(
-        context: context,
-        builder: (context) {
-          String tempLanguage = selectedLanguage;
-          return StatefulBuilder(
-            builder: (context, setState) {
-              return BasicDialog(
-                width: 100.sp,
-                title: 'Chọn ngôn ngữ',
-                content: '',
-                confirmText: 'Xác nhận',
-                cancelText: 'Huỷ',
-                onConfirm: () {
-                  setState(() {
-                    selectedLanguage = tempLanguage;
-                  });
-                },
-                onCancel: () {},
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    RadioListTile<String>(
-                      title: SvgPicture.asset(
-                        AppVectors.vi,
-                        width: 40.sp,
-                        height: 40.sp,
-                      ),
-                      value: 'vi',
-                      groupValue: tempLanguage,
-                      activeColor: AppColors.primary_main,
-
-                      onChanged: (value) {
-                        setState(() {
-                          tempLanguage = value!;
-                        });
-                      },
-                    ),
-                    RadioListTile<String>(
-                      title: SvgPicture.asset(
-                        AppVectors.en,
-                        width: 40.sp,
-                        height: 40.sp,
-                      ),
-                      value: 'en',
-                      activeColor: AppColors.primary_main,
-                      groupValue: tempLanguage,
-                      onChanged: (value) {
-                        setState(() {
-                          tempLanguage = value!;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-      );
-    }
-
     return Container(
       decoration: BoxDecoration(
         color: Color(0xFFE6F3F1),
@@ -617,49 +551,6 @@ class _PersonalSettingState extends State<PersonalSetting> {
                   color: AppColors.primary_700,
                 ),
                 text: "Lịch sử quét bệnh",
-                action: Icon(Icons.keyboard_arrow_right_rounded, size: 20.sp),
-              ),
-            ),
-            Divider(height: 1.sp, color: AppColors.white),
-            SettingListItem(
-              isHavePadding: false,
-              leading: SvgPicture.asset(
-                AppVectors.bell,
-                width: 20.sp,
-                height: 20.sp,
-                color: AppColors.primary_700,
-              ),
-              text: "Thông báo",
-              action: Transform.scale(
-                scale: 0.8,
-                child: Switch(
-                  value: isNotificationsEnabled,
-                  onChanged: (value) {
-                    setState(() {
-                      isNotificationsEnabled = value;
-                    });
-                  },
-                  thumbColor: WidgetStateProperty.all(AppColors.white),
-                  trackColor: WidgetStateProperty.resolveWith<Color>((states) {
-                    if (states.contains(WidgetState.selected)) {
-                      return AppColors.primary_main;
-                    }
-                    return AppColors.text_color_100;
-                  }),
-                ),
-              ),
-            ),
-            Divider(height: 1.sp, color: AppColors.white),
-            GestureDetector(
-              onTap: showLanguageDialog,
-              child: SettingListItem(
-                leading: SvgPicture.asset(
-                  AppVectors.global,
-                  width: 20.sp,
-                  height: 20.sp,
-                  color: AppColors.primary_700,
-                ),
-                text: "Ngôn ngữ",
                 action: Icon(Icons.keyboard_arrow_right_rounded, size: 20.sp),
               ),
             ),

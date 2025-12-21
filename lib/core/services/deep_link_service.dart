@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:se501_plantheon/presentation/screens/community/post_detail.dart';
 import 'package:toastification/toastification.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
 class DeepLinkService {
   static final DeepLinkService _instance = DeepLinkService._internal();
@@ -110,7 +110,7 @@ class DeepLinkService {
         autoCloseDuration: const Duration(seconds: 2),
         alignment: Alignment.bottomCenter,
         showProgressBar: true,
-        icon: const Icon(Icons.check_circle, color: Colors.green),
+        icon: const Icon(Icons.check_circle, color: AppColors.primary_main),
       );
     }
   }

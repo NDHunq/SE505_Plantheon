@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/services.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/presentation/screens/diary/diary.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
 /// Full-screen loading screen với hiệu ứng đẹp và xử lý system UI overlays
 class FullScreenLoadingScreen extends StatefulWidget {
@@ -113,10 +114,10 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.green.shade300,
-              Colors.green.shade500,
-              Colors.green.shade700,
-              Colors.green.shade900,
+              AppColors.primary_300,
+              AppColors.primary_600,
+              AppColors.primary_700,
+              AppColors.primary_900,
             ],
             stops: const [0.0, 0.3, 0.7, 1.0],
           ),
@@ -166,7 +167,7 @@ class _FullScreenLoadingScreenState extends State<FullScreenLoadingScreen>
                             child: Icon(
                               Icons.eco,
                               size: 70.sp,
-                              color: Colors.green.shade600,
+                              color: AppColors.primary_600,
                             ),
                           ),
                         ),

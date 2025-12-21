@@ -337,7 +337,7 @@ class CommonNavigationActions {
     return NavigationAction.icon(
       icon: Icons.add,
       onPressed: onPressed,
-      backgroundColor: backgroundColor ?? Colors.green,
+      backgroundColor: backgroundColor ?? AppColors.primary_main,
       iconColor: iconColor ?? Colors.white,
     );
   }
@@ -379,7 +379,7 @@ class CommonNavigationActions {
     return NavigationAction.icon(
       icon: Icons.save,
       onPressed: onPressed,
-      backgroundColor: backgroundColor ?? Colors.green,
+      backgroundColor: backgroundColor ?? AppColors.primary_main,
       iconColor: iconColor ?? Colors.white,
     );
   }

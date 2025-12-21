@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_state.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/diary/models/day_event.dart';
 
 class DayEventMapper {
@@ -112,7 +113,7 @@ class DayEventMapper {
       case 'EXPENSE':
         return Colors.red;
       case 'INCOME':
-        return Colors.green;
+        return AppColors.primary_main;
       case 'DISEASE':
         return Colors.orange;
       case 'TECHNIQUE':

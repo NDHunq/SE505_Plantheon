@@ -95,7 +95,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
   String alertTime = "";
   String category = "";
   String unit = "Kg";
-  String currency = "đ";
+  String currency = "VNĐ";
   String? attachedLink; // URL ảnh từ Supabase
   bool _isUploadingImage = false;
 
@@ -1091,7 +1091,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                         child: Text(
                           "Chi tiêu",
                           style: TextStyle(
-                            color: Colors.green,
+                            color: AppColors.primary_main,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -1119,7 +1119,10 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.sp),
-                      borderSide: BorderSide(color: Colors.green, width: 2.sp),
+                      borderSide: BorderSide(
+                        color: AppColors.primary_main,
+                        width: 2.sp,
+                      ),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.sp),
@@ -1137,7 +1140,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                   child: Switch(
                     value: allDay,
                     onChanged: (value) => setState(() => allDay = value),
-                    activeThumbColor: Colors.green,
+                    activeThumbColor: AppColors.primary_main,
                   ),
                 ),
 
@@ -1482,6 +1485,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                   child: Row(
                     children: [
                       Expanded(
+                        flex: 2,
                         child: AppTextField(
                           controller: amountController,
                           keyboardType: TextInputType.number,
@@ -1491,27 +1495,16 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                         ),
                       ),
                       SizedBox(width: 8.sp),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => _showCurrencyDialog(context),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.sp,
-                              vertical: 8.sp,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade300),
-                              borderRadius: BorderRadius.circular(8.sp),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(currency),
-                                Icon(Icons.arrow_drop_down, size: 20.sp),
-                              ],
-                            ),
-                          ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.sp,
+                          vertical: 8.sp,
                         ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8.sp),
+                        ),
+                        child: Text("VNĐ", style: TextStyle(fontSize: 14.sp)),
                       ),
                     ],
                   ),

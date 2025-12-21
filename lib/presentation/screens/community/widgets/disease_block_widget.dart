@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
@@ -40,7 +40,7 @@ class _DiseaseBlockWidgetState extends State<DiseaseBlockWidget> {
     }
 
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8.sp),
+      margin: EdgeInsets.symmetric(vertical: 0.sp),
       decoration: BoxDecoration(
         color: Colors.orange[50],
         borderRadius: BorderRadius.circular(12.sp),
@@ -152,31 +152,22 @@ class _DiseaseBlockWidgetState extends State<DiseaseBlockWidget> {
                       ),
                     ),
                     SizedBox(height: 8.sp),
-                    Html(
+                    MarkdownBody(
                       data: widget.diseaseDescription!,
-                      style: {
-                        "body": Style(
-                          margin: Margins.zero,
-                          padding: HtmlPaddings.zero,
-                          fontSize: FontSize(12.sp),
+                      styleSheet: MarkdownStyleSheet(
+                        p: AppTextStyles.s12Regular(
                           color: AppColors.text_color_main,
                         ),
-                        "p": Style(margin: Margins.only(bottom: 8.sp)),
-                        "h2": Style(
-                          fontSize: FontSize(14.sp),
-                          fontWeight: FontWeight.bold,
-                          margin: Margins.only(top: 8.sp, bottom: 4.sp),
+                        h2: AppTextStyles.s14Bold(
+                          color: AppColors.text_color_main,
                         ),
-                        "h3": Style(
-                          fontSize: FontSize(12.sp),
-                          fontWeight: FontWeight.bold,
-                          margin: Margins.only(top: 8.sp, bottom: 4.sp),
+                        h3: AppTextStyles.s12Bold(
+                          color: AppColors.text_color_main,
                         ),
-                        "ul": Style(
-                          margin: Margins.only(left: 16.sp, bottom: 8.sp),
+                        listBullet: AppTextStyles.s12Regular(
+                          color: AppColors.text_color_main,
                         ),
-                        "li": Style(margin: Margins.only(bottom: 4.sp)),
-                      },
+                      ),
                     ),
                     SizedBox(height: 12.sp),
                   ],
@@ -190,19 +181,16 @@ class _DiseaseBlockWidgetState extends State<DiseaseBlockWidget> {
                       ),
                     ),
                     SizedBox(height: 8.sp),
-                    Html(
+                    MarkdownBody(
                       data: widget.diseaseSolution!,
-                      style: {
-                        "body": Style(
-                          margin: Margins.zero,
-                          padding: HtmlPaddings.zero,
-                          fontSize: FontSize(12.sp),
+                      styleSheet: MarkdownStyleSheet(
+                        p: AppTextStyles.s12Regular(
                           color: AppColors.text_color_main,
                         ),
-                        "p": Style(margin: Margins.only(bottom: 8.sp)),
-                        "strong": Style(fontWeight: FontWeight.bold),
-                        "br": Style(margin: Margins.only(bottom: 4.sp)),
-                      },
+                        strong: AppTextStyles.s12Bold(
+                          color: AppColors.text_color_main,
+                        ),
+                      ),
                     ),
                     SizedBox(height: 12.sp),
                   ],

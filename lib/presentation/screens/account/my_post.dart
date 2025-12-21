@@ -74,6 +74,7 @@ class _MyPostView extends StatelessWidget {
                     timeAgo: _formatTimeAgo(post.createdAt),
                     content: post.content,
                     category: post.tags.isNotEmpty ? post.tags.first : 'Khác',
+                    imageUrl: post.avatar.isNotEmpty ? post.avatar : '',
                     imageLink: post.imageLink,
                     diseaseLink: post.diseaseLink,
                     diseaseName: post.diseaseName,
@@ -187,6 +188,7 @@ class _MyPostView extends StatelessWidget {
     required String timeAgo,
     required String content,
     required String category,
+    required String imageUrl,
     required List<String>? imageLink,
     String? diseaseLink,
     String? diseaseName,
@@ -217,11 +219,18 @@ class _MyPostView extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 20.sp,
-                    backgroundColor: Colors.green[200],
-                    child: Text(
-                      username.isNotEmpty ? username[0] : '?',
-                      style: AppTextStyles.s16Bold(color: Colors.white),
-                    ),
+                    backgroundColor: AppColors.primary_200,
+                    backgroundImage:
+                        imageUrl.isNotEmpty && !imageUrl.contains('placeholder')
+                        ? NetworkImage(imageUrl)
+                        : null,
+                    child:
+                        (imageUrl.isEmpty || imageUrl.contains('placeholder'))
+                        ? Text(
+                            username.isNotEmpty ? username[0] : '?',
+                            style: AppTextStyles.s16Bold(color: Colors.white),
+                          )
+                        : null,
                   ),
                   SizedBox(width: 12.sp),
                   Expanded(
@@ -232,7 +241,9 @@ class _MyPostView extends StatelessWidget {
                           children: [
                             Text(
                               'Bạn',
-                              style: AppTextStyles.s16Bold(color: Colors.green),
+                              style: AppTextStyles.s16Bold(
+                                color: AppColors.primary_main,
+                              ),
                             ),
                             SizedBox(width: 4.sp),
                             Container(

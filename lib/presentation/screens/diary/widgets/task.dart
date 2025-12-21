@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
 class TaskWidget extends StatelessWidget {
   final String title;
@@ -120,7 +121,7 @@ extension TaskWidgetFactory on TaskWidget {
       amountText: amount,
       startTime: startTime,
       endTime: endTime,
-      baseColor: Colors.green,
+      baseColor: AppColors.primary_main,
       isShort: isShort,
     );
   }

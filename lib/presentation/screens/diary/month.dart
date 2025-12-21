@@ -110,7 +110,7 @@ class _MonthScreenState extends State<MonthScreen> {
         children: [
           Scaffold(
             body: Padding(
-              padding: EdgeInsets.all(AppConstraints.mainPadding.sp),
+              padding: EdgeInsets.all(0),
               child: Column(
                 children: [
                   Row(
@@ -297,9 +297,12 @@ class ADayWidget extends StatelessWidget {
             SizedBox(height: 8.sp),
             // Phần tasks - co giãn để lấp đầy không gian còn lại
             Expanded(
-              child: SizedBox(
-                width: double.infinity,
-                child: ArrayTaskWidget(tasks),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 1.sp),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ArrayTaskWidget(tasks),
+                ),
               ),
             ),
             // Gạch dưới - cố định ở cuối
@@ -325,7 +328,7 @@ class ArrayTaskWidget extends StatelessWidget {
       case 'EXPENSE':
         return Colors.red;
       case 'INCOME':
-        return Colors.green;
+        return AppColors.primary_main;
       case 'DISEASE':
         return Colors.orange;
       case 'TECHNIQUE':
@@ -358,25 +361,28 @@ class ArrayTaskWidget extends StatelessWidget {
           final Color bgColor = _getColorByType(activity.type);
           return Container(
             width: double.infinity,
-            height: 8.sp,
+            height: 10.sp,
             margin: EdgeInsets.only(top: 1.sp),
             padding: EdgeInsets.symmetric(horizontal: 2.sp),
             decoration: BoxDecoration(
               color: bgColor,
               borderRadius: BorderRadius.circular(4.sp),
             ),
-            alignment: Alignment.center,
-            child: Text(
-              activity.title,
-              style: TextStyle(
-                fontSize: 8.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
+            alignment: Alignment.topCenter,
+            child: Transform.translate(
+              offset: const Offset(0, -2),
+              child: Text(
+                activity.title,
+                style: TextStyle(
+                  fontSize: 10.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                softWrap: false,
+                textAlign: TextAlign.start,
               ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              softWrap: false,
-              textAlign: TextAlign.center,
             ),
           );
         }),

@@ -16,6 +16,7 @@ import 'package:se501_plantheon/presentation/screens/diary/kyThuat.dart';
 import 'package:se501_plantheon/presentation/screens/diary/dichBenh.dart';
 import 'package:se501_plantheon/presentation/screens/diary/climamate.dart';
 import 'package:toastification/toastification.dart';
+import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
 class ReusableActivitySuggestionItem extends StatefulWidget {
   final Activity activity;
@@ -342,7 +343,7 @@ class _ReusableActivitySuggestionItemState
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(16.sp),
+        padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 12.sp),
         child: Row(
           children: [
             // Icon bên trái
@@ -657,7 +658,10 @@ class _ReusableAddButtonState extends State<ReusableAddButton> {
                 autoCloseDuration: const Duration(seconds: 2),
                 alignment: Alignment.bottomCenter,
                 showProgressBar: true,
-                icon: const Icon(Icons.check_circle, color: Colors.green),
+                icon: const Icon(
+                  Icons.check_circle,
+                  color: AppColors.primary_main,
+                ),
               );
             }
           }
@@ -695,7 +699,10 @@ class _ReusableAddButtonState extends State<ReusableAddButton> {
                 autoCloseDuration: const Duration(seconds: 2),
                 alignment: Alignment.bottomCenter,
                 showProgressBar: true,
-                icon: const Icon(Icons.check_circle, color: Colors.green),
+                icon: const Icon(
+                  Icons.check_circle,
+                  color: AppColors.primary_main,
+                ),
               );
             }
           }

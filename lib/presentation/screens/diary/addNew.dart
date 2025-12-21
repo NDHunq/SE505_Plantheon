@@ -136,11 +136,7 @@ class _AddNewScreenState extends State<AddNewScreen>
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(16.sp),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8.sp),
-        color: Colors.white,
-      ),
+      decoration: BoxDecoration(color: Colors.white),
       child: SingleChildScrollView(child: _buildCategoryContent()),
     );
   }
@@ -305,12 +301,12 @@ class _AddNewScreenState extends State<AddNewScreen>
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(
-                        vertical: 8.sp,
+                        vertical: 0.sp,
                         horizontal: 4.sp,
                       ),
                       color: Colors.transparent,
                       child: selectedCategory != null
-                          ? Icon(Icons.arrow_back, size: 24.sp)
+                          ? Icon(Icons.arrow_back, size: 20.sp)
                           : Text(
                               'Hủy',
                               style: TextStyle(
@@ -333,7 +329,7 @@ class _AddNewScreenState extends State<AddNewScreen>
                 ],
               ),
             ),
-            Divider(height: 1.sp, color: Color(0xFFEEEEEE)),
+
             Expanded(
               child: selectedCategory != null
                   ? _buildSelectedCategoryView()

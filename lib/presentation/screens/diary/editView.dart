@@ -68,7 +68,7 @@ class _EditViewScreenState extends State<EditViewScreen> {
                 Text(
                   widget.title ?? 'Chỉnh sửa',
                   style: TextStyle(
-                    fontSize: 18.sp,
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

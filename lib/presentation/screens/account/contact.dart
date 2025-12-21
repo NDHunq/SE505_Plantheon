@@ -99,7 +99,7 @@ class Contact extends StatelessWidget {
                       _buildDivider(),
                       _buildContactItem(
                         icon: Icons.phone,
-                        iconColor: Colors.green[600]!,
+                        iconColor: AppColors.primary_600,
                         title: 'Điện thoại',
                         content: '(028) 3823 4567',
                       ),

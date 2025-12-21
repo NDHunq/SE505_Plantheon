@@ -264,10 +264,6 @@ class _DiaryState extends State<Diary> {
           icon: Icons.calendar_month,
           onPressed: _backToCalendar,
         ),
-        CommonNavigationActions.search(
-          onPressed: () => _showSearchModal(context),
-        ),
-        CommonNavigationActions.add(onPressed: () => _showAddNewModal(context)),
       ];
     } else {
       // Default actions cho các view khác
@@ -286,13 +282,7 @@ class _DiaryState extends State<Diary> {
         );
       }
 
-      return [
-        NavigationAction(icon: Icons.bar_chart, onPressed: billAction),
-        CommonNavigationActions.search(
-          onPressed: () => _showSearchModal(context),
-        ),
-        CommonNavigationActions.add(onPressed: () => _showAddNewModal(context)),
-      ];
+      return [NavigationAction(icon: Icons.bar_chart, onPressed: billAction)];
     }
   }
 
@@ -339,6 +329,20 @@ class _DiaryState extends State<Diary> {
             onBackPressed: _shouldShowBackButton() ? _handleBackPressed : null,
             customTitle: customTitle,
             actions: _getActions(),
+          ),
+          floatingActionButton: FloatingActionButton(
+            heroTag: 'diary_fab',
+            onPressed: () => _showAddNewModal(context),
+            backgroundColor: AppColors.orange,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100.sp),
+              side: BorderSide(color: AppColors.orange_400, width: 5.sp),
+            ),
+            child: Icon(
+              Icons.add_rounded,
+              size: 30.sp,
+              color: AppColors.text_color_main,
+            ),
           ),
           body: Stack(
             children: [
@@ -437,53 +441,24 @@ class _DiaryState extends State<Diary> {
     );
   }
 
-  void _showSearchModal(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Tìm kiếm nhật ký"),
-        content: const TextField(
-          decoration: InputDecoration(
-            hintText: "Nhập từ khóa tìm kiếm...",
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.search),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Hủy"),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Tìm"),
-          ),
-        ],
-      ),
-    );
-  }
-
   /// Lazy load 12 tháng
   Widget _buildMonthGrid() {
-    return Padding(
-      padding: EdgeInsets.all(8.0.sp),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          childAspectRatio: 1,
-          crossAxisSpacing: 0,
-          mainAxisSpacing: 0,
-        ),
-        itemCount: 12,
-        itemBuilder: (context, index) {
-          return MonthWidget(
-            key: ValueKey("$selectedYear-${index + 1}"),
-            month: index + 1,
-            year: selectedYear,
-            onMonthSelected: _selectMonth,
-          );
-        },
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        childAspectRatio: 1,
+        crossAxisSpacing: 0,
+        mainAxisSpacing: 0,
       ),
+      itemCount: 12,
+      itemBuilder: (context, index) {
+        return MonthWidget(
+          key: ValueKey("$selectedYear-${index + 1}"),
+          month: index + 1,
+          year: selectedYear,
+          onMonthSelected: _selectMonth,
+        );
+      },
     );
   }
 
@@ -497,7 +472,7 @@ class _DiaryState extends State<Diary> {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        mainAxisSpacing: 8,
+        mainAxisSpacing: 0,
         crossAxisSpacing: 8,
         childAspectRatio: 2,
       ),
@@ -616,60 +591,51 @@ class _MonthWidgetState extends State<MonthWidget> {
         (now.year == widget.year && now.month == widget.month);
     final int daysInMonth = DateUtils.getDaysInMonth(widget.year, widget.month);
 
-    return Padding(
-      padding: EdgeInsets.all(4.0.sp),
-      child: GestureDetector(
-        onTap: () => _navigateToMonth(context),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.sp),
-            border: Border.all(
-              color: isCurrentMonth
-                  ? AppColors.primary_600
-                  : Colors.grey.shade300,
-              width: isCurrentMonth ? 2 : 1,
-            ),
-            color: isCurrentMonth ? AppColors.primary_50 : Colors.white,
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(8.sp),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Tháng ${widget.month}",
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                    color: isCurrentMonth
-                        ? AppColors.primary_600
-                        : Colors.black87,
-                  ),
+    return GestureDetector(
+      onTap: () => _navigateToMonth(context),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300, width: 1),
+          color: Colors.white,
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(8.sp),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Tháng ${widget.month}",
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                  color: isCurrentMonth
+                      ? AppColors.primary_600
+                      : Colors.black87,
                 ),
+              ),
+
+              Text(
+                "$daysInMonth ngày",
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: isCurrentMonth
+                      ? AppColors.primary_600
+                      : Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              if (isCurrentMonth) ...[
                 SizedBox(height: 4.sp),
-                Text(
-                  "$daysInMonth ngày",
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: isCurrentMonth
-                        ? AppColors.primary_600
-                        : Colors.grey.shade600,
-                    fontWeight: FontWeight.w500,
+                Container(
+                  width: 6.sp,
+                  height: 6.sp,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary_600,
+                    shape: BoxShape.circle,
                   ),
                 ),
-                if (isCurrentMonth) ...[
-                  SizedBox(height: 4.sp),
-                  Container(
-                    width: 6.sp,
-                    height: 6.sp,
-                    decoration: const BoxDecoration(
-                      color: AppColors.primary_600,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ],
               ],
-            ),
+            ],
           ),
         ),
       ),

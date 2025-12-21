@@ -135,7 +135,7 @@ class _UserProfileView extends StatelessWidget {
           // Avatar
           CircleAvatar(
             radius: 50.sp,
-            backgroundColor: Colors.green[200],
+            backgroundColor: AppColors.primary_200,
             backgroundImage: state.user.avatar.isNotEmpty
                 ? NetworkImage(state.user.avatar)
                 : null,
@@ -199,7 +199,7 @@ class _UserProfileView extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 20.sp,
-                  backgroundColor: Colors.green[200],
+                  backgroundColor: AppColors.primary_200,
                   child: Text(
                     post.fullName.isNotEmpty ? post.fullName[0] : '?',
                     style: AppTextStyles.s16Bold(color: Colors.white),
@@ -215,7 +215,9 @@ class _UserProfileView extends StatelessWidget {
                           Text(
                             post.isMyPost ? 'Bạn' : post.fullName,
                             style: AppTextStyles.s16Bold(
-                              color: post.isMyPost ? Colors.green : null,
+                              color: post.isMyPost
+                                  ? AppColors.primary_main
+                                  : null,
                             ),
                           ),
                           SizedBox(width: 4.sp),
@@ -454,7 +456,7 @@ class _UserProfileView extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: currentPage == index
-                            ? Colors.green
+                            ? AppColors.primary_main
                             : Colors.grey[300],
                       ),
                     ),

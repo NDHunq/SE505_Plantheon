@@ -293,7 +293,7 @@ class _BillOfMonthState extends State<BillOfMonth> {
             child: Row(
               children: [
                 Expanded(
-                  flex: 1,
+                  flex: 2,
                   child: Text(
                     monthName,
                     style: TextStyle(
@@ -306,7 +306,7 @@ class _BillOfMonthState extends State<BillOfMonth> {
                   ),
                 ),
                 Expanded(
-                  flex: 3,
+                  flex: 5,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [

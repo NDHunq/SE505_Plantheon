@@ -52,7 +52,10 @@ class _SignUpPageState extends State<SignUpPage> {
             autoCloseDuration: const Duration(seconds: 3),
             alignment: Alignment.bottomCenter,
             showProgressBar: true,
-            icon: const Icon(Icons.check_circle_outline, color: Colors.green),
+            icon: const Icon(
+              Icons.check_circle_outline,
+              color: AppColors.primary_main,
+            ),
           );
           Navigator.pop(context);
         } else if (state is AuthError) {

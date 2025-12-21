@@ -31,6 +31,7 @@ import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class ScanSolution extends StatefulWidget {
   final String scanHistoryId;
   const ScanSolution({super.key, required this.scanHistoryId});
@@ -96,63 +97,63 @@ class _ScanSolutionState extends State<ScanSolution> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 1. Diagnosis Result
-                  _SectionTitle(
-                    index: 1,
-                    title: 'Kết quả chẩn đoán',
-                    action: TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Thay đổi',
-                        style: TextStyle(
-                          color: Color(0xFF1976D2),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
+                  _SectionTitle(index: 1, title: 'Kết quả chẩn đoán'),
                   SizedBox(height: 8.sp),
                   _DiagnosisCard(
                     disease: disease,
                     scanImageUrl: scanHistory.scanImage,
                   ),
                   SizedBox(height: 20.sp),
-                  Divider(height: 32.sp, thickness: 1.sp, color: Color(0xFFE0E0E0)),
                   // 2. Recommended Solution
-                  _SectionTitle(index: 2, title: 'Giải pháp khuyến nghị'),
-                  SizedBox(height: 8.sp),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(8.sp),
-                    child: MarkdownBody(
-                      data: disease.solution,
-                      styleSheet: MarkdownStyleSheet(
-                        h3: TextStyle(
-                          color: Color(0xFF388E3C),
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          height: 1.5.sp,
-                        ),
-                        p: TextStyle(
-                          fontSize: 14.sp,
-                          height: 1.6.sp,
-                          color: Colors.black87,
-                        ),
-                        listBullet: TextStyle(
-                          fontSize: 14.sp,
-                          height: 1.5.sp,
-                          color: Colors.black87,
-                        ),
-                        strong: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1976D2),
-                        ),
-                        em: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          color: Colors.black87,
-                        ),
-                        blockSpacing: 12.sp,
-                        listIndent: 24.sp,
+                  Theme(
+                    data: Theme.of(
+                      context,
+                    ).copyWith(dividerColor: Colors.transparent),
+                    child: ExpansionTile(
+                      initiallyExpanded: true,
+                      tilePadding: EdgeInsets.zero,
+                      childrenPadding: EdgeInsets.zero,
+                      title: _SectionTitle(
+                        index: 2,
+                        title: 'Giải pháp khuyến nghị',
                       ),
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(8.sp),
+                          child: MarkdownBody(
+                            data: disease.solution,
+                            styleSheet: MarkdownStyleSheet(
+                              h3: TextStyle(
+                                color: Color(0xFF388E3C),
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600,
+                                height: 1.5.sp,
+                              ),
+                              p: TextStyle(
+                                fontSize: 14.sp,
+                                height: 1.6.sp,
+                                color: Colors.black87,
+                              ),
+                              listBullet: TextStyle(
+                                fontSize: 14.sp,
+                                height: 1.5.sp,
+                                color: Colors.black87,
+                              ),
+                              strong: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1976D2),
+                              ),
+                              em: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                color: Colors.black87,
+                              ),
+                              blockSpacing: 12.sp,
+                              listIndent: 24.sp,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(height: 12.sp),
@@ -236,17 +237,14 @@ class _SectionTitle extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             '$index',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
         SizedBox(width: 10.sp),
         Expanded(
           child: Text(
             title,
-            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
           ),
         ),
         if (action != null) action!,

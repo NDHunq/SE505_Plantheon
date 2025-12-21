@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,7 +21,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
   final TextEditingController _bucketNameController = TextEditingController(
     text: 'uploads',
   );
-  List<UploadedFile> _uploadedFiles = [];
+  final List<UploadedFile> _uploadedFiles = [];
   bool _isLoading = false;
   String? _errorMessage;
   List<String> _availableBuckets = [];
@@ -203,7 +202,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.check_circle, color: Colors.green),
+            Icon(Icons.check_circle, color: AppColors.primary_main),
             SizedBox(width: 8.sp),
             Text('Upload Thành Công!'),
           ],
@@ -365,7 +364,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
                     icon: Icon(Icons.camera_alt),
                     label: Text('Chụp Ảnh'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: AppColors.primary_main,
                       foregroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(vertical: 12.sp),
                     ),
@@ -413,7 +412,11 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.cloud_upload, size: 80.sp, color: Colors.grey),
+                        Icon(
+                          Icons.cloud_upload,
+                          size: 80.sp,
+                          color: Colors.grey,
+                        ),
                         SizedBox(height: 16.sp),
                         Text(
                           'Chưa có file nào được upload',

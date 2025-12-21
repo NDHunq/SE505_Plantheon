@@ -294,7 +294,7 @@ class _PushNotificationDemoScreenState
                     style: TextStyle(
                       fontSize: 12.sp,
                       color: _isSubscribedToPlants
-                          ? Colors.green[700]
+                          ? AppColors.primary_700
                           : Colors.grey[600],
                     ),
                   ),

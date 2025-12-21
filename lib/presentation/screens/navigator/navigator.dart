@@ -11,7 +11,7 @@ import 'package:se501_plantheon/presentation/screens/home/home.dart';
 import 'package:se501_plantheon/presentation/screens/scan/scan.dart';
 
 class CustomNavigator extends StatefulWidget {
-  const CustomNavigator({Key? key}) : super(key: key);
+  const CustomNavigator({super.key});
 
   @override
   State<CustomNavigator> createState() => _CustomNavigatorState();
@@ -85,7 +85,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                         'Trang chủ',
                         style: TextStyle(
                           color: _selectedIndex == 0
-                              ? Colors.green
+                              ? AppColors.primary_main
                               : Colors.grey,
                           fontSize: 11.sp,
                         ), // Removed ANSI color code
@@ -110,7 +110,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                         'Nhật ký',
                         style: TextStyle(
                           color: _selectedIndex == 1
-                              ? Colors.green
+                              ? AppColors.primary_main
                               : Colors.grey,
                           fontSize: 11.sp,
                         ),
@@ -141,7 +141,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                         'Cộng đồng',
                         style: TextStyle(
                           color: _selectedIndex == 2
-                              ? Colors.green
+                              ? AppColors.primary_main
                               : Colors.grey,
                           fontSize: 11.sp,
                         ),
@@ -166,7 +166,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
                         'Tài khoản',
                         style: TextStyle(
                           color: _selectedIndex == 3
-                              ? Colors.green
+                              ? AppColors.primary_main
                               : Colors.grey,
                           fontSize: 11.sp,
                         ),

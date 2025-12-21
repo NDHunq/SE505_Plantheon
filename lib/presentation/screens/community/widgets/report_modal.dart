@@ -181,7 +181,7 @@ class _ReportModalState extends State<ReportModal> {
                     SizedBox(height: 8.sp),
                     Container(
                       padding: EdgeInsets.symmetric(
-                        horizontal: 12.sp,
+                        horizontal: 0.sp,
                         vertical: 8.sp,
                       ),
                       decoration: BoxDecoration(
