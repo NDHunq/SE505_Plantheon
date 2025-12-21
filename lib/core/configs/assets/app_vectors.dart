@@ -58,4 +58,5 @@ class AppVectors {
   static const String warning = '${basePath}warning$format';
   static const String speaker = '${basePath}speaker$format';
   static const String stop = '${basePath}stop$format';
+  static const String chart = '${basePath}chart$format';
 }

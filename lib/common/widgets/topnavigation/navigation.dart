@@ -109,7 +109,9 @@ class CustomNavigationBar extends StatelessWidget
           if (showYearSelector) ...[
             SizedBox(width: 4.sp),
             Icon(
-              showYearSelector ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+              showYearSelector
+                  ? Icons.arrow_drop_up_rounded
+                  : Icons.arrow_drop_down_rounded,
               color:
                   iconColor ??
                   Theme.of(context).iconTheme.color ??
@@ -153,17 +155,23 @@ class CustomNavigationBar extends StatelessWidget
           }
         },
         child: SizedBox(
-          width: 40.sp,
-          height: 40.sp,
+          width: 30.sp,
+          height: 30.sp,
 
-          child: action.icon != null
-              ? Icon(
-                  action.icon,
-
-                  size: AppConstraints.mediumIconSize.sp,
+          child: action.svgAsset != null
+              ? SvgPicture.asset(
+                  action.svgAsset!,
+                  width: AppConstraints.mediumIconSize.sp,
+                  height: AppConstraints.mediumIconSize.sp,
                   color: AppColors.primary_600,
                 )
-              : action.child,
+              : (action.icon != null
+                    ? Icon(
+                        action.icon,
+                        size: AppConstraints.mediumIconSize.sp,
+                        color: AppColors.primary_600,
+                      )
+                    : action.child),
         ),
       ),
     );
@@ -173,6 +181,7 @@ class CustomNavigationBar extends StatelessWidget
 /// Class định nghĩa action cho navigation bar
 class NavigationAction {
   final IconData? icon;
+  final String? svgAsset;
   final Widget? child;
   final VoidCallback? onPressed;
   final Color? backgroundColor;
@@ -182,6 +191,7 @@ class NavigationAction {
 
   const NavigationAction({
     this.icon,
+    this.svgAsset,
     this.child,
     this.onPressed,
     this.backgroundColor,
@@ -201,6 +211,25 @@ class NavigationAction {
   }) {
     return NavigationAction(
       icon: icon,
+      onPressed: onPressed,
+      backgroundColor: backgroundColor,
+      iconColor: iconColor,
+      borderColor: borderColor,
+      tooltip: tooltip,
+    );
+  }
+
+  /// Tạo action với SVG asset
+  factory NavigationAction.svg({
+    required String svgAsset,
+    required VoidCallback onPressed,
+    Color? backgroundColor,
+    Color? iconColor,
+    Color? borderColor,
+    String? tooltip,
+  }) {
+    return NavigationAction(
+      svgAsset: svgAsset,
       onPressed: onPressed,
       backgroundColor: backgroundColor,
       iconColor: iconColor,
@@ -304,8 +333,8 @@ class DiaryNavigationBar extends StatelessWidget
                     SizedBox(width: 4.sp),
                     Icon(
                       showYearSelector
-                          ? Icons.arrow_drop_up
-                          : Icons.arrow_drop_down,
+                          ? Icons.arrow_drop_up_rounded
+                          : Icons.arrow_drop_down_rounded,
                     ),
                   ],
                 ],
@@ -333,7 +362,7 @@ class CommonNavigationActions {
     Color? iconColor,
   }) {
     return NavigationAction.icon(
-      icon: Icons.add,
+      icon: Icons.add_rounded,
       onPressed: onPressed,
       backgroundColor: backgroundColor ?? AppColors.primary_main,
       iconColor: iconColor ?? Colors.white,
@@ -346,8 +375,8 @@ class CommonNavigationActions {
     Color? backgroundColor,
     Color? iconColor,
   }) {
-    return NavigationAction.icon(
-      icon: Icons.edit,
+    return NavigationAction.svg(
+      svgAsset: AppVectors.userEdit,
       onPressed: onPressed,
       backgroundColor: backgroundColor ?? Colors.blue,
       iconColor: iconColor ?? Colors.white,
@@ -360,8 +389,8 @@ class CommonNavigationActions {
     Color? backgroundColor,
     Color? iconColor,
   }) {
-    return NavigationAction.icon(
-      icon: Icons.delete,
+    return NavigationAction.svg(
+      svgAsset: AppVectors.trash,
       onPressed: onPressed,
       backgroundColor: backgroundColor ?? Colors.red,
       iconColor: iconColor ?? Colors.white,
@@ -388,8 +417,8 @@ class CommonNavigationActions {
     Color? backgroundColor,
     Color? iconColor,
   }) {
-    return NavigationAction.icon(
-      icon: Icons.share,
+    return NavigationAction.svg(
+      svgAsset: AppVectors.share,
       onPressed: onPressed,
       backgroundColor: backgroundColor ?? Colors.orange,
       iconColor: iconColor ?? Colors.white,
@@ -402,8 +431,8 @@ class CommonNavigationActions {
     Color? backgroundColor,
     Color? iconColor,
   }) {
-    return NavigationAction.icon(
-      icon: Icons.search,
+    return NavigationAction.svg(
+      svgAsset: AppVectors.search,
       onPressed: onPressed,
       backgroundColor: backgroundColor ?? Colors.purple,
       iconColor: iconColor ?? Colors.white,
@@ -430,8 +459,8 @@ class CommonNavigationActions {
     Color? backgroundColor,
     Color? iconColor,
   }) {
-    return NavigationAction.icon(
-      icon: Icons.refresh,
+    return NavigationAction.svg(
+      svgAsset: AppVectors.reload,
       onPressed: onPressed,
       backgroundColor: backgroundColor ?? Colors.blue,
       iconColor: iconColor ?? Colors.white,
