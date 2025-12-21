@@ -109,7 +109,7 @@ class _PlantsPickerState extends State<PlantsPicker> {
         padding: EdgeInsets.symmetric(horizontal: 8.sp),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.sp),
-          border: Border.all(color: AppColors.primary_700, width: 1.sp),
+          border: Border.all(color: AppColors.primary_600, width: 1.sp),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

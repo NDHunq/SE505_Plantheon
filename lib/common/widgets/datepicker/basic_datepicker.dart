@@ -51,7 +51,7 @@ class _BasicDatepickerState extends State<BasicDatepicker> {
         padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 8.sp),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.sp),
-          border: Border.all(color: AppColors.primary_700, width: 1.sp),
+          border: Border.all(color: AppColors.primary_600, width: 1.sp),
         ),
         child: Row(
           spacing: 12.sp,
@@ -59,7 +59,7 @@ class _BasicDatepickerState extends State<BasicDatepicker> {
             Text(
               _formattedDate,
               style: TextStyle(
-                color: AppColors.primary_800,
+                color: AppColors.primary_600,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
               ),
@@ -68,7 +68,7 @@ class _BasicDatepickerState extends State<BasicDatepicker> {
               AppVectors.calendar,
               width: 24.sp,
               height: 24.sp,
-              color: AppColors.primary_800,
+              color: AppColors.primary_600,
             ),
           ],
         ),
