@@ -53,13 +53,10 @@ class _ScanSolutionState extends State<ScanSolution> {
   void initState() {
     super.initState();
     _initTts();
-    print(
-      '🚀 ScanSolution: initState called with scanHistoryId: ${widget.scanHistoryId}',
-    );
+
     context.read<ScanHistoryBloc>().add(
       GetScanHistoryByIdEvent(id: widget.scanHistoryId),
     );
-    print('📤 ScanSolution: GetScanHistoryByIdEvent sent to BLoC');
   }
 
   Future<void> _initTts() async {
@@ -88,7 +85,6 @@ class _ScanSolutionState extends State<ScanSolution> {
     });
 
     _flutterTts.setErrorHandler((message) {
-      print('TTS error: $message');
       if (!mounted) return;
       setState(() => _isSpeaking = false);
     });
@@ -101,12 +97,10 @@ class _ScanSolutionState extends State<ScanSolution> {
     }
 
     var textToSpeak = _stripMarkdownTags(markdownContent);
-    print('🗣️ TTS: Text length: ${textToSpeak.length} characters');
 
     // Only read first 300 characters
     if (textToSpeak.length > 300) {
       textToSpeak = textToSpeak.substring(0, 300);
-      print('🗣️ TTS: Text truncated to 300 characters');
     }
 
     if (textToSpeak.isEmpty) return;
@@ -116,11 +110,10 @@ class _ScanSolutionState extends State<ScanSolution> {
     try {
       // Split long text into chunks to avoid Android TTS limitations
       final chunks = _splitTextIntoChunks(textToSpeak, maxLength: 4000);
-      print('🗣️ TTS: Split into ${chunks.length} chunks');
 
       for (int i = 0; i < chunks.length; i++) {
         if (!_isSpeaking && i > 0) break; // Stop if user cancelled
-        print('🗣️ TTS: Speaking chunk ${i + 1}/${chunks.length}');
+
         await _flutterTts.speak(chunks[i]);
       }
 
@@ -133,7 +126,6 @@ class _ScanSolutionState extends State<ScanSolution> {
         });
       }
     } catch (e) {
-      print('TTS speak error: $e');
       if (mounted) {
         setState(() => _isLoadingTts = false);
       }
@@ -159,7 +151,7 @@ class _ScanSolutionState extends State<ScanSolution> {
 
         final words = sentence.split(' ');
         for (final word in words) {
-          if ((currentChunk + ' ' + word).length > maxLength) {
+          if (('$currentChunk $word').length > maxLength) {
             if (currentChunk.isNotEmpty) {
               chunks.add(currentChunk.trim());
               currentChunk = word;
@@ -172,7 +164,7 @@ class _ScanSolutionState extends State<ScanSolution> {
         }
       } else {
         // Add sentence to current chunk if it fits
-        if ((currentChunk + ' ' + sentence).length > maxLength) {
+        if (('$currentChunk $sentence').length > maxLength) {
           if (currentChunk.isNotEmpty) {
             chunks.add(currentChunk.trim());
           }
@@ -293,10 +285,7 @@ class _ScanSolutionState extends State<ScanSolution> {
                     title: 'Giải pháp khuyến nghị',
                     action: IconButton(
                       onPressed: () {
-                        print('🔊 TTS: speak button pressed');
-                        _handleListenTap(disease.solution).catchError((e) {
-                          print('TTS error: $e');
-                        });
+                        _handleListenTap(disease.solution).catchError((e) {});
                       },
                       icon: _isLoadingTts
                           ? LoadingIndicator(size: 26.sp)
@@ -465,9 +454,6 @@ class _DiagnosisCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
-          print(
-            '🚀 DiagnosisCard: Tapped on disease card with label: ${disease.id}',
-          );
           Navigator.push(
             context,
             MaterialPageRoute(

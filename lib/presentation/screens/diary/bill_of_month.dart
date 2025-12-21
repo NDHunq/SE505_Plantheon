@@ -15,8 +15,8 @@ import 'package:se501_plantheon/presentation/bloc/financial/financial_bloc.dart'
 
 import 'package:se501_plantheon/presentation/bloc/financial/financial_event.dart';
 import 'package:se501_plantheon/presentation/bloc/financial/financial_state.dart';
-import 'package:se501_plantheon/presentation/screens/diary/billOfYear.dart';
-import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
+import 'package:se501_plantheon/presentation/screens/diary/bill_of_year.dart';
+import 'package:se501_plantheon/presentation/screens/diary/bill_of_day.dart';
 import 'package:se501_plantheon/common/helpers/money_formatter.dart';
 
 class BillOfMonth extends StatefulWidget {

@@ -27,23 +27,15 @@ class DeepLinkService {
       if (uri != null) {
         _handleLink(uri, navigatorKey);
       }
-    } catch (e) {
-      debugPrint('Error getting initial link: $e');
-    }
+    } catch (e) {}
 
     // Listen to incoming links
-    _linkSubscription = _appLinks.uriLinkStream.listen(
-      (uri) {
-        _handleLink(uri, navigatorKey);
-      },
-      onError: (err) {
-        debugPrint('Deep Link Error: $err');
-      },
-    );
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      _handleLink(uri, navigatorKey);
+    }, onError: (err) {});
   }
 
   void _handleLink(Uri uri, GlobalKey<NavigatorState>? navigatorKey) {
-    debugPrint('Received Deep Link: $uri');
     // Example: plantheon://post?id=123
 
     // Check scheme

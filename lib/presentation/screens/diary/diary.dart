@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/common/widgets/topnavigation/navigation.dart';
-import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
-import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/presentation/screens/diary/month.dart';
-import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
-import 'package:se501_plantheon/presentation/screens/diary/billOfMonth.dart';
-import 'package:se501_plantheon/presentation/screens/diary/billOfYear.dart';
-import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
-import 'package:se501_plantheon/presentation/screens/diary/dayDetail.dart';
+import 'package:se501_plantheon/presentation/screens/diary/add_new.dart';
+import 'package:se501_plantheon/presentation/screens/diary/bill_of_month.dart';
+import 'package:se501_plantheon/presentation/screens/diary/bill_of_year.dart';
+import 'package:se501_plantheon/presentation/screens/diary/bill_of_day.dart';
+import 'package:se501_plantheon/presentation/screens/diary/day_detail.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
 enum DiaryViewType {
@@ -118,51 +114,6 @@ class _DiaryState extends State<Diary> {
     });
   }
 
-  void _openBillOfMonth() {
-    final now = DateTime.now();
-    final targetDate = DateTime(selectedYear, selectedMonth ?? now.month, 1);
-
-    // Kiểm tra nếu là tháng/năm tương lai
-    if (targetDate.isAfter(DateTime(now.year, now.month, 1))) {
-      _showFutureWarning();
-      return;
-    }
-
-    setState(() {
-      billDate = targetDate;
-      currentView = DiaryViewType.billOfMonth;
-    });
-  }
-
-  void _openBillOfYear(DateTime date) {
-    final now = DateTime.now();
-
-    // Kiểm tra nếu là năm tương lai
-    if (date.year > now.year) {
-      _showFutureWarning();
-      return;
-    }
-
-    setState(() {
-      billDate = date;
-      currentView = DiaryViewType.billOfYear;
-    });
-  }
-
-  void _openBillOfDay(DateTime date) {
-    final now = DateTime.now();
-
-    // Kiểm tra nếu là ngày tương lai
-    if (date.isAfter(DateTime(now.year, now.month, now.day))) {
-      _showFutureWarning();
-      return;
-    }
-
-    setState(() {
-      billDate = date;
-      currentView = DiaryViewType.billOfDay;
-    });
-  }
 
   void navigateToDay(int day, int month, int year) async {
     setState(() {
@@ -506,34 +457,6 @@ class _DiaryState extends State<Diary> {
           ),
         );
       },
-    );
-  }
-
-  void _showFutureWarning() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          "Thông báo",
-          style: TextStyle(
-            color: AppColors.primary_600,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Text(
-          "Không có thống kê trong tương lai",
-          style: TextStyle(fontSize: 16.sp),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "Đóng",
-              style: TextStyle(color: AppColors.primary_600),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

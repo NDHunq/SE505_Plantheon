@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:se501_plantheon/common/helpers/dayCompare.dart';
+import 'package:se501_plantheon/common/helpers/day_compare.dart';
 import 'package:se501_plantheon/common/widgets/textfield/text_field.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
@@ -695,76 +694,6 @@ class _otherWidgetState extends State<otherWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: alertTime == option
-                    ? const Icon(
-                        Icons.check_rounded,
-                        color: AppColors.primary_600,
-                      )
-                    : null,
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
-  }
-
-  // Phương thức hiển thị dialog chọn đơn vị tính
-  Future<void> _showUnitDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "Chọn đơn vị tính",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: units.map((unitItem) {
-              return ListTile(
-                title: Text(unitItem),
-                onTap: () {
-                  setState(() {
-                    unit = unitItem;
-                  });
-                  Navigator.of(context).pop();
-                },
-                trailing: unit == unitItem
-                    ? const Icon(
-                        Icons.check_rounded,
-                        color: AppColors.primary_600,
-                      )
-                    : null,
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
-  }
-
-  // Phương thức hiển thị dialog chọn đơn vị tiền tệ
-  Future<void> _showCurrencyDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "Chọn đơn vị tiền tệ",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: currencies.map((currencyItem) {
-              return ListTile(
-                title: Text(currencyItem),
-                onTap: () {
-                  setState(() {
-                    currency = currencyItem;
-                  });
-                  Navigator.of(context).pop();
-                },
-                trailing: currency == currencyItem
                     ? const Icon(
                         Icons.check_rounded,
                         color: AppColors.primary_600,

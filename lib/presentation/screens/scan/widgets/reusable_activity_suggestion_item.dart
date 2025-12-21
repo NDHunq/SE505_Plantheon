@@ -9,12 +9,12 @@ import 'package:se501_plantheon/presentation/bloc/activities/activities_state.da
 import 'package:se501_plantheon/presentation/screens/scan/models/activity_ui_model.dart';
 import 'package:se501_plantheon/data/models/activities_models.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
-import 'package:se501_plantheon/presentation/screens/diary/chiTieu.dart';
-import 'package:se501_plantheon/presentation/screens/diary/banSanPham.dart';
+import 'package:se501_plantheon/presentation/screens/diary/expense.dart';
+import 'package:se501_plantheon/presentation/screens/diary/income.dart';
 import 'package:se501_plantheon/presentation/screens/diary/other.dart';
-import 'package:se501_plantheon/presentation/screens/diary/kyThuat.dart';
-import 'package:se501_plantheon/presentation/screens/diary/dichBenh.dart';
-import 'package:se501_plantheon/presentation/screens/diary/climamate.dart';
+import 'package:se501_plantheon/presentation/screens/diary/technique.dart';
+import 'package:se501_plantheon/presentation/screens/diary/disease.dart';
+import 'package:se501_plantheon/presentation/screens/diary/climate.dart';
 import 'package:toastification/toastification.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
@@ -599,14 +599,10 @@ class _ReusableAddButtonState extends State<ReusableAddButton> {
         note: note,
       );
 
-      print('🚀 AddButton: Creating activity: $title');
-      print('   Time: $startTime - $endTime');
-
       context.read<ActivitiesBloc>().add(
         CreateActivityEvent(request: request, correlationId: _correlationId),
       );
     } catch (e) {
-      print('❌ Error preparing activity data: $e');
       setState(() {
         _isLoading = false;
       });

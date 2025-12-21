@@ -70,15 +70,11 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
   @override
   void initState() {
     super.initState();
-    print(
-      '🚀 Screen: initState called with diseaseLabel: ${widget.diseaseLabel}',
-    );
+
     _initTts();
     context.read<DiseaseBloc>().add(
       GetDiseaseEvent(diseaseId: widget.diseaseLabel),
     );
-    print('📤 Screen: GetDiseaseEvent sent to BLoC');
-    print("my image link in initState: ${widget.myImageLink}");
   }
 
   @override
@@ -120,12 +116,9 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
       ),
       body: BlocBuilder<DiseaseBloc, DiseaseState>(
         builder: (context, state) {
-          print('🔄 UI: BlocBuilder rebuild with state: ${state.runtimeType}');
           if (state is DiseaseLoading) {
-            print('⏳ UI: Showing loading state');
             return const Center(child: LoadingIndicator());
           } else if (state is DiseaseError) {
-            print('❌ UI: Showing error state: ${state.message}');
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -150,9 +143,6 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
               ),
             );
           } else if (state is DiseaseSuccess) {
-            print(
-              '✅ UI: Showing success state with disease: ${state.disease.name}',
-            );
             final disease =
                 state.disease; // Capture disease for use in nested builders
             return Column(
@@ -264,86 +254,86 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                   ),
                                 ],
                               ),
-                              child: BlocConsumer<ScanHistoryBloc, ScanHistoryState>(
-                                listener: (context, state) {
-                                  if (state is CreateScanHistorySuccess) {
-                                    print(
-                                      '✅ UI: Scan history created successfully with id: ${state.scanHistory.id}',
-                                    );
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            ScanHistoryProvider(
-                                              child: ScanSolution(
-                                                scanHistoryId:
-                                                    state.scanHistory.id,
-                                              ),
-                                            ),
-                                      ),
-                                    );
-                                  } else if (state is ScanHistoryError) {
-                                    print(
-                                      '❌ UI: Error creating scan history: ${state.message}',
-                                    );
-                                    toastification.show(
-                                      context: context,
-                                      type: ToastificationType.error,
-                                      style: ToastificationStyle.flat,
-                                      title: Text('Lỗi: ${state.message}'),
-                                      autoCloseDuration: const Duration(
-                                        seconds: 3,
-                                      ),
-                                      alignment: Alignment.bottomCenter,
-                                      showProgressBar: true,
-                                    );
-                                  }
-                                },
-                                builder: (context, state) {
-                                  final isLoading = state is ScanHistoryLoading;
-                                  return ElevatedButton(
-                                    onPressed: isLoading
-                                        ? null
-                                        : () {
-                                            print(
-                                              '🔘 UI: Confirm button pressed, creating scan history for disease: ${disease.id}',
-                                            );
-
-                                            context.read<ScanHistoryBloc>().add(
-                                              CreateScanHistoryEvent(
-                                                diseaseId: disease.id,
-                                                scanImage: widget.myImage,
-                                              ),
-                                            );
-                                          },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.primary_main,
-                                      foregroundColor: Colors.white,
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 16.sp,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          12.sp,
-                                        ),
-                                      ),
-                                      elevation: 0,
-                                    ),
-                                    child: isLoading
-                                        ? SizedBox(
-                                            height: 20.sp,
-                                            width: 20.sp,
-                                            child: LoadingIndicator(),
-                                          )
-                                        : Text(
-                                            'Xác nhận & Xem điều trị',
-                                            style: AppTextStyles.s16SemiBold(
-                                              color: Colors.white,
+                              child:
+                                  BlocConsumer<
+                                    ScanHistoryBloc,
+                                    ScanHistoryState
+                                  >(
+                                    listener: (context, state) {
+                                      if (state is CreateScanHistorySuccess) {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ScanHistoryProvider(
+                                                  child: ScanSolution(
+                                                    scanHistoryId:
+                                                        state.scanHistory.id,
+                                                  ),
+                                                ),
+                                          ),
+                                        );
+                                      } else if (state is ScanHistoryError) {
+                                        toastification.show(
+                                          context: context,
+                                          type: ToastificationType.error,
+                                          style: ToastificationStyle.flat,
+                                          title: Text('Lỗi: ${state.message}'),
+                                          autoCloseDuration: const Duration(
+                                            seconds: 3,
+                                          ),
+                                          alignment: Alignment.bottomCenter,
+                                          showProgressBar: true,
+                                        );
+                                      }
+                                    },
+                                    builder: (context, state) {
+                                      final isLoading =
+                                          state is ScanHistoryLoading;
+                                      return ElevatedButton(
+                                        onPressed: isLoading
+                                            ? null
+                                            : () {
+                                                context
+                                                    .read<ScanHistoryBloc>()
+                                                    .add(
+                                                      CreateScanHistoryEvent(
+                                                        diseaseId: disease.id,
+                                                        scanImage:
+                                                            widget.myImage,
+                                                      ),
+                                                    );
+                                              },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              AppColors.primary_main,
+                                          foregroundColor: Colors.white,
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 16.sp,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12.sp,
                                             ),
                                           ),
-                                  );
-                                },
-                              ),
+                                          elevation: 0,
+                                        ),
+                                        child: isLoading
+                                            ? SizedBox(
+                                                height: 20.sp,
+                                                width: 20.sp,
+                                                child: LoadingIndicator(),
+                                              )
+                                            : Text(
+                                                'Xác nhận & Xem điều trị',
+                                                style:
+                                                    AppTextStyles.s16SemiBold(
+                                                      color: Colors.white,
+                                                    ),
+                                              ),
+                                      );
+                                    },
+                                  ),
                             ),
                             Container(
                               width: double.infinity,
@@ -714,7 +704,6 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
     });
 
     _flutterTts.setErrorHandler((message) {
-      print('TTS error: $message');
       if (!mounted) return;
       setState(() => _isSpeaking = false);
     });
@@ -727,7 +716,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
     }
 
     final textToSpeak = _stripMarkdownTags(markdownlContent);
-    print('🗣️ TTS: Text length: ${textToSpeak.length} characters');
+
     if (textToSpeak.isEmpty) return;
 
     setState(() => _isLoadingTts = true);
@@ -735,11 +724,10 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
     try {
       // Split long text into chunks to avoid Android TTS limitations
       final chunks = _splitTextIntoChunks(textToSpeak, maxLength: 4000);
-      print('🗣️ TTS: Split into ${chunks.length} chunks');
 
       for (int i = 0; i < chunks.length; i++) {
         if (!_isSpeaking && i > 0) break; // Stop if user cancelled
-        print('🗣️ TTS: Speaking chunk ${i + 1}/${chunks.length}');
+
         await _flutterTts.speak(chunks[i]);
       }
 
@@ -752,7 +740,6 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
         });
       }
     } catch (e) {
-      print('TTS speak error: $e');
       if (mounted) {
         setState(() => _isLoadingTts = false);
       }
@@ -778,7 +765,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
 
         final words = sentence.split(' ');
         for (final word in words) {
-          if ((currentChunk + ' ' + word).length > maxLength) {
+          if (('$currentChunk $word').length > maxLength) {
             if (currentChunk.isNotEmpty) {
               chunks.add(currentChunk.trim());
               currentChunk = word;
@@ -791,7 +778,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
         }
       } else {
         // Add sentence to current chunk if it fits
-        if ((currentChunk + ' ' + sentence).length > maxLength) {
+        if (('$currentChunk $sentence').length > maxLength) {
           if (currentChunk.isNotEmpty) {
             chunks.add(currentChunk.trim());
           }

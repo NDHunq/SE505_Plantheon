@@ -31,7 +31,6 @@ class _ImageComparisonScreenState extends State<ImageComparisonScreen> {
     super.initState();
     _currentImageIndex = widget.initialIndex;
     _carouselController = CarouselSliderController();
-    print("my image link: ${widget.myImageLink}");
   }
 
   @override

@@ -25,7 +25,6 @@ import 'package:se501_plantheon/core/services/camera_service.dart';
 
 class Scan extends StatefulWidget {
   const Scan({super.key});
-
   @override
   State<Scan> createState() => _ScanState();
 }
@@ -173,8 +172,6 @@ class _ScanState extends State<Scan> {
         _predictionResult = result;
       });
 
-      print('✅ Phân tích thành công: ${result.topPrediction?.label}');
-
       if (mounted && result.topPrediction != null) {
         // Wait a bit to show the loading animation
         await Future.delayed(const Duration(seconds: 2));
@@ -206,7 +203,7 @@ class _ScanState extends State<Scan> {
           );
         }
       }
-    } on NoPlantDetectedException catch (e) {
+    } on NoPlantDetectedException {
       // Handle no plant detected error specifically
       setState(() {
         _loading = false;
@@ -241,8 +238,6 @@ class _ScanState extends State<Scan> {
           );
         }
       }
-
-      print('⚠️ Không phát hiện cây: $e');
     } on LowConfidencePredictionException catch (e) {
       // Handle low confidence prediction error
       setState(() {
@@ -280,8 +275,6 @@ class _ScanState extends State<Scan> {
           );
         }
       }
-
-      print('⚠️ Độ tin cậy thấp: $e');
     } catch (e) {
       setState(() {
         _loading = false;
@@ -305,8 +298,6 @@ class _ScanState extends State<Scan> {
           showProgressBar: true,
         );
       }
-
-      print('❌ Lỗi phân tích: $e');
     }
   }
 

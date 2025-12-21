@@ -3,15 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:se501_plantheon/common/helpers/dayCompare.dart';
-import 'package:se501_plantheon/common/helpers/decimalTextInputFormatter.dart';
-import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
+import 'package:se501_plantheon/core/services/supabase_service.dart';
+import 'package:se501_plantheon/common/helpers/day_compare.dart';
 import 'package:se501_plantheon/common/widgets/textfield/text_field.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
-import 'package:se501_plantheon/core/services/supabase_service.dart';
 import 'package:se501_plantheon/core/services/firebase_notification_service.dart';
+import 'package:se501_plantheon/presentation/screens/diary/widgets/addNew_Row_1_1.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/addNew_Row_1_2.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
@@ -20,9 +20,7 @@ import 'package:se501_plantheon/data/models/activities_models.dart';
 import 'package:se501_plantheon/domain/entities/activities_entities.dart';
 import 'package:toastification/toastification.dart';
 
-import '../../../core/configs/assets/app_vectors.dart';
-
-class banSanPhamWidget extends StatefulWidget {
+class climaMateWidget extends StatefulWidget {
   final DayActivityDetailEntity? activityToEdit;
   final ActivitiesBloc? bloc;
   final DateTime? initialDate;
@@ -39,7 +37,7 @@ class banSanPhamWidget extends StatefulWidget {
   final Map<String, dynamic>? initialFormData;
   final Function(Map<String, dynamic>)? onClose;
 
-  const banSanPhamWidget({
+  const climaMateWidget({
     super.key,
     this.activityToEdit,
     this.bloc,
@@ -59,31 +57,28 @@ class banSanPhamWidget extends StatefulWidget {
   });
 
   @override
-  State<banSanPhamWidget> createState() => _banSanPhamWidgetState();
+  State<climaMateWidget> createState() => _climaMateWidgetState();
 }
 
-class _banSanPhamWidgetState extends State<banSanPhamWidget> {
+class _climaMateWidgetState extends State<climaMateWidget> {
   // Form key for validation
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // Controllers
   final TextEditingController titleController = TextEditingController();
-  final TextEditingController purchasedItemController = TextEditingController(
+  final TextEditingController climateEnvironmentController =
+      TextEditingController(text: "");
+  final TextEditingController adaptationActionsController =
+      TextEditingController(text: "");
+  final TextEditingController descriptionController = TextEditingController(
     text: "",
   );
-  final TextEditingController quantityController = TextEditingController(
+  final TextEditingController cropTypeController = TextEditingController(
     text: "",
   );
-  final TextEditingController amountController = TextEditingController(
+  final TextEditingController sourcePersonController = TextEditingController(
     text: "",
   );
-  final TextEditingController purposeController = TextEditingController(
-    text: "",
-  );
-  final TextEditingController purchasedForController = TextEditingController(
-    text: "",
-  );
-  final TextEditingController buyerController = TextEditingController(text: "");
   final TextEditingController noteController = TextEditingController(text: "");
 
   // State variables
@@ -98,7 +93,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
   String alertTime = "";
   String category = "";
   String unit = "Kg";
-  String currency = "VNĐ";
+  String currency = "đ";
   String? attachedLink;
   bool _isUploadingImage = false;
 
@@ -212,28 +207,40 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
         repeatEndDate = activity.endRepeatDay!;
       }
       if (activity.object != null) {
-        purchasedItemController.text = activity.object!;
+        descriptionController.text = activity.object!;
       }
       if (activity.unit != null) {
         unit = activity.unit!;
       }
-      if (activity.amount != null) {
-        quantityController.text = activity.amount!.toString();
+      if (activity.alertTime != null) {
+        alertTime = activity.alertTime!;
       }
-      if (activity.targetPerson != null) {
-        purchasedForController.text = activity.targetPerson!;
+
+      // Map fields for CLIMATE type
+      // description -> climateEnvironmentController (Biến đổi khí hậu và môi trường)
+      // description2 -> adaptationActionsController (Các hành động thích ứng với BĐKH và môi trường)
+      // description3 -> descriptionController (Mô tả)
+      // object -> cropTypeController (Loại cây trồng)
+      // sourcePerson -> sourcePersonController (Người thực hiện)
+      // note -> noteController (Ghi chú)
+
+      if (activity.description != null) {
+        climateEnvironmentController.text = activity.description!;
+      }
+      if (activity.description2 != null) {
+        adaptationActionsController.text = activity.description2!;
+      }
+      if (activity.description3 != null) {
+        descriptionController.text = activity.description3!;
+      }
+      if (activity.object != null) {
+        cropTypeController.text = activity.object!;
       }
       if (activity.sourcePerson != null) {
-        buyerController.text = activity.sourcePerson!;
+        sourcePersonController.text = activity.sourcePerson!;
       }
       if (activity.note != null) {
         noteController.text = activity.note!;
-      }
-      if (activity.money != null) {
-        amountController.text = activity.money!.toString();
-      }
-      if (activity.purpose != null) {
-        purposeController.text = activity.purpose!;
       }
       // Load attached image link
       if (activity.attachedLink != null && activity.attachedLink!.isNotEmpty) {
@@ -318,12 +325,11 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
     setTextController(titleController, 'title');
     setTextController(noteController, 'note');
     setTextController(noteController, 'description');
-    setTextController(purchasedItemController, 'purchasedItem');
-    setTextController(quantityController, 'quantity');
-    setTextController(amountController, 'amount');
-    setTextController(purposeController, 'purpose');
-    setTextController(purchasedForController, 'purchasedFor');
-    setTextController(buyerController, 'buyer');
+    setTextController(climateEnvironmentController, 'climateEnvironment');
+    setTextController(adaptationActionsController, 'adaptationActions');
+    setTextController(descriptionController, 'descriptionDetail');
+    setTextController(cropTypeController, 'cropType');
+    setTextController(sourcePersonController, 'sourcePerson');
 
     final startTimeValue = data['startTime'];
     if (startTimeValue is String && startTimeValue.isNotEmpty) {
@@ -382,11 +388,6 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
     if (categoryValue is String) {
       category = categoryValue;
     }
-
-    final attachedLinkValue = data['attachedLink'];
-    if (attachedLinkValue is String) {
-      attachedLink = attachedLinkValue;
-    }
   }
 
   Map<String, dynamic> _buildFormData() {
@@ -394,12 +395,11 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
       'title': titleController.text,
       'description': noteController.text,
       'note': noteController.text,
-      'purchasedItem': purchasedItemController.text,
-      'quantity': quantityController.text,
-      'amount': amountController.text,
-      'purpose': purposeController.text,
-      'purchasedFor': purchasedForController.text,
-      'buyer': buyerController.text,
+      'climateEnvironment': climateEnvironmentController.text,
+      'adaptationActions': adaptationActionsController.text,
+      'descriptionDetail': descriptionController.text,
+      'cropType': cropTypeController.text,
+      'sourcePerson': sourcePersonController.text,
       'isAllDay': allDay,
       'startTime': startTime,
       'endTime': endTime,
@@ -412,19 +412,17 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
       'unit': unit,
       'currency': currency,
       'category': category,
-      'attachedLink': attachedLink,
     };
   }
 
   @override
   void dispose() {
     titleController.dispose();
-    purchasedItemController.dispose();
-    quantityController.dispose();
-    amountController.dispose();
-    purposeController.dispose();
-    purchasedForController.dispose();
-    buyerController.dispose();
+    climateEnvironmentController.dispose();
+    adaptationActionsController.dispose();
+    descriptionController.dispose();
+    cropTypeController.dispose();
+    sourcePersonController.dispose();
     noteController.dispose();
     super.dispose();
   }
@@ -747,76 +745,6 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
     );
   }
 
-  // Phương thức hiển thị dialog chọn đơn vị tính
-  Future<void> _showUnitDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "Chọn đơn vị tính",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: units.map((unitItem) {
-              return ListTile(
-                title: Text(unitItem),
-                onTap: () {
-                  setState(() {
-                    unit = unitItem;
-                  });
-                  Navigator.of(context).pop();
-                },
-                trailing: unit == unitItem
-                    ? const Icon(
-                        Icons.check_rounded,
-                        color: AppColors.primary_600,
-                      )
-                    : null,
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
-  }
-
-  // Phương thức hiển thị dialog chọn đơn vị tiền tệ
-  Future<void> _showCurrencyDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "Chọn đơn vị tiền tệ",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: currencies.map((currencyItem) {
-              return ListTile(
-                title: Text(currencyItem),
-                onTap: () {
-                  setState(() {
-                    currency = currencyItem;
-                  });
-                  Navigator.of(context).pop();
-                },
-                trailing: currency == currencyItem
-                    ? const Icon(
-                        Icons.check_rounded,
-                        color: AppColors.primary_600,
-                      )
-                    : null,
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
-  }
-
   // Helper method to format DateTime to ISO8601 string
   String _formatDateTimeToISO(DateTime date, String time) {
     if (allDay) {
@@ -868,41 +796,38 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
 
     final request = CreateActivityRequestModel(
       title: titleController.text.trim(),
-      type: "INCOME",
+      type: "CLIMATE",
       day: allDay,
       timeStart: _formatDateTimeToISO(startDate, startTime),
-      // Khi lặp lại: endDate = startDate, chỉ khác giờ
-      timeEnd: (repeatType.isNotEmpty && repeatType != "Không")
-          ? _formatDateTimeToISO(startDate, endTime)
-          : _formatDateTimeToISO(endDate, endTime),
-      repeat: repeatType == "Không" ? "" : repeatType,
-      isRepeat: endRepeatType == "Không" ? "" : endRepeatType,
+      timeEnd: _formatDateTimeToISO(endDate, endTime),
+      repeat: repeatType == "Không" || repeatType.isEmpty ? "" : repeatType,
+      isRepeat: endRepeatType == "Không" || endRepeatType.isEmpty
+          ? ""
+          : endRepeatType,
       endRepeatDay: endRepeatType == "Ngày"
           ? _formatToISO8601(repeatEndDate)
           : null,
-      object: purchasedItemController.text.trim().isNotEmpty
-          ? purchasedItemController.text.trim()
+      alertTime: alertTime != "Không" && alertTime.isNotEmpty
+          ? alertTime
           : null,
-      unit: unit,
-      amount: quantityController.text.trim().isNotEmpty
-          ? double.tryParse(quantityController.text.trim())
+      description: climateEnvironmentController.text.trim().isNotEmpty
+          ? climateEnvironmentController.text.trim()
           : null,
-      targetPerson: purchasedForController.text.trim().isNotEmpty
-          ? purchasedForController.text.trim()
+      description2: adaptationActionsController.text.trim().isNotEmpty
+          ? adaptationActionsController.text.trim()
           : null,
-      sourcePerson: buyerController.text.trim().isNotEmpty
-          ? buyerController.text.trim()
+      description3: descriptionController.text.trim().isNotEmpty
+          ? descriptionController.text.trim()
+          : null,
+      object: cropTypeController.text.trim().isNotEmpty
+          ? cropTypeController.text.trim()
+          : null,
+      sourcePerson: sourcePersonController.text.trim().isNotEmpty
+          ? sourcePersonController.text.trim()
           : null,
       note: noteController.text.trim().isNotEmpty
           ? noteController.text.trim()
           : null,
-      money: amountController.text.trim().isNotEmpty
-          ? double.tryParse(amountController.text.trim())
-          : null,
-      purpose: purposeController.text.trim().isNotEmpty
-          ? purposeController.text.trim()
-          : null,
-      alertTime: alertTime != "Không" ? alertTime : null,
       attachedLink: (attachedLink != null && attachedLink!.isNotEmpty)
           ? attachedLink
           : "",
@@ -978,13 +903,6 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
       },
       child: BlocListener<ActivitiesBloc, ActivitiesState>(
         bloc: bloc,
-        listenWhen: (previous, current) =>
-            current is CreateActivitySuccess ||
-            current is CreateActivityError ||
-            current is UpdateActivitySuccess ||
-            current is UpdateActivityError ||
-            current is DeleteActivitySuccess ||
-            current is DeleteActivityError,
         listener: (context, state) {
           if (state is CreateActivityLoading ||
               state is UpdateActivityLoading) {
@@ -1026,8 +944,15 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
               alignment: Alignment.bottomCenter,
               showProgressBar: true,
             );
+            // Clear form after successful creation
             titleController.clear();
-            Navigator.of(context).pop();
+            climateEnvironmentController.clear();
+            adaptationActionsController.clear();
+            descriptionController.clear();
+            cropTypeController.clear();
+            sourcePersonController.clear();
+            noteController.clear();
+            Navigator.of(context).pop(); // Đóng dialog sau khi tạo thành công
           } else if (state is UpdateActivitySuccess) {
             widget.onSubmitSuccess?.call();
 
@@ -1043,7 +968,9 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
               alignment: Alignment.bottomCenter,
               showProgressBar: true,
             );
-            Navigator.of(context).pop();
+            Navigator.of(
+              context,
+            ).pop(); // Đóng dialog sau khi update thành công
           } else if (state is DeleteActivitySuccess) {
             widget.onSubmitSuccess?.call();
             toastification.show(
@@ -1091,6 +1018,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
+            padding: EdgeInsets.only(bottom: 16.sp),
             child: Column(
               children: [
                 // Row trên cùng: Loại nhật ký (trái) | Nút sát phải
@@ -1118,7 +1046,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                           ),
                         ),
                         child: Text(
-                          "Bán sản phẩm, vật tư",
+                          "Thích ứng BĐKH & MT",
                           style: TextStyle(
                             color: AppColors.primary_main,
                             fontWeight: FontWeight.w600,
@@ -1173,7 +1101,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   ),
                 ),
 
-                // Khi lặp lại: hiển thị 3 cột (Ngày | Giờ bắt đầu | Giờ kết thúc)
+                // Khi lặp lại: hiển thị 2 hàng (Giờ bắt đầu | Giờ kết thúc) và (Ngày)
                 if (repeatType.isNotEmpty &&
                     repeatType != "Không" &&
                     !allDay) ...[
@@ -1206,9 +1134,11 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                                 ),
                               ),
                             ),
+
                             SizedBox(width: 8.sp),
                             Icon(Icons.arrow_forward_ios_rounded, size: 16.sp),
                             SizedBox(width: 8.sp),
+
                             // Cột 3: Giờ kết thúc
                             Expanded(
                               flex: 2,
@@ -1261,8 +1191,6 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                                 ),
                               ),
                             ),
-
-                            // Cột 2: Giờ bắt đầu
                           ],
                         ),
                       ],
@@ -1314,7 +1242,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                     ),
                   ),
 
-                  // Ngày kết thúc - ẩn khi cả ngày VÀ lặp lại
+                  // Ngày kết thúc - ẨN khi cả ngày VÀ lặp lại
                   if (!(allDay &&
                       repeatType.isNotEmpty &&
                       repeatType != "Không"))
@@ -1461,107 +1389,46 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   ),
                 ),
 
-                // Vật mua
-                AddNewRow(
-                  label: "Vật bán",
-                  child: AppTextField(controller: purchasedItemController),
-                ),
-
-                // Số lượng mua
-                AddNewRow(
-                  label: "Số lượng bán",
+                // Biến đổi khí hậu và môi trường
+                AddNewRowVertical(
+                  label: "Biến đổi khí hậu và môi trường",
                   child: AppTextField(
-                    inputFormatters: [
-                      // Chỉ cho phép nhập số và tối đa một dấu chấm
-                      DecimalTextInputFormatter(decimalRange: 2),
-                    ],
-                    controller: quantityController,
-                    keyboardType: TextInputType.number,
+                    controller: climateEnvironmentController,
+                    maxLines: 5,
                   ),
                 ),
 
-                // Đơn vị tính
-                AddNewRow(
-                  label: "Đơn vị tính",
-                  child: GestureDetector(
-                    onTap: () => _showUnitDialog(context),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12.sp,
-                        vertical: 8.sp,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8.sp),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(unit),
-                          Icon(Icons.arrow_drop_down_rounded, size: 20.sp),
-                        ],
-                      ),
-                    ),
+                // Các hành động thích ứng với BĐKH và môi trường
+                AddNewRowVertical(
+                  label: "Các hành động thích ứng BĐKH & MT",
+                  child: AppTextField(
+                    controller: adaptationActionsController,
+                    maxLines: 5,
                   ),
                 ),
 
-                // Số tiền đã chi
-                AddNewRow(
-                  label: "Số tiền đã nhận",
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: AppTextField(
-                          controller: amountController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            DecimalTextInputFormatter(decimalRange: 2),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 8.sp),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => _showCurrencyDialog(context),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.sp,
-                              vertical: 8.sp,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade300),
-                              borderRadius: BorderRadius.circular(8.sp),
-                            ),
-                            child: Text(
-                              "VNĐ",
-                              style: TextStyle(fontSize: 14.sp),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                // Mô tả
+                AddNewRowVertical(
+                  label: "Mô tả",
+                  child: AppTextField(
+                    controller: descriptionController,
+                    maxLines: 5,
                   ),
                 ),
 
-                // Mục đích
+                // Loại cây trồng
                 AddNewRow(
-                  label: "Mục đích",
-                  child: AppTextField(controller: purposeController),
+                  label: "Loại cây trồng",
+                  child: AppTextField(controller: cropTypeController),
                 ),
 
-                // Mua cho ai
+                // Người thực hiện
                 AddNewRow(
-                  label: "Bán cho ai",
-                  child: AppTextField(controller: purchasedForController),
+                  label: "Người thực hiện",
+                  child: AppTextField(controller: sourcePersonController),
                 ),
 
-                // Người mua
-                AddNewRow(
-                  label: "Người bán",
-                  child: AppTextField(controller: buyerController),
-                ),
-
+                // Hình ảnh đính kèm
                 AddNewRow(
                   label: "Ảnh đính kèm",
                   child: Column(
@@ -1570,7 +1437,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                       if (_isUploadingImage)
                         Padding(
                           padding: EdgeInsets.all(8.sp),
-                          child: Center(child: LoadingIndicator()),
+                          child: Center(child: CircularProgressIndicator()),
                         )
                       else if (attachedLink != null && attachedLink!.isNotEmpty)
                         Column(
@@ -1685,9 +1552,9 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                 ),
 
                 // Ghi chú
-                AddNewRow(
+                AddNewRowVertical(
                   label: "Ghi chú",
-                  child: AppTextField(controller: noteController),
+                  child: AppTextField(controller: noteController, maxLines: 5),
                 ),
 
                 // Save / Delete actions

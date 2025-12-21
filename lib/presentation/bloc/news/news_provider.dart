@@ -7,13 +7,11 @@ import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
 import 'package:se501_plantheon/data/repository/news_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/news/get_news.dart';
 import 'package:se501_plantheon/domain/usecases/news/get_news_tags.dart';
-import 'package:se501_plantheon/domain/usecases/news/get_news_detail.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/news/news_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/news/news_event.dart';
 import 'package:se501_plantheon/presentation/bloc/news_tag/news_tag_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/news_tag/news_tag_event.dart';
-import 'package:se501_plantheon/presentation/bloc/news_detail/news_detail_bloc.dart';
 
 class NewsProvider extends StatelessWidget {
   final Widget child;

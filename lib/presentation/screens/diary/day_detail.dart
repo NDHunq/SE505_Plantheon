@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
-import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_day.dart';
@@ -15,20 +13,17 @@ import 'package:se501_plantheon/domain/entities/activities_entities.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_state.dart';
-import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
-import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
-import 'package:se501_plantheon/presentation/screens/diary/chiTieu.dart';
-import 'package:se501_plantheon/presentation/screens/diary/banSanPham.dart';
-import 'package:se501_plantheon/presentation/screens/diary/dichBenh.dart';
-import 'package:se501_plantheon/presentation/screens/diary/kyThuat.dart';
-import 'package:se501_plantheon/presentation/screens/diary/climamate.dart';
+import 'package:se501_plantheon/presentation/screens/diary/expense.dart';
+import 'package:se501_plantheon/presentation/screens/diary/income.dart';
+import 'package:se501_plantheon/presentation/screens/diary/disease.dart';
+import 'package:se501_plantheon/presentation/screens/diary/technique.dart';
+import 'package:se501_plantheon/presentation/screens/diary/climate.dart';
 import 'package:se501_plantheon/presentation/screens/diary/other.dart';
-import 'package:se501_plantheon/presentation/screens/diary/editView.dart';
+import 'package:se501_plantheon/presentation/screens/diary/edit_view.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/task.dart';
 import 'package:se501_plantheon/presentation/screens/diary/models/day_event.dart';
 import 'package:se501_plantheon/presentation/screens/diary/helpers/day_event_mapper.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
-import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/presentation/screens/home/widgets/card/weather_card.dart';
 
 class DayDetailScreen extends StatefulWidget {
@@ -157,64 +152,6 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
             );
           },
         ),
-      ),
-    );
-  }
-
-  void _showEditModal(BuildContext context) async {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Chỉnh sửa ngày"),
-        content: const Text("Chức năng chỉnh sửa sẽ được thêm sau"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Đóng"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showAddNewModal(BuildContext context) async {
-    // Truyền ngày hiện tại đang được chọn
-    final selectedDate = DateTime(selectedYear, selectedMonth, selectedDay);
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.95,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.sp),
-            topRight: Radius.circular(20.sp),
-          ),
-        ),
-        child: AddNewScreen(initialDate: selectedDate),
-      ),
-    );
-  }
-
-  void _showShareModal(BuildContext context) async {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Chia sẻ ngày"),
-        content: const Text("Chia sẻ thông tin ngày này"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Hủy"),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Chia sẻ"),
-          ),
-        ],
       ),
     );
   }
@@ -923,169 +860,6 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
       default:
         return '';
     }
-  }
-
-  DayEvent? _findEventStartingAt(int hour) {
-    try {
-      // Not used with BLoC data; kept for potential future feature
-      return null;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  void _showBillModal(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => BillOfDay(initialDate: DateTime.now()),
-      ),
-    );
-  }
-}
-
-extension DayDetailExtension on _DayDetailScreenState {
-  void _navigateWithLoading(BuildContext context) {
-    // Hiển thị loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: LoadingIndicator());
-      },
-    );
-
-    // Simulate loading delay và navigate
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.of(context).pop(); // Đóng loading dialog
-      // Navigator.pushAndRemoveUntil(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => Navigation(tab: 2)),
-      //   (route) => false,
-      // );
-    });
-  }
-
-  void _openBillOfDay() {
-    _navigateWithLoadingToBillOfDay(() {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => BillOfDay(
-            initialDate: DateTime(selectedYear, selectedMonth, selectedDay),
-          ),
-        ),
-      );
-    });
-  }
-
-  void _navigateWithLoadingToBillOfDay(VoidCallback navigationAction) {
-    // Hiển thị loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: LoadingIndicator());
-      },
-    );
-
-    // Simulate loading delay và navigate
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.of(context).pop(); // Đóng loading dialog
-      navigationAction(); // Thực hiện navigation
-    });
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return NavigationBar(
-      onDestinationSelected: (int index) {
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => Navigation(tab: index)),
-        // );
-      },
-      height: 56.sp,
-      indicatorColor: Colors.transparent,
-      destinations: [
-        NavigationDestination(
-          selectedIcon: Padding(
-            padding: EdgeInsets.only(top: 3.sp),
-            child: SvgPicture.asset(
-              AppVectors.homeSolid,
-              height: 23.sp,
-              width: 23.sp,
-            ),
-          ),
-          icon: Padding(
-            padding: EdgeInsets.only(top: 20.0.sp),
-            child: SvgPicture.asset(
-              AppVectors.homeStroke,
-              height: 23.sp,
-              width: 23.sp,
-            ),
-          ),
-          label: '',
-        ),
-        NavigationDestination(
-          selectedIcon: Padding(
-            padding: EdgeInsets.only(top: 3.sp),
-            child: SvgPicture.asset(
-              AppVectors.diarySolid,
-              height: 23.sp,
-              width: 23.sp,
-            ),
-          ),
-          icon: Padding(
-            padding: EdgeInsets.only(top: 20.0.sp),
-            child: SvgPicture.asset(
-              AppVectors.diaryStroke,
-              height: 23.sp,
-              width: 23.sp,
-            ),
-          ),
-          label: '',
-        ),
-        NavigationDestination(
-          selectedIcon: Padding(
-            padding: EdgeInsets.only(top: 3.sp),
-            child: SvgPicture.asset(
-              AppVectors.communitySolid,
-              height: 23.sp,
-              width: 23.sp,
-            ),
-          ),
-          icon: Padding(
-            padding: EdgeInsets.only(top: 20.0.sp),
-            child: SvgPicture.asset(
-              AppVectors.communityStroke,
-              height: 23.sp,
-              width: 23.sp,
-            ),
-          ),
-          label: '',
-        ),
-        NavigationDestination(
-          selectedIcon: Padding(
-            padding: EdgeInsets.only(top: 3.sp),
-            child: SvgPicture.asset(
-              AppVectors.accountSolid,
-              height: 23.sp,
-              width: 23.sp,
-            ),
-          ),
-          icon: Padding(
-            padding: EdgeInsets.only(top: 20.0.sp),
-            child: SvgPicture.asset(
-              AppVectors.accountStroke,
-              height: 23.sp,
-              width: 23.sp,
-            ),
-          ),
-          label: '',
-        ),
-      ],
-      selectedIndex: 2, // Diary tab
-    );
   }
 }
 

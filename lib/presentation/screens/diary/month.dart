@@ -5,7 +5,6 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
-import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/data/models/activities_models.dart';
 import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
@@ -17,7 +16,7 @@ import 'package:se501_plantheon/domain/usecases/activity/delete_activity.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_event.dart';
 import 'package:se501_plantheon/presentation/bloc/activities/activities_state.dart';
-import 'package:se501_plantheon/presentation/screens/diary/dayDetail.dart';
+import 'package:se501_plantheon/presentation/screens/diary/day_detail.dart';
 
 class MonthScreen extends StatefulWidget {
   final int year;
