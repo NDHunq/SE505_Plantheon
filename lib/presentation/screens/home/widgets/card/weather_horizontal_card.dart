@@ -22,9 +22,6 @@ class WeatherHorizontalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     String weatherAsset;
     switch (weatherType) {
-      case WeatherType.moon:
-        weatherAsset = AppVectors.weatherMoon;
-        break;
       case WeatherType.sunny:
         weatherAsset = AppVectors.weatherSunny;
         break;
@@ -37,6 +34,12 @@ class WeatherHorizontalCard extends StatelessWidget {
       case WeatherType.partlyCloudy:
         weatherAsset = AppVectors.weatherPartlyCloudy;
         break;
+      case WeatherType.smallRainy:
+        weatherAsset = AppVectors.weatherSmallRainy;
+        break;
+      case WeatherType.cloud:
+        weatherAsset = AppVectors.weatherCloudy;
+        break;
     }
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.0.sp),
@@ -44,7 +47,7 @@ class WeatherHorizontalCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SizedBox(
-            width: 70.sp,
+            width: 80.sp,
             child: Text(
               date,
               style: AppTextStyles.s16Medium(color: AppColors.primary_800),
@@ -58,9 +61,15 @@ class WeatherHorizontalCard extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 4.sp),
             child: SvgPicture.asset(weatherAsset, width: 40.sp, height: 40.sp),
           ),
-          Text(
-            "$temperature°C",
-            style: AppTextStyles.s16Medium(color: AppColors.primary_800),
+          SizedBox(
+            width: 50.sp,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                "$temperature°C",
+                style: AppTextStyles.s16Medium(color: AppColors.primary_800),
+              ),
+            ),
           ),
         ],
       ),

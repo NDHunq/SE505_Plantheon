@@ -55,6 +55,30 @@ class WeatherSuggestionWidget extends StatelessWidget {
         );
         break;
 
+      case WeatherType.smallRainy:
+        suggestions.add(
+          _createActivity(
+            title: "Tưới nước vừa phải",
+            description: "Mưa nhỏ. Giảm lượng tưới để tránh thừa nước.",
+            type: ActivityType.kyThuat,
+            hour: 8,
+            duration: 1,
+            id: 'small_rain_water_${now.day}',
+          ),
+        );
+        suggestions.add(
+          _createActivity(
+            title: "Kiểm tra độ ẩm đất",
+            description:
+                "Mưa nhỏ có thể không đủ ẩm. Kiểm tra xem cần tưới thêm không.",
+            type: ActivityType.kyThuat,
+            hour: 14,
+            duration: 1,
+            id: 'small_rain_check_moisture_${now.day}',
+          ),
+        );
+        break;
+
       case WeatherType.sunny:
         if (weatherData.currentTemperature > 33) {
           suggestions.add(
@@ -117,16 +141,27 @@ class WeatherSuggestionWidget extends StatelessWidget {
         );
         break;
 
-      case WeatherType.moon:
+      case WeatherType.cloud:
         suggestions.add(
           _createActivity(
-            title: "Kiểm tra đèn chiếu sáng",
+            title: "Kiểm tra độ ẩm",
             description:
-                "Đảm bảo hệ thống chiếu sáng ban đêm hoạt động tốt nếu cần.",
-            type: ActivityType.kyThuat,
-            hour: 19,
+                "Trời nhiều mây, độ ẩm cao. Kiểm tra tình trạng cây để phòng bệnh.",
+            type: ActivityType.dichBenh,
+            hour: 9,
             duration: 1,
-            id: 'moon_light_check_${now.day}',
+            id: 'cloud_humidity_check_${now.day}',
+          ),
+        );
+        suggestions.add(
+          _createActivity(
+            title: "Thích hợp phun thuốc",
+            description:
+                "Thời tiết u ám không nắng gắt, thích hợp để phun thuốc bảo vệ thực vật.",
+            type: ActivityType.dichBenh,
+            hour: 10,
+            duration: 2,
+            id: 'cloud_spray_${now.day}',
           ),
         );
         break;

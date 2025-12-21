@@ -209,7 +209,10 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                   if (state is GuideStageDetailLoaded) {
                     if (state.detail.subGuideStages.isEmpty) {
                       return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.sp,
+                          vertical: 8.sp,
+                        ),
                         child: Text(
                           'Chưa có dữ liệu chi tiết cho giai đoạn này.',
                           style: AppTextStyles.s14Regular(
@@ -252,53 +255,60 @@ class _SubGuideStageSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(color: AppColors.white),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DottedLine(
-            dashLength: 6.sp,
-            dashGapLength: 4.sp,
-            lineThickness: 1.sp,
-            dashColor: AppColors.text_color_200,
-          ),
-          SizedBox(height: 8.sp),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.sp),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  subStage.title,
-                  style: AppTextStyles.s16SemiBold(
-                    color: AppColors.primary_700,
-                  ),
-                ),
-                Text(
-                  timeRange,
-                  style: AppTextStyles.s14Regular(
-                    color: AppColors.text_color_400,
-                  ),
-                ),
-                SizedBox(height: 8.sp),
-                SizedBox(
-                  height: 170.sp,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: subStage.blogs.length,
-                    separatorBuilder: (context, index) => SizedBox(width: 8.sp),
-                    itemBuilder: (context, index) => _BlogCard(
-                      blogId: subStage.blogs[index].id,
-                      title: subStage.blogs[index].title,
-                      content: subStage.blogs[index].content,
-                      coverImageUrl: subStage.blogs[index].coverImageUrl,
+      child: Padding(
+        padding: EdgeInsets.only(left: 12.sp),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 8.sp, right: 16.sp),
+              child: DottedLine(
+                dashLength: 6.sp,
+                dashGapLength: 4.sp,
+                lineThickness: 1.sp,
+                dashColor: AppColors.text_color_200,
+              ),
+            ),
+            SizedBox(height: 8.sp),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.sp),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    subStage.title,
+                    style: AppTextStyles.s16SemiBold(
+                      color: AppColors.primary_700,
                     ),
                   ),
-                ),
-              ],
+                  Text(
+                    timeRange,
+                    style: AppTextStyles.s14Regular(
+                      color: AppColors.text_color_400,
+                    ),
+                  ),
+                  SizedBox(height: 8.sp),
+                  SizedBox(
+                    height: 170.sp,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: subStage.blogs.length,
+                      separatorBuilder: (context, index) =>
+                          SizedBox(width: 8.sp),
+                      itemBuilder: (context, index) => _BlogCard(
+                        blogId: subStage.blogs[index].id,
+                        title: subStage.blogs[index].title,
+                        content: subStage.blogs[index].content,
+                        coverImageUrl: subStage.blogs[index].coverImageUrl,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          SizedBox(height: 12.sp),
-        ],
+            SizedBox(height: 12.sp),
+          ],
+        ),
       ),
     );
   }

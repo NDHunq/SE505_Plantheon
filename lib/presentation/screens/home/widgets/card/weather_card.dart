@@ -60,17 +60,29 @@ class _WeatherCardState extends State<WeatherCard> {
       case WeatherType.sunny:
         return 'Nắng';
       case WeatherType.partlyCloudy:
-        return 'Nhiều mây';
+        return 'Có mây';
       case WeatherType.rainy:
         return 'Mưa';
       case WeatherType.rainThunder:
         return 'Mưa dông';
-      case WeatherType.moon:
-        return 'Đêm quang đãng';
+      case WeatherType.smallRainy:
+        return 'Mưa nhẹ';
+      case WeatherType.cloud:
+        return 'Nhiều mây';
     }
   }
 
-  String _getWeatherIcon(WeatherType type) {
+  String _getWeatherIcon(WeatherType type, bool isDay) {
+    // Nếu ban đêm, hiển thị icon mặt trăng cho sunny và partlyCloudy
+    if (!isDay) {
+      if (type == WeatherType.sunny) {
+        return AppVectors.weatherMoon;
+      }
+      if (type == WeatherType.partlyCloudy) {
+        return AppVectors.weatherPartlyCloudyMoon;
+      }
+    }
+
     switch (type) {
       case WeatherType.sunny:
         return AppVectors.weatherSunny;
@@ -80,8 +92,10 @@ class _WeatherCardState extends State<WeatherCard> {
         return AppVectors.weatherRainy;
       case WeatherType.rainThunder:
         return AppVectors.weatherRainThunder;
-      case WeatherType.moon:
-        return AppVectors.weatherMoon;
+      case WeatherType.smallRainy:
+        return AppVectors.weatherSmallRainy;
+      case WeatherType.cloud:
+        return AppVectors.weatherCloudy;
     }
   }
 
@@ -97,7 +111,10 @@ class _WeatherCardState extends State<WeatherCard> {
         : '${_weatherData!.currentTemperature.toDouble().round()}°C';
     final iconAsset = _isLoading || _error.isNotEmpty || _weatherData == null
         ? AppVectors.weatherPartlyCloudy
-        : _getWeatherIcon(_weatherData!.currentWeatherType);
+        : _getWeatherIcon(
+            _weatherData!.currentWeatherType,
+            _weatherData!.currentIsDay,
+          );
 
     return GestureDetector(
       onTap: () {
@@ -115,7 +132,10 @@ class _WeatherCardState extends State<WeatherCard> {
             border: Border.all(color: AppColors.text_color_50, width: 1.sp),
           ),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0.sp, vertical: 8.0.sp),
+            padding: EdgeInsets.symmetric(
+              horizontal: 16.0.sp,
+              vertical: 8.0.sp,
+            ),
             child: Row(
               spacing: 10.0.sp,
               children: [
@@ -127,7 +147,11 @@ class _WeatherCardState extends State<WeatherCard> {
                     borderRadius: BorderRadius.circular(100.sp),
                   ),
                   child: Center(
-                    child: SvgPicture.asset(iconAsset, width: 28.sp, height: 28.sp),
+                    child: SvgPicture.asset(
+                      iconAsset,
+                      width: 28.sp,
+                      height: 28.sp,
+                    ),
                   ),
                 ),
                 Column(

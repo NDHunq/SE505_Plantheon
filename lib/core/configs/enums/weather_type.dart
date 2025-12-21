@@ -1,1 +1,1 @@
-enum WeatherType { moon, sunny, rainy, rainThunder, partlyCloudy }
+enum WeatherType { sunny, rainy, rainThunder, partlyCloudy, smallRainy, cloud }

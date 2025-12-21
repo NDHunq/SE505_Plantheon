@@ -102,49 +102,81 @@ class _FarmingTipsState extends State<FarmingTips> {
               },
               child: Scaffold(
                 appBar: BasicAppbar(title: 'Mẹo canh tác'),
-                body: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0.sp),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.0.sp),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Ngày gieo:",
-                                style: AppTextStyles.s14Medium(
+                body: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0.sp),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 4.sp,
+                          children: [
+                            Text(
+                              "Ngày gieo:",
+                              style: AppTextStyles.s14Medium(
+                                color: AppColors.text_color_200,
+                              ),
+                            ),
+                            Row(
+                              spacing: 16.sp,
+                              children: [
+                                BasicDatepicker(
+                                  initialDate: _sowingDate,
+                                  onDateSelected: _onDateSelected,
+                                ),
+                                PlantsPicker(
+                                  initialPlant: _selectedPlant,
+                                  onPlantSelected: _onPlantSelected,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 16.sp),
+                          ],
+                        ),
+                      ),
+                      BlocBuilder<GuideStageBloc, GuideStageState>(
+                        builder: (context, state) {
+                          if (_selectedPlant == null) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.0.sp,
+                              ),
+                              child: Text(
+                                'Hãy chọn cây trồng để xem lộ trình chăm sóc.',
+                                style: AppTextStyles.s14Regular(
                                   color: AppColors.text_color_200,
                                 ),
                               ),
-                              Row(
-                                spacing: 16.sp,
-                                children: [
-                                  BasicDatepicker(
-                                    initialDate: _sowingDate,
-                                    onDateSelected: _onDateSelected,
-                                  ),
-                                  PlantsPicker(
-                                    initialPlant: _selectedPlant,
-                                    onPlantSelected: _onPlantSelected,
-                                  ),
-                                ],
+                            );
+                          }
+
+                          if (state is GuideStageLoading) {
+                            return const Center(child: LoadingIndicator());
+                          }
+
+                          if (state is GuideStageError) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.0.sp,
                               ),
-                              SizedBox(height: 24.sp),
-                            ],
-                          ),
-                        ),
-                        BlocBuilder<GuideStageBloc, GuideStageState>(
-                          builder: (context, state) {
-                            if (_selectedPlant == null) {
+                              child: Text(
+                                'Không tải được lộ trình: ${state.message}',
+                                style: AppTextStyles.s14Regular(
+                                  color: Colors.red,
+                                ),
+                              ),
+                            );
+                          }
+
+                          if (state is GuideStageLoaded) {
+                            if (state.stages.isEmpty) {
                               return Padding(
                                 padding: EdgeInsets.symmetric(
-                                  horizontal: 16.0.sp,
+                                  horizontal: 16.sp,
                                 ),
                                 child: Text(
-                                  'Hãy chọn cây trồng để xem lộ trình chăm sóc.',
+                                  'Chưa có dữ liệu lộ trình cho cây này.',
                                   style: AppTextStyles.s14Regular(
                                     color: AppColors.text_color_200,
                                   ),
@@ -152,74 +184,39 @@ class _FarmingTipsState extends State<FarmingTips> {
                               );
                             }
 
-                            if (state is GuideStageLoading) {
-                              return const Center(child: LoadingIndicator());
-                            }
-
-                            if (state is GuideStageError) {
-                              return Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 16.0.sp,
-                                ),
-                                child: Text(
-                                  'Không tải được lộ trình: ${state.message}',
-                                  style: AppTextStyles.s14Regular(
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              );
-                            }
-
-                            if (state is GuideStageLoaded) {
-                              if (state.stages.isEmpty) {
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16.0.sp,
-                                  ),
-                                  child: Text(
-                                    'Chưa có dữ liệu lộ trình cho cây này.',
-                                    style: AppTextStyles.s14Regular(
-                                      color: AppColors.text_color_200,
-                                    ),
-                                  ),
-                                );
-                              }
-
-                              return Column(
-                                children: state.stages
-                                    .map(
-                                      (
-                                        stage,
-                                      ) => BlocProvider<GuideStageDetailBloc>(
-                                        create: (ctx) => GuideStageDetailBloc(
-                                          getGuideStageDetail:
-                                              GetGuideStageDetail(
-                                                repository: ctx
-                                                    .read<
-                                                      GuideStageRepositoryImpl
-                                                    >(),
-                                              ),
+                            return Column(
+                              children: state.stages
+                                  .map(
+                                    (stage) =>
+                                        BlocProvider<GuideStageDetailBloc>(
+                                          create: (ctx) => GuideStageDetailBloc(
+                                            getGuideStageDetail:
+                                                GetGuideStageDetail(
+                                                  repository: ctx
+                                                      .read<
+                                                        GuideStageRepositoryImpl
+                                                      >(),
+                                                ),
+                                          ),
+                                          child: FarmingTipStageCard(
+                                            stageId: stage.id,
+                                            imageUrl: stage.imageUrl,
+                                            stageLabel: stage.stageTitle,
+                                            stageDescription: stage.description,
+                                            stageTime: _formatStageTime(stage),
+                                            sowingDate: _sowingDate,
+                                            isNow: _isCurrentStage(stage),
+                                          ),
                                         ),
-                                        child: FarmingTipStageCard(
-                                          stageId: stage.id,
-                                          imageUrl: stage.imageUrl,
-                                          stageLabel: stage.stageTitle,
-                                          stageDescription: stage.description,
-                                          stageTime: _formatStageTime(stage),
-                                          sowingDate: _sowingDate,
-                                          isNow: _isCurrentStage(stage),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                              );
-                            }
+                                  )
+                                  .toList(),
+                            );
+                          }
 
-                            return const SizedBox.shrink();
-                          },
-                        ),
-                      ],
-                    ),
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),

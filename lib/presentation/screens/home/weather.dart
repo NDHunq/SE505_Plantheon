@@ -134,17 +134,28 @@ class _WeatherState extends State<Weather> {
       case WeatherType.sunny:
         return "Nắng";
       case WeatherType.partlyCloudy:
-        return "Nhiều mây";
+        return "Có mây";
       case WeatherType.rainy:
         return "Mưa";
       case WeatherType.rainThunder:
         return "Mưa dông";
-      case WeatherType.moon:
-        return "Đêm quang đãng";
+      case WeatherType.smallRainy:
+        return "Mưa nhẹ";
+      case WeatherType.cloud:
+        return "Nhiều mây";
     }
   }
 
-  String _getWeatherIcon(WeatherType type) {
+  String _getWeatherIcon(WeatherType type, bool isDay) {
+    if (!isDay) {
+      if (type == WeatherType.sunny) {
+        return AppVectors.weatherMoon;
+      }
+      if (type == WeatherType.partlyCloudy) {
+        return AppVectors.weatherPartlyCloudyMoon;
+      }
+    }
+
     switch (type) {
       case WeatherType.sunny:
         return AppVectors.weatherSunny;
@@ -154,8 +165,10 @@ class _WeatherState extends State<Weather> {
         return AppVectors.weatherRainy;
       case WeatherType.rainThunder:
         return AppVectors.weatherRainThunder;
-      case WeatherType.moon:
-        return AppVectors.weatherMoon;
+      case WeatherType.smallRainy:
+        return AppVectors.weatherSmallRainy;
+      case WeatherType.cloud:
+        return AppVectors.weatherCloudy;
     }
   }
 
@@ -241,7 +254,7 @@ class _WeatherState extends State<Weather> {
                       futureHourlyWeather[_selectedHourIndex!];
 
                   return SingleChildScrollView(
-                    padding: EdgeInsets.only(top: 16.sp),
+                    padding: EdgeInsets.only(top: 8.sp),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -261,12 +274,13 @@ class _WeatherState extends State<Weather> {
                               child: SvgPicture.asset(
                                 _getWeatherIcon(
                                   selectedHourlyWeather.weatherType,
+                                  selectedHourlyWeather.isDay,
                                 ),
                                 width: 110.sp,
                                 height: 110.sp,
                               ),
                             ),
-                            SizedBox(width: 30.sp),
+                            SizedBox(width: 24.sp),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -276,7 +290,7 @@ class _WeatherState extends State<Weather> {
                                       ? _formatCurrentDate()
                                       : 'Hôm nay, ${selectedHourlyWeather.time.hour.toString().padLeft(2, '0')}:00',
                                   style: AppTextStyles.s14Bold(
-                                    color: AppColors.primary_700,
+                                    color: AppColors.white,
                                   ),
                                 ),
                                 Text(
@@ -290,27 +304,27 @@ class _WeatherState extends State<Weather> {
                                     selectedHourlyWeather.weatherType,
                                   ),
                                   style: AppTextStyles.s14Medium(
-                                    color: AppColors.primary_800,
+                                    color: AppColors.white,
                                   ),
                                 ),
                                 Text(
                                   'Độ ẩm: ${_weatherData!.currentHumidity.toDouble().round()}% - Gió: ${_weatherData!.currentWindSpeed.toDouble().round()} km/h',
                                   style: AppTextStyles.s12Medium(
-                                    color: AppColors.primary_800,
+                                    color: AppColors.white,
                                   ),
                                 ),
                               ],
                             ),
                           ],
                         ),
-                        SizedBox(height: 24.sp),
+                        SizedBox(height: 16.sp),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 6.sp),
                           child: WeatherSuggestionWidget(
                             weatherData: _weatherData!,
                           ),
                         ),
-                        SizedBox(height: 24.sp),
+                        SizedBox(height: 16.sp),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 22.sp),
                           child: SingleChildScrollView(
@@ -327,6 +341,7 @@ class _WeatherState extends State<Weather> {
                                         .round(),
                                     hour: hourly.time.hour,
                                     weatherType: hourly.weatherType,
+                                    isDay: hourly.isDay,
                                     isSelected: index == _selectedHourIndex,
                                     onTap: () {
                                       setState(() {
@@ -339,7 +354,7 @@ class _WeatherState extends State<Weather> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 24.sp),
+                        SizedBox(height: 16.sp),
                         Container(
                           width: double.infinity,
                           decoration: BoxDecoration(

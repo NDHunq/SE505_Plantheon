@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import '../../data/models/user_model.dart';
 
 class TokenStorageService {
@@ -18,6 +19,23 @@ class TokenStorageService {
   /// Get stored authentication token
   Future<String?> getToken() async {
     return _prefs.getString(_tokenKey);
+  }
+
+  /// Check if token is valid (exists and not expired)
+  Future<bool> isTokenValid() async {
+    final token = await getToken();
+    if (token == null || token.isEmpty) {
+      return false;
+    }
+
+    try {
+      // Check if token is expired
+      final hasExpired = Jwt.isExpired(token);
+      return !hasExpired;
+    } catch (e) {
+      print('Error validating token: $e');
+      return false;
+    }
   }
 
   /// Delete authentication token

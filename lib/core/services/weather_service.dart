@@ -8,8 +8,8 @@ class WeatherService {
   Future<WeatherData> fetchWeather(double lat, double lon) async {
     final url = Uri.parse(
       '$baseUrl?latitude=$lat&longitude=$lon'
-      '&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weathercode'
-      '&hourly=temperature_2m,weathercode'
+      '&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weathercode,is_day'
+      '&hourly=temperature_2m,weathercode,is_day'
       '&daily=temperature_2m_max,weathercode'
       '&timezone=Asia/Bangkok'
       '&forecast_days=7',
