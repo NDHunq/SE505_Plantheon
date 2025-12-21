@@ -629,7 +629,7 @@ class _PostDetailViewState extends State<PostDetailView> {
             GestureDetector(
               onTap: () => _toggleExpanded(comment.id),
               child: Padding(
-                padding: EdgeInsets.only(left: 40.sp, top: 4.sp, bottom: 4.sp),
+                padding: EdgeInsets.only(left: 40.sp, top: 0.sp, bottom: 12.sp),
                 child: Row(
                   children: [
                     Container(

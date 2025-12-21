@@ -153,14 +153,41 @@ class _CreatePostModalState extends State<CreatePostModal> {
   }
 
   Future<void> _pickImages() async {
+    final int currentCount =
+        _selectedImages.length + (_prefilledImageUrl != null ? 1 : 0);
+    if (currentCount >= 6) {
+      toastification.show(
+        context: context,
+        type: ToastificationType.warning,
+        style: ToastificationStyle.flat,
+        title: Text('Bạn chỉ được chọn tối đa 6 ảnh'),
+        autoCloseDuration: const Duration(seconds: 3),
+        alignment: Alignment.bottomCenter,
+        showProgressBar: true,
+      );
+      return;
+    }
+
     try {
       final List<XFile> pickedImages = await _picker.pickMultiImage(
         imageQuality: 80,
       );
 
       if (pickedImages.isNotEmpty) {
+        final int remaining = 6 - currentCount;
+        if (pickedImages.length > remaining) {
+          toastification.show(
+            context: context,
+            type: ToastificationType.warning,
+            style: ToastificationStyle.flat,
+            title: Text('Đã giới hạn chọn tối đa 6 ảnh'),
+            autoCloseDuration: const Duration(seconds: 3),
+            alignment: Alignment.bottomCenter,
+            showProgressBar: true,
+          );
+        }
         setState(() {
-          _selectedImages.addAll(pickedImages);
+          _selectedImages.addAll(pickedImages.take(remaining));
         });
       }
     } catch (e) {
@@ -194,13 +221,25 @@ class _CreatePostModalState extends State<CreatePostModal> {
       );
     } else {
       print('CreatePostModal: Content is empty');
+      toastification.show(
+        context: context,
+        type: ToastificationType.warning,
+        style: ToastificationStyle.flat,
+        title: Text('Vui lòng nhập nội dung bài viết'),
+        autoCloseDuration: const Duration(seconds: 3),
+        alignment: Alignment.bottomCenter,
+        showProgressBar: true,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 600.sp, // Increased height to accommodate disease info
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+        minHeight: 300.sp,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -234,9 +273,10 @@ class _CreatePostModalState extends State<CreatePostModal> {
           }
         },
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(8.sp, 8.sp, 8.sp, 0),
+              padding: EdgeInsets.fromLTRB(0.sp, 8.sp, 8.sp, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -244,7 +284,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                     child: Container(
                       width: 40.sp,
                       height: 4.sp,
-                      margin: EdgeInsets.only(bottom: 16.sp),
+                      margin: EdgeInsets.only(bottom: 8.sp),
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
                         borderRadius: BorderRadius.circular(2.sp),
@@ -287,39 +327,105 @@ class _CreatePostModalState extends State<CreatePostModal> {
                 ],
               ),
             ),
-            Expanded(
+            Flexible(
               child: SingleChildScrollView(
                 child: Container(
-                  padding: EdgeInsets.all(12.sp),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          BlocBuilder<UserBloc, UserState>(
-                            builder: (context, userState) {
-                              if (userState is UserLoaded) {
-                                final user = userState.user;
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                        child: Row(
+                          children: [
+                            BlocBuilder<UserBloc, UserState>(
+                              builder: (context, userState) {
+                                if (userState is UserLoaded) {
+                                  final user = userState.user;
+                                  return Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 20.sp,
+                                        backgroundColor: AppColors.primary_200,
+                                        backgroundImage: user.avatar.isNotEmpty
+                                            ? NetworkImage(user.avatar)
+                                            : null,
+                                        child: user.avatar.isEmpty
+                                            ? Text(
+                                                user.fullName.isNotEmpty
+                                                    ? user.fullName[0]
+                                                    : (user.username.isNotEmpty
+                                                          ? user.username[0]
+                                                          : 'M'),
+                                                style: AppTextStyles.s16Bold(
+                                                  color: Colors.white,
+                                                ),
+                                              )
+                                            : null,
+                                      ),
+                                      SizedBox(width: 12.sp),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            user.fullName.isNotEmpty
+                                                ? user.fullName
+                                                : user.username,
+                                            style: AppTextStyles.s14Bold(),
+                                          ),
+                                          Row(
+                                            children: [
+                                              DropdownButtonHideUnderline(
+                                                child: DropdownButton<String>(
+                                                  value: _selectedCategory,
+                                                  isDense: true,
+                                                  style:
+                                                      AppTextStyles.s12Regular(
+                                                        color: Colors.grey[600],
+                                                      ),
+                                                  icon: Icon(
+                                                    Icons.keyboard_arrow_down,
+                                                    size: 16.sp,
+                                                    color: Colors.grey[600],
+                                                  ),
+                                                  items: _categories.map((
+                                                    String category,
+                                                  ) {
+                                                    return DropdownMenuItem<
+                                                      String
+                                                    >(
+                                                      value: category,
+                                                      child: Text(category),
+                                                    );
+                                                  }).toList(),
+                                                  onChanged:
+                                                      (String? newValue) {
+                                                        setState(() {
+                                                          _selectedCategory =
+                                                              newValue!;
+                                                        });
+                                                      },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                }
+                                // Fallback while loading
                                 return Row(
                                   children: [
                                     CircleAvatar(
                                       radius: 20.sp,
                                       backgroundColor: AppColors.primary_200,
-                                      backgroundImage: user.avatar.isNotEmpty
-                                          ? NetworkImage(user.avatar)
-                                          : null,
-                                      child: user.avatar.isEmpty
-                                          ? Text(
-                                              user.fullName.isNotEmpty
-                                                  ? user.fullName[0]
-                                                  : (user.username.isNotEmpty
-                                                        ? user.username[0]
-                                                        : 'M'),
-                                              style: AppTextStyles.s16Bold(
-                                                color: Colors.white,
-                                              ),
-                                            )
-                                          : null,
+                                      child: Text(
+                                        'M',
+                                        style: AppTextStyles.s16Bold(
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                     ),
                                     SizedBox(width: 12.sp),
                                     Column(
@@ -327,9 +433,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          user.fullName.isNotEmpty
-                                              ? user.fullName
-                                              : user.username,
+                                          'Đang tải...',
                                           style: AppTextStyles.s16Bold(),
                                         ),
                                         Row(
@@ -363,90 +467,38 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                                 },
                                               ),
                                             ),
+                                            SizedBox(width: 8.sp),
                                           ],
                                         ),
                                       ],
                                     ),
                                   ],
                                 );
-                              }
-                              // Fallback while loading
-                              return Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 20.sp,
-                                    backgroundColor: AppColors.primary_200,
-                                    child: Text(
-                                      'M',
-                                      style: AppTextStyles.s16Bold(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.sp),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Đang tải...',
-                                        style: AppTextStyles.s16Bold(),
-                                      ),
-                                      Row(
-                                        children: [
-                                          DropdownButtonHideUnderline(
-                                            child: DropdownButton<String>(
-                                              value: _selectedCategory,
-                                              style: AppTextStyles.s12Regular(
-                                                color: Colors.grey[600],
-                                              ),
-                                              icon: Icon(
-                                                Icons.keyboard_arrow_down,
-                                                size: 16.sp,
-                                                color: Colors.grey[600],
-                                              ),
-                                              items: _categories.map((
-                                                String category,
-                                              ) {
-                                                return DropdownMenuItem<String>(
-                                                  value: category,
-                                                  child: Text(category),
-                                                );
-                                              }).toList(),
-                                              onChanged: (String? newValue) {
-                                                setState(() {
-                                                  _selectedCategory = newValue!;
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                          SizedBox(width: 8.sp),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
-                        ],
+                              },
+                            ),
+                          ],
+                        ),
                       ),
 
                       // Text input
-                      SizedBox(
-                        height: 120.sp,
-                        child: TextField(
-                          controller: _postController,
-                          maxLines: null,
-                          textAlignVertical: TextAlignVertical.top,
-                          decoration: InputDecoration(
-                            hintText: 'Bạn đang nghĩ gì ?',
-                            border: InputBorder.none,
-                            hintStyle: AppTextStyles.s14Regular(
-                              color: AppColors.text_color_100,
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                        child: SizedBox(
+                          height: 120.sp,
+                          child: TextField(
+                            controller: _postController,
+                            maxLines: null,
+                            textAlignVertical: TextAlignVertical.top,
+                            decoration: InputDecoration(
+                              hintText: 'Bạn đang nghĩ gì ?',
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.zero,
+                              hintStyle: AppTextStyles.s14Regular(
+                                color: AppColors.text_color_100,
+                              ),
                             ),
+                            style: AppTextStyles.s16Regular(),
                           ),
-                          style: AppTextStyles.s16Regular(),
                         ),
                       ),
 
@@ -458,7 +510,11 @@ class _CreatePostModalState extends State<CreatePostModal> {
                               print('CreatePostModal State: $state');
                               if (state is DiseaseLoading) {
                                 return Padding(
-                                  padding: EdgeInsets.only(bottom: 16.sp),
+                                  padding: EdgeInsets.only(
+                                    bottom: 16.sp,
+                                    left: 16.sp,
+                                    right: 16.sp,
+                                  ),
                                   child: const Center(
                                     child: LoadingIndicator(),
                                   ),
@@ -468,7 +524,11 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                 return Stack(
                                   children: [
                                     Container(
-                                      margin: EdgeInsets.only(bottom: 16.sp),
+                                      margin: EdgeInsets.only(
+                                        bottom: 16.sp,
+                                        left: 16.sp,
+                                        right: 16.sp,
+                                      ),
                                       padding: EdgeInsets.all(12.sp),
                                       decoration: BoxDecoration(
                                         color: Colors.grey[50],
@@ -566,7 +626,11 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                 );
                               } else if (state is DiseaseError) {
                                 return Container(
-                                  margin: EdgeInsets.only(bottom: 16.sp),
+                                  margin: EdgeInsets.only(
+                                    bottom: 16.sp,
+                                    left: 16.sp,
+                                    right: 16.sp,
+                                  ),
                                   padding: EdgeInsets.all(12.sp),
                                   decoration: BoxDecoration(
                                     color: Colors.red[50],
@@ -598,7 +662,11 @@ class _CreatePostModalState extends State<CreatePostModal> {
                           )
                         else
                           Padding(
-                            padding: EdgeInsets.only(bottom: 16.sp),
+                            padding: EdgeInsets.only(
+                              bottom: 16.sp,
+                              left: 16.sp,
+                              right: 16.sp,
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
@@ -614,7 +682,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                     color: AppColors.primary_main,
                                   ),
                                   label: Text(
-                                    'Liên kết với Scan Solution',
+                                    'Liên kết bệnh với bài viết',
                                     style: AppTextStyles.s14Bold(
                                       color: AppColors.primary_main,
                                     ),
@@ -642,14 +710,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                       // Image selection area
                       Container(
                         width: double.infinity,
-                        constraints: BoxConstraints(
-                          minHeight: 120.sp,
-                          maxHeight:
-                              (_selectedImages.isEmpty &&
-                                  _prefilledImageUrl == null)
-                              ? 120.sp
-                              : 300.sp,
-                        ),
+                        constraints: BoxConstraints(minHeight: 120.sp),
                         decoration: BoxDecoration(
                           color: Colors.grey[50],
                           borderRadius: BorderRadius.circular(12.sp),
@@ -664,7 +725,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                             ? InkWell(
                                 onTap: _pickImages,
                                 child: SizedBox(
-                                  height: 120.sp,
+                                  height: 240.sp,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -705,45 +766,53 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          '${_selectedImages.length + (_prefilledImageUrl != null ? 1 : 0)} ảnh đã chọn',
+                                          '${_selectedImages.length + (_prefilledImageUrl != null ? 1 : 0)}/6 ảnh đã chọn',
                                           style: AppTextStyles.s14Regular(
                                             color: Colors.grey[700],
                                           ),
                                         ),
-                                        InkWell(
-                                          onTap: _pickImages,
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 12.sp,
-                                              vertical: 6.sp,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.primary_main
-                                                  .withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(16.sp),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  Icons.add,
-                                                  size: 16.sp,
-                                                  color: AppColors.primary_main,
-                                                ),
-                                                SizedBox(width: 4.sp),
-                                                Text(
-                                                  'Thêm ảnh',
-                                                  style:
-                                                      AppTextStyles.s12Regular(
-                                                        color: AppColors
-                                                            .primary_main,
-                                                      ),
-                                                ),
-                                              ],
+                                        if ((_selectedImages.length +
+                                                (_prefilledImageUrl != null
+                                                    ? 1
+                                                    : 0)) <
+                                            6)
+                                          InkWell(
+                                            onTap: _pickImages,
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 12.sp,
+                                                vertical: 8.sp,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.primary_main
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      16.sp,
+                                                    ),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    Icons.add,
+                                                    size: 16.sp,
+                                                    color:
+                                                        AppColors.primary_main,
+                                                  ),
+                                                  SizedBox(width: 4.sp),
+                                                  Text(
+                                                    'Thêm ảnh',
+                                                    style:
+                                                        AppTextStyles.s12Regular(
+                                                          color: AppColors
+                                                              .primary_main,
+                                                        ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
                                       ],
                                     ),
                                   ),
@@ -913,7 +982,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                       },
                                     ),
                                   ),
-                                  SizedBox(height: 12.sp),
+                                  SizedBox(height: 24.sp),
                                 ],
                               ),
                       ),

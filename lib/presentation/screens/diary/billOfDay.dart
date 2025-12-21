@@ -8,6 +8,7 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/presentation/screens/diary/widgets/task.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfMonth.dart';
+import 'package:se501_plantheon/common/helpers/money_formatter.dart';
 import 'package:se501_plantheon/data/datasources/activities_remote_datasource.dart';
 import 'package:se501_plantheon/data/repository/activities_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/financial/get_monthly_financial.dart';
@@ -266,15 +267,15 @@ class _BillOfDayState extends State<BillOfDay> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "+${monthIncome.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                "+${MoneyFormatter.format(monthIncome)} ₫",
                 style: TextStyle(fontSize: 13.sp, color: AppColors.primary_600),
               ),
               Text(
-                "-${monthExpense.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                "-${MoneyFormatter.format(monthExpense)} ₫",
                 style: TextStyle(color: Colors.red, fontSize: 13.sp),
               ),
               Text(
-                "= ${monthBalance.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                "= ${MoneyFormatter.format(monthBalance)} ₫",
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 13.sp,
@@ -324,7 +325,7 @@ class _BillOfDayState extends State<BillOfDay> {
                   child: Text(
                     balance == 0
                         ? "0 ₫"
-                        : "${balance > 0 ? '+' : ''}${balance.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                        : "${balance > 0 ? '+' : ''}${MoneyFormatter.format(balance)} ₫",
                     style: TextStyle(
                       fontSize: AppConstraints.normalTextFontSize.sp,
                       color: balance > 0
@@ -435,7 +436,7 @@ class _BillOfDayState extends State<BillOfDay> {
     }
 
     final String amountText = activity.money != null
-        ? "${activity.money! > 0 ? '+' : ''}${activity.money!.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫"
+        ? "${activity.money! > 0 ? '+' : ''}${MoneyFormatter.format(activity.money!)} ₫"
         : "0 đ";
 
     // Determine color based on type (defensive: handle empty string)

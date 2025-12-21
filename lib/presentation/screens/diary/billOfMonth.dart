@@ -17,6 +17,7 @@ import 'package:se501_plantheon/presentation/bloc/financial/financial_event.dart
 import 'package:se501_plantheon/presentation/bloc/financial/financial_state.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfYear.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfDay.dart';
+import 'package:se501_plantheon/common/helpers/money_formatter.dart';
 
 class BillOfMonth extends StatefulWidget {
   final DateTime? initialDate;
@@ -240,15 +241,15 @@ class _BillOfMonthState extends State<BillOfMonth> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "+${yearIncome.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                "+${MoneyFormatter.format(yearIncome)} ₫",
                 style: TextStyle(fontSize: 13.sp, color: AppColors.primary_600),
               ),
               Text(
-                "-${yearExpense.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                "-${MoneyFormatter.format(yearExpense)} ₫",
                 style: TextStyle(color: Colors.red, fontSize: 13.sp),
               ),
               Text(
-                "= ${yearBalance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                "= ${MoneyFormatter.format(yearBalance)} ₫",
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 13.sp,
@@ -314,18 +315,18 @@ class _BillOfMonthState extends State<BillOfMonth> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        "+${income.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                        "+${MoneyFormatter.format(income)} ₫",
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: AppColors.primary_600,
                         ),
                       ),
                       Text(
-                        "-${expense.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                        "-${MoneyFormatter.format(expense)} ₫",
                         style: TextStyle(fontSize: 12.sp, color: Colors.red),
                       ),
                       Text(
-                        "= ${balance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                        "= ${MoneyFormatter.format(balance)} ₫",
                         style: TextStyle(
                           fontSize: AppConstraints.normalTextFontSize.sp,
                           color: Colors.black,

@@ -15,6 +15,7 @@ import 'package:se501_plantheon/presentation/bloc/financial/financial_bloc.dart'
 import 'package:se501_plantheon/presentation/bloc/financial/financial_event.dart';
 import 'package:se501_plantheon/presentation/bloc/financial/financial_state.dart';
 import 'package:se501_plantheon/presentation/screens/diary/billOfMonth.dart';
+import 'package:se501_plantheon/common/helpers/money_formatter.dart';
 
 class BillOfYear extends StatefulWidget {
   final DateTime? initialDate;
@@ -222,15 +223,15 @@ class _BillOfYearState extends State<BillOfYear> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "+${decadeIncome.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                "+${MoneyFormatter.format(decadeIncome)} ₫",
                 style: TextStyle(fontSize: 13.sp, color: AppColors.primary_600),
               ),
               Text(
-                "-${decadeExpense.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                "-${MoneyFormatter.format(decadeExpense)} ₫",
                 style: TextStyle(color: Colors.red, fontSize: 13.sp),
               ),
               Text(
-                "= ${decadeBalance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                "= ${MoneyFormatter.format(decadeBalance)} ₫",
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 13.sp,
@@ -290,7 +291,7 @@ class _BillOfYearState extends State<BillOfYear> {
                   child: Text(
                     balance == 0
                         ? "0 ₫"
-                        : "${balance > 0 ? '+' : ''}${balance.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ₫",
+                        : "${balance > 0 ? '+' : ''}${MoneyFormatter.format(balance)} ₫",
                     textAlign: TextAlign.end,
                     style: TextStyle(
                       fontSize: AppConstraints.normalTextFontSize.sp,
