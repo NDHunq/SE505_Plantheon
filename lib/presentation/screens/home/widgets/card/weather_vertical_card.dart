@@ -12,6 +12,7 @@ class WeatherVerticalCard extends StatelessWidget {
   final int temperature;
   final int hour;
   final WeatherType weatherType;
+  final bool isDay;
   final VoidCallback? onTap;
   const WeatherVerticalCard({
     super.key,
@@ -19,28 +20,40 @@ class WeatherVerticalCard extends StatelessWidget {
     required this.temperature,
     required this.hour,
     required this.weatherType,
+    required this.isDay,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     String weatherAsset;
-    switch (weatherType) {
-      case WeatherType.moon:
-        weatherAsset = AppVectors.weatherMoon;
-        break;
-      case WeatherType.sunny:
-        weatherAsset = AppVectors.weatherSunny;
-        break;
-      case WeatherType.rainy:
-        weatherAsset = AppVectors.weatherRainy;
-        break;
-      case WeatherType.rainThunder:
-        weatherAsset = AppVectors.weatherRainThunder;
-        break;
-      case WeatherType.partlyCloudy:
-        weatherAsset = AppVectors.weatherPartlyCloudy;
-        break;
+
+    // Nếu ban đêm, hiển thị icon mặt trăng cho sunny và partlyCloudy
+    if (!isDay && weatherType == WeatherType.sunny) {
+      weatherAsset = AppVectors.weatherMoon;
+    } else if (!isDay && weatherType == WeatherType.partlyCloudy) {
+      weatherAsset = AppVectors.weatherPartlyCloudyMoon;
+    } else {
+      switch (weatherType) {
+        case WeatherType.sunny:
+          weatherAsset = AppVectors.weatherSunny;
+          break;
+        case WeatherType.rainy:
+          weatherAsset = AppVectors.weatherRainy;
+          break;
+        case WeatherType.rainThunder:
+          weatherAsset = AppVectors.weatherRainThunder;
+          break;
+        case WeatherType.partlyCloudy:
+          weatherAsset = AppVectors.weatherPartlyCloudy;
+          break;
+        case WeatherType.smallRainy:
+          weatherAsset = AppVectors.weatherSmallRainy;
+          break;
+        case WeatherType.cloud:
+          weatherAsset = AppVectors.weatherCloudy;
+          break;
+      }
     }
     return GestureDetector(
       onTap: onTap,

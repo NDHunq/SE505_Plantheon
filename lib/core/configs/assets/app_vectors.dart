@@ -17,8 +17,12 @@ class AppVectors {
   static const String weatherMoon = '${basePath}moon$format';
   static const String weatherSunny = '${basePath}sunny$format';
   static const String weatherRainy = '${basePath}rainy$format';
+  static const String weatherSmallRainy = '${basePath}small_rainy$format';
   static const String weatherRainThunder = '${basePath}rain_thunder$format';
+  static const String weatherCloudy = '${basePath}cloudy$format';
   static const String weatherPartlyCloudy = '${basePath}partly_cloudy$format';
+  static const String weatherPartlyCloudyMoon =
+      '${basePath}partly_cloudy_moon$format';
   static const String trash = '${basePath}trash$format';
   static const String scan = '${basePath}scan$format';
   static const String camera = '${basePath}camera$format';

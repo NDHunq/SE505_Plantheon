@@ -22,9 +22,6 @@ class WeatherHorizontalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     String weatherAsset;
     switch (weatherType) {
-      case WeatherType.moon:
-        weatherAsset = AppVectors.weatherMoon;
-        break;
       case WeatherType.sunny:
         weatherAsset = AppVectors.weatherSunny;
         break;
@@ -36,6 +33,12 @@ class WeatherHorizontalCard extends StatelessWidget {
         break;
       case WeatherType.partlyCloudy:
         weatherAsset = AppVectors.weatherPartlyCloudy;
+        break;
+      case WeatherType.smallRainy:
+        weatherAsset = AppVectors.weatherSmallRainy;
+        break;
+      case WeatherType.cloud:
+        weatherAsset = AppVectors.weatherCloudy;
         break;
     }
     return Padding(
