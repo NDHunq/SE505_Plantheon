@@ -43,11 +43,24 @@ class WeatherHorizontalCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(date, style: AppTextStyles.s16Medium(color: AppColors.white)),
-          SvgPicture.asset(weatherAsset, width: 40.sp, height: 40.sp),
+          SizedBox(
+            width: 70.sp,
+            child: Text(
+              date,
+              style: AppTextStyles.s16Medium(color: AppColors.primary_800),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withAlpha(70),
+              borderRadius: BorderRadius.circular(12.sp),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 4.sp),
+            child: SvgPicture.asset(weatherAsset, width: 40.sp, height: 40.sp),
+          ),
           Text(
             "$temperature°C",
-            style: AppTextStyles.s16Medium(color: AppColors.white),
+            style: AppTextStyles.s16Medium(color: AppColors.primary_800),
           ),
         ],
       ),

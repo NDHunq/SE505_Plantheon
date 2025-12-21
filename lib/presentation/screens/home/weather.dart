@@ -111,9 +111,9 @@ class _WeatherState extends State<Weather> {
     showDialog(
       context: context,
       builder: (context) => BasicDialog(
-        title: "Tính năng vị trí không khả dụng",
+        title: "Định vị không khả dụng",
         content:
-            "Hiện tại ứng dụng đang sử dụng vị trí mặc định: Bình Thạnh, TP.HCM",
+            "Hiện tại ứng dụng đang sử dụng vị trí mặc định: Thủ Đức, TP.HCM",
         confirmText: "OK",
         onConfirm: () {
           Navigator.of(context).pop();
@@ -175,7 +175,7 @@ class _WeatherState extends State<Weather> {
         deleteActivity: DeleteActivity(activitiesRepository),
       ),
       child: Scaffold(
-        backgroundColor: AppColors.primary_400,
+        backgroundColor: AppColors.primary_main,
         appBar: BasicAppbar(
           title: _locationName,
           titleColor: AppColors.white,
@@ -248,14 +248,25 @@ class _WeatherState extends State<Weather> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SvgPicture.asset(
-                              _getWeatherIcon(
-                                selectedHourlyWeather.weatherType,
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black.withAlpha(10),
+                                borderRadius: BorderRadius.circular(24.sp),
                               ),
-                              width: 110.sp,
-                              height: 110.sp,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.sp,
+                                vertical: 8.sp,
+                              ),
+
+                              child: SvgPicture.asset(
+                                _getWeatherIcon(
+                                  selectedHourlyWeather.weatherType,
+                                ),
+                                width: 110.sp,
+                                height: 110.sp,
+                              ),
                             ),
-                            SizedBox(width: 60.sp),
+                            SizedBox(width: 30.sp),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -279,13 +290,13 @@ class _WeatherState extends State<Weather> {
                                     selectedHourlyWeather.weatherType,
                                   ),
                                   style: AppTextStyles.s14Medium(
-                                    color: AppColors.primary_700,
+                                    color: AppColors.primary_800,
                                   ),
                                 ),
                                 Text(
                                   'Độ ẩm: ${_weatherData!.currentHumidity.toDouble().round()}% - Gió: ${_weatherData!.currentWindSpeed.toDouble().round()} km/h',
                                   style: AppTextStyles.s12Medium(
-                                    color: AppColors.primary_700,
+                                    color: AppColors.primary_800,
                                   ),
                                 ),
                               ],
@@ -332,7 +343,7 @@ class _WeatherState extends State<Weather> {
                         Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: AppColors.primary_200,
+                            color: AppColors.primary_100,
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(20.sp),
                               topRight: Radius.circular(20.sp),
@@ -347,7 +358,7 @@ class _WeatherState extends State<Weather> {
                                 Text(
                                   'Dự báo kế tiếp',
                                   style: AppTextStyles.s16SemiBold(
-                                    color: AppColors.primary_700,
+                                    color: AppColors.primary_800,
                                   ),
                                 ),
                                 ..._weatherData!.dailyWeather
