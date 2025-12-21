@@ -240,7 +240,12 @@ class _PostDetailViewState extends State<PostDetailView> {
                         value: 'delete',
                         child: Row(
                           children: [
-                            Icon(Icons.delete, color: Colors.red),
+                            SvgPicture.asset(
+                              AppVectors.trash,
+                              width: 22.sp,
+                              height: 22.sp,
+                              color: Colors.red,
+                            ),
                             SizedBox(width: 8.sp),
                             Text(
                               'Xóa bài viết',
@@ -253,7 +258,12 @@ class _PostDetailViewState extends State<PostDetailView> {
                       value: 'report',
                       child: Row(
                         children: [
-                          Icon(Icons.flag_outlined),
+                          SvgPicture.asset(
+                            AppVectors.report,
+                            width: 20.sp,
+                            height: 20.sp,
+                            color: AppColors.text_color_400,
+                          ),
                           SizedBox(width: 8.sp),
                           Text('Báo cáo'),
                         ],
@@ -455,10 +465,11 @@ class _PostDetailViewState extends State<PostDetailView> {
                             IconButton(
                               onPressed: () =>
                                   _addComment(_commentController.text),
-                              icon: Icon(
-                                Icons.send,
+                              icon: SvgPicture.asset(
+                                AppVectors.send,
+                                width: 28.sp,
+                                height: 28.sp,
                                 color: AppColors.primary_main,
-                                size: 20.sp,
                               ),
                             ),
                           ],
@@ -806,7 +817,12 @@ class _PostDetailViewState extends State<PostDetailView> {
                                 value: 'report',
                                 child: Row(
                                   children: [
-                                    Icon(Icons.flag_outlined, size: 16.sp),
+                                    SvgPicture.asset(
+                                      AppVectors.report,
+                                      width: 20.sp,
+                                      height: 20.sp,
+                                      color: AppColors.text_color_400,
+                                    ),
                                     SizedBox(width: 8.sp),
                                     Text('Báo cáo'),
                                   ],
@@ -846,14 +862,13 @@ class _PostDetailViewState extends State<PostDetailView> {
                         },
                         child: Row(
                           children: [
-                            Icon(
+                            SvgPicture.asset(
                               comment.isLike
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              size: 16.sp,
-                              color: comment.isLike
-                                  ? AppColors.red
-                                  : Colors.grey[600],
+                                  ? AppVectors.heartSolid
+                                  : AppVectors.heart,
+                              color: AppColors.red,
+                              width: 16.sp,
+                              height: 16.sp,
                             ),
                             SizedBox(width: 4.sp),
                             Text(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
@@ -32,6 +33,8 @@ import 'package:se501_plantheon/domain/usecases/disease/get_disease.dart';
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+
+import '../../../core/configs/assets/app_vectors.dart';
 
 class ScanSolution extends StatefulWidget {
   final String scanHistoryId;
@@ -297,14 +300,13 @@ class _ScanSolutionState extends State<ScanSolution> {
                       },
                       icon: _isLoadingTts
                           ? LoadingIndicator(size: 26.sp)
-                          : Icon(
+                          : SvgPicture.asset(
                               _isSpeaking
-                                  ? Icons.stop_circle_outlined
-                                  : Icons.volume_up,
-                              color: _isSpeaking
-                                  ? AppColors.primary_600
-                                  : AppColors.primary_400,
-                              size: 24.sp,
+                                  ? AppVectors.stop
+                                  : AppVectors.speaker,
+                              width: 24.sp,
+                              height: 24.sp,
+                              color: AppColors.primary_400,
                             ),
                     ),
                   ),

@@ -98,7 +98,11 @@ class _AddEventModalState extends State<AddEventModal> {
       ),
       child: Row(
         children: [
-          Icon(Icons.add_circle_outline, color: Colors.blue.shade700, size: 28.sp),
+          Icon(
+            Icons.add_circle_outline,
+            color: Colors.blue.shade700,
+            size: 28.sp,
+          ),
           SizedBox(width: 12.sp),
           Expanded(
             child: Column(
@@ -114,14 +118,17 @@ class _AddEventModalState extends State<AddEventModal> {
                 ),
                 Text(
                   '${_selectedDate?.day}/${_selectedDate?.month}/${_selectedDate?.year}',
-                  style: TextStyle(fontSize: 14.sp, color: Colors.blue.shade600),
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.blue.shade600,
+                  ),
                 ),
               ],
             ),
           ),
           IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.close, color: Colors.blue.shade700),
+            icon: Icon(Icons.close_rounded, color: Colors.blue.shade700),
           ),
         ],
       ),

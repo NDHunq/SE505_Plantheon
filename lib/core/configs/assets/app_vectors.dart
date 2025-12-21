@@ -43,4 +43,15 @@ class AppVectors {
   static const String unflash = '${basePath}unflash$format';
   static const String reload = '${basePath}reload$format';
   static const String info = '${basePath}info$format';
+  static const String file = '${basePath}file$format';
+  static const String search = '${basePath}search$format';
+  static const String calendar = '${basePath}calendar$format';
+  static const String eye = '${basePath}eye$format';
+  static const String eyeOff = '${basePath}eye_off$format';
+  static const String galleryAdd = '${basePath}gallery_add$format';
+  static const String galleryEdit = '${basePath}gallery_edit$format';
+  static const String link = '${basePath}link$format';
+  static const String warning = '${basePath}warning$format';
+  static const String speaker = '${basePath}speaker$format';
+  static const String stop = '${basePath}stop$format';
 }

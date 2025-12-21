@@ -130,7 +130,7 @@ class _ReportModalState extends State<ReportModal> {
                         ),
                         IconButton(
                           onPressed: () => Navigator.pop(context),
-                          icon: Icon(Icons.close),
+                          icon: Icon(Icons.close_rounded),
                           padding: EdgeInsets.zero,
                           constraints: BoxConstraints(),
                         ),

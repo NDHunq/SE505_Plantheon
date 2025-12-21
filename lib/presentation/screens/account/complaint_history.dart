@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
@@ -18,6 +19,8 @@ import 'package:se501_plantheon/presentation/bloc/complaint/complaint_state.dart
 import 'package:se501_plantheon/presentation/screens/community/post_detail.dart';
 import 'package:se501_plantheon/presentation/screens/community/user_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../core/configs/assets/app_vectors.dart';
 
 class ComplaintHistory extends StatelessWidget {
   const ComplaintHistory({super.key});
@@ -99,10 +102,11 @@ class _ComplaintHistoryView extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.assignment_outlined,
-                      size: 64.sp,
-                      color: Colors.grey[400],
+                    SvgPicture.asset(
+                      AppVectors.report,
+                      width: 64.sp,
+                      height: 64.sp,
+                      color: Colors.grey,
                     ),
                     SizedBox(height: 16.sp),
                     Text(

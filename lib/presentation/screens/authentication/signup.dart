@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/common/widgets/button/sized_button.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_event.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_state.dart';
@@ -279,9 +281,11 @@ class _SignUpPageState extends State<SignUpPage> {
           borderRadius: BorderRadius.all(Radius.circular(12.sp)),
         ),
         suffixIcon: IconButton(
-          icon: Icon(
-            _obscurePassword ? Icons.visibility_off : Icons.visibility,
-            color: const Color.fromARGB(255, 63, 63, 63),
+          icon: SvgPicture.asset(
+            _obscurePassword ? AppVectors.eyeOff : AppVectors.eye,
+            width: 24.sp,
+            height: 24.sp,
+            color: AppColors.primary_600,
           ),
           onPressed: () {
             setState(() {
@@ -312,9 +316,11 @@ class _SignUpPageState extends State<SignUpPage> {
           borderRadius: BorderRadius.all(Radius.circular(12.sp)),
         ),
         suffixIcon: IconButton(
-          icon: Icon(
-            _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
-            color: const Color.fromARGB(255, 63, 63, 63),
+          icon: SvgPicture.asset(
+            _obscureConfirmPassword ? AppVectors.eyeOff : AppVectors.eye,
+            width: 24.sp,
+            height: 24.sp,
+            color: AppColors.primary_600,
           ),
           onPressed: () {
             setState(() {

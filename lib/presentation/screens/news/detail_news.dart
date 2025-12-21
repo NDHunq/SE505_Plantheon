@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/domain/entities/news_entity.dart';
 import 'package:se501_plantheon/domain/usecases/news/get_news_detail.dart';
@@ -154,7 +156,7 @@ class DetailNews extends StatelessWidget {
                             SizedBox(width: 16.sp),
 
                             Icon(
-                              Icons.access_time,
+                              Icons.access_time_rounded,
                               size: 14.sp,
                               color: AppColors.text_color_200,
                             ),
@@ -168,10 +170,11 @@ class DetailNews extends StatelessWidget {
                               ),
                             ),
                             SizedBox(width: 16.sp),
-                            Icon(
-                              Icons.person_outline,
-                              size: 14.sp,
-                              color: AppColors.text_color_200,
+                            SvgPicture.asset(
+                              AppVectors.accountStroke,
+                              width: 14.sp,
+                              height: 14.sp,
+                              color: AppColors.text_color_400,
                             ),
                             SizedBox(width: 4.sp),
                             Text(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:intl/intl.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 
 class BasicDatepicker extends StatefulWidget {
@@ -57,12 +59,17 @@ class _BasicDatepickerState extends State<BasicDatepicker> {
             Text(
               _formattedDate,
               style: TextStyle(
-                color: AppColors.text_color_200,
+                color: AppColors.primary_800,
                 fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            Icon(Icons.calendar_month_rounded, color: AppColors.text_color_200),
+            SvgPicture.asset(
+              AppVectors.calendar,
+              width: 24.sp,
+              height: 24.sp,
+              color: AppColors.primary_800,
+            ),
           ],
         ),
       ),

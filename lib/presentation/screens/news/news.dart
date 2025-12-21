@@ -143,7 +143,12 @@ class _NewsState extends State<News> {
                     ),
                   ),
                   SizedBox(width: 8.sp),
-                  Icon(Icons.search_rounded, color: Colors.grey),
+                  SvgPicture.asset(
+                    AppVectors.search,
+                    width: 24.sp,
+                    height: 24.sp,
+                    color: Colors.grey,
+                  ),
                 ],
               ),
             ),
@@ -223,7 +228,7 @@ class _NewsState extends State<News> {
                             children: [
                               if (isSelected) ...[
                                 Icon(
-                                  Icons.check,
+                                  Icons.check_rounded,
                                   size: 16.sp,
                                   color: AppColors.white,
                                 ),

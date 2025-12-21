@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
@@ -23,6 +24,8 @@ import 'package:se501_plantheon/data/datasources/post_remote_datasource.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
 import 'package:toastification/toastification.dart';
+
+import '../../../../core/configs/assets/app_vectors.dart';
 
 class CreatePostModal extends StatefulWidget {
   final String? diseaseId; // className for fetching disease info
@@ -150,7 +153,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
   Future<void> _pickImages() async {
     try {
       // Calculate current image count (selected + prefilled)
-      final int currentImageCount = _selectedImages.length + (_prefilledImageUrl != null ? 1 : 0);
+      final int currentImageCount =
+          _selectedImages.length + (_prefilledImageUrl != null ? 1 : 0);
       final int remainingSlots = 5 - currentImageCount;
 
       if (remainingSlots <= 0) {
@@ -176,7 +180,9 @@ class _CreatePostModalState extends State<CreatePostModal> {
             context: context,
             type: ToastificationType.warning,
             style: ToastificationStyle.flat,
-            title: Text('Chỉ có thể thêm $remainingSlots ảnh nữa (tối đa 5 ảnh)'),
+            title: Text(
+              'Chỉ có thể thêm $remainingSlots ảnh nữa (tối đa 5 ảnh)',
+            ),
             autoCloseDuration: const Duration(seconds: 3),
             alignment: Alignment.bottomCenter,
             showProgressBar: true,
@@ -470,7 +476,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                       ),
                                     ),
                                     child: Icon(
-                                      Icons.close,
+                                      Icons.close_rounded,
                                       size: 16.sp,
                                       color: Colors.grey[600],
                                     ),
@@ -523,9 +529,10 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                 _isDiseaseLinked = true;
                               });
                             },
-                            icon: Icon(
-                              Icons.link,
-                              size: 20.sp,
+                            icon: SvgPicture.asset(
+                              AppVectors.link,
+                              width: 22.sp,
+                              height: 22.sp,
                               color: AppColors.primary_main,
                             ),
                             label: Text(
@@ -578,14 +585,18 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                 Container(
                                   width: 60.sp,
                                   height: 60.sp,
+                                  padding: EdgeInsets.all(14.sp),
                                   decoration: BoxDecoration(
                                     color: Colors.grey[400],
                                     borderRadius: BorderRadius.circular(12.sp),
                                   ),
-                                  child: Icon(
-                                    Icons.add_photo_alternate,
-                                    size: 30.sp,
-                                    color: Colors.white,
+                                  child: SizedBox(
+                                    child: SvgPicture.asset(
+                                      AppVectors.galleryAdd,
+                                      width: 24.sp,
+                                      height: 24.sp,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                                 SizedBox(height: 8.sp),
@@ -633,7 +644,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Icon(
-                                            Icons.add,
+                                            Icons.add_rounded,
                                             size: 16.sp,
                                             color: AppColors.primary_main,
                                           ),
@@ -725,7 +736,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                                   shape: BoxShape.circle,
                                                 ),
                                                 child: Icon(
-                                                  Icons.close,
+                                                  Icons.close_rounded,
                                                   size: 16.sp,
                                                   color: Colors.white,
                                                 ),
@@ -796,7 +807,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                                 shape: BoxShape.circle,
                                               ),
                                               child: Icon(
-                                                Icons.close,
+                                                Icons.close_rounded,
                                                 size: 16.sp,
                                                 color: Colors.white,
                                               ),

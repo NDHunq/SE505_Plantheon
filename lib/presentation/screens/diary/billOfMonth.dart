@@ -195,7 +195,7 @@ class _BillOfMonthState extends State<BillOfMonth> {
                 IconButton(
                   onPressed: _previousYear,
                   icon: const Icon(
-                    Icons.chevron_left,
+                    Icons.chevron_left_rounded,
                     color: AppColors.primary_600,
                   ),
                 ),
@@ -226,7 +226,10 @@ class _BillOfMonthState extends State<BillOfMonth> {
 
                 IconButton(
                   onPressed: _nextYear,
-                  icon: Icon(Icons.chevron_right, color: AppColors.primary_600),
+                  icon: Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.primary_600,
+                  ),
                 ),
               ],
             ),

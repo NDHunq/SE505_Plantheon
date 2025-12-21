@@ -60,7 +60,7 @@ class CommunitySuggestionWidget extends StatelessWidget {
                 ),
                 SizedBox(width: 4.sp),
                 Icon(
-                  Icons.arrow_forward_ios,
+                  Icons.arrow_forward_ios_rounded,
                   size: 12.sp,
                   color: AppColors.primary_main,
                 ),

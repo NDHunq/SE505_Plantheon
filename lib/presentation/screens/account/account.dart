@@ -226,9 +226,10 @@ class _ProfileCardState extends State<_profileCard> {
                             color: Colors.black54,
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(
-                            Icons.camera_alt,
-                            size: 16.sp,
+                          child: SvgPicture.asset(
+                            AppVectors.camera,
+                            width: 16.sp,
+                            height: 16.sp,
                             color: Colors.white,
                           ),
                         ),
@@ -296,11 +297,16 @@ class _ProfileCardState extends State<_profileCard> {
                         height: 16.sp,
                         child: const LoadingIndicator(),
                       )
-                    : const Icon(Icons.save, color: Colors.green),
+                    : SvgPicture.asset(
+                        AppVectors.file,
+                        width: 22.sp,
+                        height: 22.sp,
+                        color: AppColors.primary_600,
+                      ),
                 onPressed: isSaving ? null : _saveProfile,
               ),
               IconButton(
-                icon: const Icon(Icons.close, color: Colors.red),
+                icon: const Icon(Icons.close_rounded, color: Colors.red),
                 onPressed: isSaving ? null : _cancelEdit,
               ),
             ] else ...[
@@ -451,7 +457,12 @@ class _ProfileCardState extends State<_profileCard> {
                 Navigator.of(dialogContext).pop();
                 await _pickImage(ImageSource.camera);
               },
-              icon: Icon(Icons.camera_alt),
+              icon: SvgPicture.asset(
+                AppVectors.camera,
+                width: 20.sp,
+                height: 20.sp,
+                color: Colors.white,
+              ),
               label: Text('Chụp ảnh'),
             ),
             SizedBox(height: 8.sp),
@@ -460,7 +471,12 @@ class _ProfileCardState extends State<_profileCard> {
                 Navigator.of(dialogContext).pop();
                 await _pickImage(ImageSource.gallery);
               },
-              icon: const Icon(Icons.photo_library),
+              icon: SvgPicture.asset(
+                AppVectors.gallery,
+                width: 20.sp,
+                height: 20.sp,
+                color: Colors.white,
+              ),
               label: const Text('Chọn từ thư viện'),
             ),
           ],

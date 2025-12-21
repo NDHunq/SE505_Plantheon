@@ -295,8 +295,14 @@ class _MyPostView extends StatelessWidget {
                       PopupMenuItem(
                         value: 'delete',
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.delete, color: Colors.red),
+                            SvgPicture.asset(
+                              AppVectors.trash,
+                              width: 22.sp,
+                              height: 22.sp,
+                              color: Colors.red,
+                            ),
                             SizedBox(width: 8.sp),
                             Text(
                               'Xóa bài viết',

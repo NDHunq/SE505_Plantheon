@@ -5,8 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
@@ -191,6 +193,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
+                                    spacing: 4.sp,
                                     children: [
                                       if (_isLoadingTts)
                                         SizedBox(
@@ -202,13 +205,15 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                                           ),
                                         )
                                       else
-                                        Icon(
+                                        SvgPicture.asset(
                                           _isSpeaking
-                                              ? Icons.stop_circle_outlined
-                                              : Icons.volume_up,
+                                              ? AppVectors.stop
+                                              : AppVectors.speaker,
+                                          width: 24.sp,
+                                          height: 24.sp,
                                           color: AppColors.primary_400,
-                                          size: 24.sp,
                                         ),
+
                                       Text(
                                         _isLoadingTts
                                             ? ' Đang tải...'

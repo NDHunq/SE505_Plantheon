@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/common/widgets/topnavigation/navigation.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/constants/constraints.dart';
 import 'package:se501_plantheon/presentation/screens/diary/month.dart';
 import 'package:se501_plantheon/presentation/screens/diary/addNew.dart';
@@ -441,12 +443,14 @@ class _DiaryState extends State<Diary> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Tìm kiếm nhật ký"),
-        content: const TextField(
+        title: Text(
+          "Tìm kiếm nhật ký",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
+        ),
+        content: TextField(
           decoration: InputDecoration(
             hintText: "Nhập từ khóa tìm kiếm...",
             border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.search),
           ),
         ),
         actions: [

@@ -108,6 +108,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             "Bỏ qua",
                             style: TextStyle(
                               color: Colors.grey,
+                              fontWeight: FontWeight.w600,
                               fontSize: 15.sp,
                             ),
                           ),

@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
-import 'package:lottie/lottie.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/common/widgets/fast_lottie_loading.dart';
 import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
@@ -488,7 +487,7 @@ class _ScanState extends State<Scan> {
                                             Navigator.of(context).pop();
                                           },
                                           icon: Icon(
-                                            Icons.close,
+                                            Icons.close_rounded,
                                             color: AppColors.primary_700,
                                           ),
                                         ),

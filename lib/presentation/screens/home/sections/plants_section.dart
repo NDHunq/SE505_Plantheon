@@ -32,7 +32,7 @@ class PlantSection extends StatelessWidget {
                 );
               },
               icon: Icon(
-                Icons.arrow_forward_ios,
+                Icons.arrow_forward_ios_rounded,
                 size: 16.sp,
                 color: AppColors.primary_700,
               ),
@@ -44,7 +44,7 @@ class PlantSection extends StatelessWidget {
           child: BlocBuilder<PlantBloc, PlantState>(
             builder: (context, state) {
               final isLoading = state is PlantLoading || state is PlantInitial;
-              
+
               if (state is PlantError) {
                 return Center(
                   child: Text(
@@ -55,7 +55,7 @@ class PlantSection extends StatelessWidget {
               }
 
               final plants = state is PlantLoaded ? state.plants : [];
-              
+
               if (!isLoading && plants.isEmpty) {
                 return const Center(
                   child: Text('Chưa có cây trồng để hiển thị'),
@@ -63,9 +63,9 @@ class PlantSection extends StatelessWidget {
               }
 
               // Show skeleton or real data
-              final displayPlants = isLoading 
-                ? List.generate(4, (index) => null) // 4 skeleton items
-                : plants;
+              final displayPlants = isLoading
+                  ? List.generate(4, (index) => null) // 4 skeleton items
+                  : plants;
 
               return Skeletonizer(
                 enabled: isLoading,
@@ -75,12 +75,9 @@ class PlantSection extends StatelessWidget {
                   itemBuilder: (context, index) {
                     if (isLoading) {
                       // Skeleton card
-                      return const PlantsCard(
-                        name: 'Plant Name',
-                        imageUrl: '',
-                      );
+                      return const PlantsCard(name: 'Plant Name', imageUrl: '');
                     }
-                    
+
                     final plant = plants[index];
                     return GestureDetector(
                       onTap: () {
