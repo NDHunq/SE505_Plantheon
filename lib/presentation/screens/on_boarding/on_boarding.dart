@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/core/configs/assets/app_images.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/authentication/signin.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -14,6 +15,11 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  Future<void> _completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('has_seen_onboarding', true);
+  }
+
   List<Map<String, String>> onboardingData = [
     {
       "title": "Chẩn đoán bệnh thần tốc",
@@ -30,7 +36,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     {
       "title": "Kết nối cộng đồng nhà nông",
       "text":
-          "Tham gia mạng xã hội nông nghiệp, nơi giao lưu và chia sẻ bí quyết canh tác cùng những người bạn đồng hành.",
+          "Tham gia mạng xã hội nông nghiệp, nơi giao lưu và chia sẻ bí quyết canh tác cùng những người bạn đồng hành. ",
       "image": AppImages.onBoarding3,
     },
   ];
@@ -44,7 +50,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           children: [
             const Spacer(),
             SizedBox(
-              height: 430.sp,
+              height: 450.sp,
               child: PageView.builder(
                 controller: _pageController,
                 onPageChanged: (value) {
@@ -96,8 +102,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () {
-                            Navigator.push(
+                          onTap: () async {
+                            await _completeOnboarding();
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                 builder: (BuildContext context) => SignInPage(),
@@ -130,9 +137,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           borderRadius: BorderRadius.circular(30.sp),
                         ),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                         if (_currentPage == onboardingData.length - 1) {
-                          Navigator.push(
+                          await _completeOnboarding();
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (BuildContext context) => SignInPage(),

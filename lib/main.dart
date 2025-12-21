@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/supabase_service.dart';
 import 'package:se501_plantheon/core/services/firebase_notification_service.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_provider.dart';
 import 'package:se501_plantheon/core/services/deep_link_service.dart';
+import 'package:se501_plantheon/presentation/screens/authentication/signin.dart';
 import 'package:se501_plantheon/presentation/screens/on_boarding/on_boarding.dart';
 import 'package:se501_plantheon/presentation/screens/on_boarding/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -120,20 +122,43 @@ class _StartupRouterState extends State<StartupRouter> {
   Future<void> _decideInitialRoute() async {
     await Future.delayed(const Duration(milliseconds: 1000));
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token');
+    final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
 
-    // If user has valid token, go to main navigator
-    if (token != null && token.isNotEmpty) {
+    // If first time opening app, show onboarding
+    if (!hasSeenOnboarding) {
       Navigator.of(navigatorKey.currentContext!).pushReplacement(
-        MaterialPageRoute(builder: (_) => const CustomNavigator()),
+        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
       );
       return;
     }
 
-    // Otherwise show onboarding
-    Navigator.of(navigatorKey.currentContext!).pushReplacement(
-      MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-    );
+    // Check if token is valid (exists and not expired)
+    final token = prefs.getString('auth_token');
+    if (token != null && token.isNotEmpty) {
+      try {
+        final isExpired = Jwt.isExpired(token);
+        if (!isExpired) {
+          // Token is valid, go to main navigator
+          Navigator.of(navigatorKey.currentContext!).pushReplacement(
+            MaterialPageRoute(builder: (_) => const CustomNavigator()),
+          );
+          return;
+        } else {
+          // Token expired, clear it
+          await prefs.remove('auth_token');
+          await prefs.remove('user_data');
+        }
+      } catch (e) {
+        // Invalid token format, clear it
+        await prefs.remove('auth_token');
+        await prefs.remove('user_data');
+      }
+    }
+
+    // Otherwise show sign in
+    Navigator.of(
+      navigatorKey.currentContext!,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => SignInPage()));
   }
 
   @override

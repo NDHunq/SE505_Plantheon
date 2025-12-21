@@ -48,13 +48,13 @@ class _BasicDatepickerState extends State<BasicDatepicker> {
     return GestureDetector(
       onTap: () => _pickDate(context),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 4.sp),
+        padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 8.sp),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.sp),
+          borderRadius: BorderRadius.circular(12.sp),
           border: Border.all(color: AppColors.primary_700, width: 1.sp),
         ),
         child: Row(
-          spacing: 16.sp,
+          spacing: 12.sp,
           children: [
             Text(
               _formattedDate,
