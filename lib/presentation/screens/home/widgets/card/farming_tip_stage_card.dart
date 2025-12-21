@@ -80,11 +80,11 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.sp),
               child: Row(
-                // spacing: 16.sp, // Row does not have spacing, use SizedBox
                 children: [
                   CachedNetworkImage(
                     imageUrl: widget.imageUrl,
@@ -92,8 +92,8 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                       borderRadius: BorderRadius.circular(8.sp),
                       child: Image(
                         image: imageProvider,
-                        width: 60.sp,
-                        height: 60.sp,
+                        width: 72.sp,
+                        height: 72.sp,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -125,12 +125,13 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 16.sp),
+                  SizedBox(width: 12.sp),
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: 12.sp),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
                             padding: EdgeInsets.symmetric(
@@ -280,7 +281,7 @@ class _SubGuideStageSection extends StatelessWidget {
                 ),
                 SizedBox(height: 8.sp),
                 SizedBox(
-                  height: 150.sp,
+                  height: 170.sp,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: subStage.blogs.length,
@@ -337,6 +338,7 @@ class _BlogCard extends StatelessWidget {
                   fallbackTag: '',
                   fallbackDate: DateTime.now(),
                   fallbackContent: content,
+                  isFromFarmingTip: true,
                 ),
               ),
             ),
@@ -351,10 +353,11 @@ class _BlogCard extends StatelessWidget {
           border: Border.all(color: AppColors.text_color_50, width: 1.sp),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: 140.sp,
-              height: 69.sp,
+              height: 90.sp,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.sp),
                 image: coverImageUrl.isNotEmpty

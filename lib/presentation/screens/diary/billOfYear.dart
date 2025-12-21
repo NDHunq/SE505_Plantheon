@@ -192,7 +192,10 @@ class _BillOfYearState extends State<BillOfYear> {
               children: [
                 IconButton(
                   onPressed: _previousDecade,
-                  icon: Icon(Icons.chevron_left, color: AppColors.primary_600),
+                  icon: Icon(
+                    Icons.chevron_left_rounded,
+                    color: AppColors.primary_600,
+                  ),
                 ),
                 Text(
                   "$startYear - $endYear",
@@ -205,7 +208,10 @@ class _BillOfYearState extends State<BillOfYear> {
                 ),
                 IconButton(
                   onPressed: _nextDecade,
-                  icon: Icon(Icons.chevron_right, color: AppColors.primary_600),
+                  icon: Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.primary_600,
+                  ),
                 ),
               ],
             ),

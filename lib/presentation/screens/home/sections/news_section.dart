@@ -52,7 +52,7 @@ class _NewsSectionState extends State<NewsSection> {
                 ),
               ),
               child: Icon(
-                Icons.arrow_forward_ios,
+                Icons.arrow_forward_ios_rounded,
                 size: 16.sp,
                 color: AppColors.primary_700,
               ),
@@ -193,6 +193,7 @@ class _NewsSectionState extends State<NewsSection> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DetailNews(
+                                      isFromFarmingTip: false,
                                       newsId: newsItem.id,
                                       repository: repo,
                                       fallbackTitle: newsItem.title,

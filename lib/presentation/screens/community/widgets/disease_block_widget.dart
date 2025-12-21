@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/presentation/screens/scan/scan_solution.dart';
 
@@ -96,15 +98,16 @@ class _DiseaseBlockWidgetState extends State<DiseaseBlockWidget> {
                       children: [
                         Row(
                           children: [
-                            Icon(
-                              Icons.warning_rounded,
-                              size: 14.sp,
+                            SvgPicture.asset(
+                              AppVectors.warning,
+                              width: 16.sp,
+                              height: 16.sp,
                               color: AppColors.orange,
                             ),
                             SizedBox(width: 4.sp),
                             Text(
                               'Bệnh phát hiện',
-                              style: AppTextStyles.s10Regular(
+                              style: AppTextStyles.s12Regular(
                                 color: AppColors.orange,
                               ),
                             ),
@@ -218,7 +221,10 @@ class _DiseaseBlockWidgetState extends State<DiseaseBlockWidget> {
                             borderRadius: BorderRadius.circular(8.sp),
                           ),
                         ),
-                        icon: Icon(Icons.medical_services, size: 16.sp),
+                        icon: Icon(
+                          Icons.medical_services_outlined,
+                          size: 16.sp,
+                        ),
                         label: Text(
                           'Xem giải pháp chi tiết',
                           style: AppTextStyles.s12Bold(color: Colors.white),

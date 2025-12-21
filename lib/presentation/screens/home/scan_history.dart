@@ -123,11 +123,7 @@ class _ScanHistoryContent extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.error_outline,
-                      size: 64.sp,
-                      color: Colors.red,
-                    ),
+                    Icon(Icons.error_outline, size: 64.sp, color: Colors.red),
                     SizedBox(height: 16.sp),
                     Text(
                       'Lỗi: ${state.message}',
@@ -183,10 +179,11 @@ class _ScanHistoryContent extends StatelessWidget {
                         alignment: Alignment.centerRight,
                         padding: EdgeInsets.only(right: 20.sp),
                         color: Colors.red,
-                        child: Icon(
-                          Icons.delete,
+                        child: SvgPicture.asset(
+                          AppVectors.trash,
+                          width: 24.sp,
+                          height: 24.sp,
                           color: Colors.white,
-                          size: 32.sp,
                         ),
                       ),
                       confirmDismiss: (direction) async {

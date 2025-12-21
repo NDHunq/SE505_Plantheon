@@ -61,7 +61,10 @@ class _PlantsPickerState extends State<PlantsPicker> {
               SizedBox(width: 16.sp, height: 16.sp, child: LoadingIndicator()),
               Text(
                 'Đang tải...',
-                style: TextStyle(color: AppColors.text_color_200, fontSize: 14.sp),
+                style: TextStyle(
+                  color: AppColors.text_color_200,
+                  fontSize: 14.sp,
+                ),
               ),
             ],
           ),
@@ -118,8 +121,8 @@ class _PlantsPickerState extends State<PlantsPicker> {
               child: Text(
                 _selectedPlant?.name ?? 'Chọn cây trồng',
                 style: TextStyle(
-                  color: AppColors.text_color_main,
-                  fontSize: 12.sp,
+                  color: AppColors.primary_800,
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.w600,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -212,14 +215,6 @@ class _PlantPickerSheetState extends State<_PlantPickerSheet> {
     _selectedId = widget.initialSelectedId;
   }
 
-  void _filter(String query) {
-    setState(() {
-      _filtered = widget.plants
-          .where((p) => p.name.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height * 0.8.sp;
@@ -256,23 +251,7 @@ class _PlantPickerSheetState extends State<_PlantPickerSheet> {
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w700,
-                color: AppColors.text_color_main,
-              ),
-            ),
-            SizedBox(height: 12.sp),
-            TextField(
-              onChanged: _filter,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                hintText: 'Tìm kiếm',
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 12.sp,
-                  vertical: 10.sp,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.sp),
-                  borderSide: BorderSide(color: AppColors.text_color_100),
-                ),
+                color: AppColors.primary_800,
               ),
             ),
             SizedBox(height: 16.sp),

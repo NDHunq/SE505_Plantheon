@@ -422,7 +422,7 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
                             ),
                             SizedBox(width: 8.sp),
                             Icon(
-                              Icons.arrow_forward_ios,
+                              Icons.arrow_forward_ios_rounded,
                               size: 14.sp,
                               color: activityColor.text,
                             ),

@@ -1,3 +1,3 @@
 class AppInfo {
-  static const double main_padding = 010;
+  static const double main_padding = 15;
 }

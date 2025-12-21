@@ -148,10 +148,11 @@ class _NotificationState extends State<Notification> {
                           borderRadius: BorderRadius.circular(12.r),
                         ),
                         padding: EdgeInsets.symmetric(horizontal: 20.sp),
-                        child: Icon(
-                          Icons.delete,
+                        child: SvgPicture.asset(
+                          AppVectors.trash,
+                          width: 24.sp,
+                          height: 24.sp,
                           color: Colors.white,
-                          size: 24.sp,
                         ),
                       ),
                       confirmDismiss: (direction) async {

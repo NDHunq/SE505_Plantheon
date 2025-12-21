@@ -101,18 +101,7 @@ class _FarmingTipsState extends State<FarmingTips> {
                 }
               },
               child: Scaffold(
-                appBar: BasicAppbar(
-                  title: 'Mẹo canh tác',
-                  actions: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.menu_rounded,
-                        color: AppColors.primary_700,
-                      ),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
+                appBar: BasicAppbar(title: 'Mẹo canh tác'),
                 body: Padding(
                   padding: EdgeInsets.symmetric(vertical: 16.0.sp),
                   child: SingleChildScrollView(

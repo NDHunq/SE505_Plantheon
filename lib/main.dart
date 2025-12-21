@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:se501_plantheon/presentation/screens/authentication/login.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/supabase_service.dart';
 import 'package:se501_plantheon/core/services/firebase_notification_service.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_provider.dart';
 import 'package:se501_plantheon/core/services/deep_link_service.dart';
+import 'package:se501_plantheon/presentation/screens/on_boarding/on_boarding.dart';
+import 'package:se501_plantheon/presentation/screens/on_boarding/splash_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:se501_plantheon/presentation/screens/navigator/navigator.dart';
 
 import 'package:toastification/toastification.dart';
 import 'package:se501_plantheon/core/services/camera_service.dart';
@@ -90,12 +93,51 @@ class MainApp extends StatelessWidget {
                   ),
                 ),
               ),
-              home: const SignInPage(),
+              home: const StartupRouter(),
               debugShowCheckedModeBanner: false,
             ),
           );
         },
       ),
     );
+  }
+}
+
+class StartupRouter extends StatefulWidget {
+  const StartupRouter({super.key});
+
+  @override
+  State<StartupRouter> createState() => _StartupRouterState();
+}
+
+class _StartupRouterState extends State<StartupRouter> {
+  @override
+  void initState() {
+    super.initState();
+    _decideInitialRoute();
+  }
+
+  Future<void> _decideInitialRoute() async {
+    await Future.delayed(const Duration(milliseconds: 1000));
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+
+    // If user has valid token, go to main navigator
+    if (token != null && token.isNotEmpty) {
+      Navigator.of(navigatorKey.currentContext!).pushReplacement(
+        MaterialPageRoute(builder: (_) => const CustomNavigator()),
+      );
+      return;
+    }
+
+    // Otherwise show onboarding
+    Navigator.of(navigatorKey.currentContext!).pushReplacement(
+      MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const SplashScreen();
   }
 }

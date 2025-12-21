@@ -30,22 +30,21 @@ class BasicDialog extends StatelessWidget {
     return AlertDialog(
       backgroundColor: AppColors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.sp)),
-      contentPadding: EdgeInsets.all(16.sp),
+      contentPadding: EdgeInsets.all(12.sp),
       content: SizedBox(
         width: width ?? MediaQuery.of(context).size.width * 0.8,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      color: AppColors.primary_600,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16.sp,
-                    ),
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: AppColors.primary_600,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16.sp,
                   ),
                 ),
                 IconButton(
@@ -74,7 +73,11 @@ class BasicDialog extends StatelessWidget {
                   if (cancelText != null)
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.text_color_100,
+                        backgroundColor: AppColors.white,
+                        side: BorderSide(
+                          color: AppColors.primary_main,
+                          width: 1.sp,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.sp),
                         ),
@@ -86,7 +89,8 @@ class BasicDialog extends StatelessWidget {
                         cancelText!,
                         style: TextStyle(
                           fontSize: 14.sp,
-                          color: AppColors.white,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary_main,
                         ),
                       ),
                     ),
@@ -107,6 +111,7 @@ class BasicDialog extends StatelessWidget {
                         confirmText!,
                         style: TextStyle(
                           fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.white,
                         ),
                       ),

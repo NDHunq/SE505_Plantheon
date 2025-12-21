@@ -121,7 +121,12 @@ class _CommunityState extends State<Community> {
                       ),
                     ),
                     SizedBox(width: 8.sp),
-                    Icon(Icons.search_rounded, color: Colors.grey),
+                    SvgPicture.asset(
+                      AppVectors.search,
+                      width: 24.sp,
+                      height: 24.sp,
+                      color: Colors.grey,
+                    ),
                   ],
                 ),
               ),
@@ -497,8 +502,14 @@ class _CommunityState extends State<Community> {
                         PopupMenuItem(
                           value: 'delete',
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.delete, color: Colors.red),
+                              SvgPicture.asset(
+                                AppVectors.trash,
+                                width: 22.sp,
+                                height: 22.sp,
+                                color: Colors.red,
+                              ),
                               SizedBox(width: 8.sp),
                               Text(
                                 'Xóa bài viết',
@@ -511,7 +522,12 @@ class _CommunityState extends State<Community> {
                         value: 'report',
                         child: Row(
                           children: [
-                            Icon(Icons.flag_outlined),
+                            SvgPicture.asset(
+                              AppVectors.report,
+                              width: 20.sp,
+                              height: 20.sp,
+                              color: AppColors.text_color_400,
+                            ),
                             SizedBox(width: 8.sp),
                             Text('Báo cáo'),
                           ],

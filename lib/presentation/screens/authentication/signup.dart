@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/common/widgets/button/sized_button.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_event.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_state.dart';
@@ -82,16 +84,12 @@ class _SignUpPageState extends State<SignUpPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: 50.sp),
+                  SizedBox(height: 100.sp),
                   _registerText(),
                   SizedBox(height: 20.sp),
                   _supportText(),
                   SizedBox(height: 25.sp),
                   _buildFormRegister(state),
-                  SizedBox(height: 40.sp),
-                  _dividerWithText('hoặc'),
-                  SizedBox(height: 40.sp),
-                  _iconGroup(context),
                 ],
               ),
             ),
@@ -158,47 +156,8 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget _dividerWithText(String text) {
-    return Row(
-      children: [
-        Expanded(child: _fadingDivider()),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5.sp),
-          child: Text(text, style: AppTextStyles.s14Regular()),
-        ),
-        Expanded(child: _fadingDivider2()),
-      ],
-    );
-  }
-
-  Widget _fadingDivider() {
-    return Container(
-      height: 1.sp,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.grey, Colors.transparent],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-      ),
-    );
-  }
-
-  Widget _fadingDivider2() {
-    return Container(
-      height: 1.sp,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.transparent, Colors.grey],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-      ),
-    );
-  }
-
   Widget _registerText() {
-    return Text('Đăng ký', style: AppTextStyles.s32SemiBold());
+    return Text('Đăng ký', style: AppTextStyles.s24SemiBold());
   }
 
   Widget _supportText() {
@@ -325,9 +284,11 @@ class _SignUpPageState extends State<SignUpPage> {
           borderRadius: BorderRadius.all(Radius.circular(12.sp)),
         ),
         suffixIcon: IconButton(
-          icon: Icon(
-            _obscurePassword ? Icons.visibility_off : Icons.visibility,
-            color: const Color.fromARGB(255, 63, 63, 63),
+          icon: SvgPicture.asset(
+            _obscurePassword ? AppVectors.eyeOff : AppVectors.eye,
+            width: 24.sp,
+            height: 24.sp,
+            color: AppColors.primary_600,
           ),
           onPressed: () {
             setState(() {
@@ -358,9 +319,11 @@ class _SignUpPageState extends State<SignUpPage> {
           borderRadius: BorderRadius.all(Radius.circular(12.sp)),
         ),
         suffixIcon: IconButton(
-          icon: Icon(
-            _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
-            color: const Color.fromARGB(255, 63, 63, 63),
+          icon: SvgPicture.asset(
+            _obscureConfirmPassword ? AppVectors.eyeOff : AppVectors.eye,
+            width: 24.sp,
+            height: 24.sp,
+            color: AppColors.primary_600,
           ),
           onPressed: () {
             setState(() {
@@ -379,17 +342,6 @@ class _SignUpPageState extends State<SignUpPage> {
         }
         return null;
       },
-    );
-  }
-
-  Widget _iconGroup(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // SvgPicture.asset(AppVectors.google, height: 35.sp),
-        SizedBox(width: 50.sp),
-        // SvgPicture.asset(AppVectors.facebook, height: 35.sp),
-      ],
     );
   }
 }

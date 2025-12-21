@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:se501_plantheon/common/helpers/dayCompare.dart';
 import 'package:se501_plantheon/common/helpers/decimalTextInputFormatter.dart';
@@ -18,6 +19,8 @@ import 'package:se501_plantheon/presentation/bloc/activities/activities_state.da
 import 'package:se501_plantheon/data/models/activities_models.dart';
 import 'package:se501_plantheon/domain/entities/activities_entities.dart';
 import 'package:toastification/toastification.dart';
+
+import '../../../core/configs/assets/app_vectors.dart';
 
 class banSanPhamWidget extends StatefulWidget {
   final DayActivityDetailEntity? activityToEdit;
@@ -520,7 +523,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Chọn lặp lại"),
+          title: Text(
+            "Chọn lặp lại",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: repeatOptions.map((option) {
@@ -533,7 +539,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: repeatType == option
-                    ? const Icon(Icons.check, color: AppColors.primary_600)
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.primary_600,
+                      )
                     : null,
               );
             }).toList(),
@@ -564,7 +573,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: endRepeatType == option
-                    ? const Icon(Icons.check, color: AppColors.primary_600)
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.primary_600,
+                      )
                     : null,
               );
             }).toList(),
@@ -659,13 +671,18 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Chọn nguồn ảnh'),
+        title: Text(
+          'Chọn nguồn ảnh',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(
-                Icons.photo_library,
+              leading: SvgPicture.asset(
+                AppVectors.gallery,
+                width: 24,
+                height: 24,
                 color: AppColors.primary_600,
               ),
               title: const Text('Thư viện ảnh'),
@@ -675,8 +692,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
               },
             ),
             ListTile(
-              leading: const Icon(
-                Icons.camera_alt,
+              leading: SvgPicture.asset(
+                AppVectors.camera,
+                width: 24,
+                height: 24,
                 color: AppColors.primary_600,
               ),
               title: const Text('Chụp ảnh'),
@@ -699,7 +718,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Chọn cảnh báo"),
+          title: Text(
+            "Chọn cảnh báo",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: alertOptions.map((option) {
@@ -712,7 +734,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: alertTime == option
-                    ? const Icon(Icons.check, color: AppColors.primary_600)
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.primary_600,
+                      )
                     : null,
               );
             }).toList(),
@@ -728,7 +753,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Chọn đơn vị tính"),
+          title: Text(
+            "Chọn đơn vị tính",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: units.map((unitItem) {
@@ -741,7 +769,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: unit == unitItem
-                    ? const Icon(Icons.check, color: AppColors.primary_600)
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.primary_600,
+                      )
                     : null,
               );
             }).toList(),
@@ -757,7 +788,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Chọn đơn vị tiền tệ"),
+          title: Text(
+            "Chọn đơn vị tiền tệ",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: currencies.map((currencyItem) {
@@ -770,7 +804,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: currency == currencyItem
-                    ? const Icon(Icons.check, color: AppColors.primary_600)
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.primary_600,
+                      )
                     : null,
               );
             }).toList(),
@@ -1170,7 +1207,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                               ),
                             ),
                             SizedBox(width: 8.sp),
-                            Icon(Icons.arrow_forward_ios, size: 16.sp),
+                            Icon(Icons.arrow_forward_ios_rounded, size: 16.sp),
                             SizedBox(width: 8.sp),
                             // Cột 3: Giờ kết thúc
                             Expanded(
@@ -1345,7 +1382,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(repeatType),
-                          Icon(Icons.arrow_drop_down, size: 20.sp),
+                          Icon(Icons.arrow_drop_down_rounded, size: 20.sp),
                         ],
                       ),
                     ),
@@ -1371,7 +1408,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(endRepeatType),
-                            Icon(Icons.arrow_drop_down, size: 20.sp),
+                            Icon(Icons.arrow_drop_down_rounded, size: 20.sp),
                           ],
                         ),
                       ),
@@ -1417,7 +1454,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(alertTime),
-                          Icon(Icons.arrow_drop_down, size: 20.sp),
+                          Icon(Icons.arrow_drop_down_rounded, size: 20.sp),
                         ],
                       ),
                     ),
@@ -1461,7 +1498,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(unit),
-                          Icon(Icons.arrow_drop_down, size: 20.sp),
+                          Icon(Icons.arrow_drop_down_rounded, size: 20.sp),
                         ],
                       ),
                     ),
@@ -1484,16 +1521,24 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                         ),
                       ),
                       SizedBox(width: 8.sp),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12.sp,
-                          vertical: 8.sp,
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => _showCurrencyDialog(context),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12.sp,
+                              vertical: 8.sp,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(8.sp),
+                            ),
+                            child: Text(
+                              "VNĐ",
+                              style: TextStyle(fontSize: 14.sp),
+                            ),
+                          ),
                         ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(8.sp),
-                        ),
-                        child: Text("VNĐ", style: TextStyle(fontSize: 14.sp)),
                       ),
                     ],
                   ),
@@ -1518,7 +1563,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                 ),
 
                 AddNewRow(
-                  label: "Hình ảnh đính kèm",
+                  label: "Ảnh đính kèm",
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -1576,7 +1621,12 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                                 Expanded(
                                   child: OutlinedButton.icon(
                                     onPressed: _showImageSourceDialog,
-                                    icon: Icon(Icons.edit, size: 18.sp),
+                                    icon: SvgPicture.asset(
+                                      AppVectors.galleryEdit,
+                                      width: 18,
+                                      height: 18,
+                                      color: AppColors.primary_600,
+                                    ),
                                     label: Text('Đổi'),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: AppColors.primary_600,
@@ -1594,7 +1644,12 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                                         attachedLink = "";
                                       });
                                     },
-                                    icon: Icon(Icons.delete, size: 18.sp),
+                                    icon: SvgPicture.asset(
+                                      AppVectors.trash,
+                                      width: 18,
+                                      height: 18,
+                                      color: Colors.red,
+                                    ),
                                     label: Text('Xóa'),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: Colors.red,
@@ -1611,7 +1666,12 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             onPressed: _showImageSourceDialog,
-                            icon: Icon(Icons.add_photo_alternate, size: 20.sp),
+                            icon: SvgPicture.asset(
+                              AppVectors.galleryAdd,
+                              width: 18,
+                              height: 18,
+                              color: AppColors.primary_600,
+                            ),
                             label: Text('Upload Ảnh'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.primary_600,

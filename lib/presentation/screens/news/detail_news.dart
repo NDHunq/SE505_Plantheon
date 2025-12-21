@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/domain/entities/news_entity.dart';
 import 'package:se501_plantheon/domain/usecases/news/get_news_detail.dart';
@@ -23,6 +25,7 @@ class DetailNews extends StatelessWidget {
   final String? fallbackTag;
   final DateTime? fallbackDate;
   final String? fallbackContent;
+  final bool isFromFarmingTip;
 
   const DetailNews({
     super.key,
@@ -34,6 +37,7 @@ class DetailNews extends StatelessWidget {
     this.fallbackTag,
     this.fallbackDate,
     this.fallbackContent,
+    required this.isFromFarmingTip,
   });
 
   String _formatDateUtcPlus7(DateTime? dt) {
@@ -52,7 +56,9 @@ class DetailNews extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: BasicAppbar(
-          title: 'Chi tiết tin tức',
+          title: isFromFarmingTip
+              ? 'Chi tiết mẹo canh tác'
+              : 'Chi tiết tin tức',
           actions: [
             Padding(
               padding: EdgeInsets.only(right: 8.sp),
@@ -150,7 +156,7 @@ class DetailNews extends StatelessWidget {
                             SizedBox(width: 16.sp),
 
                             Icon(
-                              Icons.access_time,
+                              Icons.access_time_rounded,
                               size: 14.sp,
                               color: AppColors.text_color_200,
                             ),
@@ -164,10 +170,11 @@ class DetailNews extends StatelessWidget {
                               ),
                             ),
                             SizedBox(width: 16.sp),
-                            Icon(
-                              Icons.person_outline,
-                              size: 14.sp,
-                              color: AppColors.text_color_200,
+                            SvgPicture.asset(
+                              AppVectors.accountStroke,
+                              width: 14.sp,
+                              height: 14.sp,
+                              color: AppColors.text_color_400,
                             ),
                             SizedBox(width: 4.sp),
                             Text(
@@ -276,21 +283,22 @@ class DetailNews extends StatelessWidget {
                           SizedBox(height: 24.sp),
                         ],
 
-                        // Related Topics Section
-                        Text(
-                          'Chủ đề liên quan',
-                          style: AppTextStyles.s16Bold(
-                            color: AppColors.primary_700,
+                        if (!isFromFarmingTip) ...[
+                          Text(
+                            'Chủ đề liên quan',
+                            style: AppTextStyles.s16Bold(
+                              color: AppColors.primary_700,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 12.sp),
-                        Wrap(
-                          spacing: 8.sp,
-                          runSpacing: 8.sp,
-                          children: [
-                            _buildTopicChip(news.blogTagName ?? 'Tin tức'),
-                          ],
-                        ),
+                          SizedBox(height: 12.sp),
+                          Wrap(
+                            spacing: 8.sp,
+                            runSpacing: 8.sp,
+                            children: [
+                              _buildTopicChip(news.blogTagName ?? 'Tin tức'),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
                   ),

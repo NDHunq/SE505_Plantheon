@@ -47,9 +47,12 @@ class WeatherVerticalCard extends StatelessWidget {
       child: Container(
         decoration: isSelected
             ? BoxDecoration(
-                color: AppColors.primary_300,
+                color: AppColors.primary_400,
                 borderRadius: BorderRadius.circular(25.sp),
-                border: Border.all(color: AppColors.text_color_50, width: 1.sp),
+                border: Border.all(
+                  color: AppColors.white.withAlpha(100),
+                  width: 1.sp,
+                ),
               )
             : null,
         child: Padding(
