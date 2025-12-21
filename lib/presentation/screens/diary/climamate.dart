@@ -537,7 +537,10 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: repeatType == option
-                    ? const Icon(Icons.check, color: AppColors.primary_600)
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.primary_600,
+                      )
                     : null,
               );
             }).toList(),
@@ -568,7 +571,10 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: endRepeatType == option
-                    ? const Icon(Icons.check, color: AppColors.primary_600)
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.primary_600,
+                      )
                     : null,
               );
             }).toList(),
@@ -726,7 +732,10 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: alertTime == option
-                    ? const Icon(Icons.check, color: AppColors.primary_600)
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.primary_600,
+                      )
                     : null,
               );
             }).toList(),

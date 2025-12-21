@@ -409,7 +409,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                             child: Row(
                               children: [
                                 Icon(
-                                  Icons.reply,
+                                  Icons.reply_rounded,
                                   size: 16.sp,
                                   color: AppColors.primary_main,
                                 ),
@@ -424,7 +424,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                                 InkWell(
                                   onTap: _cancelReply,
                                   child: Icon(
-                                    Icons.close,
+                                    Icons.close_rounded,
                                     size: 16.sp,
                                     color: AppColors.primary_main,
                                   ),
@@ -862,8 +862,14 @@ class _PostDetailViewState extends State<PostDetailView> {
                                 PopupMenuItem(
                                   value: 'report',
                                   child: Row(
+                                    spacing: 8.sp,
                                     children: [
-                                      Icon(Icons.flag_outlined, size: 16.sp),
+                                      SvgPicture.asset(
+                                        AppVectors.report,
+                                        width: 20.sp,
+                                        height: 20.sp,
+                                        color: AppColors.text_color_400,
+                                      ),
                                       Text('Báo cáo'),
                                     ],
                                   ),

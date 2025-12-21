@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/configs/constants/api_constants.dart';
 
@@ -200,7 +202,6 @@ class _CreatePostModalState extends State<CreatePostModal> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 600.sp, // Increased height to accommodate disease info
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -341,7 +342,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                                   color: Colors.grey[600],
                                                 ),
                                                 icon: Icon(
-                                                  Icons.keyboard_arrow_down,
+                                                  Icons
+                                                      .keyboard_arrow_down_rounded,
                                                   size: 16.sp,
                                                   color: Colors.grey[600],
                                                 ),
@@ -401,7 +403,8 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                                 color: Colors.grey[600],
                                               ),
                                               icon: Icon(
-                                                Icons.keyboard_arrow_down,
+                                                Icons
+                                                    .keyboard_arrow_down_rounded,
                                                 size: 16.sp,
                                                 color: Colors.grey[600],
                                               ),
@@ -555,7 +558,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                             ),
                                           ),
                                           child: Icon(
-                                            Icons.close,
+                                            Icons.close_rounded,
                                             size: 16.sp,
                                             color: Colors.grey[600],
                                           ),
@@ -608,9 +611,10 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                       _isDiseaseLinked = true;
                                     });
                                   },
-                                  icon: Icon(
-                                    Icons.link,
-                                    size: 20.sp,
+                                  icon: SvgPicture.asset(
+                                    AppVectors.link,
+                                    width: 22.sp,
+                                    height: 22.sp,
                                     color: AppColors.primary_main,
                                   ),
                                   label: Text(
@@ -677,10 +681,14 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                             12.sp,
                                           ),
                                         ),
-                                        child: Icon(
-                                          Icons.add_photo_alternate,
-                                          size: 30.sp,
-                                          color: Colors.white,
+                                        child: Container(
+                                          padding: EdgeInsets.all(16.sp),
+                                          child: SvgPicture.asset(
+                                            AppVectors.galleryAdd,
+                                            width: 32.sp,
+                                            height: 32.sp,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
                                       SizedBox(height: 8.sp),
@@ -727,7 +735,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Icon(
-                                                  Icons.add,
+                                                  Icons.add_rounded,
                                                   size: 16.sp,
                                                   color: AppColors.primary_main,
                                                 ),
@@ -827,7 +835,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                                       shape: BoxShape.circle,
                                                     ),
                                                     child: Icon(
-                                                      Icons.close,
+                                                      Icons.close_rounded,
                                                       size: 16.sp,
                                                       color: Colors.white,
                                                     ),
@@ -901,7 +909,7 @@ class _CreatePostModalState extends State<CreatePostModal> {
                                                     shape: BoxShape.circle,
                                                   ),
                                                   child: Icon(
-                                                    Icons.close,
+                                                    Icons.close_rounded,
                                                     size: 16.sp,
                                                     color: Colors.white,
                                                   ),

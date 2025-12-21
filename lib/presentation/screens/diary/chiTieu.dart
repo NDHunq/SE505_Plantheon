@@ -748,7 +748,10 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: alertTime == option
-                    ? const Icon(Icons.check, color: AppColors.primary_600)
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.primary_600,
+                      )
                     : null,
               );
             }).toList(),
@@ -780,7 +783,10 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: unit == unitItem
-                    ? const Icon(Icons.check, color: AppColors.primary_600)
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.primary_600,
+                      )
                     : null,
               );
             }).toList(),
@@ -812,7 +818,10 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                   Navigator.of(context).pop();
                 },
                 trailing: currency == currencyItem
-                    ? const Icon(Icons.check, color: AppColors.primary_600)
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.primary_600,
+                      )
                     : null,
               );
             }).toList(),
