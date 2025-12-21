@@ -224,7 +224,7 @@ class _BillOfDayState extends State<BillOfDay> {
                 IconButton(
                   onPressed: _previousMonth,
                   icon: const Icon(
-                    Icons.chevron_left,
+                    Icons.chevron_left_rounded,
                     color: AppColors.primary_600,
                   ),
                 ),
@@ -256,7 +256,10 @@ class _BillOfDayState extends State<BillOfDay> {
 
                 IconButton(
                   onPressed: _nextMonth,
-                  icon: Icon(Icons.chevron_right, color: AppColors.primary_600),
+                  icon: Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.primary_600,
+                  ),
                 ),
               ],
             ),
@@ -337,7 +340,9 @@ class _BillOfDayState extends State<BillOfDay> {
                   ),
                 ),
                 Icon(
-                  isExpanded ? Icons.expand_less : Icons.expand_more,
+                  isExpanded
+                      ? Icons.expand_less_rounded
+                      : Icons.expand_more_rounded,
                   color: Colors.grey,
                 ),
               ],

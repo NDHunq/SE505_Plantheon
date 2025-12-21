@@ -51,7 +51,7 @@ class BasicDialog extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  icon: Icon(Icons.close, color: AppColors.primary_700),
+                  icon: Icon(Icons.close_rounded, color: AppColors.primary_700),
                 ),
               ],
             ),

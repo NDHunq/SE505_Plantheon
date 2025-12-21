@@ -23,6 +23,7 @@ import 'package:se501_plantheon/presentation/screens/community/widgets/report_mo
 import 'package:se501_plantheon/presentation/bloc/user/user_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/user/user_state.dart';
 import 'package:se501_plantheon/presentation/bloc/user/user_provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class PostDetail extends StatelessWidget {
   final String postId;
@@ -148,19 +149,6 @@ class _PostDetailViewState extends State<PostDetailView> {
                                       ? AppColors.primary_main
                                       : Colors.black, // Explicit black
                                 ),
-                              ),
-                            ),
-                            SizedBox(width: 4.sp),
-                            Container(
-                              padding: EdgeInsets.all(2.sp),
-                              decoration: BoxDecoration(
-                                color: Colors.orange,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.check,
-                                size: 12.sp,
-                                color: Colors.white,
                               ),
                             ),
                           ],
@@ -409,7 +397,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                             child: Row(
                               children: [
                                 Icon(
-                                  Icons.reply,
+                                  Icons.reply_rounded,
                                   size: 16.sp,
                                   color: AppColors.primary_main,
                                 ),
@@ -424,7 +412,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                                 InkWell(
                                   onTap: _cancelReply,
                                   child: Icon(
-                                    Icons.close,
+                                    Icons.close_rounded,
                                     size: 16.sp,
                                     color: AppColors.primary_main,
                                   ),
@@ -709,11 +697,18 @@ class _PostDetailViewState extends State<PostDetailView> {
             itemBuilder: (context, index) {
               return ClipRRect(
                 borderRadius: BorderRadius.circular(12.sp),
-                child: Image.network(
-                  imageLinks[index],
+                child: CachedNetworkImage(
+                  imageUrl: imageLinks[index],
                   fit: BoxFit.contain,
                   width: double.infinity,
-                  errorBuilder: (context, error, stackTrace) {
+                  placeholder: (context, url) => Center(
+                    child: SizedBox(
+                      width: 40.sp,
+                      height: 40.sp,
+                      child: const LoadingIndicator(),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) {
                     return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12.sp),
@@ -862,8 +857,14 @@ class _PostDetailViewState extends State<PostDetailView> {
                                 PopupMenuItem(
                                   value: 'report',
                                   child: Row(
+                                    spacing: 8.sp,
                                     children: [
-                                      Icon(Icons.flag_outlined, size: 16.sp),
+                                      SvgPicture.asset(
+                                        AppVectors.report,
+                                        width: 20.sp,
+                                        height: 20.sp,
+                                        color: AppColors.text_color_400,
+                                      ),
                                       Text('Báo cáo'),
                                     ],
                                   ),

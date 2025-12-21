@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/presentation/screens/community/user_profile_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
@@ -273,11 +274,18 @@ class _CommunityState extends State<Community> {
             itemBuilder: (context, index) {
               return ClipRRect(
                 borderRadius: BorderRadius.circular(12.sp),
-                child: Image.network(
-                  imageLinks[index],
+                child: CachedNetworkImage(
+                  imageUrl: imageLinks[index],
                   fit: BoxFit.contain,
                   width: double.infinity,
-                  errorBuilder: (context, error, stackTrace) {
+                  placeholder: (context, url) => Center(
+                    child: SizedBox(
+                      width: 40.sp,
+                      height: 40.sp,
+                      child: const LoadingIndicator(),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) {
                     return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12.sp),
@@ -435,19 +443,6 @@ class _CommunityState extends State<Community> {
                                       ? AppColors.primary_main
                                       : null,
                                 ),
-                              ),
-                            ),
-                            SizedBox(width: 4.sp),
-                            Container(
-                              padding: EdgeInsets.all(2.sp),
-                              decoration: BoxDecoration(
-                                color: Colors.orange,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.check,
-                                size: 12.sp,
-                                color: Colors.white,
                               ),
                             ),
                           ],

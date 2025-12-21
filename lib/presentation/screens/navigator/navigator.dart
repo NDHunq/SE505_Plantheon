@@ -60,6 +60,7 @@ class _CustomNavigatorState extends State<CustomNavigator> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
+        color: Colors.grey[100],
         shape: CircularNotchedRectangle(),
         notchMargin: 8.0,
         child: Row(

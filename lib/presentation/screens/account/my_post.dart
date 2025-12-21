@@ -16,6 +16,7 @@ import 'package:se501_plantheon/presentation/bloc/community/community_bloc.dart'
 import 'package:se501_plantheon/presentation/screens/community/post_detail.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/acction_button.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/disease_block_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MyPost extends StatelessWidget {
   const MyPost({super.key});
@@ -128,11 +129,18 @@ class _MyPostView extends StatelessWidget {
             itemBuilder: (context, index) {
               return ClipRRect(
                 borderRadius: BorderRadius.circular(12.sp),
-                child: Image.network(
-                  imageLinks[index],
+                child: CachedNetworkImage(
+                  imageUrl: imageLinks[index],
                   fit: BoxFit.contain,
                   width: double.infinity,
-                  errorBuilder: (context, error, stackTrace) {
+                  placeholder: (context, url) => Center(
+                    child: SizedBox(
+                      width: 40.sp,
+                      height: 40.sp,
+                      child: const LoadingIndicator(),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) {
                     return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12.sp),
@@ -243,19 +251,6 @@ class _MyPostView extends StatelessWidget {
                               'Bạn',
                               style: AppTextStyles.s16Bold(
                                 color: AppColors.primary_main,
-                              ),
-                            ),
-                            SizedBox(width: 4.sp),
-                            Container(
-                              padding: EdgeInsets.all(2.sp),
-                              decoration: BoxDecoration(
-                                color: Colors.orange,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.check,
-                                size: 12.sp,
-                                color: Colors.white,
                               ),
                             ),
                           ],

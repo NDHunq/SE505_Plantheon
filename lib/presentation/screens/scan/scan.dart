@@ -329,294 +329,300 @@ class _ScanState extends State<Scan> {
         }
         return true;
       },
-      child: Scaffold(
-        body: Stack(
-          children: [
-            // Hiển thị camera preview hoặc ảnh đã chụp
-            Positioned.fill(
-              child: _image != null
-                  ? Image.file(
-                      _image!,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                    )
-                  : _cameraError != null
-                  ? Center(
-                      child: Text(
-                        _cameraError!,
-                        style: TextStyle(color: Colors.red),
+      child: SafeArea(
+        child: Scaffold(
+          body: Stack(
+            children: [
+              // Hiển thị camera preview hoặc ảnh đã chụp
+              Positioned.fill(
+                child: _image != null
+                    ? Image.file(
+                        _image!,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      )
+                    : _cameraError != null
+                    ? Center(
+                        child: Text(
+                          _cameraError!,
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      )
+                    : (!_isCameraReady || _cameraController == null)
+                    ? Center(child: LoadingIndicator())
+                    : ClipRect(
+                        child: FittedBox(
+                          fit: BoxFit.cover, // lấp đầy mà không méo
+                          child: SizedBox(
+                            width: _cameraController!.value.previewSize!.height,
+                            height: _cameraController!.value.previewSize!.width,
+                            child: CameraPreview(_cameraController!),
+                          ),
+                        ),
                       ),
-                    )
-                  : (!_isCameraReady || _cameraController == null)
-                  ? Center(child: LoadingIndicator())
-                  : ClipRect(
-                      child: FittedBox(
-                        fit: BoxFit.cover, // lấp đầy mà không méo
-                        child: SizedBox(
-                          width: _cameraController!.value.previewSize!.height,
-                          height: _cameraController!.value.previewSize!.width,
-                          child: CameraPreview(_cameraController!),
-                        ),
-                      ),
-                    ),
-            ),
-            Positioned(
-              left: 0.sp,
-              right: 0.sp,
-              top: 0.sp,
-              child: Container(
-                color: Colors.black.withOpacity(0.7),
-                padding: EdgeInsets.symmetric(vertical: 10.sp),
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 16.sp,
-                    left: 10.sp,
-                    right: 10.sp,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (_image == null) ...[
-                        IconButton(
-                          icon: SvgPicture.asset(
-                            AppVectors.arrowBack,
-                            width: 28.sp,
-                            height: 28.sp,
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        Text(
-                          "Quét bệnh",
-                          style: TextStyle(
-                            color: AppColors.primary_700,
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(right: 4.sp),
-                          child: GestureDetector(
-                            onTap: _toggleFlash,
-                            child: SvgPicture.asset(
-                              _flashOn ? AppVectors.flash : AppVectors.unflash,
-                              height: 24.sp,
-                              width: 24.sp,
-                              color: _flashOn
-                                  ? AppColors.primary_main
-                                  : AppColors.primary_600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
               ),
-            ),
-            if (_image == null)
               Positioned(
                 left: 0.sp,
                 right: 0.sp,
-                bottom: 0.sp,
+                top: 0.sp,
                 child: Container(
                   color: Colors.black.withOpacity(0.7),
-                  padding: EdgeInsets.symmetric(vertical: 20.sp),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 64.sp,
-                    children: [
-                      InkWell(
-                        onTap: () => _pickImage(ImageSource.gallery),
-                        child: SvgPicture.asset(
-                          AppVectors.gallery,
-                          color: AppColors.primary_600,
-                          height: 34.sp,
-                          width: 34.sp,
-                        ),
-                      ),
-                      Container(
-                        height: 64.sp,
-                        width: 64.sp,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: AppColors.primary_300,
-                            width: 6.sp,
+                  padding: EdgeInsets.symmetric(vertical: 10.sp),
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: 16.sp,
+                      left: 10.sp,
+                      right: 10.sp,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (_image == null) ...[
+                          IconButton(
+                            icon: SvgPicture.asset(
+                              AppVectors.arrowBack,
+                              width: 28.sp,
+                              height: 28.sp,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
                           ),
-                          borderRadius: BorderRadius.circular(50.sp),
-                        ),
-                        child: FloatingActionButton(
-                          onPressed: _takePicture,
-                          backgroundColor: AppColors.primary_main,
-                          elevation: 0,
-                          shape: CircleBorder(),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => {
-                          //Hiển thị dialog hướng dẫn
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              backgroundColor: AppColors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.sp),
+                          Text(
+                            "Quét bệnh",
+                            style: TextStyle(
+                              color: AppColors.primary_700,
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(right: 4.sp),
+                            child: GestureDetector(
+                              onTap: _toggleFlash,
+                              child: SvgPicture.asset(
+                                _flashOn
+                                    ? AppVectors.flash
+                                    : AppVectors.unflash,
+                                height: 24.sp,
+                                width: 24.sp,
+                                color: _flashOn
+                                    ? AppColors.primary_main
+                                    : AppColors.primary_600,
                               ),
-                              contentPadding: EdgeInsets.all(16.sp),
-                              content: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.8,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            "Mẹo quét chẩn đoán",
-                                            style: TextStyle(
-                                              color: AppColors.primary_600,
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 16.sp,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              if (_image == null)
+                Positioned(
+                  left: 0.sp,
+                  right: 0.sp,
+                  bottom: 0.sp,
+                  child: Container(
+                    color: Colors.black.withOpacity(0.7),
+                    padding: EdgeInsets.symmetric(vertical: 20.sp),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 64.sp,
+                      children: [
+                        InkWell(
+                          onTap: () => _pickImage(ImageSource.gallery),
+                          child: SvgPicture.asset(
+                            AppVectors.gallery,
+                            color: AppColors.primary_600,
+                            height: 34.sp,
+                            width: 34.sp,
+                          ),
+                        ),
+                        Container(
+                          height: 64.sp,
+                          width: 64.sp,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: AppColors.primary_300,
+                              width: 6.sp,
+                            ),
+                            borderRadius: BorderRadius.circular(50.sp),
+                          ),
+                          child: FloatingActionButton(
+                            onPressed: _takePicture,
+                            backgroundColor: AppColors.primary_main,
+                            elevation: 0,
+                            shape: CircleBorder(),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => {
+                            //Hiển thị dialog hướng dẫn
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                backgroundColor: AppColors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.sp),
+                                ),
+                                contentPadding: EdgeInsets.all(16.sp),
+                                content: SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.8,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              "Mẹo quét chẩn đoán",
+                                              style: TextStyle(
+                                                color: AppColors.primary_600,
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 16.sp,
+                                              ),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            icon: Icon(
+                                              Icons.close_rounded,
+                                              color: AppColors.primary_700,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Text(
+                                        "• Đảm bảo ánh sáng đủ để camera có thể chụp rõ ràng.\n"
+                                        "• Giữ điện thoại ổn định khi chụp ảnh để tránh mờ.\n"
+                                        "• Chụp ảnh từ khoảng cách vừa phải, không quá gần hoặc quá xa.\n"
+                                        "• Tập trung vào vùng bị bệnh trên lá cây để có kết quả chính xác hơn.",
+                                        style: TextStyle(
+                                          color: AppColors.text_color_main,
+                                          fontSize: 14.sp,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8.sp),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              AppColors.primary_main,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8.sp,
                                             ),
                                           ),
                                         ),
-                                        IconButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          icon: Icon(
-                                            Icons.close_rounded,
-                                            color: AppColors.primary_700,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      "• Đảm bảo ánh sáng đủ để camera có thể chụp rõ ràng.\n"
-                                      "• Giữ điện thoại ổn định khi chụp ảnh để tránh mờ.\n"
-                                      "• Chụp ảnh từ khoảng cách vừa phải, không quá gần hoặc quá xa.\n"
-                                      "• Tập trung vào vùng bị bệnh trên lá cây để có kết quả chính xác hơn.",
-                                      style: TextStyle(
-                                        color: AppColors.text_color_main,
-                                        fontSize: 14.sp,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8.sp),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColors.primary_main,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8.sp,
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text(
+                                          "Đã hiểu",
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            color: AppColors.white,
                                           ),
                                         ),
                                       ),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text(
-                                        "Đã hiểu",
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          color: AppColors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        },
-                        child: SvgPicture.asset(
-                          AppVectors.info,
-                          height: 36.sp,
-                          width: 36.sp,
-                          color: AppColors.primary_600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            if (_image != null)
-              Positioned(
-                left: 0.sp,
-                right: 0.sp,
-                bottom: 0.sp,
-                child: Container(
-                  color: Colors.black.withOpacity(0.7),
-                  padding: EdgeInsets.symmetric(vertical: 20.sp),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 64.sp,
-                    children: [
-                      if (_image != null)
-                        GestureDetector(
-                          onTap: () async {
-                            await _cameraController?.resumePreview();
-                            setState(() {
-                              _image = null;
-                              _predictionResult = null;
-                              _cameraError = null;
-                            });
                           },
                           child: SvgPicture.asset(
-                            AppVectors.reload,
-                            color: AppColors.primary_700,
-                            width: 30.sp,
-                            height: 30.sp,
+                            AppVectors.info,
+                            height: 36.sp,
+                            width: 36.sp,
+                            color: AppColors.primary_600,
                           ),
                         ),
-                      Container(
-                        height: 64.sp,
-                        width: 64.sp,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: AppColors.primary_300,
-                            width: 6.sp,
+                      ],
+                    ),
+                  ),
+                ),
+              if (_image != null)
+                Positioned(
+                  left: 0.sp,
+                  right: 0.sp,
+                  bottom: 0.sp,
+                  child: Container(
+                    color: Colors.black.withOpacity(0.7),
+                    padding: EdgeInsets.symmetric(vertical: 20.sp),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 64.sp,
+                      children: [
+                        if (_image != null)
+                          GestureDetector(
+                            onTap: () async {
+                              await _cameraController?.resumePreview();
+                              setState(() {
+                                _image = null;
+                                _predictionResult = null;
+                                _cameraError = null;
+                              });
+                            },
+                            child: SvgPicture.asset(
+                              AppVectors.reload,
+                              color: AppColors.primary_700,
+                              width: 30.sp,
+                              height: 30.sp,
+                            ),
                           ),
-                          borderRadius: BorderRadius.circular(50.sp),
+                        Container(
+                          height: 64.sp,
+                          width: 64.sp,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: AppColors.primary_300,
+                              width: 6.sp,
+                            ),
+                            borderRadius: BorderRadius.circular(50.sp),
+                          ),
+                          child: FloatingActionButton(
+                            onPressed: !_loading ? _analyzeImage : null,
+                            backgroundColor: AppColors.primary_main,
+                            elevation: 0,
+                            shape: CircleBorder(),
+                            child: _loading
+                                ? SizedBox(
+                                    height: 20.sp,
+                                    width: 20.sp,
+                                    child: LoadingIndicator(),
+                                  )
+                                : Icon(
+                                    Icons.check_rounded,
+                                    size: 32.sp,
+                                    color: AppColors.white,
+                                  ),
+                          ),
                         ),
-                        child: FloatingActionButton(
-                          onPressed: !_loading ? _analyzeImage : null,
-                          backgroundColor: AppColors.primary_main,
-                          elevation: 0,
-                          shape: CircleBorder(),
-                          child: _loading
-                              ? SizedBox(
-                                  height: 20.sp,
-                                  width: 20.sp,
-                                  child: LoadingIndicator(),
-                                )
-                              : Icon(
-                                  Icons.check_rounded,
-                                  size: 32.sp,
-                                  color: AppColors.white,
-                                ),
-                        ),
-                      ),
-                      SizedBox(width: 34.sp),
-                    ],
+                        SizedBox(width: 34.sp),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            if (_image == null)
-              Positioned.fill(
-                bottom: 30.sp,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: SvgPicture.asset(
-                    AppVectors.qr,
-                    color: AppColors.primary_600,
-                    height: 450.sp,
-                    width: 450.sp,
+              if (_image == null)
+                Positioned.fill(
+                  bottom: 30.sp,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: SvgPicture.asset(
+                      AppVectors.qr,
+                      color: AppColors.primary_600,
+                      height: 450.sp,
+                      width: 450.sp,
+                    ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
