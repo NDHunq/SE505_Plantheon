@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/common/widgets/topnavigation/navigation.dart';
+import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/presentation/screens/diary/month.dart';
 import 'package:se501_plantheon/presentation/screens/diary/add_new.dart';
 import 'package:se501_plantheon/presentation/screens/diary/bill_of_month.dart';
@@ -114,7 +115,6 @@ class _DiaryState extends State<Diary> {
     });
   }
 
-
   void navigateToDay(int day, int month, int year) async {
     setState(() {
       isLoading = true;
@@ -214,7 +214,7 @@ class _DiaryState extends State<Diary> {
         currentView == DiaryViewType.billOfDay) {
       return [
         NavigationAction(
-          icon: Icons.calendar_month,
+          svgAsset: AppVectors.calendar,
           onPressed: _backToCalendar,
         ),
       ];
@@ -235,7 +235,9 @@ class _DiaryState extends State<Diary> {
         );
       }
 
-      return [NavigationAction(icon: Icons.bar_chart, onPressed: billAction)];
+      return [
+        NavigationAction(svgAsset: AppVectors.chart, onPressed: billAction),
+      ];
     }
   }
 

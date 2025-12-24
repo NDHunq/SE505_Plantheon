@@ -92,8 +92,8 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                       borderRadius: BorderRadius.circular(8.sp),
                       child: Image(
                         image: imageProvider,
-                        width: 72.sp,
-                        height: 72.sp,
+                        width: 90.sp,
+                        height: 90.sp,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -143,7 +143,7 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                               border: Border.all(
                                 color: widget.isNow
                                     ? AppColors.white
-                                    : AppColors.text_color_200,
+                                    : AppColors.primary_600,
                                 width: 1.sp,
                               ),
                             ),
@@ -152,7 +152,7 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                               style: AppTextStyles.s12Medium(
                                 color: widget.isNow
                                     ? AppColors.white
-                                    : AppColors.text_color_200,
+                                    : AppColors.primary_600,
                               ),
                             ),
                           ),
@@ -164,6 +164,8 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                                   ? AppColors.white
                                   : AppColors.text_color_200,
                             ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
                           ),
                           SizedBox(height: 4.sp),
                           Text(
