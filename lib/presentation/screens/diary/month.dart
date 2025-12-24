@@ -373,7 +373,7 @@ class ArrayTaskWidget extends StatelessWidget {
               child: Text(
                 activity.title,
                 style: TextStyle(
-                  fontSize: 9.sp,
+                  fontSize: 8.sp,
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
                 ),
