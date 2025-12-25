@@ -276,7 +276,28 @@ class _PostDetailViewState extends State<PostDetailView> {
           if (state is PostDetailLoading) {
             return const Center(child: LoadingIndicator());
           } else if (state is PostDetailError) {
-            return Center(child: Text(state.message));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.article_outlined,
+                    size: 64.sp,
+                    color: Colors.grey[400],
+                  ),
+                  SizedBox(height: 16.sp),
+                  Text(
+                    'Bài viết không tồn tại',
+                    style: AppTextStyles.s16Bold(color: Colors.grey[600]),
+                  ),
+                  SizedBox(height: 8.sp),
+                  Text(
+                    'Bài viết có thể đã bị xóa hoặc không khả dụng',
+                    style: AppTextStyles.s14Regular(color: Colors.grey[500]),
+                  ),
+                ],
+              ),
+            );
           } else if (state is PostDetailLoaded) {
             final post = state.post;
             return Padding(

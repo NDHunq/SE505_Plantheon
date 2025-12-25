@@ -12,6 +12,11 @@ class DeepLinkService {
   factory DeepLinkService() => _instance;
   DeepLinkService._internal();
 
+  // GitHub Pages domain configuration
+  static const String _httpsHost = 'kkuyen.github.io';
+  static const String _httpsPathPrefix = '/plantheon-links';
+  static const String _customScheme = 'plantheon';
+
   late AppLinks _appLinks;
   StreamSubscription<Uri>? _linkSubscription;
 
@@ -36,28 +41,31 @@ class DeepLinkService {
   }
 
   void _handleLink(Uri uri, GlobalKey<NavigatorState>? navigatorKey) {
-    // Example: plantheon://post?id=123
+    String? postId;
 
-    // Check scheme
-    if (uri.scheme != 'plantheon') return;
+    // Handle Custom URL Scheme: plantheon://post?id=123
+    if (uri.scheme == _customScheme && uri.host == 'post') {
+      postId = uri.queryParameters['id'];
+    }
 
-    // Handle different paths
-    if (uri.host == 'post') {
-      final String? postId = uri.queryParameters['id'];
-      if (postId != null && navigatorKey != null) {
-        // Navigate to post details
-        navigatorKey.currentState?.push(
-          MaterialPageRoute(builder: (context) => PostDetail(postId: postId)),
-        );
+    // Handle App Links: https://kkuyen.github.io/plantheon-links/post?id=123
+    if (uri.scheme == 'https' && uri.host == _httpsHost) {
+      if (uri.path.startsWith('$_httpsPathPrefix/post')) {
+        postId = uri.queryParameters['id'];
       }
     }
 
-    // For now, just logging. Expand this method based on your routing needs.
+    // Navigate to post detail if postId found
+    if (postId != null && navigatorKey != null) {
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(builder: (context) => PostDetail(postId: postId!)),
+      );
+    }
   }
 
   /// Generates a deep link and shares it.
-  /// Example: scheme='plantheon', host='post', path='', params={'id': '123'}
-  /// Result: plantheon://post?id=123
+  /// Example: host='post', params={'id': '123'}
+  /// Result: https://kkuyen.github.io/plantheon-links/post?id=123
   Future<void> shareLink({
     required String host,
     String? path,
@@ -66,9 +74,9 @@ class DeepLinkService {
     String? text,
   }) async {
     final Uri uri = Uri(
-      scheme: 'plantheon',
-      host: host,
-      path: path,
+      scheme: 'https',
+      host: _httpsHost,
+      path: '$_httpsPathPrefix/$host${path ?? ''}',
       queryParameters: params,
     );
 
@@ -84,9 +92,9 @@ class DeepLinkService {
     Map<String, String>? params,
   }) async {
     final Uri uri = Uri(
-      scheme: 'plantheon',
-      host: host,
-      path: path,
+      scheme: 'https',
+      host: _httpsHost,
+      path: '$_httpsPathPrefix/$host${path ?? ''}',
       queryParameters: params,
     );
 

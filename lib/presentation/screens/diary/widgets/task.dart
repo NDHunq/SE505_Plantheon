@@ -53,7 +53,7 @@ class TaskWidget extends StatelessWidget {
               title,
               maxLines: isShort ? 1 : 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w600),
             ),
 
             // Amount text (if provided)
@@ -64,7 +64,7 @@ class TaskWidget extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 8.sp,
+                  fontSize: 7.sp,
                   color: Colors.red.shade600,
                   fontWeight: FontWeight.w500,
                 ),
@@ -78,7 +78,7 @@ class TaskWidget extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 9,
+                fontSize: 8.sp,
                 color: Colors.black54,
                 fontWeight: FontWeight.w400,
               ),
