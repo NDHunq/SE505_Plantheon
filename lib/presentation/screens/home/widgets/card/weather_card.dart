@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:se501_plantheon/core/configs/assets/app_text_styles.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
@@ -55,7 +57,12 @@ class _WeatherCardState extends State<WeatherCard> {
     }
   }
 
-  String _getWeatherDescription(WeatherType type) {
+  String _getWeatherDescription(WeatherType type, bool isDay) {
+    // Nếu là ban đêm và thời tiết là sunny, hiển thị "Trời quang"
+    if (!isDay && type == WeatherType.sunny) {
+      return 'Đêm quang';
+    }
+
     switch (type) {
       case WeatherType.sunny:
         return 'Nắng';
@@ -105,7 +112,10 @@ class _WeatherCardState extends State<WeatherCard> {
         ? 'Đang tải thời tiết...'
         : _error.isNotEmpty || _weatherData == null
         ? 'Không thể tải'
-        : _getWeatherDescription(_weatherData!.currentWeatherType);
+        : _getWeatherDescription(
+            _weatherData!.currentWeatherType,
+            _weatherData!.currentIsDay,
+          );
     final temperature = _isLoading || _error.isNotEmpty || _weatherData == null
         ? '25°C'
         : '${_weatherData!.currentTemperature.toDouble().round()}°C';
@@ -117,11 +127,61 @@ class _WeatherCardState extends State<WeatherCard> {
           );
 
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const Weather()),
-        );
+      onTap: () async {
+        // Check location permission
+        LocationPermission permission = await Geolocator.checkPermission();
+
+        if (permission == LocationPermission.denied) {
+          // Request permission
+          permission = await Geolocator.requestPermission();
+
+          if (permission == LocationPermission.denied) {
+            // Permission denied, don't navigate
+            return;
+          }
+        }
+
+        if (permission == LocationPermission.deniedForever) {
+          // Permission permanently denied, show settings dialog
+          if (!context.mounted) return;
+          showDialog(
+            context: context,
+            builder: (context) => BasicDialog(
+              title: "Cần quyền truy cập vị trí",
+              content:
+                  "Ứng dụng cần quyền truy cập vị trí để hiển thị thông tin thời tiết. Vui lòng cấp quyền trong cài đặt.",
+              cancelText: "Hủy",
+              confirmText: "Đi đến cài đặt",
+              onCancel: () {
+                Navigator.of(context).pop();
+              },
+              onConfirm: () async {
+                Navigator.of(context).pop();
+                await Geolocator.openAppSettings();
+              },
+            ),
+          );
+          return;
+        }
+
+        // Permission granted, get current location
+        try {
+          Position position = await Geolocator.getCurrentPosition();
+          if (!context.mounted) return;
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Weather(
+                latitude: position.latitude,
+                longitude: position.longitude,
+              ),
+            ),
+          );
+        } catch (e) {
+          // If getting location fails, don't navigate
+          print('Error getting location: $e');
+        }
       },
       child: Skeletonizer(
         enabled: _isLoading,

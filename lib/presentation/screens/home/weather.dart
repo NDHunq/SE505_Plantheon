@@ -28,7 +28,10 @@ import 'package:se501_plantheon/domain/usecases/activity/get_activities_by_month
 import 'package:se501_plantheon/domain/usecases/activity/update_activity.dart';
 
 class Weather extends StatefulWidget {
-  const Weather({super.key});
+  final double? latitude;
+  final double? longitude;
+
+  const Weather({super.key, this.latitude, this.longitude});
 
   @override
   _WeatherState createState() => _WeatherState();
@@ -47,6 +50,12 @@ class _WeatherState extends State<Weather> {
   @override
   void initState() {
     super.initState();
+    // Initialize with provided coordinates or use defaults
+    if (widget.latitude != null && widget.longitude != null) {
+      _latitude = widget.latitude!;
+      _longitude = widget.longitude!;
+      _locationName = 'Vị trí hiện tại';
+    }
     _initializeLocale();
     _fetchWeather();
   }
@@ -129,7 +138,12 @@ class _WeatherState extends State<Weather> {
     return "Hôm nay, $day tháng $month";
   }
 
-  String _getWeatherDescription(WeatherType type) {
+  String _getWeatherDescription(WeatherType type, bool isDay) {
+    // Nếu là ban đêm và thời tiết là sunny, hiển thị "Trời quang"
+    if (!isDay && type == WeatherType.sunny) {
+      return "Đêm quang";
+    }
+
     switch (type) {
       case WeatherType.sunny:
         return "Nắng";
@@ -203,17 +217,6 @@ class _WeatherState extends State<Weather> {
               Navigator.of(context).pop();
             },
           ),
-          actions: [
-            IconButton(
-              icon: SvgPicture.asset(
-                AppVectors.location,
-                width: 24.sp,
-                height: 24.sp,
-                color: AppColors.white,
-              ),
-              onPressed: _getCurrentLocation,
-            ),
-          ],
         ),
         body: _isLoading
             ? const LoadingIndicator()
@@ -302,6 +305,7 @@ class _WeatherState extends State<Weather> {
                                 Text(
                                   _getWeatherDescription(
                                     selectedHourlyWeather.weatherType,
+                                    selectedHourlyWeather.isDay,
                                   ),
                                   style: AppTextStyles.s14Medium(
                                     color: AppColors.white,

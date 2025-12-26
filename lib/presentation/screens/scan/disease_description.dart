@@ -337,7 +337,11 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
                             ),
                             Container(
                               width: double.infinity,
-                              padding: EdgeInsets.all(16.sp),
+                              padding: EdgeInsets.only(
+                                left: 16.sp,
+                                right: 16.sp,
+                                bottom: 16.sp,
+                              ),
                               decoration: BoxDecoration(color: Colors.white),
                               child: FutureBuilder<SharedPreferences>(
                                 future: SharedPreferences.getInstance(),
