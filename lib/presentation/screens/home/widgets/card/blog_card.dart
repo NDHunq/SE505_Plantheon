@@ -30,41 +30,50 @@ class BlogCard extends StatelessWidget {
 
     return Container(
       width: 200.sp,
+      clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.sp),
         border: Border.all(color: AppColors.text_color_50, width: 1.sp),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 114.sp,
+            height: 110.sp,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.sp),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8.sp),
+                topRight: Radius.circular(8.sp),
+              ),
               image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.all(8.sp),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: AppTextStyles.s12SemiBold(
-                    color: AppColors.text_color_400,
+          Flexible(
+            child: Padding(
+              padding: EdgeInsets.all(8.sp),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: AppTextStyles.s12SemiBold(
+                      color: AppColors.text_color_400,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  description,
-                  style: AppTextStyles.s10Regular(
-                    color: AppColors.text_color_400,
+                  SizedBox(height: 4.sp),
+                  Text(
+                    description,
+                    style: AppTextStyles.s10Regular(
+                      color: AppColors.text_color_400,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

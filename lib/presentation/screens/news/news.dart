@@ -333,7 +333,7 @@ class _NewsState extends State<News> {
                             ),
                           ),
                           SizedBox(
-                            height: 220.sp,
+                            height: 240.sp,
                             child: Column(
                               children: [
                                 Expanded(

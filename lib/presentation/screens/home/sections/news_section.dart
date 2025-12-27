@@ -60,7 +60,7 @@ class _NewsSectionState extends State<NewsSection> {
           ],
         ),
         SizedBox(
-          height: 220.sp,
+          height: 240.sp,
           child: BlocBuilder<NewsBloc, NewsState>(
             builder: (context, state) {
               final isLoading = state is NewsLoading || state is NewsInitial;

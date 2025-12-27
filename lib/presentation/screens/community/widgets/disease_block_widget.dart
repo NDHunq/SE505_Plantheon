@@ -63,12 +63,12 @@ class _DiseaseBlockWidgetState extends State<DiseaseBlockWidget> {
               child: Row(
                 children: [
                   // Disease image thumbnail
-                  if (widget.postImageLinks != null &&
-                      widget.postImageLinks!.isNotEmpty)
+                  if (widget.diseaseImageLink != null &&
+                      widget.diseaseImageLink!.isNotEmpty)
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8.sp),
                       child: Image.network(
-                        widget.postImageLinks!.first,
+                        widget.diseaseImageLink!,
                         width: 60.sp,
                         height: 60.sp,
                         fit: BoxFit.cover,
@@ -105,7 +105,7 @@ class _DiseaseBlockWidgetState extends State<DiseaseBlockWidget> {
                             ),
                             SizedBox(width: 4.sp),
                             Text(
-                              'Bệnh phát hiện',
+                              'Chẩn đoán',
                               style: AppTextStyles.s12Regular(
                                 color: AppColors.orange,
                               ),
