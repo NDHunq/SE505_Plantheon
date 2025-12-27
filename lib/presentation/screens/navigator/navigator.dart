@@ -63,121 +63,80 @@ class _CustomNavigatorState extends State<CustomNavigator> {
         color: Colors.grey[100],
         shape: CircularNotchedRectangle(),
         notchMargin: 8.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              spacing: 24.sp,
-              children: [
-                InkWell(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final double horizontalPadding = 0.sp;
+            final double availableWidth =
+                constraints.maxWidth - (horizontalPadding * 2);
+            final double sectionWidth = availableWidth / 5;
+
+            Widget buildNavItem(
+              int index,
+              String iconSolid,
+              String iconStroke,
+              String label,
+            ) {
+              return SizedBox(
+                width: sectionWidth,
+                child: InkWell(
                   borderRadius: BorderRadius.all(Radius.circular(20.sp)),
-                  onTap: () => _onItemTapped(0),
+                  onTap: () => _onItemTapped(index),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SvgPicture.asset(
-                        _selectedIndex == 0
-                            ? AppVectors.homeSolid
-                            : AppVectors.homeStroke,
+                        _selectedIndex == index ? iconSolid : iconStroke,
                         height: 25.sp,
                         width: 25.sp,
                       ),
                       Text(
-                        'Trang chủ',
+                        label,
                         style: TextStyle(
-                          color: _selectedIndex == 0
+                          color: _selectedIndex == index
                               ? AppColors.primary_main
                               : Colors.grey,
-                          fontSize: 11.sp,
-                        ), // Removed ANSI color code
-                      ),
-                    ],
-                  ),
-                ),
-                InkWell(
-                  borderRadius: BorderRadius.all(Radius.circular(20.sp)),
-                  onTap: () => _onItemTapped(1),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        _selectedIndex == 1
-                            ? AppVectors.diarySolid
-                            : AppVectors.diaryStroke,
-                        height: 25.sp,
-                        width: 25.sp,
-                      ),
-                      Text(
-                        'Nhật ký',
-                        style: TextStyle(
-                          color: _selectedIndex == 1
-                              ? AppColors.primary_main
-                              : Colors.grey,
-                          fontSize: 11.sp,
+                          fontSize: 8.sp,
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(width: 0.sp),
-              ],
-            ),
-            Row(
-              spacing: 24.sp,
-              children: [
-                InkWell(
-                  borderRadius: BorderRadius.all(Radius.circular(20.sp)),
-                  onTap: () => _onItemTapped(2),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        _selectedIndex == 2
-                            ? AppVectors.communitySolid
-                            : AppVectors.communityStroke,
-                        height: 25.sp,
-                        width: 25.sp,
-                      ),
-                      Text(
-                        'Cộng đồng',
-                        style: TextStyle(
-                          color: _selectedIndex == 2
-                              ? AppColors.primary_main
-                              : Colors.grey,
-                          fontSize: 11.sp,
-                        ),
-                      ),
-                    ],
+              );
+            }
+
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+              child: Row(
+                children: [
+                  buildNavItem(
+                    0,
+                    AppVectors.homeSolid,
+                    AppVectors.homeStroke,
+                    'Trang chủ',
                   ),
-                ),
-                InkWell(
-                  borderRadius: BorderRadius.all(Radius.circular(20.sp)),
-                  onTap: () => _onItemTapped(3),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        _selectedIndex == 3
-                            ? AppVectors.accountSolid
-                            : AppVectors.accountStroke,
-                        height: 25.sp,
-                        width: 25.sp,
-                      ),
-                      Text(
-                        'Tài khoản',
-                        style: TextStyle(
-                          color: _selectedIndex == 3
-                              ? AppColors.primary_main
-                              : Colors.grey,
-                          fontSize: 11.sp,
-                        ),
-                      ),
-                    ],
+                  buildNavItem(
+                    1,
+                    AppVectors.diarySolid,
+                    AppVectors.diaryStroke,
+                    'Nhật ký',
                   ),
-                ),
-              ],
-            ),
-          ],
+                  SizedBox(width: sectionWidth), // Space for FAB
+                  buildNavItem(
+                    2,
+                    AppVectors.communitySolid,
+                    AppVectors.communityStroke,
+                    'Cộng đồng',
+                  ),
+                  buildNavItem(
+                    3,
+                    AppVectors.accountSolid,
+                    AppVectors.accountStroke,
+                    'Tài khoản',
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

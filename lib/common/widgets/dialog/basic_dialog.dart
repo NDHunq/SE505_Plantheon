@@ -38,13 +38,19 @@ class BasicDialog extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: AppColors.primary_600,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16.sp,
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 8.sp),
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        color: AppColors.primary_600,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14.sp,
+                      ),
+                    ),
                   ),
                 ),
                 IconButton(

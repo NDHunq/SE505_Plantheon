@@ -178,8 +178,8 @@ class _ScanState extends State<Scan> {
         if (mounted) {
           // Close loading dialog
           Navigator.of(context).pop();
-          // Navigate to result screen
-          Navigator.push(
+          // Navigate to result screen (replace scan screen so back goes to home)
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => BlocProvider<DiseaseBloc>(
@@ -404,6 +404,24 @@ class _ScanState extends State<Scan> {
                               ),
                             ),
                           ),
+                        ] else ...[
+                          IconButton(
+                            icon: SvgPicture.asset(
+                              AppVectors.arrowBack,
+                              width: 28.sp,
+                              height: 28.sp,
+                            ),
+                            onPressed: () async {
+                              await _cameraController?.resumePreview();
+                              setState(() {
+                                _image = null;
+                                _predictionResult = null;
+                                _cameraError = null;
+                              });
+                            },
+                          ),
+
+                          SizedBox(width: 48.sp), // Placeholder for alignment
                         ],
                       ],
                     ),
