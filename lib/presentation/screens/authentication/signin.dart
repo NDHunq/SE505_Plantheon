@@ -8,6 +8,10 @@ import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_event.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_state.dart';
+import 'package:se501_plantheon/presentation/bloc/forgot_password/forgot_password_bloc.dart';
+import 'package:se501_plantheon/presentation/bloc/forgot_password/forgot_password_event.dart';
+import 'package:se501_plantheon/presentation/bloc/forgot_password/forgot_password_state.dart';
+import 'package:se501_plantheon/presentation/screens/authentication/verify_otp_screen.dart';
 import 'package:se501_plantheon/presentation/screens/navigator/navigator.dart';
 import '../../../core/configs/constants/app_info.dart';
 import '../../../core/configs/theme/app_colors.dart';
@@ -26,7 +30,6 @@ class _SignInPageState extends State<SignInPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  final TextEditingController _phoneDialogController = TextEditingController();
 
   bool _obscureText = true;
   bool isShowErrText = false;
@@ -266,61 +269,132 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _showForgotPasswordBottomSheet(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Cho phép BottomSheet cuộn
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(
-              context,
-            ).viewInsets.bottom, // Lấy khoảng trống của bàn phím
-            left: 25.sp,
-            right: 25.sp,
-            top: 25.sp,
-          ),
-          child: SingleChildScrollView(
-            // Bao bọc nội dung để cho phép cuộn
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 100.sp,
-                    height: 5.sp,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(10.sp),
+      isScrollControlled: true,
+      builder: (BuildContext bottomSheetContext) {
+        return BlocProvider.value(
+          value: context.read<ForgotPasswordBloc>(),
+          child: BlocConsumer<ForgotPasswordBloc, ForgotPasswordState>(
+            listener: (context, state) {
+              if (state is OtpSent) {
+                // Close bottom sheet
+                Navigator.pop(bottomSheetContext);
+                
+                // Navigate to OTP verification screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VerifyOtpScreen(email: state.email),
+                  ),
+                );
+                
+                // Show success message
+                toastification.show(
+                  context: context,
+                  type: ToastificationType.success,
+                  style: ToastificationStyle.flat,
+                  title: Text(state.message),
+                  autoCloseDuration: const Duration(seconds: 2),
+                  alignment: Alignment.bottomCenter,
+                  showProgressBar: true,
+                );
+              } else if (state is ForgotPasswordError) {
+                toastification.show(
+                  context: bottomSheetContext,
+                  type: ToastificationType.error,
+                  style: ToastificationStyle.flat,
+                  title: Text(state.message),
+                  autoCloseDuration: const Duration(seconds: 3),
+                  alignment: Alignment.bottomCenter,
+                  showProgressBar: true,
+                );
+              }
+            },
+            builder: (context, state) {
+              final isLoading = state is ForgotPasswordLoading;
+              
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
+                  left: 25.sp,
+                  right: 25.sp,
+                  top: 25.sp,
+                ),
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 100.sp,
+                            height: 5.sp,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10.sp),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 30.sp),
+                        Text('Quên mật khẩu', style: AppTextStyles.s20Bold()),
+                        SizedBox(height: 20.sp),
+                        Text(
+                          'Vui lòng nhập email của bạn để nhận OTP đặt lại mật khẩu.',
+                          style: AppTextStyles.s14Regular(),
+                        ),
+                        SizedBox(height: 20.sp),
+                        TextFormField(
+                          controller: emailController,
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(12.sp)),
+                            ),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          enabled: !isLoading,
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Vui lòng nhập email';
+                            }
+                            bool emailValid = RegExp(
+                              r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                            ).hasMatch(value);
+                            if (!emailValid) {
+                              return 'Vui lòng nhập đúng định dạng email';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20.sp),
+                        Sizedbutton(
+                          onPressFun: isLoading
+                              ? null
+                              : () {
+                                  if (formKey.currentState!.validate()) {
+                                    context.read<ForgotPasswordBloc>().add(
+                                          RequestOtpEvent(
+                                            email: emailController.text.trim(),
+                                          ),
+                                        );
+                                  }
+                                },
+                          text: isLoading ? 'Đang gửi...' : 'Gửi OTP',
+                          width: double.infinity,
+                        ),
+                        SizedBox(height: 10.sp),
+                      ],
                     ),
                   ),
                 ),
-                SizedBox(height: 30.sp),
-                Text('Quên mật khẩu', style: AppTextStyles.s20Bold()),
-                SizedBox(height: 20.sp),
-                Text(
-                  'Vui lòng nhập số điện thoại của bạn để nhận OTP đặt lại mật khẩu.',
-                  style: AppTextStyles.s14Regular(),
-                ),
-                SizedBox(height: 20.sp),
-                TextFormField(
-                  controller: _phoneDialogController,
-                  decoration: InputDecoration(
-                    labelText: 'Số điện thoại',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12.sp)),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20.sp),
-                Sizedbutton(
-                  onPressFun: () {},
-                  text: 'Gửi OTP',
-                  width: double.infinity,
-                ),
-                SizedBox(height: 10.sp),
-              ],
-            ),
+              );
+            },
           ),
         );
       },
@@ -359,7 +433,6 @@ class _SignInPageState extends State<SignInPage> {
     _hideLoadingDialog();
     _email.dispose();
     _password.dispose();
-    _phoneDialogController.dispose();
     super.dispose();
   }
 }

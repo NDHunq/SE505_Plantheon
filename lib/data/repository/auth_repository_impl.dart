@@ -70,4 +70,41 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<bool> isAuthenticated() async {
     return await tokenStorage.isTokenValid();
   }
+
+  @override
+  Future<String> requestPasswordReset(String email) async {
+    try {
+      final response = await remoteDataSource.requestPasswordReset(email);
+      return response.message;
+    } catch (e) {
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> verifyOtp(String email, String otp) async {
+    try {
+      final response = await remoteDataSource.verifyOtp(email, otp);
+      return {
+        'valid': response.valid,
+        'message': response.message,
+        'attemptsRemaining': response.attemptsRemaining,
+      };
+    } catch (e) {
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  @override
+  Future<void> resetPassword(
+    String email,
+    String otp,
+    String newPassword,
+  ) async {
+    try {
+      await remoteDataSource.resetPassword(email, otp, newPassword);
+    } catch (e) {
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
 }

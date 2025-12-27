@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:se501_plantheon/common/widgets/appbar/basic_appbar.dart';
-import 'package:se501_plantheon/common/widgets/dialog/basic_dialog.dart';
 import 'package:se501_plantheon/common/widgets/loading_indicator.dart';
 import 'package:se501_plantheon/core/configs/assets/app_vectors.dart';
 import 'package:se501_plantheon/core/configs/enums/weather_type.dart';
@@ -83,52 +81,6 @@ class _WeatherState extends State<Weather> {
         _isLoading = false;
       });
     }
-  }
-
-  Future<void> _getCurrentLocation() async {
-    try {
-      // Check if geolocator is available (not on web)
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        _showLocationDialog();
-        return;
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          _showLocationDialog();
-          return;
-        }
-      }
-
-      Position position = await Geolocator.getCurrentPosition();
-      setState(() {
-        _latitude = position.latitude;
-        _longitude = position.longitude;
-        _locationName = 'Vị trí hiện tại';
-      });
-      await _fetchWeather();
-    } catch (e) {
-      // Fallback for web or when geolocator is not available
-      _showLocationDialog();
-    }
-  }
-
-  void _showLocationDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => BasicDialog(
-        title: "Định vị không khả dụng",
-        content:
-            "Hiện tại ứng dụng đang sử dụng vị trí mặc định: Thủ Đức, TP.HCM",
-        confirmText: "OK",
-        onConfirm: () {
-          Navigator.of(context).pop();
-        },
-      ),
-    );
   }
 
   String _formatCurrentDate() {
