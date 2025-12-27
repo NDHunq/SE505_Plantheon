@@ -75,7 +75,7 @@ class PlantSection extends StatelessWidget {
                   itemBuilder: (context, index) {
                     if (isLoading) {
                       // Skeleton card
-                      return const PlantsCard(name: 'Plant Name', imageUrl: '');
+                      return const PlantsCard(name: 'Cây', imageUrl: '');
                     }
 
                     final plant = plants[index];
