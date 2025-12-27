@@ -32,6 +32,7 @@ class Scan extends StatefulWidget {
 class _ScanState extends State<Scan> {
   File? _image;
   bool _loading = false;
+  // ignore: unused_field
   DiseasePredictionResponse? _predictionResult;
   CameraController? _cameraController;
   List<CameraDescription>? _cameras;

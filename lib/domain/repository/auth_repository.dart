@@ -13,4 +13,9 @@ abstract class AuthRepository {
   Future<String?> getStoredToken();
   Future<UserEntity?> getCurrentUser();
   Future<bool> isAuthenticated();
+  
+  // Forgot password methods
+  Future<String> requestPasswordReset(String email);
+  Future<Map<String, dynamic>> verifyOtp(String email, String otp);
+  Future<void> resetPassword(String email, String otp, String newPassword);
 }

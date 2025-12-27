@@ -9,7 +9,11 @@ import '../../../domain/usecases/check_auth_usecase.dart';
 import '../../../domain/usecases/login_usecase.dart';
 import '../../../domain/usecases/logout_usecase.dart';
 import '../../../domain/usecases/register_usecase.dart';
+import '../../../domain/usecases/request_password_reset_usecase.dart';
+import '../../../domain/usecases/verify_otp_usecase.dart';
+import '../../../domain/usecases/reset_password_usecase.dart';
 import 'auth_bloc.dart';
+import '../forgot_password/forgot_password_bloc.dart';
 
 class AuthProvider extends StatelessWidget {
   final Widget child;
@@ -35,14 +39,27 @@ class AuthProvider extends StatelessWidget {
           tokenStorage: tokenStorage,
         );
 
-        return BlocProvider(
-          create: (context) => AuthBloc(
-            loginUseCase: LoginUseCase(repository: repository),
-            registerUseCase: RegisterUseCase(repository: repository),
-            logoutUseCase: LogoutUseCase(repository: repository),
-            checkAuthUseCase: CheckAuthUseCase(repository: repository),
-            authRepository: repository,
-          ),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => AuthBloc(
+                loginUseCase: LoginUseCase(repository: repository),
+                registerUseCase: RegisterUseCase(repository: repository),
+                logoutUseCase: LogoutUseCase(repository: repository),
+                checkAuthUseCase: CheckAuthUseCase(repository: repository),
+                authRepository: repository,
+              ),
+            ),
+            BlocProvider(
+              create: (context) => ForgotPasswordBloc(
+                requestPasswordResetUseCase:
+                    RequestPasswordResetUseCase(repository: repository),
+                verifyOtpUseCase: VerifyOtpUseCase(repository: repository),
+                resetPasswordUseCase:
+                    ResetPasswordUseCase(repository: repository),
+              ),
+            ),
+          ],
           child: child,
         );
       },
