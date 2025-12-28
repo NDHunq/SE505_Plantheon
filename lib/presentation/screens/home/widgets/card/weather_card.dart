@@ -128,6 +128,31 @@ class _WeatherCardState extends State<WeatherCard> {
 
     return GestureDetector(
       onTap: () async {
+        // Check if location services are enabled
+        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!serviceEnabled) {
+          // Location services are not enabled, prompt user to enable
+          if (!context.mounted) return;
+          showDialog(
+            context: context,
+            builder: (context) => BasicDialog(
+              title: "Dịch vụ vị trí đã tắt",
+              content:
+                  "Vui lòng bật dịch vụ vị trí để xem thông tin thời tiết tại vị trí của bạn.",
+              cancelText: "Hủy",
+              confirmText: "Mở cài đặt",
+              onCancel: () {
+                Navigator.of(context).pop();
+              },
+              onConfirm: () async {
+                Navigator.of(context).pop();
+                await Geolocator.openLocationSettings();
+              },
+            ),
+          );
+          return;
+        }
+
         // Check location permission
         LocationPermission permission = await Geolocator.checkPermission();
 
@@ -166,7 +191,10 @@ class _WeatherCardState extends State<WeatherCard> {
 
         // Permission granted, get current location
         try {
-          Position position = await Geolocator.getCurrentPosition();
+          Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.medium,
+            timeLimit: const Duration(seconds: 10),
+          );
           if (!context.mounted) return;
 
           Navigator.push(
@@ -179,8 +207,15 @@ class _WeatherCardState extends State<WeatherCard> {
             ),
           );
         } catch (e) {
-          // If getting location fails, don't navigate
+          // If getting location fails, show error and don't navigate
           print('Error getting location: $e');
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Không thể lấy vị trí hiện tại. Vui lòng thử lại.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
         }
       },
       child: Skeletonizer(

@@ -37,6 +37,7 @@ class chiTieuWidget extends StatefulWidget {
   final String? initialNote;
   final Map<String, dynamic>? initialFormData;
   final Function(Map<String, dynamic>)? onClose;
+  final bool isSuggestion;
 
   const chiTieuWidget({
     super.key,
@@ -55,6 +56,7 @@ class chiTieuWidget extends StatefulWidget {
     this.initialNote,
     this.initialFormData,
     this.onClose,
+    this.isSuggestion = false,
   });
 
   @override
@@ -490,6 +492,9 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
 
   // Phương thức chọn ngày bắt đầu
   Future<void> _selectStartDate(BuildContext context) async {
+    // Nếu là suggestion mode, không cho phép thay đổi ngày
+    if (widget.isSuggestion) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: startDate,
@@ -505,6 +510,9 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
 
   // Phương thức chọn ngày kết thúc
   Future<void> _selectEndDate(BuildContext context) async {
+    // Nếu là suggestion mode, không cho phép thay đổi ngày
+    if (widget.isSuggestion) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: endDate,
@@ -540,7 +548,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
             mainAxisSize: MainAxisSize.min,
             children: repeatOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     repeatType = option;
@@ -574,7 +582,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
             mainAxisSize: MainAxisSize.min,
             children: endRepeatOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     endRepeatType = option;
@@ -740,7 +748,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
             mainAxisSize: MainAxisSize.min,
             children: alertOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     alertTime = option;
@@ -775,7 +783,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
             mainAxisSize: MainAxisSize.min,
             children: units.map((unitItem) {
               return ListTile(
-                title: Text(unitItem),
+                title: Text(unitItem, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     unit = unitItem;
@@ -810,7 +818,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
             mainAxisSize: MainAxisSize.min,
             children: currencies.map((currencyItem) {
               return ListTile(
-                title: Text(currencyItem),
+                title: Text(currencyItem, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     currency = currencyItem;
@@ -1108,7 +1116,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                     children: [
                       Text(
                         "Loại nhật ký",
-                        style: TextStyle(fontSize: 14.sp),
+                        style: TextStyle(fontSize: 12.sp),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Container(
@@ -1129,6 +1137,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                           style: TextStyle(
                             color: AppColors.primary_main,
                             fontWeight: FontWeight.w600,
+                            fontSize: 12.sp,
                           ),
                         ),
                       ),
@@ -1137,6 +1146,8 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                 ),
 
                 TextFormField(
+                  style: TextStyle(fontSize: 12.sp),
+
                   controller: titleController,
                   validator: _validateTitle,
                   decoration: InputDecoration(
@@ -1262,8 +1273,8 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                                   ),
                                   child: Text(
                                     _formatDateDisplay(startDate),
-                                    maxLines: 2,
                                     textAlign: TextAlign.center,
+                                    softWrap: true,
                                   ),
                                 ),
                               ),
@@ -1308,10 +1319,22 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                                 vertical: 8.sp,
                               ),
                               decoration: BoxDecoration(
+                                color: widget.isSuggestion
+                                    ? Colors.grey.shade200
+                                    : null,
                                 border: Border.all(color: Colors.grey.shade300),
                                 borderRadius: BorderRadius.circular(8.sp),
                               ),
-                              child: Text(_formatDateDisplay(startDate)),
+                              child: Text(
+                                _formatDateDisplay(startDate),
+                                textAlign: TextAlign.center,
+                                softWrap: true,
+                                style: TextStyle(
+                                  color: widget.isSuggestion
+                                      ? Colors.grey.shade600
+                                      : null,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -1355,12 +1378,24 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                                   vertical: 8.sp,
                                 ),
                                 decoration: BoxDecoration(
+                                  color: widget.isSuggestion
+                                      ? Colors.grey.shade200
+                                      : null,
                                   border: Border.all(
                                     color: Colors.grey.shade300,
                                   ),
                                   borderRadius: BorderRadius.circular(8.sp),
                                 ),
-                                child: Text(_formatDateDisplay(endDate)),
+                                child: Text(
+                                  _formatDateDisplay(endDate),
+                                  textAlign: TextAlign.center,
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    color: widget.isSuggestion
+                                        ? Colors.grey.shade600
+                                        : null,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -1474,7 +1509,10 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                 // Vật mua
                 AddNewRow(
                   label: "Vật mua",
-                  child: AppTextField(controller: purchasedItemController),
+                  child: AppTextField(
+                    controller: purchasedItemController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Số lượng mua
@@ -1487,6 +1525,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                     ],
                     controller: quantityController,
                     keyboardType: TextInputType.number,
+                    textStyle: TextStyle(fontSize: 12.sp),
                   ),
                 ),
 
@@ -1507,7 +1546,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(unit),
+                          Text(unit, style: TextStyle(fontSize: 12.sp)),
                           Icon(Icons.arrow_drop_down_rounded, size: 20.sp),
                         ],
                       ),
@@ -1524,6 +1563,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                         flex: 2,
                         child: AppTextField(
                           controller: amountController,
+                          textStyle: TextStyle(fontSize: 12.sp),
                           keyboardType: TextInputType.number,
                           inputFormatters: [
                             DecimalTextInputFormatter(decimalRange: 2),
@@ -1547,7 +1587,7 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
 
                             child: Text(
                               "VNĐ",
-                              style: TextStyle(fontSize: 14.sp),
+                              style: TextStyle(fontSize: 12.sp),
                             ),
                           ),
                         ),
@@ -1559,19 +1599,28 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                 // Mục đích
                 AddNewRow(
                   label: "Mục đích",
-                  child: AppTextField(controller: purposeController),
+                  child: AppTextField(
+                    controller: purposeController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Mua cho ai
                 AddNewRow(
                   label: "Mua cho ai",
-                  child: AppTextField(controller: purchasedForController),
+                  child: AppTextField(
+                    controller: purchasedForController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Người mua
                 AddNewRow(
                   label: "Người mua",
-                  child: AppTextField(controller: buyerController),
+                  child: AppTextField(
+                    controller: buyerController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 SizedBox(height: 8.sp),
@@ -1690,7 +1739,10 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                               height: 18,
                               color: AppColors.primary_600,
                             ),
-                            label: Text('Upload Ảnh'),
+                            label: Text(
+                              'Upload Ảnh',
+                              style: TextStyle(fontSize: 12.sp),
+                            ),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.primary_600,
                               side: BorderSide(color: AppColors.primary_600),
@@ -1706,7 +1758,10 @@ class _chiTieuWidgetState extends State<chiTieuWidget> {
                 // Ghi chú
                 AddNewRow(
                   label: "Ghi chú",
-                  child: AppTextField(controller: noteController),
+                  child: AppTextField(
+                    controller: noteController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Save / Delete actions

@@ -36,6 +36,7 @@ class dichBenhWidget extends StatefulWidget {
   final String? initialNote;
   final Map<String, dynamic>? initialFormData;
   final Function(Map<String, dynamic>)? onClose;
+  final bool isSuggestion;
 
   const dichBenhWidget({
     super.key,
@@ -54,6 +55,7 @@ class dichBenhWidget extends StatefulWidget {
     this.initialNote,
     this.initialFormData,
     this.onClose,
+    this.isSuggestion = false,
   });
 
   @override
@@ -414,6 +416,9 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
 
   // Phương thức chọn ngày bắt đầu
   Future<void> _selectStartDate(BuildContext context) async {
+    // Nếu là suggestion mode, không cho phép thay đổi ngày
+    if (widget.isSuggestion) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: startDate,
@@ -429,6 +434,9 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
 
   // Phương thức chọn ngày kết thúc
   Future<void> _selectEndDate(BuildContext context) async {
+    // Nếu là suggestion mode, không cho phép thay đổi ngày
+    if (widget.isSuggestion) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: endDate,
@@ -464,7 +472,7 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
             mainAxisSize: MainAxisSize.min,
             children: repeatOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     repeatType = option;
@@ -498,7 +506,7 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
             mainAxisSize: MainAxisSize.min,
             children: endRepeatOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     endRepeatType = option;
@@ -949,7 +957,7 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                     children: [
                       Text(
                         "Loại nhật ký",
-                        style: TextStyle(fontSize: 14.sp),
+                        style: TextStyle(fontSize: 12.sp),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Container(
@@ -970,6 +978,7 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                           style: TextStyle(
                             color: AppColors.primary_main,
                             fontWeight: FontWeight.w600,
+                            fontSize: 12.sp,
                           ),
                         ),
                       ),
@@ -978,6 +987,8 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                 ),
 
                 TextFormField(
+                  style: TextStyle(fontSize: 12.sp),
+
                   controller: titleController,
                   validator: _validateTitle,
                   decoration: InputDecoration(
@@ -1098,6 +1109,9 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                                       vertical: 8.sp,
                                     ),
                                     decoration: BoxDecoration(
+                                      color: widget.isSuggestion
+                                          ? Colors.grey.shade200
+                                          : null,
                                       border: Border.all(
                                         color: Colors.grey.shade300,
                                       ),
@@ -1105,8 +1119,13 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                                     ),
                                     child: Text(
                                       _formatDateDisplay(startDate),
-                                      maxLines: 2,
                                       textAlign: TextAlign.center,
+                                      softWrap: true,
+                                      style: TextStyle(
+                                        color: widget.isSuggestion
+                                            ? Colors.grey.shade600
+                                            : null,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1154,10 +1173,22 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                                 vertical: 8.sp,
                               ),
                               decoration: BoxDecoration(
+                                color: widget.isSuggestion
+                                    ? Colors.grey.shade200
+                                    : null,
                                 border: Border.all(color: Colors.grey.shade300),
                                 borderRadius: BorderRadius.circular(8.sp),
                               ),
-                              child: Text(_formatDateDisplay(startDate)),
+                              child: Text(
+                                _formatDateDisplay(startDate),
+                                textAlign: TextAlign.center,
+                                softWrap: true,
+                                style: TextStyle(
+                                  color: widget.isSuggestion
+                                      ? Colors.grey.shade600
+                                      : null,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -1201,12 +1232,24 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                                   vertical: 8.sp,
                                 ),
                                 decoration: BoxDecoration(
+                                  color: widget.isSuggestion
+                                      ? Colors.grey.shade200
+                                      : null,
                                   border: Border.all(
                                     color: Colors.grey.shade300,
                                   ),
                                   borderRadius: BorderRadius.circular(8.sp),
                                 ),
-                                child: Text(_formatDateDisplay(endDate)),
+                                child: Text(
+                                  _formatDateDisplay(endDate),
+                                  textAlign: TextAlign.center,
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    color: widget.isSuggestion
+                                        ? Colors.grey.shade600
+                                        : null,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -1317,7 +1360,7 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                   label: "Nội dung",
                   child: AppTextField(
                     controller: descriptionController,
-
+                    textStyle: TextStyle(fontSize: 12.sp),
                     maxLines: 5,
                   ),
                 ),
@@ -1328,6 +1371,7 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                   child: AppTextField(
                     controller: damageDescriptionController,
                     maxLines: 5,
+                    textStyle: TextStyle(fontSize: 12.sp),
                   ),
                 ),
 
@@ -1337,6 +1381,7 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                   child: AppTextField(
                     controller: actionController,
                     maxLines: 5,
+                    textStyle: TextStyle(fontSize: 12.sp),
                   ),
                 ),
 
@@ -1351,13 +1396,17 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                     ],
+                    textStyle: TextStyle(fontSize: 12.sp),
                   ),
                 ),
 
                 // Người thực hiện
                 AddNewRow(
                   label: "Người thực hiện ",
-                  child: AppTextField(controller: implementedByController),
+                  child: AppTextField(
+                    controller: implementedByController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Hình ảnh đính kèm
@@ -1471,7 +1520,10 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                               height: 18,
                               color: AppColors.primary_600,
                             ),
-                            label: Text('Upload Ảnh'),
+                            label: Text(
+                              'Upload Ảnh',
+                              style: TextStyle(fontSize: 12.sp),
+                            ),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.primary_600,
                               side: BorderSide(color: AppColors.primary_600),
@@ -1488,7 +1540,7 @@ class _dichBenhWidgetState extends State<dichBenhWidget> {
                   label: "Ghi chú",
                   child: AppTextField(
                     controller: noteController,
-                    textStyle: TextStyle(fontSize: 14.sp),
+                    textStyle: TextStyle(fontSize: 12.sp),
                   ),
                 ),
 

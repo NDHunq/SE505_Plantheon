@@ -20,7 +20,7 @@ class AddNewRowVertical extends StatelessWidget {
         Padding(
           padding: EdgeInsets.fromLTRB(0.sp, 8.sp, 0.sp, 0.sp),
           child: Row(
-            children: [Text(label, style: TextStyle(fontSize: 14.sp))],
+            children: [Text(label, style: TextStyle(fontSize: 12.sp))],
           ),
         ),
         // Row cho child (text field)

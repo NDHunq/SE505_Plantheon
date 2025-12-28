@@ -35,6 +35,7 @@ class kyThuatWidget extends StatefulWidget {
   final String? initialNote;
   final Map<String, dynamic>? initialFormData;
   final Function(Map<String, dynamic>)? onClose;
+  final bool isSuggestion;
 
   const kyThuatWidget({
     super.key,
@@ -53,6 +54,7 @@ class kyThuatWidget extends StatefulWidget {
     this.initialNote,
     this.initialFormData,
     this.onClose,
+    this.isSuggestion = false,
   });
 
   @override
@@ -447,6 +449,9 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
 
   // Phương thức chọn ngày bắt đầu
   Future<void> _selectStartDate(BuildContext context) async {
+    // Nếu là suggestion mode, không cho phép thay đổi ngày
+    if (widget.isSuggestion) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: startDate,
@@ -462,6 +467,9 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
 
   // Phương thức chọn ngày kết thúc
   Future<void> _selectEndDate(BuildContext context) async {
+    // Nếu là suggestion mode, không cho phép thay đổi ngày
+    if (widget.isSuggestion) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: endDate,
@@ -497,7 +505,7 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
             mainAxisSize: MainAxisSize.min,
             children: repeatOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     repeatType = option;
@@ -531,7 +539,7 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
             mainAxisSize: MainAxisSize.min,
             children: endRepeatOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     endRepeatType = option;
@@ -689,7 +697,7 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
             mainAxisSize: MainAxisSize.min,
             children: alertOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     alertTime = option;
@@ -993,7 +1001,7 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                     children: [
                       Text(
                         "Loại nhật ký",
-                        style: TextStyle(fontSize: 14.sp),
+                        style: TextStyle(fontSize: 12.sp),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Container(
@@ -1014,6 +1022,7 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                           style: TextStyle(
                             color: AppColors.primary_main,
                             fontWeight: FontWeight.w600,
+                            fontSize: 12.sp,
                           ),
                         ),
                       ),
@@ -1022,6 +1031,8 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                 ),
 
                 TextFormField(
+                  style: TextStyle(fontSize: 12.sp),
+
                   controller: titleController,
                   validator: _validateTitle,
                   decoration: InputDecoration(
@@ -1140,6 +1151,9 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                                     vertical: 8.sp,
                                   ),
                                   decoration: BoxDecoration(
+                                    color: widget.isSuggestion
+                                        ? Colors.grey.shade200
+                                        : null,
                                     border: Border.all(
                                       color: Colors.grey.shade300,
                                     ),
@@ -1147,8 +1161,12 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                                   ),
                                   child: Text(
                                     _formatDateDisplay(startDate),
-                                    maxLines: 2,
                                     textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: widget.isSuggestion
+                                          ? Colors.grey.shade600
+                                          : null,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1193,10 +1211,22 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                                 vertical: 8.sp,
                               ),
                               decoration: BoxDecoration(
+                                color: widget.isSuggestion
+                                    ? Colors.grey.shade200
+                                    : null,
                                 border: Border.all(color: Colors.grey.shade300),
                                 borderRadius: BorderRadius.circular(8.sp),
                               ),
-                              child: Text(_formatDateDisplay(startDate)),
+                              child: Text(
+                                _formatDateDisplay(startDate),
+                                textAlign: TextAlign.center,
+                                softWrap: true,
+                                style: TextStyle(
+                                  color: widget.isSuggestion
+                                      ? Colors.grey.shade600
+                                      : null,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -1240,12 +1270,24 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                                   vertical: 8.sp,
                                 ),
                                 decoration: BoxDecoration(
+                                  color: widget.isSuggestion
+                                      ? Colors.grey.shade200
+                                      : null,
                                   border: Border.all(
                                     color: Colors.grey.shade300,
                                   ),
                                   borderRadius: BorderRadius.circular(8.sp),
                                 ),
-                                child: Text(_formatDateDisplay(endDate)),
+                                child: Text(
+                                  _formatDateDisplay(endDate),
+                                  textAlign: TextAlign.center,
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    color: widget.isSuggestion
+                                        ? Colors.grey.shade600
+                                        : null,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -1354,25 +1396,38 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                 // Loại cây trồng
                 AddNewRowVertical(
                   label: "Loại cây trồng",
-                  child: AppTextField(controller: plantTypeController),
+                  child: AppTextField(
+                    controller: plantTypeController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Kỹ thuật áp dụng
                 AddNewRowVertical(
                   label: "Kỹ thuật áp dụng",
-                  child: AppTextField(controller: kyThuatApDungController),
+                  child: AppTextField(
+                    controller: kyThuatApDungController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Mô tả
                 AddNewRowVertical(
                   label: "Mô tả",
-                  child: AppTextField(controller: moTaController, maxLines: 5),
+                  child: AppTextField(
+                    controller: moTaController,
+                    maxLines: 5,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Người thực hiện
                 AddNewRow(
                   label: "Người thực hiện",
-                  child: AppTextField(controller: nguoiThucHienController),
+                  child: AppTextField(
+                    controller: nguoiThucHienController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 AddNewRow(
@@ -1485,7 +1540,10 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                               height: 18,
                               color: AppColors.primary_600,
                             ),
-                            label: Text('Upload Ảnh'),
+                            label: Text(
+                              'Upload Ảnh',
+                              style: TextStyle(fontSize: 12.sp),
+                            ),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.primary_600,
                               side: BorderSide(color: AppColors.primary_600),
@@ -1500,7 +1558,11 @@ class _kyThuatWidgetState extends State<kyThuatWidget> {
                 // Ghi chú
                 AddNewRowVertical(
                   label: "Ghi chú",
-                  child: AppTextField(controller: noteController, maxLines: 5),
+                  child: AppTextField(
+                    controller: noteController,
+                    maxLines: 5,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Save / Delete actions

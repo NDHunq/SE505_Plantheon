@@ -149,7 +149,7 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                             ),
                             child: Text(
                               widget.stageLabel,
-                              style: AppTextStyles.s12Medium(
+                              style: AppTextStyles.s10Medium(
                                 color: widget.isNow
                                     ? AppColors.white
                                     : AppColors.primary_600,
@@ -159,7 +159,7 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                           SizedBox(height: 4.sp),
                           Text(
                             widget.stageDescription,
-                            style: AppTextStyles.s14Medium(
+                            style: AppTextStyles.s12Medium(
                               color: widget.isNow
                                   ? AppColors.white
                                   : AppColors.text_color_200,
@@ -170,7 +170,7 @@ class _FarmingTipStageCardState extends State<FarmingTipStageCard> {
                           SizedBox(height: 4.sp),
                           Text(
                             widget.stageTime,
-                            style: AppTextStyles.s16Bold(
+                            style: AppTextStyles.s12Bold(
                               color: widget.isNow
                                   ? AppColors.white
                                   : AppColors.text_color_400,
@@ -279,30 +279,30 @@ class _SubGuideStageSection extends StatelessWidget {
                 children: [
                   Text(
                     subStage.title,
-                    style: AppTextStyles.s16SemiBold(
-                      color: AppColors.primary_700,
-                    ),
+                    style: AppTextStyles.s12Bold(color: AppColors.primary_700),
                   ),
                   Text(
                     timeRange,
-                    style: AppTextStyles.s14Regular(
+                    style: AppTextStyles.s12Regular(
                       color: AppColors.text_color_400,
                     ),
                   ),
                   SizedBox(height: 8.sp),
-                  SizedBox(
-                    height: 170.sp,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: subStage.blogs.length,
-                      separatorBuilder: (context, index) =>
-                          SizedBox(width: 8.sp),
-                      itemBuilder: (context, index) => _BlogCard(
-                        blogId: subStage.blogs[index].id,
-                        title: subStage.blogs[index].title,
-                        content: subStage.blogs[index].content,
-                        coverImageUrl: subStage.blogs[index].coverImageUrl,
-                      ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: subStage.blogs.map((blog) {
+                        return Padding(
+                          padding: EdgeInsets.only(right: 8.sp),
+                          child: _BlogCard(
+                            blogId: blog.id,
+                            title: blog.title,
+                            content: blog.content,
+                            coverImageUrl: blog.coverImageUrl,
+                          ),
+                        );
+                      }).toList(),
                     ),
                   ),
                 ],
@@ -358,7 +358,7 @@ class _BlogCard extends StatelessWidget {
         );
       },
       child: Container(
-        width: 140.sp,
+        width: 200.sp,
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(8.sp),
@@ -368,8 +368,8 @@ class _BlogCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 140.sp,
-              height: 90.sp,
+              width: 250.sp,
+              height: 140.sp,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.sp),
                 image: coverImageUrl.isNotEmpty

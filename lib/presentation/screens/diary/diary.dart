@@ -37,7 +37,9 @@ class _DiaryState extends State<Diary> {
   DateTime? billDate; // For bill views
   String? customTitle; // For dynamic title
   DiaryViewType? latestCalendarView; // Track latest calendar view accessed
-  DateTime? selectedDate; // For add new screen\
+  DateTime? selectedDate; // For add new screen
+  VoidCallback?
+  _dayDetailRefreshFn; // Store refresh function from DayDetailScreen
 
   void _setSelectedDate(DateTime date) {
     // Sử dụng post frame callback để tránh gọi setState trong build
@@ -371,6 +373,9 @@ class _DiaryState extends State<Diary> {
           },
           onTitleChange: changeTitle,
           onDateChange: updateSelectedDate,
+          onRefreshRegistered: (refreshFn) {
+            _dayDetailRefreshFn = refreshFn;
+          },
         );
       case DiaryViewType.monthGrid:
         return _buildMonthGrid();
@@ -391,7 +396,17 @@ class _DiaryState extends State<Diary> {
             topRight: Radius.circular(20.sp),
           ),
         ),
-        child: AddNewScreen(initialDate: selectedDate),
+        child: AddNewScreen(
+          initialDate: selectedDate,
+          onActivitySaved: () {
+            // Trigger refresh when activity is saved
+            setState(() {});
+            // Refresh DayDetailScreen if currently viewing
+            if (currentView == DiaryViewType.dayDetail) {
+              _dayDetailRefreshFn?.call();
+            }
+          },
+        ),
       ),
     );
   }

@@ -190,14 +190,17 @@ class _ComplaintCard extends StatelessWidget {
                   ).withOpacity(0.1),
                   textColor: _getCategoryColor(complaint.category),
                 ),
-                Spacer(),
-                Text(
-                  _formatDateTime(complaint.createdAt),
-                  style: AppTextStyles.s12Regular(color: Colors.grey[500]),
-                ),
               ],
             ),
-            SizedBox(height: 16.sp),
+            SizedBox(height: 8.sp),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                _formatDateTime(complaint.createdAt),
+                style: AppTextStyles.s12Regular(color: Colors.grey[500]),
+              ),
+            ),
+            SizedBox(height: 8.sp),
 
             // Body: Content Preview
             Container(

@@ -202,7 +202,7 @@ class _UserProfileView extends StatelessWidget {
                   backgroundColor: AppColors.primary_200,
                   child: Text(
                     post.fullName.isNotEmpty ? post.fullName[0] : '?',
-                    style: AppTextStyles.s16Bold(color: Colors.white),
+                    style: AppTextStyles.s14Bold(color: Colors.white),
                   ),
                 ),
                 SizedBox(width: 12.sp),
@@ -214,7 +214,7 @@ class _UserProfileView extends StatelessWidget {
                         children: [
                           Text(
                             post.isMyPost ? 'Bạn' : post.fullName,
-                            style: AppTextStyles.s16Bold(
+                            style: AppTextStyles.s14Bold(
                               color: post.isMyPost
                                   ? AppColors.primary_main
                                   : null,
@@ -355,11 +355,6 @@ class _UserProfileView extends StatelessWidget {
                   Spacer(),
                   Text(
                     '${post.commentNumber} bình luận',
-                    style: AppTextStyles.s12Regular(),
-                  ),
-                  SizedBox(width: 16.sp),
-                  Text(
-                    '${post.shareNumber} lượt chia sẻ',
                     style: AppTextStyles.s12Regular(),
                   ),
                 ],

@@ -73,10 +73,18 @@ class DayEventMapper {
 
       final String amountText = _amountTextByType(a.type);
       final Color activityColor = _getColorByType(a.type);
+      // Đảm bảo endHour >= startHour sau khi clamp
+      final clampedStartHour = startHour.clamp(0, 23);
+      var clampedEndHour = endHour.clamp(1, 24);
+      if (clampedEndHour <= clampedStartHour) {
+        clampedEndHour = clampedStartHour + 1;
+        if (clampedEndHour > 24) clampedEndHour = 24;
+      }
+
       return DayEvent(
         id: a.id,
-        startHour: startHour.clamp(0, 23),
-        endHour: endHour.clamp(1, 24),
+        startHour: clampedStartHour,
+        endHour: clampedEndHour,
         title: a.title,
         type: a.type,
         day: a.day,

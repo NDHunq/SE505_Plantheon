@@ -31,6 +31,7 @@ class DayDetailScreen extends StatefulWidget {
   final Function(String)? onTitleChange;
   final Function(int day, int month, int year)? onDateChange;
   final Function(DateTime date)? onSelectedDate;
+  final Function(VoidCallback refreshFn)? onRefreshRegistered;
 
   const DayDetailScreen({
     super.key,
@@ -38,6 +39,7 @@ class DayDetailScreen extends StatefulWidget {
     this.onTitleChange,
     this.onDateChange,
     this.onSelectedDate,
+    this.onRefreshRegistered,
   });
 
   @override
@@ -95,6 +97,9 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
             '${selectedDay.toString().padLeft(2, '0')}/${selectedMonth.toString().padLeft(2, '0')}/$selectedYear';
         widget.onTitleChange!(formattedDate);
       }
+
+      // Register refresh function for parent to call
+      widget.onRefreshRegistered?.call(_refreshCurrentDayActivities);
     });
   }
 
@@ -752,6 +757,11 @@ class _DayDetailScreenState extends State<DayDetailScreen> {
     _activitiesBloc.add(
       FetchActivitiesByDay(dateIso: dateIso, showLoading: false),
     );
+  }
+
+  /// Public method to trigger refresh from outside (via GlobalKey)
+  void refreshData() {
+    _refreshCurrentDayActivities();
   }
 
   void _showEditActivityBottomSheet(DayActivityDetailEntity activity) {

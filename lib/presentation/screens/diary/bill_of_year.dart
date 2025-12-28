@@ -201,7 +201,7 @@ class _BillOfYearState extends State<BillOfYear> {
                 Text(
                   "$startYear - $endYear",
                   style: TextStyle(
-                    fontSize: 18.sp,
+                    fontSize: 16.sp,
                     color: AppColors.primary_600,
                     fontWeight: FontWeight.bold,
                   ),

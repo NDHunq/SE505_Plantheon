@@ -142,6 +142,7 @@ class _ReusableActivitySuggestionItemState
               onClose: (data) {
                 _handleBottomSheetData(data);
               },
+              isSuggestion: true,
             );
             break;
           case ActivityType.banSanPham:
@@ -159,6 +160,7 @@ class _ReusableActivitySuggestionItemState
               onClose: (data) {
                 _handleBottomSheetData(data);
               },
+              isSuggestion: true,
             );
             break;
           case ActivityType.kyThuat:
@@ -176,6 +178,7 @@ class _ReusableActivitySuggestionItemState
               onClose: (data) {
                 _handleBottomSheetData(data);
               },
+              isSuggestion: true,
             );
             break;
           case ActivityType.dichBenh:
@@ -193,6 +196,7 @@ class _ReusableActivitySuggestionItemState
               onClose: (data) {
                 _handleBottomSheetData(data);
               },
+              isSuggestion: true,
             );
             break;
           case ActivityType.kinhKhi:
@@ -214,6 +218,7 @@ class _ReusableActivitySuggestionItemState
               onClose: (data) {
                 _handleBottomSheetData(data);
               },
+              isSuggestion: true,
             );
             break;
           case ActivityType.khac:
@@ -231,6 +236,7 @@ class _ReusableActivitySuggestionItemState
               onClose: (data) {
                 _handleBottomSheetData(data);
               },
+              isSuggestion: true,
             );
             break;
         }
@@ -548,7 +554,7 @@ class _ReusableAddButtonState extends State<ReusableAddButton> {
           widget.editedDescription ?? widget.activity.description;
       final isAllDay = widget.editedIsAllDay ?? false;
       final alertTime = widget.editedAlertTime;
-      final repeat = widget.editedRepeat ?? 'NONE';
+      final repeat = widget.editedRepeat ?? 'Không';
       final endRepeatDay = widget.editedEndRepeatDay;
       final note = widget.editedNote ?? '';
 
@@ -575,13 +581,20 @@ class _ReusableAddButtonState extends State<ReusableAddButton> {
         startMinute,
       );
 
-      final endDateTime = DateTime(
+      var endDateTime = DateTime(
         widget.activity.endTime.year,
         widget.activity.endTime.month,
         widget.activity.endTime.day,
         endHour,
         endMinute,
       );
+
+      // Validate: endDateTime phải lớn hơn startDateTime
+      if (endDateTime.isBefore(startDateTime) ||
+          endDateTime.isAtSameMomentAs(startDateTime)) {
+        // Tự động điều chỉnh endDateTime = startDateTime + 1 giờ
+        endDateTime = startDateTime.add(const Duration(hours: 1));
+      }
 
       // Create base request from edited data
       final request = CreateActivityRequestModel(

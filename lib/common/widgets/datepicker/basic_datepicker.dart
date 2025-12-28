@@ -60,7 +60,7 @@ class _BasicDatepickerState extends State<BasicDatepicker> {
               _formattedDate,
               style: TextStyle(
                 color: AppColors.primary_600,
-                fontSize: 14.sp,
+                fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),

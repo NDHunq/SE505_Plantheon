@@ -38,6 +38,7 @@ class banSanPhamWidget extends StatefulWidget {
   final String? initialNote;
   final Map<String, dynamic>? initialFormData;
   final Function(Map<String, dynamic>)? onClose;
+  final bool isSuggestion;
 
   const banSanPhamWidget({
     super.key,
@@ -56,6 +57,7 @@ class banSanPhamWidget extends StatefulWidget {
     this.initialNote,
     this.initialFormData,
     this.onClose,
+    this.isSuggestion = false,
   });
 
   @override
@@ -481,6 +483,9 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
 
   // Phương thức chọn ngày bắt đầu
   Future<void> _selectStartDate(BuildContext context) async {
+    // Nếu là suggestion mode, không cho phép thay đổi ngày
+    if (widget.isSuggestion) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: startDate,
@@ -496,6 +501,9 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
 
   // Phương thức chọn ngày kết thúc
   Future<void> _selectEndDate(BuildContext context) async {
+    // Nếu là suggestion mode, không cho phép thay đổi ngày
+    if (widget.isSuggestion) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: endDate,
@@ -531,7 +539,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
             mainAxisSize: MainAxisSize.min,
             children: repeatOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     repeatType = option;
@@ -565,7 +573,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
             mainAxisSize: MainAxisSize.min,
             children: endRepeatOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     endRepeatType = option;
@@ -726,7 +734,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
             mainAxisSize: MainAxisSize.min,
             children: alertOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     alertTime = option;
@@ -761,7 +769,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
             mainAxisSize: MainAxisSize.min,
             children: units.map((unitItem) {
               return ListTile(
-                title: Text(unitItem),
+                title: Text(unitItem, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     unit = unitItem;
@@ -796,7 +804,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
             mainAxisSize: MainAxisSize.min,
             children: currencies.map((currencyItem) {
               return ListTile(
-                title: Text(currencyItem),
+                title: Text(currencyItem, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     currency = currencyItem;
@@ -1101,7 +1109,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                     children: [
                       Text(
                         "Loại nhật ký",
-                        style: TextStyle(fontSize: 14.sp),
+                        style: TextStyle(fontSize: 12.sp),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Container(
@@ -1122,6 +1130,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                           style: TextStyle(
                             color: AppColors.primary_main,
                             fontWeight: FontWeight.w600,
+                            fontSize: 12.sp,
                           ),
                         ),
                       ),
@@ -1130,6 +1139,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                 ),
 
                 TextFormField(
+                  style: TextStyle(fontSize: 12.sp),
                   controller: titleController,
                   validator: _validateTitle,
                   decoration: InputDecoration(
@@ -1255,8 +1265,8 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                                   ),
                                   child: Text(
                                     _formatDateDisplay(startDate),
-                                    maxLines: 2,
                                     textAlign: TextAlign.center,
+                                    softWrap: true,
                                   ),
                                 ),
                               ),
@@ -1303,10 +1313,22 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                                 vertical: 8.sp,
                               ),
                               decoration: BoxDecoration(
+                                color: widget.isSuggestion
+                                    ? Colors.grey.shade200
+                                    : null,
                                 border: Border.all(color: Colors.grey.shade300),
                                 borderRadius: BorderRadius.circular(8.sp),
                               ),
-                              child: Text(_formatDateDisplay(startDate)),
+                              child: Text(
+                                _formatDateDisplay(startDate),
+                                textAlign: TextAlign.center,
+                                softWrap: true,
+                                style: TextStyle(
+                                  color: widget.isSuggestion
+                                      ? Colors.grey.shade600
+                                      : null,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -1350,12 +1372,24 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                                   vertical: 8.sp,
                                 ),
                                 decoration: BoxDecoration(
+                                  color: widget.isSuggestion
+                                      ? Colors.grey.shade200
+                                      : null,
                                   border: Border.all(
                                     color: Colors.grey.shade300,
                                   ),
                                   borderRadius: BorderRadius.circular(8.sp),
                                 ),
-                                child: Text(_formatDateDisplay(endDate)),
+                                child: Text(
+                                  _formatDateDisplay(endDate),
+                                  textAlign: TextAlign.center,
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    color: widget.isSuggestion
+                                        ? Colors.grey.shade600
+                                        : null,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -1464,7 +1498,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                 // Vật mua
                 AddNewRow(
                   label: "Vật bán",
-                  child: AppTextField(controller: purchasedItemController),
+                  child: AppTextField(
+                    controller: purchasedItemController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Số lượng mua
@@ -1477,6 +1514,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                     ],
                     controller: quantityController,
                     keyboardType: TextInputType.number,
+                    textStyle: TextStyle(fontSize: 12.sp),
                   ),
                 ),
 
@@ -1497,7 +1535,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(unit),
+                          Text(unit, style: TextStyle(fontSize: 12.sp)),
                           Icon(Icons.arrow_drop_down_rounded, size: 20.sp),
                         ],
                       ),
@@ -1513,6 +1551,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                       Expanded(
                         flex: 2,
                         child: AppTextField(
+                          textStyle: TextStyle(fontSize: 12.sp),
                           controller: amountController,
                           keyboardType: TextInputType.number,
                           inputFormatters: [
@@ -1535,7 +1574,7 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                             ),
                             child: Text(
                               "VNĐ",
-                              style: TextStyle(fontSize: 14.sp),
+                              style: TextStyle(fontSize: 12.sp),
                             ),
                           ),
                         ),
@@ -1547,19 +1586,28 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                 // Mục đích
                 AddNewRow(
                   label: "Mục đích",
-                  child: AppTextField(controller: purposeController),
+                  child: AppTextField(
+                    controller: purposeController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Mua cho ai
                 AddNewRow(
                   label: "Bán cho ai",
-                  child: AppTextField(controller: purchasedForController),
+                  child: AppTextField(
+                    controller: purchasedForController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Người mua
                 AddNewRow(
                   label: "Người bán",
-                  child: AppTextField(controller: buyerController),
+                  child: AppTextField(
+                    controller: buyerController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 AddNewRow(
@@ -1672,7 +1720,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                               height: 18,
                               color: AppColors.primary_600,
                             ),
-                            label: Text('Upload Ảnh'),
+                            label: Text(
+                              'Upload Ảnh',
+                              style: TextStyle(fontSize: 12.sp),
+                            ),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.primary_600,
                               side: BorderSide(color: AppColors.primary_600),
@@ -1687,7 +1738,10 @@ class _banSanPhamWidgetState extends State<banSanPhamWidget> {
                 // Ghi chú
                 AddNewRow(
                   label: "Ghi chú",
-                  child: AppTextField(controller: noteController),
+                  child: AppTextField(
+                    controller: noteController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Save / Delete actions

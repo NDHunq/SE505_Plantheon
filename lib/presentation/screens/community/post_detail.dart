@@ -61,6 +61,8 @@ class PostDetailView extends StatefulWidget {
 
 class _PostDetailViewState extends State<PostDetailView> {
   final TextEditingController _commentController = TextEditingController();
+  final GlobalKey _commentInputKey = GlobalKey();
+  final FocusNode _commentFocusNode = FocusNode();
 
   // Reply functionality
   bool isReplying = false;
@@ -73,7 +75,22 @@ class _PostDetailViewState extends State<PostDetailView> {
   @override
   void dispose() {
     _commentController.dispose();
+    _commentFocusNode.dispose();
     super.dispose();
+  }
+
+  void _scrollToCommentInput() {
+    // Scroll to make comment input visible and focus on it
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_commentInputKey.currentContext != null) {
+        Scrollable.ensureVisible(
+          _commentInputKey.currentContext!,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+      _commentFocusNode.requestFocus();
+    });
   }
 
   @override
@@ -144,7 +161,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                                 state.post.isMyPost
                                     ? 'Bạn'
                                     : state.post.fullName,
-                                style: AppTextStyles.s16Bold(
+                                style: AppTextStyles.s14Bold(
                                   color: state.post.isMyPost
                                       ? AppColors.primary_main
                                       : Colors.black, // Explicit black
@@ -340,11 +357,6 @@ class _PostDetailViewState extends State<PostDetailView> {
                           '${post.commentList?.length ?? post.commentNumber} bình luận',
                           style: AppTextStyles.s12Regular(),
                         ),
-                        SizedBox(width: 16.sp),
-                        Text(
-                          '${post.shareNumber} lượt chia sẻ',
-                          style: AppTextStyles.s12Regular(),
-                        ),
                       ],
                     ),
                     SizedBox(height: 8.sp),
@@ -378,7 +390,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                           ActionButton(
                             iconVector: AppVectors.comment,
                             label: 'Bình luận',
-                            onPressed: () {},
+                            onPressed: _scrollToCommentInput,
                           ),
                           Container(
                             width: 1.sp,
@@ -444,6 +456,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                           SizedBox(height: 8.sp),
                         ],
                         Row(
+                          key: _commentInputKey,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             BlocBuilder<UserBloc, UserState>(
@@ -491,6 +504,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                                 ),
                                 child: TextField(
                                   controller: _commentController,
+                                  focusNode: _commentFocusNode,
                                   decoration: InputDecoration(
                                     hintText: isReplying
                                         ? 'Trả lời $replyingToUsername...'

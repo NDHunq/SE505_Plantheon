@@ -35,6 +35,7 @@ class otherWidget extends StatefulWidget {
   final String? initialNote;
   final Map<String, dynamic>? initialFormData;
   final Function(Map<String, dynamic>)? onClose;
+  final bool isSuggestion;
 
   const otherWidget({
     super.key,
@@ -53,6 +54,7 @@ class otherWidget extends StatefulWidget {
     this.initialNote,
     this.initialFormData,
     this.onClose,
+    this.isSuggestion = false,
   });
 
   @override
@@ -441,6 +443,9 @@ class _otherWidgetState extends State<otherWidget> {
 
   // Phương thức chọn ngày bắt đầu
   Future<void> _selectStartDate(BuildContext context) async {
+    // Nếu là suggestion mode, không cho phép thay đổi ngày
+    if (widget.isSuggestion) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: startDate,
@@ -456,6 +461,9 @@ class _otherWidgetState extends State<otherWidget> {
 
   // Phương thức chọn ngày kết thúc
   Future<void> _selectEndDate(BuildContext context) async {
+    // Nếu là suggestion mode, không cho phép thay đổi ngày
+    if (widget.isSuggestion) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: endDate,
@@ -491,7 +499,7 @@ class _otherWidgetState extends State<otherWidget> {
             mainAxisSize: MainAxisSize.min,
             children: repeatOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     repeatType = option;
@@ -525,7 +533,7 @@ class _otherWidgetState extends State<otherWidget> {
             mainAxisSize: MainAxisSize.min,
             children: endRepeatOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     endRepeatType = option;
@@ -686,7 +694,7 @@ class _otherWidgetState extends State<otherWidget> {
             mainAxisSize: MainAxisSize.min,
             children: alertOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     alertTime = option;
@@ -974,7 +982,7 @@ class _otherWidgetState extends State<otherWidget> {
                     children: [
                       Text(
                         "Loại nhật ký",
-                        style: TextStyle(fontSize: 14.sp),
+                        style: TextStyle(fontSize: 12.sp),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Container(
@@ -995,6 +1003,7 @@ class _otherWidgetState extends State<otherWidget> {
                           style: TextStyle(
                             color: AppColors.primary_main,
                             fontWeight: FontWeight.w600,
+                            fontSize: 12.sp,
                           ),
                         ),
                       ),
@@ -1003,6 +1012,8 @@ class _otherWidgetState extends State<otherWidget> {
                 ),
 
                 TextFormField(
+                  style: TextStyle(fontSize: 12.sp),
+
                   controller: titleController,
                   validator: _validateTitle,
                   decoration: InputDecoration(
@@ -1121,6 +1132,9 @@ class _otherWidgetState extends State<otherWidget> {
                                     vertical: 8.sp,
                                   ),
                                   decoration: BoxDecoration(
+                                    color: widget.isSuggestion
+                                        ? Colors.grey.shade200
+                                        : null,
                                     border: Border.all(
                                       color: Colors.grey.shade300,
                                     ),
@@ -1128,8 +1142,13 @@ class _otherWidgetState extends State<otherWidget> {
                                   ),
                                   child: Text(
                                     _formatDateDisplay(startDate),
-                                    maxLines: 2,
                                     textAlign: TextAlign.center,
+                                    softWrap: true,
+                                    style: TextStyle(
+                                      color: widget.isSuggestion
+                                          ? Colors.grey.shade600
+                                          : null,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1174,10 +1193,22 @@ class _otherWidgetState extends State<otherWidget> {
                                 vertical: 8.sp,
                               ),
                               decoration: BoxDecoration(
+                                color: widget.isSuggestion
+                                    ? Colors.grey.shade200
+                                    : null,
                                 border: Border.all(color: Colors.grey.shade300),
                                 borderRadius: BorderRadius.circular(8.sp),
                               ),
-                              child: Text(_formatDateDisplay(startDate)),
+                              child: Text(
+                                _formatDateDisplay(startDate),
+                                textAlign: TextAlign.center,
+                                softWrap: true,
+                                style: TextStyle(
+                                  color: widget.isSuggestion
+                                      ? Colors.grey.shade600
+                                      : null,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -1221,12 +1252,24 @@ class _otherWidgetState extends State<otherWidget> {
                                   vertical: 8.sp,
                                 ),
                                 decoration: BoxDecoration(
+                                  color: widget.isSuggestion
+                                      ? Colors.grey.shade200
+                                      : null,
                                   border: Border.all(
                                     color: Colors.grey.shade300,
                                   ),
                                   borderRadius: BorderRadius.circular(8.sp),
                                 ),
-                                child: Text(_formatDateDisplay(endDate)),
+                                child: Text(
+                                  _formatDateDisplay(endDate),
+                                  textAlign: TextAlign.center,
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    color: widget.isSuggestion
+                                        ? Colors.grey.shade600
+                                        : null,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -1338,6 +1381,7 @@ class _otherWidgetState extends State<otherWidget> {
                   child: AppTextField(
                     controller: contentController,
                     maxLines: 5,
+                    textStyle: TextStyle(fontSize: 12.sp),
                   ),
                 ),
 
@@ -1452,7 +1496,10 @@ class _otherWidgetState extends State<otherWidget> {
                               height: 18,
                               color: AppColors.primary_600,
                             ),
-                            label: Text('Upload Ảnh'),
+                            label: Text(
+                              'Upload Ảnh',
+                              style: TextStyle(fontSize: 12.sp),
+                            ),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.primary_600,
                               side: BorderSide(color: AppColors.primary_600),
@@ -1467,7 +1514,10 @@ class _otherWidgetState extends State<otherWidget> {
                 // Ghi chú
                 AddNewRow(
                   label: "Ghi chú",
-                  child: AppTextField(controller: noteController),
+                  child: AppTextField(
+                    controller: noteController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Save / Delete actions
@@ -1501,7 +1551,7 @@ class _otherWidgetState extends State<otherWidget> {
                                     vertical: 12.sp,
                                   ),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.sp),
+                                    borderRadius: BorderRadius.circular(36.sp),
                                   ),
                                 ),
                                 child: Text(

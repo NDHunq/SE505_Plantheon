@@ -244,9 +244,9 @@ class _BillOfDayState extends State<BillOfDay> {
                     }
                   },
                   child: Text(
-                    "Thg ${currentMonth.month}, ${currentMonth.year}",
+                    "${currentMonth.month}/${currentMonth.year}",
                     style: TextStyle(
-                      fontSize: 18.sp,
+                      fontSize: 16.sp,
                       color: AppColors.primary_600,
                       fontWeight: FontWeight.bold,
                     ),

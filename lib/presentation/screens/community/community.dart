@@ -408,7 +408,7 @@ class _CommunityState extends State<Community> {
                           (imageUrl.isEmpty || imageUrl.contains('placeholder'))
                           ? Text(
                               username.isNotEmpty ? username[0] : '?',
-                              style: AppTextStyles.s16Bold(color: Colors.white),
+                              style: AppTextStyles.s14Bold(color: Colors.white),
                             )
                           : null,
                     ),
@@ -438,7 +438,7 @@ class _CommunityState extends State<Community> {
                               },
                               child: Text(
                                 isMyPost ? 'Bạn' : username,
-                                style: AppTextStyles.s16Bold(
+                                style: AppTextStyles.s14Bold(
                                   color: isMyPost
                                       ? AppColors.primary_main
                                       : null,
@@ -568,11 +568,6 @@ class _CommunityState extends State<Community> {
                   Spacer(),
                   Text(
                     '$comments bình luận',
-                    style: AppTextStyles.s12Regular(),
-                  ),
-                  SizedBox(width: 16.sp),
-                  Text(
-                    '$shares lượt chia sẻ',
                     style: AppTextStyles.s12Regular(),
                   ),
                 ],

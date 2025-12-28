@@ -114,10 +114,11 @@ class _FarmingTipsState extends State<FarmingTips> {
                           children: [
                             Text(
                               "Ngày gieo:",
-                              style: AppTextStyles.s14Medium(
-                                color: AppColors.text_color_200,
+                              style: AppTextStyles.s14Bold(
+                                color: AppColors.text_color_400,
                               ),
                             ),
+
                             Row(
                               spacing: 16.sp,
                               children: [
@@ -131,7 +132,7 @@ class _FarmingTipsState extends State<FarmingTips> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 16.sp),
+                            SizedBox(height: 8.sp),
                           ],
                         ),
                       ),

@@ -217,7 +217,7 @@ class _BillOfMonthState extends State<BillOfMonth> {
                   child: Text(
                     "Năm ${currentYear.year}",
                     style: TextStyle(
-                      fontSize: 18.sp,
+                      fontSize: 16.sp,
                       color: AppColors.primary_600,
                       fontWeight: FontWeight.bold,
                     ),

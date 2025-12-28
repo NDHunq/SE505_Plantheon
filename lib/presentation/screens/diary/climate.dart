@@ -36,6 +36,7 @@ class climaMateWidget extends StatefulWidget {
   final String? initialNote;
   final Map<String, dynamic>? initialFormData;
   final Function(Map<String, dynamic>)? onClose;
+  final bool isSuggestion;
 
   const climaMateWidget({
     super.key,
@@ -54,6 +55,7 @@ class climaMateWidget extends StatefulWidget {
     this.initialNote,
     this.initialFormData,
     this.onClose,
+    this.isSuggestion = false,
   });
 
   @override
@@ -479,6 +481,9 @@ class _climaMateWidgetState extends State<climaMateWidget> {
 
   // Phương thức chọn ngày bắt đầu
   Future<void> _selectStartDate(BuildContext context) async {
+    // Nếu là suggestion mode, không cho phép thay đổi ngày
+    if (widget.isSuggestion) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: startDate,
@@ -494,6 +499,9 @@ class _climaMateWidgetState extends State<climaMateWidget> {
 
   // Phương thức chọn ngày kết thúc
   Future<void> _selectEndDate(BuildContext context) async {
+    // Nếu là suggestion mode, không cho phép thay đổi ngày
+    if (widget.isSuggestion) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: endDate,
@@ -529,7 +537,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
             mainAxisSize: MainAxisSize.min,
             children: repeatOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     repeatType = option;
@@ -563,7 +571,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
             mainAxisSize: MainAxisSize.min,
             children: endRepeatOptions.map((option) {
               return ListTile(
-                title: Text(option),
+                title: Text(option, style: TextStyle(fontSize: 12.sp)),
                 onTap: () {
                   setState(() {
                     endRepeatType = option;
@@ -1029,7 +1037,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                     children: [
                       Text(
                         "Loại nhật ký",
-                        style: TextStyle(fontSize: 14.sp),
+                        style: TextStyle(fontSize: 12.sp),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Container(
@@ -1050,6 +1058,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                           style: TextStyle(
                             color: AppColors.primary_main,
                             fontWeight: FontWeight.w600,
+                            fontSize: 12.sp,
                           ),
                         ),
                       ),
@@ -1058,6 +1067,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                 ),
 
                 TextFormField(
+                  style: TextStyle(fontSize: 12.sp),
                   controller: titleController,
                   validator: _validateTitle,
                   decoration: InputDecoration(
@@ -1178,6 +1188,9 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                                     vertical: 8.sp,
                                   ),
                                   decoration: BoxDecoration(
+                                    color: widget.isSuggestion
+                                        ? Colors.grey.shade200
+                                        : null,
                                     border: Border.all(
                                       color: Colors.grey.shade300,
                                     ),
@@ -1185,8 +1198,13 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                                   ),
                                   child: Text(
                                     _formatDateDisplay(startDate),
-                                    maxLines: 2,
                                     textAlign: TextAlign.center,
+                                    softWrap: true,
+                                    style: TextStyle(
+                                      color: widget.isSuggestion
+                                          ? Colors.grey.shade600
+                                          : null,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1231,10 +1249,22 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                                 vertical: 8.sp,
                               ),
                               decoration: BoxDecoration(
+                                color: widget.isSuggestion
+                                    ? Colors.grey.shade200
+                                    : null,
                                 border: Border.all(color: Colors.grey.shade300),
                                 borderRadius: BorderRadius.circular(8.sp),
                               ),
-                              child: Text(_formatDateDisplay(startDate)),
+                              child: Text(
+                                _formatDateDisplay(startDate),
+                                textAlign: TextAlign.center,
+                                softWrap: true,
+                                style: TextStyle(
+                                  color: widget.isSuggestion
+                                      ? Colors.grey.shade600
+                                      : null,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -1278,12 +1308,24 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                                   vertical: 8.sp,
                                 ),
                                 decoration: BoxDecoration(
+                                  color: widget.isSuggestion
+                                      ? Colors.grey.shade200
+                                      : null,
                                   border: Border.all(
                                     color: Colors.grey.shade300,
                                   ),
                                   borderRadius: BorderRadius.circular(8.sp),
                                 ),
-                                child: Text(_formatDateDisplay(endDate)),
+                                child: Text(
+                                  _formatDateDisplay(endDate),
+                                  textAlign: TextAlign.center,
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    color: widget.isSuggestion
+                                        ? Colors.grey.shade600
+                                        : null,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -1395,6 +1437,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                   child: AppTextField(
                     controller: climateEnvironmentController,
                     maxLines: 5,
+                    textStyle: TextStyle(fontSize: 12.sp),
                   ),
                 ),
 
@@ -1404,6 +1447,7 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                   child: AppTextField(
                     controller: adaptationActionsController,
                     maxLines: 5,
+                    textStyle: TextStyle(fontSize: 12.sp),
                   ),
                 ),
 
@@ -1413,19 +1457,26 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                   child: AppTextField(
                     controller: descriptionController,
                     maxLines: 5,
+                    textStyle: TextStyle(fontSize: 12.sp),
                   ),
                 ),
 
                 // Loại cây trồng
                 AddNewRow(
                   label: "Loại cây trồng",
-                  child: AppTextField(controller: cropTypeController),
+                  child: AppTextField(
+                    controller: cropTypeController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Người thực hiện
                 AddNewRow(
                   label: "Người thực hiện",
-                  child: AppTextField(controller: sourcePersonController),
+                  child: AppTextField(
+                    controller: sourcePersonController,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Hình ảnh đính kèm
@@ -1539,7 +1590,10 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                               height: 18,
                               color: AppColors.primary_600,
                             ),
-                            label: Text('Upload Ảnh'),
+                            label: Text(
+                              'Upload Ảnh',
+                              style: TextStyle(fontSize: 12.sp),
+                            ),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.primary_600,
                               side: BorderSide(color: AppColors.primary_600),
@@ -1554,7 +1608,11 @@ class _climaMateWidgetState extends State<climaMateWidget> {
                 // Ghi chú
                 AddNewRowVertical(
                   label: "Ghi chú",
-                  child: AppTextField(controller: noteController, maxLines: 5),
+                  child: AppTextField(
+                    controller: noteController,
+                    maxLines: 5,
+                    textStyle: TextStyle(fontSize: 12.sp),
+                  ),
                 ),
 
                 // Save / Delete actions

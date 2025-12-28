@@ -37,7 +37,7 @@ class _PlantsPickerState extends State<PlantsPicker> {
               'Chưa có cây trồng',
               style: TextStyle(
                 color: AppColors.text_color_200,
-                fontSize: 14.sp,
+                fontSize: 12.sp,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -63,7 +63,7 @@ class _PlantsPickerState extends State<PlantsPicker> {
                 'Đang tải...',
                 style: TextStyle(
                   color: AppColors.text_color_200,
-                  fontSize: 14.sp,
+                  fontSize: 12.sp,
                 ),
               ),
             ],
@@ -122,7 +122,7 @@ class _PlantsPickerState extends State<PlantsPicker> {
                 _selectedPlant?.name ?? 'Chọn cây trồng',
                 style: TextStyle(
                   color: AppColors.primary_800,
-                  fontSize: 14.sp,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                 ),
                 overflow: TextOverflow.ellipsis,

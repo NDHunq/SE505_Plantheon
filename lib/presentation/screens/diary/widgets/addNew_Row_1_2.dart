@@ -18,7 +18,7 @@ class AddNewRow extends StatelessWidget {
             children: [
               Expanded(
                 flex: 4,
-                child: Text(label, style: TextStyle(fontSize: 14.sp)),
+                child: Text(label, style: TextStyle(fontSize: 12.sp)),
               ),
               Expanded(
                 flex: 7,

@@ -17,6 +17,7 @@ import 'package:se501_plantheon/presentation/screens/community/post_detail.dart'
 import 'package:se501_plantheon/presentation/screens/community/widgets/acction_button.dart';
 import 'package:se501_plantheon/presentation/screens/community/widgets/disease_block_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:se501_plantheon/core/services/deep_link_service.dart';
 
 class MyPost extends StatelessWidget {
   const MyPost({super.key});
@@ -360,11 +361,6 @@ class _MyPostView extends StatelessWidget {
                     '$comments bình luận',
                     style: AppTextStyles.s12Regular(),
                   ),
-                  SizedBox(width: 16.sp),
-                  Text(
-                    '$shares lượt chia sẻ',
-                    style: AppTextStyles.s12Regular(),
-                  ),
                 ],
               ),
             ),
@@ -389,13 +385,25 @@ class _MyPostView extends StatelessWidget {
                 ActionButton(
                   iconVector: AppVectors.comment,
                   label: 'Bình luận',
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => PostDetail(postId: postId),
+                      ),
+                    );
+                  },
                 ),
                 Container(width: 1.sp, height: 40.sp, color: Colors.grey[200]),
                 ActionButton(
                   iconVector: AppVectors.share,
                   label: 'Chia sẻ',
-                  onPressed: () {},
+                  onPressed: () {
+                    DeepLinkService().copyLinkToClipboard(
+                      context,
+                      host: 'post',
+                      params: {'id': postId},
+                    );
+                  },
                 ),
               ],
             ),

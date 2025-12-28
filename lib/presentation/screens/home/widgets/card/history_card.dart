@@ -42,21 +42,29 @@ class HistoryCard extends StatelessWidget {
                 ),
         ),
         SizedBox(width: 8.sp),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: AppTextStyles.s14Medium(color: AppColors.text_color_main),
-            ),
-            SizedBox(height: 4.sp),
-            Text(
-              dateTime,
-              style: AppTextStyles.s12Regular(color: AppColors.text_color_200),
-            ),
-            SizedBox(height: 4.sp),
-            ScanStatus(isSuccess: isSuccess),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: AppTextStyles.s14Medium(
+                  color: AppColors.text_color_main,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: 4.sp),
+              Text(
+                dateTime,
+                style: AppTextStyles.s12Regular(
+                  color: AppColors.text_color_200,
+                ),
+              ),
+              SizedBox(height: 4.sp),
+              ScanStatus(isSuccess: isSuccess),
+            ],
+          ),
         ),
       ],
     );
