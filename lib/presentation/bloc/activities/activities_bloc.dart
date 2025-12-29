@@ -69,7 +69,9 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
       );
       emit(ActivitiesLoaded(data: model));
     } catch (e) {
-      emit(ActivitiesError(message: e.toString()));
+      emit(
+        ActivitiesError(message: e.toString().replaceAll('Exception: ', '')),
+      );
     }
   }
 
@@ -96,7 +98,9 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
       emit(DayActivitiesLoaded(data: entity));
     } catch (e) {
       if (event.showLoading) {
-        emit(ActivitiesError(message: e.toString()));
+        emit(
+          ActivitiesError(message: e.toString().replaceAll('Exception: ', '')),
+        );
       }
       // If silent refresh fails, just keep the current state
     }
@@ -123,7 +127,7 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
       print('[ActivitiesBloc] Error creating activity: $e');
       emit(
         CreateActivityError(
-          message: e.toString(),
+          message: e.toString().replaceAll('Exception: ', ''),
           correlationId: event.correlationId,
         ),
       );
@@ -149,7 +153,11 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
       emit(UpdateActivitySuccess(response: response));
     } catch (e) {
       print('[ActivitiesBloc] Error updating activity: $e');
-      emit(UpdateActivityError(message: e.toString()));
+      emit(
+        UpdateActivityError(
+          message: e.toString().replaceAll('Exception: ', ''),
+        ),
+      );
     }
   }
 
@@ -165,7 +173,7 @@ class ActivitiesBloc extends Bloc<ActivitiesEvent, ActivitiesState> {
       print('[ActivitiesBloc] Error deleting activity: $e');
       emit(
         DeleteActivityError(
-          message: e.toString(),
+          message: e.toString().replaceAll('Exception: ', ''),
           correlationId: event.correlationId,
         ),
       );

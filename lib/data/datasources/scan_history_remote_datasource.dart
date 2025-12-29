@@ -61,7 +61,13 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
       return responseModel.scanHistories;
     } else {
       print('❌ DataSource: API error: ${response.statusCode}');
-      throw Exception('Failed to load scan history: ${response.statusCode}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể tải lịch sử quét';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải lịch sử quét');
+      }
     }
   }
 
@@ -97,7 +103,13 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
       return responseModel.scanHistory;
     } else {
       print('❌ DataSource: API error: ${response.statusCode}');
-      throw Exception('Failed to get scan history: ${response.statusCode}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể tải lịch sử quét';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải lịch sử quét');
+      }
     }
   }
 
@@ -145,7 +157,13 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
       return responseModel.scanHistory;
     } else {
       print('❌ DataSource: API error: ${response.statusCode}');
-      throw Exception('Failed to create scan history: ${response.statusCode}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể tạo lịch sử quét';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tạo lịch sử quét');
+      }
     }
   }
 
@@ -173,9 +191,14 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
       print('✅ DataSource: Deleted all scan history');
     } else {
       print('❌ DataSource: API error: ${response.statusCode}');
-      throw Exception(
-        'Failed to delete all scan history: ${response.statusCode}',
-      );
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể xóa tất cả lịch sử quét';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể xóa tất cả lịch sử quét');
+      }
     }
   }
 
@@ -203,7 +226,13 @@ class ScanHistoryRemoteDataSourceImpl implements ScanHistoryRemoteDataSource {
       print('✅ DataSource: Deleted scan history with id: $id');
     } else {
       print('❌ DataSource: API error: ${response.statusCode}');
-      throw Exception('Failed to delete scan history: ${response.statusCode}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể xóa lịch sử quét';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể xóa lịch sử quét');
+      }
     }
   }
 }

@@ -36,18 +36,25 @@ class DiseaseRemoteDataSourceImpl implements DiseaseRemoteDataSource {
           return model;
         } catch (e) {
           print('❌ DataSource: Parsing error: $e');
-          throw Exception('Failed to parse disease data: $e');
+          throw Exception('Không thể đọc dữ liệu bệnh');
         }
       } else {
         print('❌ DataSource: API error: ${response.statusCode}');
-        throw Exception('Failed to load disease: ${response.statusCode}');
+        try {
+          final errorBody = json.decode(response.body);
+          final errorMessage =
+              errorBody['error'] ?? 'Không thể tải thông tin bệnh';
+          throw Exception(errorMessage);
+        } catch (e) {
+          throw Exception('Không thể tải thông tin bệnh');
+        }
       }
     } on TimeoutException catch (_) {
       print('❌ DataSource: Connection timed out');
-      throw Exception('Connection timed out. Please check your internet.');
+      throw Exception('Kết nối hết thời gian. Vui lòng kiểm tra internet');
     } catch (e) {
       print('❌ DataSource: General error: $e');
-      throw Exception('Failed to fetch disease: $e');
+      throw Exception('Không thể tải thông tin bệnh');
     }
   }
 }

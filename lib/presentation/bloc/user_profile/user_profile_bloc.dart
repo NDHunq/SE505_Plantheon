@@ -71,7 +71,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
         ),
       );
     } catch (e) {
-      emit(UserProfileError(e.toString()));
+      emit(UserProfileError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 

@@ -87,14 +87,12 @@ class ComplaintRemoteDataSourceImpl implements ComplaintRemoteDataSource {
     } else {
       print('❌ DataSource: API error: ${response.statusCode}');
 
-      // Try to parse error message from response
       try {
         final errorData = json.decode(response.body);
-        final errorMessage =
-            errorData['error'] ?? errorData['detail'] ?? 'Unknown error';
-        throw Exception('Failed to submit complaint: $errorMessage');
+        final errorMessage = errorData['error'] ?? 'Không thể gửi khiếu nại';
+        throw Exception(errorMessage);
       } catch (e) {
-        throw Exception('Failed to submit complaint: ${response.statusCode}');
+        throw Exception('Không thể gửi khiếu nại');
       }
     }
   }
@@ -124,9 +122,15 @@ class ComplaintRemoteDataSourceImpl implements ComplaintRemoteDataSource {
     print('ComplaintRemoteDataSource: Response body: ${response.body}');
 
     if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception('Failed to submit complaint: ${response.body}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể gửi khiếu nại';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể gửi khiếu nại');
+      }
     }
 
     print('ComplaintRemoteDataSource: Complaint submitted successfully');
@@ -160,9 +164,16 @@ class ComplaintRemoteDataSourceImpl implements ComplaintRemoteDataSource {
     print('ComplaintRemoteDataSource: Response body: ${response.body}');
 
     if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else if (response.statusCode != 200) {
-      throw Exception('Failed to fetch complaints: ${response.body}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể tải danh sách khiếu nại';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải danh sách khiếu nại');
+      }
     }
 
     final jsonData = json.decode(response.body) as Map<String, dynamic>;

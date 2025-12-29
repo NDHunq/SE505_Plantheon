@@ -24,7 +24,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final user = await getProfile();
       emit(UserLoaded(user: user));
     } catch (e) {
-      emit(UserError(message: e.toString()));
+      emit(UserError(message: e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -47,7 +47,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       );
       emit(UserLoaded(user: user));
     } catch (e) {
-      emit(UserError(message: e.toString()));
+      emit(UserError(message: e.toString().replaceAll('Exception: ', '')));
       if (currentUser != null) {
         emit(UserLoaded(user: currentUser));
       }

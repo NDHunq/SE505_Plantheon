@@ -37,7 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final authEntity = await loginUseCase(event.email, event.password);
       emit(AuthAuthenticated(user: authEntity.user, token: authEntity.token));
     } catch (e) {
-      emit(AuthError(message: e.toString()));
+      emit(AuthError(message: e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -56,7 +56,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       emit(const AuthRegistered());
     } catch (e) {
-      emit(AuthError(message: e.toString()));
+      emit(AuthError(message: e.toString().replaceAll('Exception: ', '')));
     }
   }
 

@@ -48,7 +48,9 @@ class ScanHistoryBloc extends Bloc<ScanHistoryEvent, ScanHistoryState> {
       print('🎉 BLoC: Emitted ScanHistorySuccess state');
     } catch (e) {
       print('❌ BLoC: Error occurred: $e');
-      emit(ScanHistoryError(message: e.toString()));
+      emit(
+        ScanHistoryError(message: e.toString().replaceAll('Exception: ', '')),
+      );
       print('💥 BLoC: Emitted ScanHistoryError state');
     }
   }
@@ -70,7 +72,9 @@ class ScanHistoryBloc extends Bloc<ScanHistoryEvent, ScanHistoryState> {
       print('🎉 BLoC: Emitted GetScanHistoryByIdSuccess state');
     } catch (e) {
       print('❌ BLoC: Error occurred: $e');
-      emit(ScanHistoryError(message: e.toString()));
+      emit(
+        ScanHistoryError(message: e.toString().replaceAll('Exception: ', '')),
+      );
       print('💥 BLoC: Emitted ScanHistoryError state');
     }
   }
@@ -113,7 +117,9 @@ class ScanHistoryBloc extends Bloc<ScanHistoryEvent, ScanHistoryState> {
       print('🎉 BLoC: Emitted CreateScanHistorySuccess state');
     } catch (e) {
       print('❌ BLoC: Error occurred: $e');
-      emit(ScanHistoryError(message: e.toString()));
+      emit(
+        ScanHistoryError(message: e.toString().replaceAll('Exception: ', '')),
+      );
       print('💥 BLoC: Emitted ScanHistoryError state');
     }
   }
@@ -135,7 +141,9 @@ class ScanHistoryBloc extends Bloc<ScanHistoryEvent, ScanHistoryState> {
       print('🎉 BLoC: Emitted DeleteAllScanHistorySuccess state');
     } catch (e) {
       print('❌ BLoC: Error occurred: $e');
-      emit(ScanHistoryError(message: e.toString()));
+      emit(
+        ScanHistoryError(message: e.toString().replaceAll('Exception: ', '')),
+      );
       print('💥 BLoC: Emitted ScanHistoryError state');
     }
   }
@@ -157,7 +165,9 @@ class ScanHistoryBloc extends Bloc<ScanHistoryEvent, ScanHistoryState> {
       print('🎉 BLoC: Emitted DeleteScanHistoryByIdSuccess state');
     } catch (e) {
       print('❌ BLoC: Error occurred: $e');
-      emit(ScanHistoryError(message: e.toString()));
+      emit(
+        ScanHistoryError(message: e.toString().replaceAll('Exception: ', '')),
+      );
       print('💥 BLoC: Emitted ScanHistoryError state');
     }
   }

@@ -45,7 +45,14 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       return UserModel.fromJson(data);
     }
 
-    throw Exception('Failed to fetch profile: ${response.statusCode}');
+    try {
+      final errorBody = json.decode(response.body);
+      final errorMessage =
+          errorBody['error'] ?? 'Không thể tải thông tin cá nhân';
+      throw Exception(errorMessage);
+    } catch (e) {
+      throw Exception('Không thể tải thông tin cá nhân');
+    }
   }
 
   @override
@@ -75,6 +82,13 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       return UserModel.fromJson(data);
     }
 
-    throw Exception('Failed to update profile: ${response.statusCode}');
+    try {
+      final errorBody = json.decode(response.body);
+      final errorMessage =
+          errorBody['error'] ?? 'Không thể cập nhật thông tin cá nhân';
+      throw Exception(errorMessage);
+    } catch (e) {
+      throw Exception('Không thể cập nhật thông tin cá nhân');
+    }
   }
 }

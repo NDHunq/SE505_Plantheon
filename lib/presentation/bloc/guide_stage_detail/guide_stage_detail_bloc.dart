@@ -21,7 +21,11 @@ class GuideStageDetailBloc
       final detail = await getGuideStageDetail(event.guideStageId);
       emit(GuideStageDetailLoaded(detail: detail));
     } catch (e) {
-      emit(GuideStageDetailError(message: e.toString()));
+      emit(
+        GuideStageDetailError(
+          message: e.toString().replaceAll('Exception: ', ''),
+        ),
+      );
     }
   }
 }

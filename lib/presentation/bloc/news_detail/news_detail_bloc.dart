@@ -19,7 +19,9 @@ class NewsDetailBloc extends Bloc<NewsDetailEvent, NewsDetailState> {
       final news = await getNewsDetail(event.id);
       emit(NewsDetailLoaded(news: news));
     } catch (e) {
-      emit(NewsDetailError(message: e.toString()));
+      emit(
+        NewsDetailError(message: e.toString().replaceAll('Exception: ', '')),
+      );
     }
   }
 }

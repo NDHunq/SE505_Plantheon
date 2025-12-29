@@ -19,7 +19,7 @@ class NewsTagBloc extends Bloc<NewsTagEvent, NewsTagState> {
       final tags = await getNewsTags();
       emit(NewsTagLoaded(tags: tags));
     } catch (e) {
-      emit(NewsTagError(message: e.toString()));
+      emit(NewsTagError(message: e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

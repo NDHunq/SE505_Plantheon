@@ -174,8 +174,6 @@ class _ScanState extends State<Scan> {
       });
 
       if (mounted && result.topPrediction != null) {
-        // Wait a bit to show the loading animation
-        await Future.delayed(const Duration(seconds: 2));
         if (mounted) {
           // Close loading dialog
           Navigator.of(context).pop();

@@ -42,9 +42,15 @@ class PostRemoteDataSource {
       print('PostRemoteDataSource: Loaded ${postResponse.posts.length} posts');
       return postResponse.posts;
     } else if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else {
-      throw Exception('Failed to load posts');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể tải bài viết';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải bài viết');
+      }
     }
   }
 
@@ -84,9 +90,16 @@ class PostRemoteDataSource {
       );
       return postResponse.posts;
     } else if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else {
-      throw Exception('Failed to search posts');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể tìm kiếm bài viết';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tìm kiếm bài viết');
+      }
     }
   }
 
@@ -119,9 +132,16 @@ class PostRemoteDataSource {
       );
       return postResponse.posts;
     } else if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else {
-      throw Exception('Failed to load my posts');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể tải bài viết của bạn';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải bài viết của bạn');
+      }
     }
   }
 
@@ -141,9 +161,15 @@ class PostRemoteDataSource {
     );
 
     if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else if (response.statusCode != 200) {
-      throw Exception('Failed to like post');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể thích bài viết';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể thích bài viết');
+      }
     }
   }
 
@@ -163,9 +189,16 @@ class PostRemoteDataSource {
     );
 
     if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else if (response.statusCode != 200) {
-      throw Exception('Failed to unlike post');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể bỏ thích bài viết';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể bỏ thích bài viết');
+      }
     }
   }
 
@@ -191,9 +224,15 @@ class PostRemoteDataSource {
     );
 
     if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else if (response.statusCode != 200 && response.statusCode != 204) {
-      throw Exception('Failed to delete post');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể xóa bài viết';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể xóa bài viết');
+      }
     }
     print('PostRemoteDataSource: Post deleted successfully');
   }
@@ -217,9 +256,16 @@ class PostRemoteDataSource {
       final jsonResponse = json.decode(response.body);
       return PostModel.fromJson(jsonResponse['data']);
     } else if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else {
-      throw Exception('Failed to load post detail');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể tải chi tiết bài viết';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải chi tiết bài viết');
+      }
     }
   }
 
@@ -250,9 +296,15 @@ class PostRemoteDataSource {
     );
 
     if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception('Failed to create comment');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể tạo bình luận';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tạo bình luận');
+      }
     }
   }
 
@@ -272,9 +324,15 @@ class PostRemoteDataSource {
     );
 
     if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else if (response.statusCode != 200 && response.statusCode != 204) {
-      throw Exception('Failed to like comment');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể thích bình luận';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể thích bình luận');
+      }
     }
   }
 
@@ -294,9 +352,16 @@ class PostRemoteDataSource {
     );
 
     if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else if (response.statusCode != 200 && response.statusCode != 204) {
-      throw Exception('Failed to unlike comment');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể bỏ thích bình luận';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể bỏ thích bình luận');
+      }
     }
   }
 
@@ -340,15 +405,19 @@ class PostRemoteDataSource {
 
     if (response.statusCode == 401) {
       print('PostRemoteDataSource: 401 Response body: ${response.body}');
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else if (response.statusCode != 200 && response.statusCode != 201) {
       print(
         'PostRemoteDataSource: Failed to create post. Status code: ${response.statusCode}',
       );
       print('PostRemoteDataSource: Response body: ${response.body}');
-      throw Exception(
-        'Failed to create post: ${response.statusCode} - ${response.body}',
-      );
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể tạo bài viết';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tạo bài viết');
+      }
     }
     print('PostRemoteDataSource: Post created successfully!');
   }

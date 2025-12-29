@@ -45,10 +45,17 @@ class GuideStageRemoteDataSourceImpl implements GuideStageRemoteDataSource {
         return responseModel.guideStages;
       }
 
-      throw Exception('Failed to fetch guide stages: ${response.statusCode}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể tải giai đoạn hướng dẫn';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải giai đoạn hướng dẫn');
+      }
     } catch (e) {
       print('❌ GuideStageRemoteDataSource: error $e');
-      throw Exception('Failed to fetch guide stages: $e');
+      throw Exception('Không thể tải giai đoạn hướng dẫn');
     }
   }
 
@@ -77,12 +84,17 @@ class GuideStageRemoteDataSourceImpl implements GuideStageRemoteDataSource {
         return model;
       }
 
-      throw Exception(
-        'Failed to fetch guide stage detail: ${response.statusCode}',
-      );
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể tải chi tiết giai đoạn';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải chi tiết giai đoạn');
+      }
     } catch (e) {
       print('❌ GuideStageRemoteDataSource (detail): error $e');
-      throw Exception('Failed to fetch guide stage detail: $e');
+      throw Exception('Không thể tải chi tiết giai đoạn');
     }
   }
 }

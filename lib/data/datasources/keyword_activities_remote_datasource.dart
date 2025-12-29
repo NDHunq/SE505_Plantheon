@@ -51,9 +51,14 @@ class KeywordActivitiesRemoteDataSourceImpl
       print(
         '[KeywordActivitiesRemote][ERROR] ${response.statusCode}: ${response.body}',
       );
-      throw Exception(
-        'Failed to load keyword activities: ${response.statusCode}',
-      );
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể tải từ khóa hoạt động';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải từ khóa hoạt động');
+      }
     }
   }
 }

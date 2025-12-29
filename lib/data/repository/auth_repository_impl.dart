@@ -25,7 +25,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return authModel;
     } catch (e) {
-      throw Exception('Login failed: ${e.toString()}');
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
@@ -47,7 +47,7 @@ class AuthRepositoryImpl implements AuthRepository {
       // Don't store token on registration - user should login after registering
       return authModel;
     } catch (e) {
-      throw Exception('Registration failed: ${e.toString()}');
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
 

@@ -37,9 +37,15 @@ class NotificationRemoteDataSource {
       );
       return notificationResponse.notifications;
     } else if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else {
-      throw Exception('Failed to load notifications');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể tải thông báo';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải thông báo');
+      }
     }
   }
 
@@ -61,9 +67,15 @@ class NotificationRemoteDataSource {
     );
 
     if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else if (response.statusCode != 200 && response.statusCode != 204) {
-      throw Exception('Failed to delete notification');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể xóa thông báo';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể xóa thông báo');
+      }
     }
   }
 
@@ -85,9 +97,16 @@ class NotificationRemoteDataSource {
     );
 
     if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else if (response.statusCode != 200 && response.statusCode != 204) {
-      throw Exception('Failed to clear notifications');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể xóa tất cả thông báo';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể xóa tất cả thông báo');
+      }
     }
   }
 
@@ -109,9 +128,16 @@ class NotificationRemoteDataSource {
     );
 
     if (response.statusCode == 401) {
-      throw Exception('Token expired. Please login again.');
+      throw Exception('Token hết hạn. Vui lòng đăng nhập lại');
     } else if (response.statusCode != 200) {
-      throw Exception('Failed to mark notification as seen');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể đánh dấu đã xem thông báo';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể đánh dấu đã xem thông báo');
+      }
     }
   }
 }

@@ -20,7 +20,9 @@ class GuideStageBloc extends Bloc<GuideStageEvent, GuideStageState> {
       final stages = await getGuideStagesByPlant(event.plantId);
       emit(GuideStageLoaded(stages: stages));
     } catch (e) {
-      emit(GuideStageError(message: e.toString()));
+      emit(
+        GuideStageError(message: e.toString().replaceAll('Exception: ', '')),
+      );
     }
   }
 }

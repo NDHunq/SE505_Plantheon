@@ -35,7 +35,7 @@ class DiseaseBloc extends Bloc<DiseaseEvent, DiseaseState> {
       print('🎉 BLoC: Emitted DiseaseSuccess state');
     } catch (e) {
       print('❌ BLoC: Error occurred: $e');
-      emit(DiseaseError(message: e.toString()));
+      emit(DiseaseError(message: e.toString().replaceAll('Exception: ', '')));
       print('💥 BLoC: Emitted DiseaseError state');
     }
   }

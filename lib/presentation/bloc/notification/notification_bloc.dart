@@ -37,7 +37,9 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       final notifications = await getNotificationsUseCase();
       emit(NotificationLoaded(notifications: notifications));
     } catch (e) {
-      emit(NotificationError(message: e.toString()));
+      emit(
+        NotificationError(message: e.toString().replaceAll('Exception: ', '')),
+      );
     }
   }
 
@@ -66,7 +68,8 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           emit(NotificationLoaded(notifications: updated));
           emit(
             NotificationError(
-              message: 'Đánh dấu đã đọc thất bại: ${e.toString()}',
+              message:
+                  'Đánh dấu đã đọc thất bại: ${e.toString().replaceAll('Exception: ', '')}',
             ),
           );
         }
@@ -92,7 +95,10 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       } catch (e) {
         // Revert and show error
         emit(
-          NotificationError(message: 'Xóa thông báo thất bại: ${e.toString()}'),
+          NotificationError(
+            message:
+                'Xóa thông báo thất bại: ${e.toString().replaceAll('Exception: ', '')}',
+          ),
         );
         emit(currentState);
       }

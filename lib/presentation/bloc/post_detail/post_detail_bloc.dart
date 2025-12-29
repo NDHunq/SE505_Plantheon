@@ -70,7 +70,7 @@ class PostDetailBloc extends Bloc<PostDetailEvent, PostDetailState> {
       final post = await postRepository.getPostDetail(event.postId);
       emit(PostDetailLoaded(post));
     } catch (e) {
-      emit(PostDetailError(e.toString()));
+      emit(PostDetailError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -192,7 +192,7 @@ class PostDetailBloc extends Bloc<PostDetailEvent, PostDetailState> {
       } catch (e) {
         // Revert to original state on failure
         emit(PostDetailLoaded(post));
-        emit(PostDetailError(e.toString()));
+        emit(PostDetailError(e.toString().replaceAll('Exception: ', '')));
       }
     }
   }

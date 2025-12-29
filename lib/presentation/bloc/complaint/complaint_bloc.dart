@@ -44,7 +44,7 @@ class ComplaintBloc extends Bloc<ComplaintEvent, ComplaintState> {
       print('🎉 BLoC: Emitted ComplaintSuccess state');
     } catch (e) {
       print('❌ BLoC: Error occurred: $e');
-      emit(ComplaintError(message: e.toString()));
+      emit(ComplaintError(message: e.toString().replaceAll('Exception: ', '')));
       print('💥 BLoC: Emitted ComplaintError state');
     }
   }
@@ -74,7 +74,7 @@ class ComplaintBloc extends Bloc<ComplaintEvent, ComplaintState> {
       await complaintRepository.submitComplaint(complaint);
       emit(ComplaintSubmitted());
     } catch (e) {
-      emit(ComplaintError(message: e.toString()));
+      emit(ComplaintError(message: e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -90,7 +90,11 @@ class ComplaintBloc extends Bloc<ComplaintEvent, ComplaintState> {
       );
       emit(ComplaintsLoaded(complaints: complaints));
     } catch (e) {
-      emit(ComplaintsLoadError(message: e.toString()));
+      emit(
+        ComplaintsLoadError(
+          message: e.toString().replaceAll('Exception: ', ''),
+        ),
+      );
     }
   }
 }

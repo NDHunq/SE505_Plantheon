@@ -42,10 +42,17 @@ class PlantRemoteDataSourceImpl implements PlantRemoteDataSource {
         return responseModel.plants;
       }
 
-      throw Exception('Failed to fetch plants: ${response.statusCode}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể tải danh sách cây trồng';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải danh sách cây trồng');
+      }
     } catch (e) {
       print('❌ PlantRemoteDataSource: error $e');
-      throw Exception('Failed to fetch plants: $e');
+      throw Exception('Không thể tải danh sách cây trồng');
     }
   }
 }

@@ -81,7 +81,13 @@ class ActivitiesRemoteDataSourceImpl implements ActivitiesRemoteDataSource {
     print(
       '[ActivitiesRemote][ERROR] Month request failed: ${response.statusCode}, body=${response.body}',
     );
-    throw Exception('Failed to fetch activities: ${response.statusCode}');
+    try {
+      final errorBody = json.decode(response.body);
+      final errorMessage = errorBody['error'] ?? 'Không thể tải hoạt động';
+      throw Exception(errorMessage);
+    } catch (e) {
+      throw Exception('Không thể tải hoạt động');
+    }
   }
 
   @override
@@ -112,7 +118,14 @@ class ActivitiesRemoteDataSourceImpl implements ActivitiesRemoteDataSource {
       print(
         '[ActivitiesRemote][ERROR] Day request failed: ${response.statusCode}, body=${response.body}',
       );
-      throw Exception('Failed to fetch day activities: ${response.statusCode}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể tải hoạt động trong ngày';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải hoạt động trong ngày');
+      }
     }
   }
 
@@ -146,7 +159,13 @@ class ActivitiesRemoteDataSourceImpl implements ActivitiesRemoteDataSource {
       print(
         '[ActivitiesRemote][ERROR] Create activity failed: ${response.statusCode}, body=${response.body}',
       );
-      throw Exception('Failed to create activity: ${response.statusCode}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể tạo hoạt động';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tạo hoạt động');
+      }
     }
   }
 
@@ -181,7 +200,14 @@ class ActivitiesRemoteDataSourceImpl implements ActivitiesRemoteDataSource {
       print(
         '[ActivitiesRemote][ERROR] Update activity failed: ${response.statusCode}, body=${response.body}',
       );
-      throw Exception('Failed to update activity: ${response.statusCode}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể cập nhật hoạt động';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể cập nhật hoạt động');
+      }
     }
   }
 
@@ -209,7 +235,13 @@ class ActivitiesRemoteDataSourceImpl implements ActivitiesRemoteDataSource {
     print(
       '[ActivitiesRemote][ERROR] Delete activity failed: ${response.statusCode}, body=${response.body}',
     );
-    throw Exception('Failed to delete activity: ${response.statusCode}');
+    try {
+      final errorBody = json.decode(response.body);
+      final errorMessage = errorBody['error'] ?? 'Không thể xóa hoạt động';
+      throw Exception(errorMessage);
+    } catch (e) {
+      throw Exception('Không thể xóa hoạt động');
+    }
   }
 
   @override
@@ -239,7 +271,14 @@ class ActivitiesRemoteDataSourceImpl implements ActivitiesRemoteDataSource {
     print(
       '[ActivitiesRemote][ERROR] Get monthly financial failed: ${response.statusCode}, body=${response.body}',
     );
-    throw Exception('Failed to get monthly financial: ${response.statusCode}');
+    try {
+      final errorBody = json.decode(response.body);
+      final errorMessage =
+          errorBody['error'] ?? 'Không thể tải dữ liệu tài chính tháng';
+      throw Exception(errorMessage);
+    } catch (e) {
+      throw Exception('Không thể tải dữ liệu tài chính tháng');
+    }
   }
 
   @override
@@ -268,7 +307,14 @@ class ActivitiesRemoteDataSourceImpl implements ActivitiesRemoteDataSource {
     print(
       '[ActivitiesRemote][ERROR] Get annual financial failed: ${response.statusCode}, body=${response.body}',
     );
-    throw Exception('Failed to get annual financial: ${response.statusCode}');
+    try {
+      final errorBody = json.decode(response.body);
+      final errorMessage =
+          errorBody['error'] ?? 'Không thể tải dữ liệu tài chính năm';
+      throw Exception(errorMessage);
+    } catch (e) {
+      throw Exception('Không thể tải dữ liệu tài chính năm');
+    }
   }
 
   @override
@@ -298,8 +344,13 @@ class ActivitiesRemoteDataSourceImpl implements ActivitiesRemoteDataSource {
     print(
       '[ActivitiesRemote][ERROR] Get multi-year financial failed: ${response.statusCode}, body=${response.body}',
     );
-    throw Exception(
-      'Failed to get multi-year financial: ${response.statusCode}',
-    );
+    try {
+      final errorBody = json.decode(response.body);
+      final errorMessage =
+          errorBody['error'] ?? 'Không thể tải dữ liệu tài chính nhiều năm';
+      throw Exception(errorMessage);
+    } catch (e) {
+      throw Exception('Không thể tải dữ liệu tài chính nhiều năm');
+    }
   }
 }

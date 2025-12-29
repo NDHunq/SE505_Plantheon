@@ -26,7 +26,11 @@ class KeywordActivitiesBloc
       emit(KeywordActivitiesLoaded(activities: activities));
     } catch (e) {
       print('[KeywordActivitiesBloc] Error: $e');
-      emit(KeywordActivitiesError(message: e.toString()));
+      emit(
+        KeywordActivitiesError(
+          message: e.toString().replaceAll('Exception: ', ''),
+        ),
+      );
     }
   }
 }

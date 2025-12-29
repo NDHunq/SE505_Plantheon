@@ -19,7 +19,7 @@ class PlantBloc extends Bloc<PlantEvent, PlantState> {
       final plants = await getPlants();
       emit(PlantLoaded(plants: plants));
     } catch (e) {
-      emit(PlantError(message: e.toString()));
+      emit(PlantError(message: e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

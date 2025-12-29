@@ -39,7 +39,7 @@ class FinancialBloc extends Bloc<FinancialEvent, FinancialState> {
       emit(MonthlyFinancialLoaded(data: entity));
     } catch (e) {
       print('[FinancialBloc] Error: $e');
-      emit(FinancialError(message: e.toString()));
+      emit(FinancialError(message: e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -57,7 +57,7 @@ class FinancialBloc extends Bloc<FinancialEvent, FinancialState> {
       emit(AnnualFinancialLoaded(data: entity));
     } catch (e) {
       print('[FinancialBloc] Error: $e');
-      emit(FinancialError(message: e.toString()));
+      emit(FinancialError(message: e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -80,7 +80,7 @@ class FinancialBloc extends Bloc<FinancialEvent, FinancialState> {
       emit(MultiYearFinancialLoaded(data: entity));
     } catch (e) {
       print('[FinancialBloc] Error: $e');
-      emit(FinancialError(message: e.toString()));
+      emit(FinancialError(message: e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

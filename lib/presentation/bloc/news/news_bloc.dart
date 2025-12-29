@@ -19,7 +19,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       final news = await getNews(size: event.size);
       emit(NewsLoaded(news: news));
     } catch (e) {
-      emit(NewsError(message: e.toString()));
+      emit(NewsError(message: e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

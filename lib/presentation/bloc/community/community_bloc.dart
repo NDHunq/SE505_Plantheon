@@ -129,7 +129,7 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
         ),
       );
     } catch (e) {
-      emit(CommunityError(e.toString()));
+      emit(CommunityError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -184,7 +184,7 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
         CommunityLoaded(posts: posts, hasReachedMax: true),
       ); // No pagination for My Posts yet
     } catch (e) {
-      emit(CommunityError(e.toString()));
+      emit(CommunityError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -326,7 +326,7 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
       add(FetchPosts(isRefresh: true));
     } catch (e) {
       print('CommunityBloc: Error creating post: $e');
-      emit(CommunityError(e.toString()));
+      emit(CommunityError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 }

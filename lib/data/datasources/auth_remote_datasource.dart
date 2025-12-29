@@ -22,8 +22,16 @@ class AuthRemoteDataSource {
       final jsonResponse = json.decode(response.body);
       return AuthModel.fromJson(jsonResponse);
     } else {
-      final errorBody = json.decode(response.body);
-      final errorMessage = errorBody['message'] ?? 'Login failed';
+      String errorMessage = 'Đăng nhập thất bại, vui lòng thử lại';
+      try {
+        final errorBody = json.decode(response.body);
+        if (errorBody is Map<String, dynamic> &&
+            errorBody.containsKey('error')) {
+          errorMessage = errorBody['error'];
+        }
+      } catch (e) {
+        // Nếu không parse được JSON, giữ message mặc định
+      }
       throw Exception(errorMessage);
     }
   }
@@ -53,8 +61,16 @@ class AuthRemoteDataSource {
       final jsonResponse = json.decode(response.body);
       return AuthModel.fromJson(jsonResponse);
     } else {
-      final errorBody = json.decode(response.body);
-      final errorMessage = errorBody['message'] ?? 'Registration failed';
+      String errorMessage = 'Đăng ký thất bại, vui lòng thử lại';
+      try {
+        final errorBody = json.decode(response.body);
+        if (errorBody is Map<String, dynamic> &&
+            errorBody.containsKey('error')) {
+          errorMessage = errorBody['error'];
+        }
+      } catch (e) {
+        // Nếu không parse được JSON, giữ message mặc định
+      }
       throw Exception(errorMessage);
     }
   }
@@ -83,7 +99,8 @@ class AuthRemoteDataSource {
       // Backend trả về error trong field 'error'
       try {
         final errorBody = json.decode(response.body);
-        final errorMessage = errorBody['error'] ?? 'Không thể gửi OTP, vui lòng thử lại';
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể gửi OTP, vui lòng thử lại';
         throw Exception(errorMessage);
       } catch (e) {
         // Nếu không parse được JSON, dùng response body trực tiếp
@@ -110,7 +127,8 @@ class AuthRemoteDataSource {
       // Backend trả về error trong field 'error'
       try {
         final errorBody = json.decode(response.body);
-        final errorMessage = errorBody['error'] ?? 'Không thể xác thực OTP, vui lòng thử lại';
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể xác thực OTP, vui lòng thử lại';
         throw Exception(errorMessage);
       } catch (e) {
         throw Exception(response.body);
@@ -144,7 +162,8 @@ class AuthRemoteDataSource {
       // Backend trả về error trong field 'error'
       try {
         final errorBody = json.decode(response.body);
-        final errorMessage = errorBody['error'] ?? 'Đặt lại mật khẩu thất bại, vui lòng thử lại';
+        final errorMessage =
+            errorBody['error'] ?? 'Đặt lại mật khẩu thất bại, vui lòng thử lại';
         throw Exception(errorMessage);
       } catch (e) {
         throw Exception(response.body);

@@ -25,6 +25,13 @@ class _WeatherCardState extends State<WeatherCard> {
   WeatherData? _weatherData;
   bool _isLoading = true;
   String _error = '';
+  bool _isNavigating = false; // Ngăn chặn multiple taps
+  
+  // Cache vị trí
+  Position? _cachedPosition;
+  DateTime? _locationCacheTime;
+  static const Duration _cacheValidDuration = Duration(minutes: 30);
+  
   // Vị trí mặc định giống màn hình chi tiết thời tiết
   static const double _defaultLat = 10.8704192;
   static const double _defaultLon = 106.79953;
@@ -42,7 +49,32 @@ class _WeatherCardState extends State<WeatherCard> {
     });
 
     try {
-      final data = await _weatherService.fetchWeather(_defaultLat, _defaultLon);
+      double lat = _defaultLat;
+      double lon = _defaultLon;
+
+      // Kiểm tra quyền location
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (serviceEnabled) {
+        LocationPermission permission = await Geolocator.checkPermission();
+        
+        // Nếu đã có quyền, lấy vị trí GPS
+        if (permission == LocationPermission.always || 
+            permission == LocationPermission.whileInUse) {
+          try {
+            Position position = await _getCachedOrFreshLocation();
+            lat = position.latitude;
+            lon = position.longitude;
+            print('Card: Sử dụng vị trí GPS ($lat, $lon)');
+          } catch (e) {
+            print('Card: Không lấy được GPS, dùng vị trí mặc định');
+            // Nếu lỗi, vẫn dùng vị trí mặc định
+          }
+        } else {
+          print('Card: Chưa có quyền location, dùng vị trí mặc định');
+        }
+      }
+
+      final data = await _weatherService.fetchWeather(lat, lon);
       if (!mounted) return;
       setState(() {
         _weatherData = data;
@@ -106,6 +138,33 @@ class _WeatherCardState extends State<WeatherCard> {
     }
   }
 
+  /// Lấy vị trí từ cache hoặc GPS
+  /// Chỉ gọi GPS nếu cache hết hạn (30 phút)
+  Future<Position> _getCachedOrFreshLocation() async {
+    final now = DateTime.now();
+    
+    // Kiểm tra cache còn valid không
+    if (_cachedPosition != null && 
+        _locationCacheTime != null &&
+        now.difference(_locationCacheTime!) < _cacheValidDuration) {
+      print('Sử dụng vị trí từ cache');
+      return _cachedPosition!;
+    }
+
+    // Cache hết hạn hoặc chưa có, lấy vị trí mới
+    print('Lấy vị trí mới từ GPS');
+    final position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.medium,
+      timeLimit: const Duration(seconds: 10),
+    );
+
+    // Lưu vào cache
+    _cachedPosition = position;
+    _locationCacheTime = now;
+
+    return position;
+  }
+
   @override
   Widget build(BuildContext context) {
     final subtitle = _isLoading
@@ -128,76 +187,80 @@ class _WeatherCardState extends State<WeatherCard> {
 
     return GestureDetector(
       onTap: () async {
-        // Check if location services are enabled
-        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-        if (!serviceEnabled) {
-          // Location services are not enabled, prompt user to enable
-          if (!context.mounted) return;
-          showDialog(
-            context: context,
-            builder: (context) => BasicDialog(
-              title: "Dịch vụ vị trí đã tắt",
-              content:
-                  "Vui lòng bật dịch vụ vị trí để xem thông tin thời tiết tại vị trí của bạn.",
-              cancelText: "Hủy",
-              confirmText: "Mở cài đặt",
-              onCancel: () {
-                Navigator.of(context).pop();
-              },
-              onConfirm: () async {
-                Navigator.of(context).pop();
-                await Geolocator.openLocationSettings();
-              },
-            ),
-          );
-          return;
-        }
+        // Ngăn chặn multiple taps
+        if (_isNavigating) return;
+        
+        setState(() {
+          _isNavigating = true;
+        });
 
-        // Check location permission
-        LocationPermission permission = await Geolocator.checkPermission();
-
-        if (permission == LocationPermission.denied) {
-          // Request permission
-          permission = await Geolocator.requestPermission();
-
-          if (permission == LocationPermission.denied) {
-            // Permission denied, don't navigate
+        try {
+          // Check if location services are enabled
+          bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+          if (!serviceEnabled) {
+            // Location services are not enabled, prompt user to enable
+            if (!context.mounted) return;
+            showDialog(
+              context: context,
+              builder: (context) => BasicDialog(
+                title: "Dịch vụ vị trí đã tắt",
+                content:
+                    "Vui lòng bật dịch vụ vị trí để xem thông tin thời tiết tại vị trí của bạn.",
+                cancelText: "Hủy",
+                confirmText: "Mở cài đặt",
+                onCancel: () {
+                  Navigator.of(context).pop();
+                },
+                onConfirm: () async {
+                  Navigator.of(context).pop();
+                  await Geolocator.openLocationSettings();
+                },
+              ),
+            );
             return;
           }
-        }
 
-        if (permission == LocationPermission.deniedForever) {
-          // Permission permanently denied, show settings dialog
+          // Check location permission
+          LocationPermission permission = await Geolocator.checkPermission();
+
+          if (permission == LocationPermission.denied) {
+            // Request permission
+            permission = await Geolocator.requestPermission();
+
+            if (permission == LocationPermission.denied) {
+              // Permission denied, don't navigate
+              return;
+            }
+          }
+
+          if (permission == LocationPermission.deniedForever) {
+            // Permission permanently denied, show settings dialog
+            if (!context.mounted) return;
+            showDialog(
+              context: context,
+              builder: (context) => BasicDialog(
+                title: "Cần quyền truy cập vị trí",
+                content:
+                    "Ứng dụng cần quyền truy cập vị trí để hiển thị thông tin thời tiết. Vui lòng cấp quyền trong cài đặt.",
+                cancelText: "Hủy",
+                confirmText: "Đi đến cài đặt",
+                onCancel: () {
+                  Navigator.of(context).pop();
+                },
+                onConfirm: () async {
+                  Navigator.of(context).pop();
+                  await Geolocator.openAppSettings();
+                },
+              ),
+            );
+            return;
+          }
+
+          // Permission granted, get current location
+          Position position = await _getCachedOrFreshLocation();
           if (!context.mounted) return;
-          showDialog(
-            context: context,
-            builder: (context) => BasicDialog(
-              title: "Cần quyền truy cập vị trí",
-              content:
-                  "Ứng dụng cần quyền truy cập vị trí để hiển thị thông tin thời tiết. Vui lòng cấp quyền trong cài đặt.",
-              cancelText: "Hủy",
-              confirmText: "Đi đến cài đặt",
-              onCancel: () {
-                Navigator.of(context).pop();
-              },
-              onConfirm: () async {
-                Navigator.of(context).pop();
-                await Geolocator.openAppSettings();
-              },
-            ),
-          );
-          return;
-        }
 
-        // Permission granted, get current location
-        try {
-          Position position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.medium,
-            timeLimit: const Duration(seconds: 10),
-          );
-          if (!context.mounted) return;
-
-          Navigator.push(
+          await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => Weather(
@@ -216,6 +279,13 @@ class _WeatherCardState extends State<WeatherCard> {
               duration: Duration(seconds: 2),
             ),
           );
+        } finally {
+          // Reset flag sau khi hoàn thành
+          if (mounted) {
+            setState(() {
+              _isNavigating = false;
+            });
+          }
         }
       },
       child: Skeletonizer(

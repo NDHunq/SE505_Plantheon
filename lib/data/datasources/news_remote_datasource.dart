@@ -53,9 +53,15 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
         return responseModel.news;
       }
 
-      throw Exception('Failed to fetch news: ${response.statusCode}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể tải tin tức';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải tin tức');
+      }
     } catch (e) {
-      throw Exception('Failed to fetch news: $e');
+      throw Exception('Không thể tải tin tức');
     }
   }
 
@@ -82,9 +88,15 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
         return responseModel.tags;
       }
 
-      throw Exception('Failed to fetch news tags: ${response.statusCode}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage = errorBody['error'] ?? 'Không thể tải thẻ tin tức';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải thẻ tin tức');
+      }
     } catch (e) {
-      throw Exception('Failed to fetch news tags: $e');
+      throw Exception('Không thể tải thẻ tin tức');
     }
   }
 
@@ -111,9 +123,16 @@ class NewsRemoteDataSourceImpl implements NewsRemoteDataSource {
         return NewsModel.fromJson(data);
       }
 
-      throw Exception('Failed to fetch news detail: ${response.statusCode}');
+      try {
+        final errorBody = json.decode(response.body);
+        final errorMessage =
+            errorBody['error'] ?? 'Không thể tải chi tiết tin tức';
+        throw Exception(errorMessage);
+      } catch (e) {
+        throw Exception('Không thể tải chi tiết tin tức');
+      }
     } catch (e) {
-      throw Exception('Failed to fetch news detail: $e');
+      throw Exception('Không thể tải chi tiết tin tức');
     }
   }
 }
