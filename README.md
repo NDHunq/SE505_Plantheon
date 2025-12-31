@@ -2,6 +2,8 @@
 
 A comprehensive mobile application for plant disease detection and agricultural management, powered by artificial intelligence and computer vision.
 
+<img width="200" height="200" alt="logo" src="https://github.com/user-attachments/assets/d004e0e8-95bc-48d2-9b6b-ae217ff88dec" />
+
 ## Overview
 
 Plantheon is an intelligent farming assistant that helps farmers and plant enthusiasts identify plant diseases, manage their agricultural activities, and connect with a community of growers. The application leverages deep learning models to provide accurate disease detection and offers personalized recommendations for treatment and prevention.
