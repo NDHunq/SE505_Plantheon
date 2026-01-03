@@ -577,8 +577,122 @@ class _PersonalSettingState extends State<PersonalSetting> {
   }
 }
 
-class HelpingSetting extends StatelessWidget {
+class HelpingSetting extends StatefulWidget {
   const HelpingSetting({super.key});
+
+  @override
+  State<HelpingSetting> createState() => _HelpingSettingState();
+}
+
+class _HelpingSettingState extends State<HelpingSetting> {
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+
+  void _showDeleteAccountDialog() {
+    _passwordController.clear();
+    
+    // Capture the parent context that has access to UserBloc
+    final parentContext = context;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => BlocListener<UserBloc, UserState>(
+        bloc: parentContext.read<UserBloc>(),
+        listener: (context, state) {
+          if (state is UserDeleted) {
+            // Close dialog
+            Navigator.of(dialogContext).pop();
+
+            // Logout and navigate to login
+            parentContext.read<AuthBloc>().add(const LogoutRequested());
+            Navigator.of(parentContext).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (BuildContext context) => const SignInPage(),
+              ),
+              (route) => false,
+            );
+
+            // Show success message
+            toastification.show(
+              context: parentContext,
+              type: ToastificationType.success,
+              title: Text('Tài khoản đã được xóa thành công'),
+              alignment: Alignment.bottomCenter,
+              autoCloseDuration: const Duration(seconds: 3),
+            );
+          } else if (state is UserError) {
+            // Show error toast
+            toastification.show(
+              context: parentContext,
+              type: ToastificationType.error,
+              title: Text(state.message),
+              alignment: Alignment.bottomCenter,
+              autoCloseDuration: const Duration(seconds: 3),
+            );
+          }
+        },
+        child: BlocBuilder<UserBloc, UserState>(
+          bloc: parentContext.read<UserBloc>(),
+          builder: (context, state) {
+            final isDeleting = state is UserDeleting;
+
+            return BasicDialog(
+              title: 'Xác nhận xóa tài khoản',
+              content:
+                  'Hành động này sẽ xóa vĩnh viễn tài khoản và tất cả dữ liệu của bạn. Vui lòng nhập mật khẩu để xác nhận.',
+              confirmText: isDeleting ? 'Đang xóa...' : 'Xóa tài khoản',
+              cancelText: 'Hủy',
+              child: TextField(
+                controller: _passwordController,
+                obscureText: true,
+                enabled: !isDeleting,
+                decoration: InputDecoration(
+                  hintText: 'Nhập mật khẩu',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.sp),
+                  ),
+                  prefixIcon: Icon(Icons.lock_outline),
+                ),
+              ),
+              onConfirm: isDeleting
+                  ? null
+                  : () {
+                      final password = _passwordController.text.trim();
+                      if (password.isEmpty) {
+                        toastification.show(
+                          context: parentContext,
+                          type: ToastificationType.warning,
+                          title: Text('Vui lòng nhập mật khẩu'),
+                          alignment: Alignment.bottomCenter,
+                          autoCloseDuration: const Duration(seconds: 2),
+                        );
+                        return;
+                      }
+
+                      // Dispatch delete account event
+                      parentContext.read<UserBloc>().add(
+                        DeleteAccountEvent(password: password),
+                      );
+                    },
+              onCancel: isDeleting
+                  ? null
+                  : () {
+                      Navigator.of(dialogContext).pop();
+                    },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -633,6 +747,24 @@ class HelpingSetting extends StatelessWidget {
                 ),
                 text: "Báo cáo",
                 action: Icon(Icons.keyboard_arrow_right_rounded, size: 20.sp),
+              ),
+            ),
+            Divider(height: 1.sp, color: AppColors.white),
+            GestureDetector(
+              onTap: _showDeleteAccountDialog,
+              child: SettingListItem(
+                leading: SvgPicture.asset(
+                  AppVectors.trash,
+                  width: 20.sp,
+                  height: 20.sp,
+                  color: Colors.red[700],
+                ),
+                text: "Xóa tài khoản",
+                action: Icon(
+                  Icons.keyboard_arrow_right_rounded,
+                  size: 20.sp,
+                  color: Colors.red[700],
+                ),
               ),
             ),
           ],

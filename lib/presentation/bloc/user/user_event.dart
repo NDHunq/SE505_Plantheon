@@ -8,3 +8,9 @@ class UpdateProfileEvent extends UserEvent {
 
   UpdateProfileEvent({this.fullName, this.avatar});
 }
+
+class DeleteAccountEvent extends UserEvent {
+  final String password;
+
+  DeleteAccountEvent({required this.password});
+}

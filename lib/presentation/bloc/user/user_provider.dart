@@ -7,6 +7,7 @@ import 'package:se501_plantheon/data/repository/auth_repository_impl.dart';
 import 'package:se501_plantheon/data/repository/user_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/user/get_profile.dart';
 import 'package:se501_plantheon/domain/usecases/user/update_profile.dart';
+import 'package:se501_plantheon/domain/usecases/user/delete_account.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/user/user_bloc.dart';
 import 'package:se501_plantheon/presentation/bloc/user/user_event.dart';
@@ -46,6 +47,9 @@ class UserProvider extends StatelessWidget {
             repository: context.read<UserRepositoryImpl>(),
           ),
           updateProfile: UpdateProfile(
+            repository: context.read<UserRepositoryImpl>(),
+          ),
+          deleteAccount: DeleteAccount(
             repository: context.read<UserRepositoryImpl>(),
           ),
         )..add(FetchProfileEvent()),

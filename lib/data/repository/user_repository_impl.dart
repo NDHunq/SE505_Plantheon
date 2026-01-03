@@ -16,4 +16,9 @@ class UserRepositoryImpl implements UserRepository {
   Future<UserEntity> updateProfile({String? fullName, String? avatar}) {
     return remoteDataSource.updateProfile(fullName: fullName, avatar: avatar);
   }
+
+  @override
+  Future<void> deleteAccount(String password) {
+    return remoteDataSource.deleteAccount(password);
+  }
 }
