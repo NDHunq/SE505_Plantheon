@@ -4,7 +4,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/supabase_service.dart';
-import 'package:se501_plantheon/core/services/firebase_notification_service.dart';
 import 'package:se501_plantheon/presentation/bloc/auth/auth_provider.dart';
 import 'package:se501_plantheon/core/services/deep_link_service.dart';
 import 'package:se501_plantheon/presentation/screens/authentication/signin.dart';
@@ -21,7 +20,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SupabaseService.initialize();
-  await FirebaseNotificationService().initialize();
+  // await FirebaseNotificationService().initialize();
 
   // Initialize Deep Link Service
   await DeepLinkService().initialize(navigatorKey: navigatorKey);

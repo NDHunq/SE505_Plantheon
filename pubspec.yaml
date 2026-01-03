@@ -1,7 +1,7 @@
 name: se501_plantheon
 description: "A new Flutter project."
 publish_to: "none"
-version: 0.1.0
+version: 1.0.0+1
 
 environment:
   sdk: ^3.9.0
@@ -48,6 +48,7 @@ dependencies:
   url_launcher: ^6.1.7
   jwt_decode: ^0.3.1
   pin_code_fields: ^8.0.1
+  rename: ^3.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
