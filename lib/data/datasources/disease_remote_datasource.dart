@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:se501_plantheon/data/models/diseases.model.dart';
+import 'package:se501_plantheon/data/models/diseases_list_model.dart';
 
 abstract class DiseaseRemoteDataSource {
   Future<DiseaseModel> getDisease(String diseaseId);
+  Future<DiseasesListModel> getAllDiseases({String? search});
 }
 
 class DiseaseRemoteDataSourceImpl implements DiseaseRemoteDataSource {
@@ -55,6 +57,49 @@ class DiseaseRemoteDataSourceImpl implements DiseaseRemoteDataSource {
     } catch (e) {
       print('❌ DataSource: General error: $e');
       throw Exception('Không thể tải thông tin bệnh');
+    }
+  }
+
+  @override
+  Future<DiseasesListModel> getAllDiseases({String? search}) async {
+    final uri = search != null && search.isNotEmpty
+        ? Uri.parse('$baseUrl/diseases/all').replace(
+            queryParameters: {'search': search},
+          )
+        : Uri.parse('$baseUrl/diseases/all');
+
+    print('🌐 DataSource: Making API call to $uri');
+    
+    try {
+      final response = await client
+          .get(
+            uri,
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 10));
+
+      print('📡 DataSource: Response status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        try {
+          final Map<String, dynamic> jsonData = json.decode(response.body);
+          final model = DiseasesListModel.fromJson(jsonData);
+          print('✅ DataSource: Loaded ${model.count} diseases');
+          return model;
+        } catch (e) {
+          print('❌ DataSource: Parsing error: $e');
+          throw Exception('Không thể đọc danh sách bệnh');
+        }
+      } else {
+        print('❌ DataSource: API error: ${response.statusCode}');
+        throw Exception('Không thể tải danh sách bệnh');
+      }
+    } on TimeoutException catch (_) {
+      print('❌ DataSource: Connection timed out');
+      throw Exception('Kết nối hết thời gian. Vui lòng kiểm tra internet');
+    } catch (e) {
+      print('❌ DataSource: General error: $e');
+      throw Exception('Không thể tải danh sách bệnh');
     }
   }
 }

@@ -19,6 +19,10 @@ import 'package:se501_plantheon/core/configs/theme/app_colors.dart';
 import 'package:se501_plantheon/core/services/token_storage_service.dart';
 import 'package:se501_plantheon/data/models/diseases.model.dart';
 import 'package:se501_plantheon/data/datasources/complaint_remote_datasource.dart';
+import 'package:se501_plantheon/data/datasources/disease_remote_datasource.dart';
+import 'package:se501_plantheon/data/repository/disease_repository_impl.dart';
+import 'package:se501_plantheon/domain/entities/disease_entity.dart';
+import 'package:se501_plantheon/domain/usecases/get_all_diseases_usecase.dart';
 import 'package:se501_plantheon/data/repository/complaint_repository_impl.dart';
 import 'package:se501_plantheon/domain/usecases/complaint/submit_scan_complaint.dart';
 import 'package:se501_plantheon/presentation/bloc/disease/disease_bloc.dart';
@@ -879,15 +883,21 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
 
   void _showComplaintDialog(BuildContext context, DiseaseModel disease) {
     String selectedCategory = 'WRONG_RESULT';
+    String? selectedDiseaseId;
     final TextEditingController contentController = TextEditingController();
+    final TextEditingController searchController = TextEditingController();
+    List<DiseaseEntity> allDiseases = [];
+    List<DiseaseEntity> filteredDiseases = [];
+    bool isLoadingDiseases = true;
+    String? diseasesError;
 
     // Save bloc reference before showing dialog
     final complaintBloc = context.read<ComplaintBloc>();
 
     final Map<String, String> categoryLabels = {
-      'WRONG_RESULT': 'Kết quả hoàn toàn sai',
+      'WRONG_RESULT': 'Nhận diện sai cây',
       'MISIDENTIFIED': 'Nhận diện sai bệnh',
-      'INCORRECT_INFO': 'Thông tin không chính xác',
+      'INCORRECT_INFO': 'Mô tả không chính xác',
       'POOR_QUALITY': 'Chất lượng kém',
       'OTHER_ISSUE': 'Vấn đề khác',
     };
@@ -895,121 +905,389 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
     showDialog(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          backgroundColor: AppColors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.sp),
-          ),
-          title: Text(
-            'Báo cáo kết quả scan',
-            style: AppTextStyles.s16Bold(color: AppColors.primary_700),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Loại vấn đề:',
-                  style: AppTextStyles.s14SemiBold(
-                    color: AppColors.primary_600,
+        builder: (context, setDialogState) {
+          // Fetch all diseases when dialog is first built
+          if (isLoadingDiseases &&
+              allDiseases.isEmpty &&
+              diseasesError == null) {
+            SharedPreferences.getInstance().then((prefs) {
+              final getAllDiseases = GetAllDiseases(
+                repository: DiseaseRepositoryImpl(
+                  remoteDataSource: DiseaseRemoteDataSourceImpl(
+                    client: http.Client(),
+                    baseUrl: ApiConstants.diseaseApiUrl,
                   ),
                 ),
-                SizedBox(height: 8.sp),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.sp),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.primary_300),
+              );
+
+              getAllDiseases()
+                  .then((diseases) {
+                    setDialogState(() {
+                      allDiseases = diseases;
+                      filteredDiseases = diseases;
+                      isLoadingDiseases = false;
+                    });
+                  })
+                  .catchError((error) {
+                    setDialogState(() {
+                      diseasesError = 'Không thể tải danh sách bệnh';
+                      isLoadingDiseases = false;
+                    });
+                  });
+            });
+          }
+
+          void filterDiseases(String query) {
+            if (query.isEmpty) {
+              filteredDiseases = allDiseases;
+            } else {
+              filteredDiseases = allDiseases.where((disease) {
+                final searchLower = query.toLowerCase();
+                return disease.name.toLowerCase().contains(searchLower) ||
+                    disease.plantName.toLowerCase().contains(searchLower);
+              }).toList();
+            }
+          }
+
+          return AlertDialog(
+            backgroundColor: AppColors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.sp),
+            ),
+            title: Text(
+              'Báo cáo kết quả quét',
+              style: AppTextStyles.s16Bold(color: AppColors.primary_700),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Category selection (moved to top)
+                  Text(
+                    'Loại vấn đề:',
+                    style: AppTextStyles.s14SemiBold(
+                      color: AppColors.primary_600,
+                    ),
+                  ),
+                  SizedBox(height: 8.sp),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12.sp),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.primary_300),
+                      borderRadius: BorderRadius.circular(8.sp),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: selectedCategory,
+                        isExpanded: true,
+                        items: categoryLabels.entries.map((entry) {
+                          return DropdownMenuItem<String>(
+                            value: entry.key,
+                            child: Text(
+                              entry.value,
+                              style: AppTextStyles.s14Regular(),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setDialogState(() {
+                              selectedCategory = value;
+                              // Reset selected disease when category changes to non-disease-related issues
+                              if (value != 'MISIDENTIFIED' &&
+                                  value != 'WRONG_RESULT') {
+                                selectedDiseaseId = null;
+                              }
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                  // Only show disease selection for MISIDENTIFIED or WRONG_RESULT
+                  if (selectedCategory == 'MISIDENTIFIED' ||
+                      selectedCategory == 'WRONG_RESULT') ...[
+                    SizedBox(height: 16.sp),
+                    Text(
+                      'Bệnh đề xuất (tùy chọn):',
+                      style: AppTextStyles.s14SemiBold(
+                        color: AppColors.primary_600,
+                      ),
+                    ),
+                    SizedBox(height: 8.sp),
+                    if (isLoadingDiseases)
+                      Container(
+                        height: 200.sp,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.primary_300),
+                          borderRadius: BorderRadius.circular(8.sp),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 24.sp,
+                                width: 24.sp,
+                                child: LoadingIndicator(),
+                              ),
+                              SizedBox(height: 12.sp),
+                              Text(
+                                'Đang tải danh sách bệnh...',
+                                style: AppTextStyles.s14Regular(
+                                  color: AppColors.primary_400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else if (diseasesError != null)
+                      Container(
+                        height: 200.sp,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.red.shade300),
+                          borderRadius: BorderRadius.circular(8.sp),
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.sp),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red.shade400,
+                                  size: 32.sp,
+                                ),
+                                SizedBox(height: 12.sp),
+                                Text(
+                                  diseasesError!,
+                                  style: AppTextStyles.s14Regular(
+                                    color: Colors.red.shade700,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Search field
+                          TextField(
+                            controller: searchController,
+                            decoration: InputDecoration(
+                              hintText: 'Tìm kiếm bệnh...',
+                              hintStyle: AppTextStyles.s14Regular(
+                                color: AppColors.primary_300,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: AppColors.primary_400,
+                                size: 20.sp,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.sp),
+                                borderSide: BorderSide(
+                                  color: AppColors.primary_300,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.sp),
+                                borderSide: BorderSide(
+                                  color: AppColors.primary_main,
+                                ),
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12.sp,
+                                vertical: 12.sp,
+                              ),
+                            ),
+                            style: AppTextStyles.s14Regular(),
+                            onChanged: (value) {
+                              setDialogState(() {
+                                filterDiseases(value);
+                              });
+                            },
+                          ),
+                          SizedBox(height: 12.sp),
+                          // Disease ListView
+                          Container(
+                            height: 200.sp,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.primary_300),
+                              borderRadius: BorderRadius.circular(8.sp),
+                            ),
+                            child: filteredDiseases.isEmpty
+                                ? Center(
+                                    child: Text(
+                                      'Không tìm thấy bệnh nào',
+                                      style: AppTextStyles.s14Regular(
+                                        color: AppColors.primary_400,
+                                      ),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    itemCount: filteredDiseases.length,
+                                    itemBuilder: (context, index) {
+                                      final disease = filteredDiseases[index];
+                                      final isSelected =
+                                          selectedDiseaseId == disease.id;
+
+                                      return InkWell(
+                                        onTap: () {
+                                          setDialogState(() {
+                                            if (selectedDiseaseId ==
+                                                disease.id) {
+                                              // Deselect if already selected
+                                              selectedDiseaseId = null;
+                                            } else {
+                                              selectedDiseaseId = disease.id;
+                                            }
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 12.sp,
+                                            vertical: 10.sp,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: isSelected
+                                                ? AppColors.primary_100
+                                                : Colors.transparent,
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                color: AppColors.primary_200,
+                                                width: 0.5,
+                                              ),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                isSelected
+                                                    ? Icons.check_circle
+                                                    : Icons
+                                                          .radio_button_unchecked,
+                                                color: isSelected
+                                                    ? AppColors.primary_main
+                                                    : AppColors.primary_300,
+                                                size: 20.sp,
+                                              ),
+                                              SizedBox(width: 12.sp),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      disease.name,
+                                                      style:
+                                                          AppTextStyles.s14SemiBold(
+                                                            color: isSelected
+                                                                ? AppColors
+                                                                      .primary_700
+                                                                : Colors
+                                                                      .black87,
+                                                          ),
+                                                    ),
+                                                    SizedBox(height: 2.sp),
+                                                    Text(
+                                                      disease.plantName,
+                                                      style:
+                                                          AppTextStyles.s12Regular(
+                                                            color: AppColors
+                                                                .primary_700,
+                                                          ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                          ),
+                        ],
+                      ),
+                  ],
+                  SizedBox(height: 16.sp),
+
+                  Text(
+                    'Chi tiết (tùy chọn):',
+                    style: AppTextStyles.s14SemiBold(
+                      color: AppColors.primary_600,
+                    ),
+                  ),
+                  SizedBox(height: 8.sp),
+                  TextField(
+                    controller: contentController,
+                    maxLines: 4,
+                    maxLength: 1000,
+                    decoration: InputDecoration(
+                      hintText: 'Mô tả chi tiết vấn đề bạn gặp phải...',
+                      hintStyle: AppTextStyles.s14Regular(
+                        color: AppColors.primary_300,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.sp),
+                        borderSide: BorderSide(color: AppColors.primary_300),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.sp),
+                        borderSide: BorderSide(color: AppColors.primary_main),
+                      ),
+                    ),
+                    style: AppTextStyles.s14Regular(),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(
+                  'Hủy',
+                  style: AppTextStyles.s14SemiBold(
+                    color: AppColors.primary_400,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.of(dialogContext).pop();
+
+                  await _submitComplaint(
+                    complaintBloc,
+                    disease,
+                    selectedCategory,
+                    contentController.text.trim().isEmpty
+                        ? null
+                        : contentController.text.trim(),
+                    selectedDiseaseId,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary_main,
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.sp),
                   ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: selectedCategory,
-                      isExpanded: true,
-                      items: categoryLabels.entries.map((entry) {
-                        return DropdownMenuItem<String>(
-                          value: entry.key,
-                          child: Text(
-                            entry.value,
-                            style: AppTextStyles.s14Regular(),
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            selectedCategory = value;
-                          });
-                        }
-                      },
-                    ),
-                  ),
                 ),
-                SizedBox(height: 16.sp),
-                Text(
-                  'Chi tiết (tùy chọn):',
-                  style: AppTextStyles.s14SemiBold(
-                    color: AppColors.primary_600,
-                  ),
-                ),
-                SizedBox(height: 8.sp),
-                TextField(
-                  controller: contentController,
-                  maxLines: 4,
-                  maxLength: 1000,
-                  decoration: InputDecoration(
-                    hintText: 'Mô tả chi tiết vấn đề bạn gặp phải...',
-                    hintStyle: AppTextStyles.s14Regular(
-                      color: AppColors.primary_300,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.sp),
-                      borderSide: BorderSide(color: AppColors.primary_300),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.sp),
-                      borderSide: BorderSide(color: AppColors.primary_main),
-                    ),
-                  ),
-                  style: AppTextStyles.s14Regular(),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(
-                'Hủy',
-                style: AppTextStyles.s14SemiBold(color: AppColors.primary_400),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(dialogContext).pop();
-
-                await _submitComplaint(
-                  complaintBloc,
-                  disease,
-                  selectedCategory,
-                  contentController.text.trim().isEmpty
-                      ? null
-                      : contentController.text.trim(),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary_main,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.sp),
+                child: Text(
+                  'Gửi báo cáo',
+                  style: AppTextStyles.s14SemiBold(color: AppColors.white),
                 ),
               ),
-              child: Text(
-                'Gửi báo cáo',
-                style: AppTextStyles.s14SemiBold(color: AppColors.white),
-              ),
-            ),
-          ],
-        ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -1019,6 +1297,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
     DiseaseModel disease,
     String category,
     String? content,
+    String? userSuggestedDiseaseId,
   ) async {
     try {
       // Upload image to Supabase if available
@@ -1053,6 +1332,7 @@ class _DiseaseDescriptionScreenState extends State<DiseaseDescriptionScreen> {
           category: category,
           imageUrl: imageUrl,
           content: content,
+          userSuggestedDiseaseId: userSuggestedDiseaseId,
         ),
       );
     } catch (e) {

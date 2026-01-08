@@ -20,6 +20,20 @@ class DiseaseRepositoryImpl implements DiseaseRepository {
     return entity;
   }
 
+  @override
+  Future<List<DiseaseEntity>> getAllDiseases({String? search}) async {
+    print('🏛️ Repository: Getting all diseases with search: $search');
+    final diseasesListModel = await remoteDataSource.getAllDiseases(
+      search: search,
+    );
+    print('📦 Repository: Received ${diseasesListModel.count} diseases');
+    final entities = diseasesListModel.diseases
+        .map((model) => _mapModelToEntity(model))
+        .toList();
+    print('🔄 Repository: Mapped to ${entities.length} entities');
+    return entities;
+  }
+
   DiseaseEntity _mapModelToEntity(DiseaseModel model) {
     return DiseaseEntity(
       id: model.id,
