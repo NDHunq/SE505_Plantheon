@@ -2,9 +2,11 @@
 
 A comprehensive mobile application for plant disease detection and agricultural management, powered by artificial intelligence and computer vision.
 
-<img width="200" height="200" alt="logo" src="https://github.com/user-attachments/assets/d004e0e8-95bc-48d2-9b6b-ae217ff88dec" />
+<img width="100" height="100" alt="logo" src="https://github.com/user-attachments/assets/d004e0e8-95bc-48d2-9b6b-ae217ff88dec" />
 
 Demo: https://youtube.com/shorts/UuzWJTGFOFk
+
+https://github.com/user-attachments/assets/535b2f7c-bed7-4235-a3fe-b7e009d85227
 
 ## Overview
 
